@@ -5,10 +5,9 @@ mutable struct StanModelSymbol
     create::Ref{Nothing}
     numparams::Ref{Nothing}
     logdensity::Ref{Nothing}
-     free::Ref{Nothing}
+    free::Ref{Nothing}
     function StanModelSymbol(path::String)
         lib = Libc.Libdl.dlopen(path)
-        # TODO probably don't need stanmodel_ prefixing each of these
         crsym = Libc.Libdl.dlsym(lib, :stanmodel_create)
         npsym = Libc.Libdl.dlsym(lib, :stanmodel_get_num_unc_params)
         ldsym = Libc.Libdl.dlsym(lib, :stanmodel_log_density)

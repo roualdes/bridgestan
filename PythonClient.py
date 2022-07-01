@@ -38,6 +38,14 @@ class PyBridgeStan:
                                           ctypes.c_int,
                                           ctypes.c_int]
 
+        self._free = self.stanlib.stanmodel_destroy
+        self._free.restype = ctypes.c_void_p
+        self._free.argtypes = [ctypes.c_void_p]
+
+    def __del__(self) -> None:
+        """Free Stan model memory"""
+        self._free(self.stanmodel)
+
     @property
     def D(self) -> int:
         return self._D

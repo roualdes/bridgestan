@@ -20,7 +20,6 @@ smb.logdensity_grad(q, 1, 0)
 smb.logdensity
 smb.grad
 
-
 multi_lib = "/Users/ez/bridgestan/stan/multi/multi_model.so"
 multi_data = "/Users/ez/bridgestan/stan/multi/multi.data.json"
 

@@ -56,13 +56,11 @@ model_functor<M> create_model_functor(const M& m, bool propto, bool jacobian,
   return model_functor<M>(m, propto, jacobian, out);
 }
 
-
 extern "C" {
 
   struct stanmodel_struct
   {
     void* model_;
-    unsigned int seed_;         // TODO don't need this
   };
 
   stanmodel* _stanmodel_create(char* data_file_path_, unsigned int seed_) {
@@ -77,11 +75,7 @@ extern "C" {
 
     stanmodel* sm = new stanmodel();
     sm->seed_ = seed_;
-    // TODO(ear) try this
     sm->model_ = &new_model(data, seed_, &std::cerr);
-    // instead of the below
-    // stan::model::model_base* model = &new_model(data, seed_, &std::cerr);
-    // sm->model_ = model;
     return sm;
   }
 
