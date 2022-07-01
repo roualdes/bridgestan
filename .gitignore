@@ -1,0 +1,13 @@
+# C/C++
+*.d
+*.o
+*.so
+*.hpp
+
+notes.org
+
+# Python
+__pycache__/
+
+# Julia
+.juliahistory
