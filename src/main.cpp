@@ -94,7 +94,6 @@ void log_density(stanmodel* sm_, int D_, double* q_, double* log_density_, doubl
 
   stan::model::model_base* model = static_cast<stan::model::model_base*>(sm_->model_);
   auto model_functor = create_model_functor(model, propto_, jacobian_, err_);
-
   stan::math::gradient(model_functor, params_unc, *log_density_, grad);
 
   for (Eigen::VectorXd::Index d = 0; d < D_; ++d) {
