@@ -54,21 +54,25 @@ model_functor<M> create_model_functor(const M& m, bool propto, bool jacobian,
   return model_functor<M>(m, propto, jacobian, out);
 }
 
-stan::model::model_base* model;
-
-
+struct stanmodel_struct;
+typedef struct stanmodel_struct stanmodel;
 
 extern "C" {
-  void create(char* data_file_path_, unsigned int seed_);
 
-  void log_density(int D_, double* q_, double* log_density_, double* grad_, int propto_, int jacobian_);
+  struct stanmodel_struct {
+    void* model_;
+  };
 
-  int get_num_unc_params();
+  stanmodel* create(char* data_file_path_, unsigned int seed_);
 
-  void destroy();
+  void log_density(stanmodel* sm_, int D_, double* q_, double* log_density_, double* grad_, int propto_, int jacobian_);
+
+  int get_num_unc_params(stanmodel* sm_);
+
+  void destroy(stanmodel* sm_);
 }
 
-void create(char* data_file_path_, unsigned int seed_) {
+stanmodel* create(char* data_file_path_, unsigned int seed_) {
   std::string data_file_path(data_file_path_);
   // TODO(ear) add catch if data_file_path_ is empty
   // https://github.com/bob-carpenter/stan-model-server/blob/8916ea58cd80da15eed10e82b1bf5f878ce31a61/src/main.cpp#L524
@@ -77,15 +81,18 @@ void create(char* data_file_path_, unsigned int seed_) {
     throw std::runtime_error("Cannot read input file: " + data_file_path);
   cmdstan::json::json_data data(in);
   in.close();
-  std::cout << "made it ehre" << std::endl;
-  model = &new_model(data, seed_, &std::cerr);
+
+  stanmodel* sm = new stanmodel();
+  sm->model_ = &new_model(data, seed_, &std::cerr);
+  return sm;
 }
 
-void log_density(int D_, double* q_, double* log_density_, double* grad_, int propto_, int jacobian_) {
+void log_density(stanmodel* sm_, int D_, double* q_, double* log_density_, double* grad_, int propto_, int jacobian_) {
   const Eigen::Map<Eigen::VectorXd> params_unc(q_, D_);
   Eigen::VectorXd grad;
   std::ostream& err_ = std::cerr; // TODO(ear) maybe std::out
 
+  stan::model::model_base* model = static_cast<stan::model::model_base*>(sm_->model_);
   auto model_functor = create_model_functor(model, propto_, jacobian_, err_);
 
   stan::math::gradient(model_functor, params_unc, *log_density_, grad);
@@ -95,15 +102,19 @@ void log_density(int D_, double* q_, double* log_density_, double* grad_, int pr
   }
 }
 
-int get_num_unc_params() {
+int get_num_unc_params(stanmodel* sm_) {
   bool include_generated_quantities = false;
   bool include_transformed_parameters = false;
   std::vector<std::string> names;
+
+  stan::model::model_base* model = static_cast<stan::model::model_base*>(sm_->model_);
   model->unconstrained_param_names(names, include_generated_quantities,
                                    include_transformed_parameters);
   return names.size();
 }
 
-void destroy() {
-  delete model;
+void destroy(stanmodel* sm_) {
+  if (sm_ == NULL) return;
+  delete static_cast<stan::model::model_base*>(sm_->model_);
+  delete sm_;
 }

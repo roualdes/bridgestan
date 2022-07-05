@@ -12,26 +12,32 @@ end
 
 const bernoulli_lib = joinpath(@__DIR__, "stan/bernoulli/bernoulli_model.so")
 bernoulli_data = joinpath(@__DIR__, "stan/bernoulli/bernoulli.data.json")
-# const blib = Libc.Libdl.dlopen(bernoulli_lib)
+blib = Libc.Libdl.dlopen(bernoulli_lib)
+
+sm = ccall((:create, blib), Ptr{StanModelStruct}, (Cstring, UInt32), bernoulli_data, 204)
+
+
 
 function create_(clib, data_)
+    sm = Ptr{StanModelStruct}
     Libc.Libdl.dlopen(clib) do lib
         create_ = Libc.Libdl.dlsym(lib, :create; throw_error = false)
         println("made it here")
-        ccall(create_,
-              Cvoid,
-              (Cstring, UInt32),
-              data_, 204)
+        sm = ccall(create_,
+                   Ptr{StanModelStruct},
+                   (Cstring, UInt32),
+                   data_, 204)
     end
+    return sm
 end
 
-create_(bernoulli_lib, bernoulli_data)
+sm = create_(bernoulli_lib, bernoulli_data)
 
-function numparams(clib)
+function numparams(clib, stanmodel)
     D = zero(Int32)
     Libc.Libdl.dlopen(clib) do lib
         numparams_ = Libc.Libdl.dlsym(lib, :get_num_unc_params; throw_error = false)
-        D = ccall((:get_num_unc_params, bernoulli_lib), Cint, ())
+        D = ccall((:get_num_unc_params, bernoulli_lib), Cint, (Ptr{StanModelStruct},), stanmodel)
     end
     return D
 end
@@ -43,7 +49,7 @@ q = @. log(x / (1 - x));                  # unconstrained scale
 logdensity = zeros(1);
 grad = zeros(D);
 
-function logdensity_(clib, q)
+function logdensity_(clib, stanmodel, q)
     logdensity = zeros(1)
     D = length(q)
     grad = zeros(D)
@@ -51,8 +57,8 @@ function logdensity_(clib, q)
         log_density_ = Libc.Libdl.dlsym(lib, :log_density; throw_error = false)
         ccall(log_density,
               Cvoid,
-              (Cint, Ref{Cdouble},  Ref{Cdouble}, Ref{Cdouble}, Cint, Cint),
-              D, q, logdensity, grad, 1, 0)
+              (Ptr{StanModelStruct}, Cint, Ref{Cdouble},  Ref{Cdouble}, Ref{Cdouble}, Cint, Cint),
+              stanmodel, D, q, logdensity, grad, 1, 0)
 
     end
     return logdensity, grad
@@ -60,10 +66,10 @@ end
 
 logdensity_(smb, blib, q)
 
-function destroy_(clib)
+function destroy_(clib, stanmodel)
     Libc.Libdl.dlopen(clib) do lib
         destroy_ = Libc.Libdl.dlsym(lib, :destroy; throw_error = false)
-        ccall(destroy_, Cvoid, ())
+        ccall(destroy_, Cvoid, (Ptr{StanModelStruct},), stanmodel)
     end
 end
 
