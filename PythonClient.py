@@ -12,7 +12,7 @@ class PyBridgeStan:
         self.stanlib = ctypes.CDLL(model_lib)
         self.seed = seed
 
-        self._create = self.stanlib.stanmodel_create
+        self._create = self.stanlib.create
         self._create.restype = ctypes.c_void_p
         self._create.argtpyes = [ctypes.c_char_p,
                                  ctypes.c_uint]
@@ -20,7 +20,7 @@ class PyBridgeStan:
         self.stanmodel = self._create(str.encode(model_data),
                                       self.seed)
 
-        self._numparams = self.stanlib.stanmodel_get_num_unc_params
+        self._numparams = self.stanlib.get_num_unc_params
         self._numparams.restype = ctypes.c_int
         self._numparams.argtypes = [ctypes.c_void_p]
         self._D = self._numparams(self.stanmodel)
@@ -28,17 +28,17 @@ class PyBridgeStan:
         self._logdensity = np.zeros(shape = 1)
         self._grad = np.zeros(shape = self._D)
 
-        self._logdensity_grad = self.stanlib.stanmodel_log_density
+        self._logdensity_grad = self.stanlib.log_density
         self._logdensity_grad.restype = ctypes.c_void_p
         self._logdensity_grad.argtypes = [ctypes.c_void_p,
-                                          ndpointer(ctypes.c_double),
                                           ctypes.c_int,
+                                          ndpointer(ctypes.c_double),
                                           ndpointer(ctypes.c_double),
                                           ndpointer(ctypes.c_double),
                                           ctypes.c_int,
                                           ctypes.c_int]
 
-        self._free = self.stanlib.stanmodel_destroy
+        self._free = self.stanlib.destroy
         self._free.restype = ctypes.c_void_p
         self._free.argtypes = [ctypes.c_void_p]
 
@@ -62,6 +62,6 @@ class PyBridgeStan:
                         propto: Optional[int] = 1,
                         jacobian: Optional[int] = 1) -> None:
         self._logdensity_grad(self.stanmodel,
-                              q, self._D,
+                              self._D, q,
                               self._logdensity, self._grad,
                               propto, jacobian)
