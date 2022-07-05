@@ -31,3 +31,5 @@ smm.logdensity_grad(x)
 
 smm.logdensity
 smm.grad
+
+del smb

@@ -36,15 +36,15 @@ ifdef STAN_OPENCL
 STANCFLAGS+= --use-opencl
 endif
 
-STANBRIDGE ?= src/stanbridge.cpp
-STANBRIDGE_SO = $(patsubst %.cpp,%.so,$(STANBRIDGE))
+MAIN ?= src/main.cpp
+MAIN_SO = $(patsubst %.cpp,%.so,$(MAIN))
 
 ## COMPILE (e.g., COMPILE.cpp == clang++ ...) was set by (MATH)make/compiler_flags
 ## UNKNOWNS:  OUTPUT_OPTION???  LDLIBS???
-$(STANBRIDGE_SO) : $(STANBRIDGE)
+$(MAIN_SO) : $(MAIN)
 	@echo '--- Compiling Stan bridge C++ code ---'
 	@mkdir -p $(dir $@)
-	$(COMPILE.cpp) -shared -fPIC -I $(CMDSTANSRC) $(OUTPUT_OPTION) $(LDLIBS) $<
+	$(COMPILE.cpp) -O3 -march=native -I $(CMDSTANSRC) $(OUTPUT_OPTION) $(LDLIBS) $<
 
 ## generate .hpp file from .stan file using stanc
 %.hpp : %.stan $(STANC)
@@ -57,27 +57,20 @@ $(STANBRIDGE_SO) : $(STANBRIDGE)
 ## declares we want to keep .hpp even though it's an intermediate
 .PRECIOUS: %.hpp
 
-JULIABRIDGE ?= src/juliabridge.c
-JULIABRIDGE_O = $(patsubst %.c,%.o,$(JULIABRIDGE))
-
-$(JULIABRIDGE_O) : $(JULIABRIDGE)
-	@echo '--- Compiling Julia bridge C code ---'
-	$(COMPILE.c) -O3 $(OUTPUT_OPTION) $(subst \,/,$<)
-
 ## builds executable (suffix depends on platform)
-%$(EXE) : %.hpp $(JULIABRIDGE_O) $(STANBRIDGE_SO) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
+%$(EXE) : %.hpp $(MAIN_SO) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	@echo ''
 	@echo '--- Compiling C++ code ---'
-	$(COMPILE.cpp) $(CXXFLAGS_PROGRAM) -shared -fPIC -x c++ -o $(subst  \,/,$*).o $(subst \,/,$<)
+	$(COMPILE.cpp) $(CXXFLAGS_PROGRAM) -O3 -march=native -x c++ -o $(subst  \,/,$*).o $(subst \,/,$<)
 	@echo '--- Linking C++ code ---'
-	$(LINK.cpp) -shared -lm -fPIC -O3 -o $(patsubst %.hpp,%_model.so,$<) $(subst \,/,$*.o) $(JULIABRIDGE_O) $(STANBRIDGE_SO) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
+	$(LINK.cpp) -shared -lm -fPIC -O3 -o $(patsubst %.hpp,%_model.so,$<) $(subst \,/,$*.o) $(MAIN_SO) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	$(RM) $(subst  \,/,$*).o
 
 ## calculate dependencies for %$(EXE) target
 ifneq (,$(STAN_TARGETS))
-$(patsubst %,%.d,$(STAN_TARGETS)) : DEPTARGETS += -MT $(patsubst %.d,%$(EXE),$@) -include $< -include $(STANBRIDGE)
+$(patsubst %,%.d,$(STAN_TARGETS)) : DEPTARGETS += -MT $(patsubst %.d,%$(EXE),$@) -include $< -include $(MAIN)
 -include $(patsubst %,%.d,$(STAN_TARGETS))
--include $(patsubst %.cpp,%.d,$(STANBRIDGE))
+-include $(patsubst %.cpp,%.d,$(MAIN))
 endif
 
 ## compiles and instantiates TBB library (only if not done automatically on platform)
@@ -94,7 +87,7 @@ clean-deps:
 	$(RM) $(call findfiles,src,*.dSYM) $(call findfiles,src/stan,*.dSYM) $(call findfiles,$(MATH)/stan,*.dSYM)
 
 clean-all: clean clean-deps
-	$(RM) $(STANBRIDGE_SO)
+	$(RM) $(MAIN_SO)
 	$(RM) -r $(wildcard $(BOOST)/stage/lib $(BOOST)/bin.v2 $(BOOST)/tools/build/src/engine/bootstrap/ $(BOOST)/tools/build/src/engine/bin.* $(BOOST)/project-config.jam* $(BOOST)/b2 $(BOOST)/bjam $(BOOST)/bootstrap.log)
 
 clean-program:
@@ -109,7 +102,7 @@ endif
 # print compilation command line config
 .PHONY: compile_info
 compile_info:
-	@echo '$(LINK.cpp) $(CXXFLAGS_PROGRAM) $(STANBRIDGE_SO) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)'
+	@echo '$(LINK.cpp) $(CXXFLAGS_PROGRAM) $(MAIN_SO) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)'
 
 ## print value of makefile variable (e.g., make print-TBB_TARGETS)
 .PHONY: print-%

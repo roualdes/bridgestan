@@ -4,6 +4,8 @@
 *.so
 *.hpp
 
+*.data*.json
+
 notes.org
 
 # Python
