@@ -2,6 +2,7 @@
 #include <stan/math.hpp>
 #include <stan/io/empty_var_context.hpp>
 #include <stan/model/model_base.hpp>
+#include <stan/math/rev/core/init_chainablestack.hpp>
 
 #include <algorithm>
 #include <exception>
@@ -12,7 +13,6 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-
 
 stan::model::model_base& new_model(stan::io::var_context &data_context,
                                    unsigned int seed, std::ostream *msg_stream);
@@ -73,6 +73,7 @@ extern "C" {
 }
 
 stanmodel* create(char* data_file_path_, unsigned int seed_) {
+
   std::string data_file_path(data_file_path_);
   // TODO(ear) add catch if data_file_path_ is empty
   // https://github.com/bob-carpenter/stan-model-server/blob/8916ea58cd80da15eed10e82b1bf5f878ce31a61/src/main.cpp#L524
@@ -84,13 +85,15 @@ stanmodel* create(char* data_file_path_, unsigned int seed_) {
 
   stanmodel* sm = new stanmodel();
   sm->model_ = &new_model(data, seed_, &std::cerr);
+
   return sm;
 }
 
 void log_density(stanmodel* sm_, int D_, double* q_, double* log_density_, double* grad_, int propto_, int jacobian_) {
   const Eigen::Map<Eigen::VectorXd> params_unc(q_, D_);
-  Eigen::VectorXd grad;
+  Eigen::VectorXd grad(D_);
   std::ostream& err_ = std::cerr; // TODO(ear) maybe std::out
+  stan::math::ChainableStack thread_instance;
 
   stan::model::model_base* model = static_cast<stan::model::model_base*>(sm_->model_);
   auto model_functor = create_model_functor(model, propto_, jacobian_, err_);

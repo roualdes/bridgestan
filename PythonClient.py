@@ -20,17 +20,17 @@ class PyBridgeStan:
         self.stanmodel = self._create(str.encode(model_data),
                                       self.seed)
 
-        self._numparams = self.stanlib.get_num_unc_params
-        self._numparams.restype = ctypes.c_int
-        self._numparams.argtypes = [ctypes.c_void_p]
-        self._D = self._numparams(self.stanmodel)
+        self._num_unc_params = self.stanlib.get_num_unc_params
+        self._num_unc_params.restype = ctypes.c_int
+        self._num_unc_params.argtypes = [ctypes.c_void_p]
+        self._dims = self._num_unc_params(self.stanmodel)
 
-        self._logdensity = np.zeros(shape = 1)
-        self._grad = np.zeros(shape = self._D)
+        self._log_density = np.zeros(shape = 1)
+        self._grad = np.zeros(shape = self._dims)
 
-        self._logdensity_grad = self.stanlib.log_density
-        self._logdensity_grad.restype = ctypes.c_void_p
-        self._logdensity_grad.argtypes = [ctypes.c_void_p,
+        self._log_density_grad = self.stanlib.log_density
+        self._log_density_grad.restype = ctypes.c_void_p
+        self._log_density_grad.argtypes = [ctypes.c_void_p,
                                           ctypes.c_int,
                                           ndpointer(ctypes.c_double),
                                           ndpointer(ctypes.c_double),
@@ -46,22 +46,24 @@ class PyBridgeStan:
         """Free Stan model memory"""
         self._free(self.stanmodel)
 
-    @property
-    def D(self) -> int:
-        return self._D
+    def dims(self) -> int:
+        return self._dims
 
-    @property
-    def logdensity(self) -> npt.NDArray[np.float64]:
-        return self._logdensity
+    def log_density(self, q: npt.NDArray[np.float64],
+                    propto: Optional[int] = 1,
+                    jacobian: Optional[int] = 1) -> float:
+        self._log_density_grad(self.stanmodel,
+                               self._dims, q,
+                               self._log_density, self._grad,
+                               propto, jacobian)
+        return -self._log_density[0]
 
-    @property
-    def grad(self) -> npt.NDArray[np.float64]:
-        return self._grad
 
-    def logdensity_grad(self, q: npt.NDArray[np.float64],
-                        propto: Optional[int] = 1,
-                        jacobian: Optional[int] = 1) -> None:
-        self._logdensity_grad(self.stanmodel,
-                              self._D, q,
-                              self._logdensity, self._grad,
-                              propto, jacobian)
+    def log_density_gradient(self, q: npt.NDArray[np.float64],
+                             propto: Optional[int] = 1,
+                             jacobian: Optional[int] = 1) -> Tuple[float, npt.NDArray[np.float64]]:
+        self._log_density_grad(self.stanmodel,
+                               self._dims, q,
+                               self._log_density, self._grad,
+                               propto, jacobian)
+        return -self._log_density[0], -self._grad

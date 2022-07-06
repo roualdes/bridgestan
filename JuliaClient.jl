@@ -2,8 +2,8 @@ module JBS
 
 export
     StanModel,
-    logdensity_grad!,
-    destroy
+    log_density_grad!,
+    free
 
 mutable struct StanModelStruct
 end
@@ -11,10 +11,10 @@ end
 mutable struct StanModel
     lib::Ptr{Nothing}
     stanmodel::Ptr{StanModelStruct}
-    D::Int
+    dims::Int
     data::String
     seed::UInt32
-    logdensity::Vector{Float64}
+    log_density::Vector{Float64}
     grad::Vector{Float64}
     function StanModel(stanlib_::Ptr{Nothing}, datafile_::String, seed_ = 204)
         seed = convert(UInt32, seed_)
@@ -24,12 +24,12 @@ mutable struct StanModel
                           (Cstring, UInt32),
                           datafile_, seed)
 
-        D = ccall(Libc.Libdl.dlsym(stanlib_, "get_num_unc_params"),
+        dims = ccall(Libc.Libdl.dlsym(stanlib_, "get_num_unc_params"),
                   Cint,
                   (Ptr{Cvoid},),
                   stanmodel)
 
-        sm = new(stanlib_, stanmodel, D, datafile_, seed, zeros(1), zeros(D))
+        sm = new(stanlib_, stanmodel, dims, datafile_, seed, zeros(1), zeros(dims))
 
         function f(sm)
             ccall(Libc.Libdl.dlsym(sm.lib, "destroy"),
@@ -42,14 +42,14 @@ mutable struct StanModel
     end
 end
 
-function logdensity_grad!(sm::StanModel, q; propto = 1, jacobian = 1)
+function log_density_grad!(sm::StanModel, q; propto = 1, jacobian = 1)
     ccall(Libc.Libdl.dlsym(sm.lib, "log_density"),
           Cvoid,
           (Ptr{StanModelStruct}, Cint, Ref{Cdouble}, Ref{Cdouble}, Ref{Cdouble}, Cint, Cint),
-          sm.stanmodel, sm.D, q, sm.logdensity, sm.grad, propto, jacobian)
+          sm.stanmodel, sm.dims, q, sm.log_density, sm.grad, propto, jacobian)
 end
 
-function destroy(sm::StanModel)
+function free(sm::StanModel)
     ccall(Libc.Libdl.dlsym(sm.lib, "destroy"),
           Cvoid,
           (Ptr{StanModelStruct},),

@@ -23,12 +23,12 @@ using Distributions
     R = 1000
 
     for _ in 1:R
-        x = rand(smb.D);
+        x = rand(smb.dims);
         q = @. log(x / (1 - x));                  # unconstrained scale
-        JBS.logdensity_grad!(smb, q, jacobian = 0)
+        JBS.log_density_grad!(smb, q, jacobian = 0)
 
         p = x[1];
-        @test isapprox(smb.logdensity[1], bernoulli_model(y, p))
+        @test isapprox(smb.log_density[1], bernoulli_model(y, p))
     end
 end
 
@@ -49,10 +49,10 @@ end
     R = 1000
 
     for _ in 1:R
-        x = randn(smm.D)
-        JBS.logdensity_grad!(smm, x)
+        x = randn(smm.dims)
+        JBS.log_density_grad!(smm, x)
 
-        @test isapprox(smm.logdensity[1], gaussian(x))
+        @test isapprox(smm.log_density[1], gaussian(x))
         @test isapprox(smm.grad, ReverseDiff.gradient(gaussian, x))
     end
 end

@@ -42,12 +42,14 @@ MAIN_SO = $(patsubst %.cpp,%.so,$(MAIN))
 ## COMPILE (e.g., COMPILE.cpp == clang++ ...) was set by (MATH)make/compiler_flags
 ## UNKNOWNS:  OUTPUT_OPTION???  LDLIBS???
 $(MAIN_SO) : $(MAIN)
+	@echo ''
 	@echo '--- Compiling Stan bridge C++ code ---'
 	@mkdir -p $(dir $@)
 	$(COMPILE.cpp) -O3 -march=native -I $(CMDSTANSRC) $(OUTPUT_OPTION) $(LDLIBS) $<
 
 ## generate .hpp file from .stan file using stanc
 %.hpp : %.stan $(STANC)
+	@echo ''
 	@echo '--- Translating Stan model to C++ code ---'
 	$(STANC) $(STANCFLAGS) --o=$(subst  \,/,$@) $(subst  \,/,$<)
 

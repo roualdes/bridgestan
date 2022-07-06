@@ -22,11 +22,11 @@ def test_bernoulli():
     R = 1000
 
     for _ in range(R):
-        x = np.random.uniform(size = smb.D)
+        x = np.random.uniform(size = smb.dims())
         q = np.log(x / (1 - x))     # unconstrained scale
-        smb.logdensity_grad(q, 1, 0)
+        logdensity, grad = smb.log_density_gradient(q, 1, 0)
 
-        assert np.isclose(smb.logdensity[0], sum(bernoulli(y, x)))
+        assert np.isclose(-logdensity, sum(bernoulli(y, x)))
 
 
 # Multivariate Gaussian
@@ -47,8 +47,8 @@ def test_gaussian():
     R = 1000
 
     for _ in range(R):
-        x = np.random.normal(size = smm.D)
-        smm.logdensity_grad(x)
+        x = np.random.normal(size = smm.dims())
+        logdensity, grad = smm.log_density_gradient(x)
 
-        assert np.isclose(smm.logdensity[0], gaussian(x))
-        assert np.allclose(smm.grad, grad_gaussian(x))
+        assert np.isclose(-logdensity, gaussian(x))
+        assert np.allclose(-grad, grad_gaussian(x))

@@ -9,17 +9,15 @@ blib = Libc.Libdl.dlopen(bernoulli_lib)
 
 smb = JBS.StanModel(blib, bernoulli_data);
 
-x = rand(smb.D);
+x = rand(smb.dims);
 q = @. log(x / (1 - x));                  # unconstrained scale
-logdensity = zeros(1);
-grad = zeros(smb.D);
 
-JBS.logdensity_grad!(smb, q, jacobian = 0)
+JBS.log_density_grad!(smb, q, jacobian = 0)
 
-smb.logdensity
+smb.log_density
 smb.grad
 
-## JBS.destroy(smb)
+## JBS.free(smb)
 
 
 # Multivariate Gaussian
@@ -31,11 +29,11 @@ mlib = Libc.Libdl.dlopen(multi_lib)
 
 smm = JBS.StanModel(mlib, multi_data)
 
-x = randn(smm.D);
+x = randn(smm.dims);
 
-JBS.logdensity_grad!(smm, x)
+JBS.log_density_grad!(smm, x)
 
-smm.logdensity
+smm.log_density
 smm.grad
 
-## JBS.destroy(smm)
+## JBS.free(smm)
