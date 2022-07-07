@@ -45,7 +45,7 @@ $(MAIN_SO) : $(MAIN)
 	@echo ''
 	@echo '--- Compiling Stan bridge C++ code ---'
 	@mkdir -p $(dir $@)
-	$(COMPILE.cpp) -O3 -march=native -I $(CMDSTANSRC) $(OUTPUT_OPTION) $(LDLIBS) $<
+	$(COMPILE.cpp) -fPIC -O3 -march=native -I $(CMDSTANSRC) $(OUTPUT_OPTION) $(LDLIBS) $<
 
 ## generate .hpp file from .stan file using stanc
 %.hpp : %.stan $(STANC)
