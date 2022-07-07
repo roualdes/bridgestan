@@ -2,7 +2,6 @@
 #include <stan/math.hpp>
 #include <stan/io/empty_var_context.hpp>
 #include <stan/model/model_base.hpp>
-#include <stan/math/rev/core/init_chainablestack.hpp>
 
 #include <algorithm>
 #include <exception>
@@ -32,25 +31,25 @@ struct model_functor {
   std::ostream& out_;
 
   model_functor(const M& m, bool propto, bool jacobian, std::ostream& out)
-      : model_(m), propto_(propto), jacobian_(jacobian), out_(out) { }
+    : model_(m), propto_(propto), jacobian_(jacobian), out_(out) { }
 
   template <typename T>
   T operator()(const Eigen::Matrix<T, Eigen::Dynamic, 1>& theta) const {
     // const cast is safe---theta not modified
     auto params_r = const_cast<Eigen::Matrix<T, Eigen::Dynamic, 1>&>(theta);
     return propto_
-        ? (jacobian_
-           ? model_->template log_prob<true, true, T>(params_r, &out_)
-           : model_->template log_prob<true, false, T>(params_r, &out_))
-        : (jacobian_
-           ? model_->template log_prob<false, true, T>(params_r, &out_)
-           : model_->template log_prob<false, false, T>(params_r, &out_));
+      ? (jacobian_
+         ? model_->template log_prob<true, true, T>(params_r, &out_)
+         : model_->template log_prob<true, false, T>(params_r, &out_))
+      : (jacobian_
+         ? model_->template log_prob<false, true, T>(params_r, &out_)
+         : model_->template log_prob<false, false, T>(params_r, &out_));
   }
 };
 
 template <typename M>
 model_functor<M> create_model_functor(const M& m, bool propto, bool jacobian,
-                                       std::ostream& out) {
+                                      std::ostream& out) {
   return model_functor<M>(m, propto, jacobian, out);
 }
 
@@ -93,7 +92,6 @@ void log_density(stanmodel* sm_, int D_, double* q_, double* log_density_, doubl
   const Eigen::Map<Eigen::VectorXd> params_unc(q_, D_);
   Eigen::VectorXd grad(D_);
   std::ostream& err_ = std::cerr; // TODO(ear) maybe std::out
-  stan::math::ChainableStack thread_instance;
 
   stan::model::model_base* model = static_cast<stan::model::model_base*>(sm_->model_);
   auto model_functor = create_model_functor(model, propto_, jacobian_, err_);
