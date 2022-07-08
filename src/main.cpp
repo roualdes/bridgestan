@@ -92,6 +92,7 @@ void log_density(stanmodel* sm_, int D_, double* q_, double* log_density_, doubl
   const Eigen::Map<Eigen::VectorXd> params_unc(q_, D_);
   Eigen::VectorXd grad(D_);
   std::ostream& err_ = std::cerr; // TODO(ear) maybe std::out
+  static thread_local stan::math::ChainableStack thread_instance;
 
   stan::model::model_base* model = static_cast<stan::model::model_base*>(sm_->model_);
   auto model_functor = create_model_functor(model, propto_, jacobian_, err_);
