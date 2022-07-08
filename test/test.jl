@@ -1,17 +1,13 @@
 include("../JuliaClient.jl")
 
 using Test
-using ReverseDiff
-using Distributions
 
 @testset "Bernoulli" begin
     # Bernoulli
     # CMDSTAN=/path/to/cmdstan/ make stan/bernoulli/bernoulli
 
-    function bernoulli_model(y, p)
-        Bn = Bernoulli(p);
-        Be = Beta(1, 1);
-        return sum(logpdf.(Bn, y)) + logpdf(Be, p)
+    function bernoulli(y, p)
+        sum(yn -> yn * log(p) + (1 - yn) * log(1 - p), y)
     end
 
     bernoulli_lib = joinpath(@__DIR__, "../stan/bernoulli/bernoulli_model.so")
@@ -24,11 +20,11 @@ using Distributions
 
     for _ in 1:R
         x = rand(smb.dims);
-        q = @. log(x / (1 - x));                  # unconstrained scale
-        JBS.log_density_grad!(smb, q, jacobian = 0)
+        q = @. log(x / (1 - x)); # unconstrained scale
+        JBS.log_density_gradient!(smb, q, jacobian = 0)
 
         p = x[1];
-        @test isapprox(smb.log_density[1], bernoulli_model(y, p))
+        @test isapprox(smb.log_density[1], bernoulli(y, p))
     end
 end
 
@@ -41,18 +37,31 @@ end
         return -0.5 * x' * x
     end
 
+    function grad_gaussian(x)
+        return -x
+    end
+
     multi_lib = joinpath(@__DIR__, "../stan/multi/multi_model.so")
     multi_data = joinpath(@__DIR__, "../stan/multi/multi.data.json")
     mlib = Libc.Libdl.dlopen(multi_lib)
 
-    smm = JBS.StanModel(mlib, multi_data)
+    nt = Threads.nthreads()
+    smm = Tuple(JBS.StanModel(mlib, multi_data) for _ in 1:nt)
+
     R = 1000
+    ld = Vector{Bool}(undef, R)
+    g = Vector{Bool}(undef, R)
 
-    for _ in 1:R
-        x = randn(smm.dims)
-        JBS.log_density_grad!(smm, x)
+    @sync for it in 1:nt
+        Threads.@spawn for r in it:nt:R
+            x = randn(smm[it].dims)
+            JBS.log_density_gradient!(smm[it], x)
 
-        @test isapprox(smm.log_density[1], gaussian(x))
-        @test isapprox(smm.grad, ReverseDiff.gradient(gaussian, x))
+            ld[r] = isapprox(smm[it].log_density[1], gaussian(x))
+            g[r] = isapprox(smm[it].gradient, grad_gaussian(x))
+        end
     end
+
+    @test all(ld)
+    @test all(g)
 end

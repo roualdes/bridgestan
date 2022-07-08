@@ -1,9 +1,7 @@
-# copy and pasted from https://github.com/bob-carpenter/stan-model-server/blob/main/MCMC.py
 import numpy as np
 
-
 class Metropolis:
-    def __init__(self, model, proposal_rng, init=[]):
+    def __init__(self, model, proposal_rng, init=None):
         self._model = model
         self._dim = self._model.dims()
         self._q_rng = proposal_rng
@@ -34,8 +32,8 @@ class HMCDiag:
         self._dim = self._model.dims()
         self._stepsize = stepsize
         self._steps = steps
-        self._metric = metric_diag or np.ones(self._dim)
-        self._theta = init or np.random.normal(size=self._dim)
+        self._metric = metric_diag if metric_diag is not None else np.ones(self._dim)
+        self._theta = init if init is not None else np.random.normal(size=self._dim)
 
     def __iter__(self):
         return self
@@ -44,26 +42,27 @@ class HMCDiag:
         return self.sample()
 
     def joint_logp(self, theta, rho):
-        return self._model.log_density(theta) + 0.5 * np.dot(
-            rho, np.multiply(self._metric, rho)
-    )
+        return self._model.log_density(theta) - 0.5 * np.dot(
+            rho, np.multiply(self._metric, rho))
 
     def leapfrog(self, theta, rho):
-        # TODO(bob-carpenter): refactor to share non-initial and non-final updates
+        e = self._stepsize * self._metric
+        lp, grad = self._model.log_density_gradient(theta)
+        rho_p = rho + 0.5 * self._stepsize * grad
         for n in range(self._steps):
+            theta += e * rho_p
             lp, grad = self._model.log_density_gradient(theta)
-            rho_mid = rho - 0.5 * self._stepsize * np.multiply(self._metric, grad)
-            theta = theta + self._stepsize * rho_mid
-            lp, grad = self._model.log_density_gradient(theta)
-            rho = rho_mid - 0.5 * self._stepsize * np.multiply(self._metric, grad)
-        return (theta, rho)
+            if n != self._steps:
+                rho_p += e * grad
+        rho_p += 0.5 * e * grad
+        return theta, rho_p
 
     def sample(self):
         rho = np.random.normal(size=self._dim)
         logp = self.joint_logp(self._theta, rho)
         theta_prop, rho_prop = self.leapfrog(self._theta, rho)
         logp_prop = self.joint_logp(theta_prop, rho_prop)
-        if np.log(np.random.uniform()) < (logp - logp_prop):
+        if np.log(np.random.uniform()) < (logp_prop - logp):
           self._theta = theta_prop
           return self._theta, logp_prop
         return self._theta, logp

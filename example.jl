@@ -8,14 +8,15 @@ bernoulli_data = joinpath(@__DIR__, "stan/bernoulli/bernoulli.data.json")
 blib = Libc.Libdl.dlopen(bernoulli_lib)
 
 smb = JBS.StanModel(blib, bernoulli_data);
-
 x = rand(smb.dims);
-q = @. log(x / (1 - x));                  # unconstrained scale
+q = @. log(x / (1 - x));        # unconstrained scale
 
-JBS.log_density_grad!(smb, q, jacobian = 0)
+JBS.log_density_gradient!(smb, q, jacobian = 0)
 
-smb.log_density
-smb.grad
+println()
+println("log_density and gradient of Bernoulli model:")
+println((smb.log_density, smb.gradient))
+println()
 
 ## JBS.free(smb)
 
@@ -28,12 +29,12 @@ multi_data = joinpath(@__DIR__, "stan/multi/multi.data.json")
 mlib = Libc.Libdl.dlopen(multi_lib)
 
 smm = JBS.StanModel(mlib, multi_data)
-
 x = randn(smm.dims);
 
-JBS.log_density_grad!(smm, x)
+JBS.log_density_gradient!(smm, x)
 
-smm.log_density
-smm.grad
+println("log_density and gradient of Multivariate Gaussian model:")
+println((smm.log_density, smm.gradient))
+println()
 
 ## JBS.free(smm)

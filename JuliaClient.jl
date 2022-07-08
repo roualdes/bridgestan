@@ -2,8 +2,8 @@ module JBS
 
 export
     StanModel,
-    log_density_grad!,
-    free
+    log_density_gradient!,
+    destroy
 
 mutable struct StanModelStruct
 end
@@ -15,7 +15,7 @@ mutable struct StanModel
     data::String
     seed::UInt32
     log_density::Vector{Float64}
-    grad::Vector{Float64}
+    gradient::Vector{Float64}
     function StanModel(stanlib_::Ptr{Nothing}, datafile_::String, seed_ = 204)
         seed = convert(UInt32, seed_)
 
@@ -42,14 +42,14 @@ mutable struct StanModel
     end
 end
 
-function log_density_grad!(sm::StanModel, q; propto = 1, jacobian = 1)
-    ccall(Libc.Libdl.dlsym(sm.lib, "log_density"),
+function log_density_gradient!(sm::StanModel, q; propto = 1, jacobian = 1)
+    ccall(Libc.Libdl.dlsym(sm.lib, "log_density_gradient"),
           Cvoid,
           (Ptr{StanModelStruct}, Cint, Ref{Cdouble}, Ref{Cdouble}, Ref{Cdouble}, Cint, Cint),
-          sm.stanmodel, sm.dims, q, sm.log_density, sm.grad, propto, jacobian)
+          sm.stanmodel, sm.dims, q, sm.log_density, sm.gradient, propto, jacobian)
 end
 
-function free(sm::StanModel)
+function destroy(sm::StanModel)
     ccall(Libc.Libdl.dlsym(sm.lib, "destroy"),
           Cvoid,
           (Ptr{StanModelStruct},),
