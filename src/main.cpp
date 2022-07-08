@@ -82,7 +82,6 @@ stanmodel* create(char* data_file_path_, unsigned int seed_) {
   cmdstan::json::json_data data(in);
   in.close();
 
-  stan::math::nested_rev_autodiff nested;
   stanmodel* sm = new stanmodel();
   sm->model_ = &new_model(data, seed_, &std::cerr);
 
@@ -90,11 +89,11 @@ stanmodel* create(char* data_file_path_, unsigned int seed_) {
 }
 
 void log_density(stanmodel* sm_, int D_, double* q_, double* log_density_, double* grad_, int propto_, int jacobian_) {
-  stan::math::ChainableStack thread_instance;
   const Eigen::Map<Eigen::VectorXd> params_unc(q_, D_);
   Eigen::VectorXd grad(D_);
   std::ostream& err_ = std::cerr; // TODO(ear) maybe std::out
 
+  stan::math::ChainableStack thread_instance;
   stan::model::model_base* model = static_cast<stan::model::model_base*>(sm_->model_);
   auto model_functor = create_model_functor(model, propto_, jacobian_, err_);
   stan::math::gradient(model_functor, params_unc, *log_density_, grad);

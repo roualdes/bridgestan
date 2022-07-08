@@ -45,7 +45,7 @@ $(MAIN_SO) : $(MAIN)
 	@echo ''
 	@echo '--- Compiling Stan bridge C++ code ---'
 	@mkdir -p $(dir $@)
-	$(COMPILE.cpp) -fPIC -O3 -march=native -I $(CMDSTANSRC) $(OUTPUT_OPTION) $(LDLIBS) $<
+	$(COMPILE.cpp) -DSTAN_THREADS -fPIC -O3 -march=native -I $(CMDSTANSRC) $(OUTPUT_OPTION) $(LDLIBS) $<
 
 ## generate .hpp file from .stan file using stanc
 %.hpp : %.stan $(STANC)
@@ -63,7 +63,7 @@ $(MAIN_SO) : $(MAIN)
 %$(EXE) : %.hpp $(MAIN_SO) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	@echo ''
 	@echo '--- Compiling C++ code ---'
-	$(COMPILE.cpp) $(CXXFLAGS_PROGRAM) -O3 -march=native -x c++ -o $(subst  \,/,$*).o $(subst \,/,$<)
+	$(COMPILE.cpp) $(CXXFLAGS_PROGRAM) -DSTAN_THREADS -O3 -march=native -x c++ -o $(subst  \,/,$*).o $(subst \,/,$<)
 	@echo '--- Linking C++ code ---'
 	$(LINK.cpp) -shared -lm -fPIC -O3 -o $(patsubst %.hpp,%_model.so,$<) $(subst \,/,$*.o) $(MAIN_SO) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	$(RM) $(subst  \,/,$*).o
