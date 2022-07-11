@@ -12,7 +12,7 @@
 GITHUB ?= $(HOME)/github/
 CMDSTAN ?= $(GITHUB)stan-dev/cmdstan/
 CMDSTANSRC ?= $(CMDSTAN)src/
-STANC ?= $(CMDSTAN)bin/stanc
+STANC ?= $(CMDSTAN)bin/stanc$(EXE)
 STAN ?= $(CMDSTAN)stan/
 MATH ?= $(STAN)lib/stan_math/
 # TBB_TARGETS = $(MATH)lib/tbb/libtbb.dylib
@@ -60,12 +60,12 @@ $(MAIN_SO) : $(MAIN)
 .PRECIOUS: %.hpp
 
 ## builds executable (suffix depends on platform)
-%$(EXE) : %.hpp $(MAIN_SO) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
+%_model.so : %.hpp $(MAIN_SO) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	@echo ''
 	@echo '--- Compiling C++ code ---'
 	$(COMPILE.cpp) $(CXXFLAGS_PROGRAM) -DSTAN_THREADS -fPIC -O3 -march=native -x c++ -o $(subst  \,/,$*).o $(subst \,/,$<)
 	@echo '--- Linking C++ code ---'
-	$(LINK.cpp) -shared -lm -fPIC -O3 -o $(patsubst %.hpp,%_model.so,$<) $(subst \,/,$*.o) $(MAIN_SO) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
+	$(LINK.cpp) -shared -lm -fPIC -O3 -o $(patsubst %.hpp, %_model.so, $(subst \,/,$<)) $(subst \,/,$*.o) $(MAIN_SO) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	$(RM) $(subst  \,/,$*).o
 
 ## calculate dependencies for %$(EXE) target
