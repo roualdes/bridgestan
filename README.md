@@ -1,6 +1,6 @@
 # BridgeStan
 
-This library provides a bridge from Julia/Python to a Stan programs via C, in
+This library provides a bridge from a Stan program to Julia or Python via C, in
 order to expose log density evaluations and gradients of the contained Stan
 model.
 
@@ -12,11 +12,11 @@ CmdStan](https://github.com/stan-dev/cmdstan/wiki/Getting-Started-with-CmdStan).
 Mostly
 
 * A C++11 compiler
-* The Gnu make utility for *nix, mingw_64 for Windows
+* The Gnu make utility for *nix, mingw for Windows
 
-## Use
+## Install
 
-First download CmdStan and BridgeStan from their repositories.
+Download CmdStan and BridgeStan from their repositories.
 
 ```
 git clone https://github.com/stan-dev/cmdstan.git --recursive
@@ -24,8 +24,10 @@ make stan-update
 git clone https://gitlab.com/roualdes/bridgestan.git
 ```
 
-Next compile a Stan program.  As an example, consider the Stan program stored in
-the file named `multi.stan` in the directory `./stan/multi/`.
+## Use
+
+First, compile a Stan program.  As an example, consider the Stan program stored
+in the file named `multi.stan` in the directory `stan/multi/`.
 
 ```
 $ cd bridgestan
@@ -34,23 +36,30 @@ $ CMDSTAN=/path/to/cmdstan/ make stan/multi/multi_model.so
 
 NB There is a necessary forward slash at the end of the `cmdstan` path.
 
-The make target is a shared object (.so) file, with a file name created by
+The make target is a shared object file (.so), with a file name created by
 replacing the `.stan` extension of your Stan program with `_model.so`.
+
+Last, proceed as in either `example.py` or `example.jl`, updating paths within
+the Julia or Python code as necessary.
+
+## Known to Work OSes and C++11 Compilers
 
 BridgeStan has been tested (with commands as above) under both Ubuntu (20.04
 with gcc 9.4.0) and macOS (12.2 with Apple clang 11.0.3).
 
-This makefile has also been tested on Windows 10 with gcc -v MSYS2 5.3.0, and
+BridgeStan has also been tested on Windows 10 with gcc MSYS2 5.3.0, and
 works so long as the path to the CmdStan directory uses forward slashes, eg
 
 ```
-mingw32-make.exe CMDSTAN="C:/Users/<username>/path/to/cmdstan/" ./stan/multi/multi_model.so
+mingw32-make.exe CMDSTAN="C:/path/to/cmdstan/" ./stan/multi/multi_model.so
 ```
-
-Last follow along in either `example.py` or `example.jl`, updating paths within
-the Python or Julia code as necessary.
 
 ## Acknowledgements
 
 Much of this project came from Bob Carpenter's [Stan Model
 Server](https://github.com/bob-carpenter/stan-model-server/).
+
+GitHub user wds15 deserves much for enabling multi-threaded Julia programs to
+efficiently call on one Stan program.
+
+Much of the testing of the makefile is credited to Brian Ward.
