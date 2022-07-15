@@ -14,7 +14,7 @@ q = np.log(x / (1 - x))         # unconstrained scale
 
 print()
 print("log_density and gradient of Bernoulli model:")
-print(smb.log_density_gradient(q, 1, 0))
+print(smb.log_density_gradient(q, propto = 1, jacobian = 0))
 print()
 
 ## del smb

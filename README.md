@@ -20,7 +20,9 @@ Download CmdStan and BridgeStan from their repositories.
 
 ```
 git clone https://github.com/stan-dev/cmdstan.git --recursive
+cd cmdstan
 make stan-update
+cd ..
 git clone https://gitlab.com/roualdes/bridgestan.git
 ```
 
