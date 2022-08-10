@@ -27,7 +27,7 @@ def test_bernoulli():
         logdensity, grad = smb.log_density_gradient(q, 1, 0)
 
         assert np.isclose(logdensity, bernoulli(y, x))
-
+        assert np.isclose(smb.param_constrain(q), x)
 
 # Multivariate Gaussian
 # CMDSTAN=/path/to/cmdstan/ make stan/multi/multi

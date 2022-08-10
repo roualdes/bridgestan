@@ -25,6 +25,15 @@ class PyBridgeStan:
         self._num_unc_params.argtypes = [ctypes.c_void_p]
         self._dims = self._num_unc_params(self.stanmodel)
 
+        self._constrained_parameters = np.zeros(shape = self._dims)
+
+        self._param_constrain = self.stanlib.param_constrain
+        self._param_constrain.restype = ctypes.c_void_p
+        self._param_constrain.argtypes = [ctypes.c_void_p,
+                                          ctypes.c_int,
+                                          ndpointer(ctypes.c_double),
+                                          ndpointer(ctypes.c_double)]
+
         self._log_density = np.zeros(shape = 1)
         self._gradient = np.zeros(shape = self._dims)
 
@@ -48,6 +57,14 @@ class PyBridgeStan:
 
     def dims(self) -> int:
         return self._dims
+
+    def param_constrain(self,
+                         q: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        self._param_constrain(self.stanmodel,
+                              self._dims,
+                              q,
+                              self._constrained_parameters)
+        return self._constrained_parameters
 
     def log_density(self, q: npt.NDArray[np.float64],
                              propto: Optional[int] = 1,
