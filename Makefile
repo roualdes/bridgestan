@@ -1,13 +1,3 @@
-## this Makefile assumes directory contents, structure:
-##   ./bin - contains stanc compiler
-##   ./lib - contains rapidjson parser library
-##   ./src - contains cmdstan/io/json
-##   <user-specified-path>stan - stan repo, contains model-header
-##   <specified/path/to/stan>/stan/lib/stan_math - stan math library
-
-## Other flags implicated in this build that we don't set
-# STAN_OPENCL:  enable GPU routines
-
 ## include paths
 GITHUB ?= $(HOME)/github/
 CMDSTAN ?= $(GITHUB)stan-dev/cmdstan/
@@ -27,13 +17,14 @@ CXX ?= clang++
 CXX_TYPE ?= clang
 
 ## makefiles needed for math library
+-include $(CMDSTAN)/make/local
 -include $(MATH)make/compiler_flags
 -include $(MATH)make/dependencies
 -include $(MATH)make/libraries
 
 ## set flags for stanc compiler (math calls MIGHT? set STAN_OPENCL)
 ifdef STAN_OPENCL
-STANCFLAGS+= --use-opencl
+	STANCFLAGS += --use-opencl
 endif
 
 MAIN ?= src/main.cpp
@@ -45,7 +36,7 @@ $(MAIN_SO) : $(MAIN)
 	@echo ''
 	@echo '--- Compiling Stan bridge C++ code ---'
 	@mkdir -p $(dir $@)
-	$(COMPILE.cpp) -DSTAN_THREADS -fPIC -O3 -march=native -I $(CMDSTANSRC) $(OUTPUT_OPTION) $(LDLIBS) $<
+	$(COMPILE.cpp) -fPIC $(CXXFLAGS_THREADS) -I $(CMDSTANSRC) $(OUTPUT_OPTION) $(LDLIBS) $<
 
 ## generate .hpp file from .stan file using stanc
 %.hpp : %.stan $(STANC)
@@ -63,9 +54,9 @@ $(MAIN_SO) : $(MAIN)
 %_model.so : %.hpp $(MAIN_SO) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	@echo ''
 	@echo '--- Compiling C++ code ---'
-	$(COMPILE.cpp) $(CXXFLAGS_PROGRAM) -DSTAN_THREADS -fPIC -O3 -march=native -x c++ -o $(subst  \,/,$*).o $(subst \,/,$<)
+	$(COMPILE.cpp) $(CXXFLAGS_PROGRAM) -fPIC $(CXXFLAGS_THREADS) -x c++ -o $(subst  \,/,$*).o $(subst \,/,$<)
 	@echo '--- Linking C++ code ---'
-	$(LINK.cpp) -shared -lm -fPIC -O3 -o $(patsubst %.hpp, %_model.so, $(subst \,/,$<)) $(subst \,/,$*.o) $(MAIN_SO) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
+	$(LINK.cpp) -shared -lm -fPIC -o $(patsubst %.hpp, %_model.so, $(subst \,/,$<)) $(subst \,/,$*.o) $(MAIN_SO) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	$(RM) $(subst  \,/,$*).o
 
 ## calculate dependencies for %$(EXE) target
@@ -100,6 +91,7 @@ endif
 	$(RM) "$(wildcard $(patsubst %.stan,%.hpp,$(basename ${STANPROG}).stan))"
 	$(RM) "$(wildcard $(patsubst %.stan,%.o,$(basename ${STANPROG}).stan))"
 	$(RM) "$(wildcard $(patsubst %.stan,%$(EXE),$(basename ${STANPROG}).stan))"
+	$(RM) "$(wildcard $(patsubst %.stan,%_model.so,$(basename ${STANPROG}).stan))"
 
 # print compilation command line config
 .PHONY: compile_info

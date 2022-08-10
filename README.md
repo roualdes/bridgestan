@@ -44,6 +44,42 @@ replacing the `.stan` extension of your Stan program with `_model.so`.
 Last, proceed as in either `example.py` or `example.jl`, updating paths within
 the Julia or Python code as necessary.
 
+## Custom Build Flags
+
+BridgeStan will make use of the compiler flags set in CmdStan's file
+`make/local`.  From within the CmdStan directory, create/edit the file
+`make/local` to use the desired compiler flags for the various parts of a Stan
+program.  If you need help getting started, copy `make/local.example` to
+`make/local`.
+
+To set the compiler flags `-O3 -march=native`, you should have
+
+```
+# Adding other arbitrary C++ compiler flags
+CXXFLAGS+= -O3 -march=native
+```
+
+If you've read the Stan Blog post [Options for improving Stan sampling
+speed](https://blog.mc-stan.org/2022/08/03/options-for-improving-stan-sampling-speed/),
+you can set stanc3 compiler flags with
+
+```
+# Add flags that are forwarded to the Stan-to-C++ compiler (stanc3).
+# This example enables pedantic mode
+STANCFLAGS+= --warn-pedantic --O1
+```
+
+Last example.  Say you've written a sampler in a higher level language, which
+uses multpiple threads, then you'll need
+
+```
+# Enable threading
+STAN_THREADS=true
+```
+
+to enable BridgeStan to be called from multiple threads.
+
+
 ## Known to Work OSes and C++11 Compilers
 
 BridgeStan has been tested (with commands as above) under both Ubuntu (20.04
