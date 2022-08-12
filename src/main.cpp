@@ -69,7 +69,9 @@ extern "C" {
 
   int get_num_unc_params(stanmodel* sm_);
 
-  void param_constrain(stanmodel* sm_, int D_, double* q_, double* params_);
+  int param_num(stanmodel* sm_);
+
+  void param_constrain(stanmodel* sm_, int D_, double* q_, int K_, double* params_);
 
   void destroy(stanmodel* sm_);
 }
@@ -122,26 +124,42 @@ int get_num_unc_params(stanmodel* sm_) {
   return names.size();
 }
 
-void param_constrain(stanmodel* sm_, int D_, double* q_, double* params_) {
+int param_num(stanmodel* sm_) {
+  bool include_transformed_parameters = false;
+  bool include_generated_quantities = false;
+  std::vector<std::string> names;
+
+  stan::model::model_base* model = static_cast<stan::model::model_base*>(sm_->model_);
+  model->constrained_param_names(names,
+                                 include_transformed_parameters,
+                                 include_generated_quantities);
+  return names.size();
+}
+
+void param_constrain(stanmodel* sm_, int D_, double* q_, int K_, double* params_) {
   bool include_transformed_parameters = false;
   bool include_generated_quantities = false;
   std::ostream& err_ = std::cout;
 
-  Eigen::VectorXd params(D_);
   Eigen::VectorXd params_unc(D_);
   for (Eigen::VectorXd::Index d = 0; d < D_; ++d) {
     params_unc(d) = q_[d];
   }
 
+  Eigen::VectorXd params;
   stan::model::model_base* model = static_cast<stan::model::model_base*>(sm_->model_);
   model->write_array(sm_->base_rng_, params_unc, params,
                      include_transformed_parameters,
                      include_generated_quantities,
                      &err_);
 
-  for (Eigen::VectorXd::Index d = 0; d < D_; ++d) {
-    params_[d] = params(d);
+  for (Eigen::VectorXd::Index k = 0; k < K_; ++k) {
+    params_[k] = params(k);
   }
+}
+
+void param_unconstrain(stanmodel* sm_, int D_, double* params_, double* q_) {
+
 }
 
 void destroy(stanmodel* sm_) {

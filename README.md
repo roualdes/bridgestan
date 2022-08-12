@@ -79,6 +79,21 @@ STAN_THREADS=true
 
 to enable BridgeStan to be called from multiple threads.
 
+## Tips
+
+### Function `param_constrain()`
+
+For a given vector `q` of unconstrained parameters, the function
+`param_constrain()` can return an array with length longer than the length of
+`q`.  This happens, for instance, with a `cov_matrix[K]` parameter.  Only the
+lower (or upper) triangular elements of the covariance matrix are required to
+reconstruct the full covariance matrix.  Thus, only the lower triangular
+elements retained in the vector `q`.  However `param_constrain(q)` will
+return the full covariance matrix, all $K + {K \choose 2}$ elements.
+
+Users of BridgeStan are to deal with the order of parameters contained in the
+unconstrained and constrained vectors themselves.
+
 
 ## Known to Work OSes and C++11 Compilers
 
