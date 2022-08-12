@@ -87,9 +87,10 @@ For a given vector `q` of unconstrained parameters, the function
 `param_constrain()` can return an array with length longer than the length of
 `q`.  This happens, for instance, with a `cov_matrix[K]` parameter.  Only the
 lower (or upper) triangular elements of the covariance matrix are required to
-reconstruct the full covariance matrix.  Thus, only the lower triangular
-elements retained in the vector `q`.  However `param_constrain(q)` will
-return the full covariance matrix, all $K + {K \choose 2}$ elements.
+reconstruct the full covariance matrix.  Thus, only $K * (K - 1) / 2$ elements
+(the number of elements in the lower triangle of the full covariance matrix) are
+retained in the vector `q`.  However `param_constrain(q)` will return the full
+covariance matrix, all $K + {K \choose 2}$ elements.
 
 Users of BridgeStan are to deal with the order of parameters contained in the
 unconstrained and constrained vectors themselves.
