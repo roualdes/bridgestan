@@ -60,6 +60,7 @@ extern "C" {
 
   struct stanmodel_struct {
     void* model_;
+    boost::ecuyer1988 base_rng_;
   };
 
   stanmodel* create(char* data_file_path_, unsigned int seed_);
@@ -67,6 +68,10 @@ extern "C" {
   void log_density_gradient(stanmodel* sm_, int D_, double* q_, double* log_density_, double* grad_, int propto_, int jacobian_);
 
   int get_num_unc_params(stanmodel* sm_);
+
+  int param_num(stanmodel* sm_);
+
+  void param_constrain(stanmodel* sm_, int D_, double* q_, int K_, double* params_);
 
   void destroy(stanmodel* sm_);
 }
@@ -85,6 +90,9 @@ stanmodel* create(char* data_file_path_, unsigned int seed_) {
     cmdstan::json::json_data data(in);
     in.close();
     sm->model_ = &new_model(data, seed_, &std::cerr);
+    boost::ecuyer1988 rng(seed_);
+    sm->base_rng_ = rng;
+    sm->base_rng_.discard(1000000000000L);
   }
 
   return sm;
@@ -114,6 +122,44 @@ int get_num_unc_params(stanmodel* sm_) {
   model->unconstrained_param_names(names, include_generated_quantities,
                                    include_transformed_parameters);
   return names.size();
+}
+
+int param_num(stanmodel* sm_) {
+  bool include_transformed_parameters = false;
+  bool include_generated_quantities = false;
+  std::vector<std::string> names;
+
+  stan::model::model_base* model = static_cast<stan::model::model_base*>(sm_->model_);
+  model->constrained_param_names(names,
+                                 include_transformed_parameters,
+                                 include_generated_quantities);
+  return names.size();
+}
+
+void param_constrain(stanmodel* sm_, int D_, double* q_, int K_, double* params_) {
+  bool include_transformed_parameters = false;
+  bool include_generated_quantities = false;
+  std::ostream& err_ = std::cout;
+
+  Eigen::VectorXd params_unc(D_);
+  for (Eigen::VectorXd::Index d = 0; d < D_; ++d) {
+    params_unc(d) = q_[d];
+  }
+
+  Eigen::VectorXd params;
+  stan::model::model_base* model = static_cast<stan::model::model_base*>(sm_->model_);
+  model->write_array(sm_->base_rng_, params_unc, params,
+                     include_transformed_parameters,
+                     include_generated_quantities,
+                     &err_);
+
+  for (Eigen::VectorXd::Index k = 0; k < K_; ++k) {
+    params_[k] = params(k);
+  }
+}
+
+void param_unconstrain(stanmodel* sm_, int D_, double* params_, double* q_) {
+
 }
 
 void destroy(stanmodel* sm_) {
