@@ -13,9 +13,25 @@
 #include <iostream>
 #include <sstream>
 
+/**
+ * Allocate and return a new model as a reference given the specified
+ * data context, seed, and message stream.  This function is defined
+ * in the generated model class.
+ *
+ * @param[in] data_context context for reading model data
+ * @param[in] seed random seed for transformed data block
+ * @param[in] msg_stream stream to which to send messages printed by the model
+ */
 stan::model::model_base& new_model(stan::io::var_context &data_context,
                                    unsigned int seed, std::ostream *msg_stream);
 
+/**
+ * Functor for a model of the specified template type and its log
+ * density configuration in terms of dropping constants and/or the
+ * change-of-variables adjustment.
+ *
+ * @tparam M type of model
+ */
 template <class M>
 struct model_functor {
   /** Stan model */
@@ -30,9 +46,29 @@ struct model_functor {
   /** Output stream for messages from Stan model */
   std::ostream& out_;
 
+  /**
+   * Construct a model functor from the specified model, output
+   * stream, and specification of whether constants should be dropped
+   * and whether the change-of-variables terms should be dropped.
+   *
+   * @param[in] m Stan model
+   * @param[in] propto `true` if log density drops constant terms
+   * @param[in] jacobian `true` if log density includes change-of-variables
+   * terms
+   * @param[in] out output stream for messages from model
+   */
   model_functor(const M& m, bool propto, bool jacobian, std::ostream& out)
     : model_(m), propto_(propto), jacobian_(jacobian), out_(out) { }
 
+  /**
+   * Return the log density for the specified unconstrained
+   * parameters, including normalizing terms and change-of-variables
+   * terms as specified in the constructor.
+   *
+   * @tparam T real scalar type for the arguments and return
+   * @param theta unconstrained parameters
+   * @throw std::exception if model throws exception evaluating log density
+   */
   template <typename T>
   T operator()(const Eigen::Matrix<T, Eigen::Dynamic, 1>& theta) const {
     // const cast is safe---theta not modified
@@ -47,6 +83,18 @@ struct model_functor {
   }
 };
 
+/**
+ * Return an appropriately typed model functor from the specified model, given
+ * the specified output stream and flags indicating whether to drop constant
+ * terms and include change-of-variables terms.  Unlike the `model_functor`
+ * constructor, this factory function provides type inference for `M`.
+ *
+ * @tparam M type of Stan model
+ * @param[in] m Stan model
+ * @param[in] propto `true` if log density drops constant terms
+ * @param[in] jacobian `true` if log density includes change-of-variables terms
+ * @param[in] out output stream for messages from model
+ */
 template <typename M>
 model_functor<M> create_model_functor(const M& m, bool propto, bool jacobian,
                                       std::ostream& out) {
@@ -76,6 +124,14 @@ extern "C" {
   void destroy(stanmodel* sm_);
 }
 
+/**
+ * Create and return a pointer to a Stan model struct using specified data and seed.
+ *
+ * @param[in] sm_ Stan model
+ * @param[in] data_file_path_ path at which data for model is found
+ * @param[in] seed_ seed to initialize base rng
+ * @return pointer to Stan model struct
+ */
 stanmodel* create(char* data_file_path_, unsigned int seed_) {
   stanmodel* sm = new stanmodel();
   std::string data_file_path(data_file_path_);
@@ -98,6 +154,18 @@ stanmodel* create(char* data_file_path_, unsigned int seed_) {
   return sm;
 }
 
+/**
+ * Compute the log density and gradient of the underlying Stan model.
+ *
+ * @param[in] sm_ Stan model
+ * @param[in] D_ number of unconstrained parameters
+ * @param[in] q_ pointer to unconstrained parameters
+ * @param[out] log_density_ pointer to log density
+ * @param[out] grad_ pointer to gradient
+ * @param[in] propto_ `true` if log density drops constant terms
+ * @param[in] jacobian_ `true` if log density includes change-of-variables terms
+ * @return number of unconstrained parameters
+ */
 void log_density_gradient(stanmodel* sm_, int D_, double* q_, double* log_density_, double* grad_, int propto_, int jacobian_) {
   const Eigen::Map<Eigen::VectorXd> params_unc(q_, D_);
   Eigen::VectorXd grad(D_);
@@ -113,6 +181,13 @@ void log_density_gradient(stanmodel* sm_, int D_, double* q_, double* log_densit
   }
 }
 
+
+/**
+ * Return the number of unconstrained parameters.
+ *
+ * @param[in] sm_ Stan model
+ * @return number of unconstrained parameters
+ */
 int get_num_unc_params(stanmodel* sm_) {
   bool include_generated_quantities = false;
   bool include_transformed_parameters = false;
@@ -124,6 +199,12 @@ int get_num_unc_params(stanmodel* sm_) {
   return names.size();
 }
 
+/**
+ * Return the number of constrained parameters.
+ *
+ * @param[in] sm_ Stan model
+ * @return number of constrained parameters
+ */
 int param_num(stanmodel* sm_) {
   bool include_transformed_parameters = false;
   bool include_generated_quantities = false;
@@ -136,6 +217,16 @@ int param_num(stanmodel* sm_) {
   return names.size();
 }
 
+/**
+ * Transform unconstrained parameters into constrained parameters.  The
+ * constrained and unconstrained parameters need not have the same length.
+ *
+ * @param[in] sm_ Stan model
+ * @param[in] D_ number of unconstrained parameters
+ * @param[in] q_ pointer to unconstrained parameters
+ * @param[in] K_ number of constrained parameters
+ * @param[out] params_ pointer to constrained parameters
+ */
 void param_constrain(stanmodel* sm_, int D_, double* q_, int K_, double* params_) {
   bool include_transformed_parameters = false;
   bool include_generated_quantities = false;
@@ -158,10 +249,11 @@ void param_constrain(stanmodel* sm_, int D_, double* q_, int K_, double* params_
   }
 }
 
-void param_unconstrain(stanmodel* sm_, int D_, double* params_, double* q_) {
-
-}
-
+/**
+ * Destroy Stan model struct and free appropriate memory.
+ *
+ * @param[in] sm_ Stan model
+ */
 void destroy(stanmodel* sm_) {
   if (sm_ == NULL) return;
   delete static_cast<stan::model::model_base*>(sm_->model_);

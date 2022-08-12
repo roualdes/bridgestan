@@ -2,9 +2,9 @@ include("../JuliaClient.jl")
 
 using Test
 
-@testset "Bernoulli" begin
+@testset "bernoulli" begin
     # Bernoulli
-    # CMDSTAN=/path/to/cmdstan/ make stan/bernoulli/bernoulli
+    # CMDSTAN=/path/to/cmdstan/ make stan/bernoulli/bernoulli_model.so
 
     function bernoulli(y, p)
         sum(yn -> yn * log(p) + (1 - yn) * log(1 - p), y)
@@ -25,13 +25,16 @@ using Test
 
         p = x[1];
         @test isapprox(smb.log_density[1], bernoulli(y, p))
+
+        JBS.param_constrain(smb, q)
+        @test isapprox(smb.constrained_parameters, x)
     end
 end
 
 
-@testset "32D Gaussian" begin
+@testset "multi" begin
     # Multivariate Gaussian
-    # CMDSTAN=/path/to/cmdstan/ make stan/multi/multi
+    # CMDSTAN=/path/to/cmdstan/ make stan/multi/multi_model.so
 
     function gaussian(x)
         return -0.5 * x' * x
