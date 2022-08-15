@@ -1,6 +1,7 @@
 #include <cmdstan/io/json/json_data.hpp>
 #include <stan/math.hpp>
 #include <stan/io/empty_var_context.hpp>
+#include <stan/io/array_var_context.hpp>
 #include <stan/model/model_base.hpp>
 
 #include <algorithm>
@@ -121,6 +122,10 @@ extern "C" {
 
   void param_constrain(stanmodel* sm_, int D_, double* q_, int K_, double* params_);
 
+  int param_unc_num(stanmodel* sm_);
+
+  void param_unconstrain(stanmodel* sm_, int D_, double* q_, int K_, double* unc_params_);
+
   void destroy(stanmodel* sm_);
 }
 
@@ -185,6 +190,8 @@ void log_density_gradient(stanmodel* sm_, int D_, double* q_, double* log_densit
 /**
  * Return the number of unconstrained parameters.
  *
+ * TODO deprecate this function in favor of param_unc_num()
+ *
  * @param[in] sm_ Stan model
  * @return number of unconstrained parameters
  */
@@ -200,12 +207,13 @@ int get_num_unc_params(stanmodel* sm_) {
 }
 
 /**
- * Return the number of constrained parameters.
+ * Return the names of the constrained parameters.
  *
  * @param[in] sm_ Stan model
- * @return number of constrained parameters
+ * @return vector of the names of the constrained parameters
  */
-int param_num(stanmodel* sm_) {
+// TODO do we need this to return into Python/Julia?
+std::vector<std::string> param_names_(stanmodel* sm_) {
   bool include_transformed_parameters = false;
   bool include_generated_quantities = false;
   std::vector<std::string> names;
@@ -214,6 +222,19 @@ int param_num(stanmodel* sm_) {
   model->constrained_param_names(names,
                                  include_transformed_parameters,
                                  include_generated_quantities);
+  return names;
+}
+
+/**
+ * Return the number of constrained parameters.
+ *
+ * @param[in] sm_ Stan model
+ * @return number of constrained parameters
+ */
+int param_num(stanmodel* sm_) {
+  bool include_transformed_parameters = false;
+  bool include_generated_quantities = false;
+  std::vector<std::string> names = param_names_(sm_);
   return names.size();
 }
 
@@ -246,6 +267,96 @@ void param_constrain(stanmodel* sm_, int D_, double* q_, int K_, double* params_
 
   for (Eigen::VectorXd::Index k = 0; k < K_; ++k) {
     params_[k] = params(k);
+  }
+}
+
+/**
+ * Return the names of the unconstrained parameters.
+ *
+ * @param[in] sm_ Stan model
+ * @return vector of the names of the unconstrained parameters
+ */
+// TODO do we need this to return into Python/Julia?
+std::vector<std::string> param_unc_names_(stanmodel* sm_) {
+  bool include_transformed_parameters = false;
+  bool include_generated_quantities = false;
+  std::vector<std::string> names;
+
+  stan::model::model_base* model = static_cast<stan::model::model_base*>(sm_->model_);
+  model->unconstrained_param_names(names,
+                                   include_transformed_parameters,
+                                   include_generated_quantities);
+  return names;
+}
+
+/**
+ * Return the number of unconstrained parameters.
+ *
+ * @param[in] sm_ Stan model
+ * @return number of unconstrained parameters
+ */
+int param_unc_num(stanmodel* sm_) {
+  bool include_transformed_parameters = false;
+  bool include_generated_quantities = false;
+  std::vector<std::string> names = param_unc_names_(sm_);
+  return names.size();
+}
+
+/**
+ * Transform constrained parameters into unconstrained parameters.  The
+ * constrained and unconstrained parameters need not have the same length.
+ *
+ // TODO Which means I don't know where the input argument is coming from, Python?  or
+ // the output of param_constrain.
+ *
+ * @param[in] sm_ Stan model
+ * @param[in] D_ number of unconstrained parameters
+ * @param[in] q_ pointer to unconstrained parameters
+ * @param[in] K_ number of constrained parameters
+ * @param[out] params_ pointer to constrained parameters
+ */
+void param_unconstrain(stanmodel* sm_, int D_, double* q_, int K_, double* unc_params_) {
+
+  std::vector<std::string> names = param_unc_names_(sm_);
+  int D = names.size();
+
+  if (D != D_) {
+    std::stringstream s;
+    s << "param_unc_num() has size"
+      << D
+      << "while argument D_ (from Python) has size"
+      << D_
+      << std::endl;
+    throw std::invalid_argument(s.str());
+  }
+
+  Eigen::VectorXd params_unc(D_);
+  for (Eigen::VectorXd::Index d = 0; d < D_; ++d) {
+    params_unc(d) = q_[d];
+  }
+
+  stan::model::model_base* model = static_cast<stan::model::model_base*>(sm_->model_);
+  std::vector<std::vector<size_t>> dims;
+  model->get_dims(dims);
+
+  stan::io::array_var_context varcontext(names, params_unc, dims);
+  Eigen::VectorXd unc_params;
+  std::ostream& err_ = std::cout;
+  model->transform_inits(varcontext, unc_params, &err_);
+
+  int K = unc_params.size();
+  if (K != K_) {
+    std::stringstream s;
+    s << "argument unc_params_ (from Python) has size"
+      << K_
+      << "while unc_params has size"
+      << K
+      << std::endl;
+    throw std::invalid_argument(s.str());
+  }
+
+  for (Eigen::VectorXd::Index k = 0; k < K_; ++k) {
+    unc_params_[k] = unc_params(k);
   }
 }
 
