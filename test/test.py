@@ -7,7 +7,6 @@ sys.path.append(os.getcwd() + '/..')
 import PythonClient as pbs
 import MCMC as mcmc
 
-
 # Bernoulli
 # CMDSTAN=/path/to/cmdstan/ make stan/bernoulli/bernoulli_model.so
 
@@ -29,7 +28,11 @@ def test_bernoulli():
         logdensity, grad = smb.log_density_gradient(q, 1, 0)
 
         assert np.isclose(logdensity, _bernoulli(y, x))
-        assert np.isclose(smb.param_constrain(q), x)
+
+        constrained_theta = smb.param_constrain(q)
+        assert np.isclose(constrained_theta, x)
+
+        assert np.isclose(smb.param_unconstrain(constrained_theta), q)
 
 # Multivariate Gaussian
 # CMDSTAN=/path/to/cmdstan/ make stan/multi/multi_model.so
@@ -123,3 +126,5 @@ def test_fr_gaussian():
     cov = _covariance_constrain_transform(a, D)
     B = b.reshape(D, D)
     assert np.allclose(cov, B)
+
+    assert np.allclose(model.param_unconstrain(constrained_theta[-1]), theta[-1])
