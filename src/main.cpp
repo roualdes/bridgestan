@@ -305,9 +305,6 @@ int param_unc_num(stanmodel* sm_) {
  * Transform constrained parameters into unconstrained parameters.  The
  * constrained and unconstrained parameters need not have the same length.
  *
- // TODO Which means I don't know where the input argument is coming from, Python?  or
- // the output of param_constrain.
- *
  * @param[in] sm_ Stan model
  * @param[in] K_ number of constrained parameters
  * @param[in] q_ pointer to constrained parameters
