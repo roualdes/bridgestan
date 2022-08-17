@@ -9,7 +9,7 @@ transformed parameters {
   real logit_theta = logit(theta);
 }
 model {
-  theta ~ beta(1,1);  // uniform prior on interval 0,1
+  theta ~ beta(1,1);
   y ~ bernoulli(theta);
 }
 generated quantities {

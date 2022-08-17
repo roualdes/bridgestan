@@ -20,16 +20,12 @@ class PyBridgeStan:
         self.stanmodel = self._create(str.encode(model_data),
                                       self.seed)
 
-        self._num_unc_params = self.stanlib.get_num_unc_params
-        self._num_unc_params.restype = ctypes.c_int
-        self._num_unc_params.argtypes = [ctypes.c_void_p]
-        self._dims = self._num_unc_params(self.stanmodel)
-
         self._param_num = self.stanlib.param_num
         self._param_num.restype = ctypes.c_int
         self._param_num.argtypes = [ctypes.c_void_p]
 
-        self._constrained_parameters = np.zeros(shape = self._param_num(self.stanmodel))
+        self._K = self._param_num(self.stanmodel)
+        self._constrained_parameters = np.zeros(shape = self._K)
 
         self._param_constrain = self.stanlib.param_constrain
         self._param_constrain.restype = ctypes.c_void_p
@@ -38,6 +34,21 @@ class PyBridgeStan:
                                           ndpointer(ctypes.c_double),
                                           ctypes.c_int,
                                           ndpointer(ctypes.c_double)]
+
+        self._param_unc_num = self.stanlib.param_unc_num
+        self._param_unc_num.restype = ctypes.c_int
+        self._param_unc_num.argtypes = [ctypes.c_void_p]
+
+        self._dims = self._param_unc_num(self.stanmodel)
+        self._unconstrained_parameters = np.zeros(shape = self._dims)
+
+        self._param_unconstrain = self.stanlib.param_unconstrain
+        self._param_unconstrain.restype = ctypes.c_void_p
+        self._param_unconstrain.argtypes = [ctypes.c_void_p,
+                                            ctypes.c_int,
+                                            ndpointer(ctypes.c_double),
+                                            ctypes.c_int,
+                                            ndpointer(ctypes.c_double)]
 
         self._log_density = np.zeros(shape = 1)
         self._gradient = np.zeros(shape = self._dims)
@@ -60,8 +71,9 @@ class PyBridgeStan:
         """Destroy Stan model and free memory"""
         self._destroy(self.stanmodel)
 
-    def dims(self) -> int:
-        return self._dims
+    def K(self) -> int:
+        """Number of constrained parameters"""
+        return self._K
 
     def param_num(self) -> int:
         return self._param_num(self.stanmodel)
@@ -74,6 +86,22 @@ class PyBridgeStan:
                               self._constrained_parameters.size,
                               self._constrained_parameters)
         return self._constrained_parameters
+
+    def dims(self) -> int:
+        """Number of unconstrained parameters"""
+        return self._dims
+
+    def param_unc_num(self) -> int:
+        return self._param_unc_num(self.stanmodel)
+
+    def param_unconstrain(self,
+                          q: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+        self._param_unconstrain(self.stanmodel,
+                                self._K,
+                                q,
+                                self._dims,
+                                self._unconstrained_parameters)
+        return self._unconstrained_parameters
 
     def log_density(self, q: npt.NDArray[np.float64],
                              propto: Optional[int] = 1,

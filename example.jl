@@ -18,7 +18,7 @@ println("log_density and gradient of Bernoulli model:")
 println((smb.log_density, smb.gradient))
 println()
 
-## JBS.free(smb)
+## JBS.destroy(smb)
 
 
 # Multivariate Gaussian
@@ -37,4 +37,24 @@ println("log_density and gradient of Multivariate Gaussian model:")
 println((smm.log_density, smm.gradient))
 println()
 
-## JBS.free(smm)
+## JBS.destroy(smm)
+
+
+# HMC
+include("./MCMC.jl")
+using Statistics
+
+model = JBS.StanModel(mlib, multi_data);
+
+stepsize = 0.25
+steps = 10
+hmcd = HMCDiag(model, stepsize, steps);
+
+M = 10_000
+theta = zeros(M, model.dims)
+for m in 1:M
+    theta[m, :] .= sample(hmcd)
+end
+
+println("Empirical mean: $(round.(mean(theta, dims = 1), digits = 3))")
+println("Empirical std: $(round.(std(theta, dims = 1), digits = 3))")

@@ -7,7 +7,6 @@ sys.path.append(os.getcwd() + '/..')
 import PythonClient as pbs
 import MCMC as mcmc
 
-
 # Bernoulli
 # CMDSTAN=/path/to/cmdstan/ make stan/bernoulli/bernoulli_model.so
 
@@ -29,7 +28,14 @@ def test_bernoulli():
         logdensity, grad = smb.log_density_gradient(q, 1, 0)
 
         assert np.isclose(logdensity, _bernoulli(y, x))
-        assert np.isclose(smb.param_constrain(q), x)
+
+        constrained_theta = smb.param_constrain(q)
+        assert np.isclose(constrained_theta, x)
+
+        assert np.isclose(smb.param_unconstrain(constrained_theta), q)
+
+    assert np.isclose(smb.dims(), 1)
+    assert np.isclose(smb.K(), 1)
 
 # Multivariate Gaussian
 # CMDSTAN=/path/to/cmdstan/ make stan/multi/multi_model.so
@@ -65,18 +71,17 @@ def test_gaussian():
     data = "../stan/gaussian/gaussian.data.json"
 
     model = pbs.PyBridgeStan(lib, data)
-    np.random.seed(2)
     N = 10
 
     sampler = mcmc.HMCDiag(model, stepsize = 0.01, steps = 10)
     theta = np.empty([N, model.dims()])
 
-    for m in range(N):
-        theta[m, :], _ = sampler.sample()
+    for n in range(N):
+        theta[n, :] = sampler.sample()
 
     constrained_theta = np.empty([N, model.param_num()])
-    for m in range(N):
-        constrained_theta[m, :] = model.param_constrain(theta[m])
+    for n in range(N):
+        constrained_theta[n, :] = model.param_constrain(theta[n])
 
     assert np.allclose(constrained_theta[:, 0], theta[:, 0])
     assert np.allclose(constrained_theta[:, 1], np.exp(theta[:, 1]))
@@ -102,20 +107,19 @@ def test_fr_gaussian():
 
     D = 4
     N = 1
-    np.random.seed(204)
     sampler = mcmc.HMCDiag(model, stepsize=0.01, steps=10)
 
     theta = np.empty([N, model.dims()])
-    for m in range(N):
-        theta[m, :], _ = sampler.sample()
+    for n in range(N):
+        theta[n, :] = sampler.sample()
 
     # Ad hoc scale down of parameters to prevent over-underflow
     # This is ok since we are interested only in testing transformation
     theta /= 10.
 
     constrained_theta = np.empty([N, model.param_num()])
-    for m in range(N):
-        constrained_theta[m, :] = model.param_constrain(theta[m])
+    for n in range(N):
+        constrained_theta[n, :] = model.param_constrain(theta[n])
 
     a = theta[-1][D:]
     b = constrained_theta[-1][D:]
@@ -123,3 +127,8 @@ def test_fr_gaussian():
     cov = _covariance_constrain_transform(a, D)
     B = b.reshape(D, D)
     assert np.allclose(cov, B)
+
+    assert np.allclose(model.param_unconstrain(constrained_theta[-1]), theta[-1])
+
+    assert np.isclose(model.dims(), 14)
+    assert np.isclose(model.K(), 20)
