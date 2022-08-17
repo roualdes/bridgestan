@@ -24,7 +24,8 @@ class PyBridgeStan:
         self._param_num.restype = ctypes.c_int
         self._param_num.argtypes = [ctypes.c_void_p]
 
-        self._constrained_parameters = np.zeros(shape = self._param_num(self.stanmodel))
+        self._K = self._param_num(self.stanmodel)
+        self._constrained_parameters = np.zeros(shape = self._K)
 
         self._param_constrain = self.stanlib.param_constrain
         self._param_constrain.restype = ctypes.c_void_p
@@ -70,8 +71,9 @@ class PyBridgeStan:
         """Destroy Stan model and free memory"""
         self._destroy(self.stanmodel)
 
-    def dims(self) -> int:
-        return self._dims
+    def K(self) -> int:
+        """Number of constrained parameters"""
+        return self._K
 
     def param_num(self) -> int:
         return self._param_num(self.stanmodel)
@@ -85,13 +87,17 @@ class PyBridgeStan:
                               self._constrained_parameters)
         return self._constrained_parameters
 
+    def dims(self) -> int:
+        """Number of unconstrained parameters"""
+        return self._dims
+
     def param_unc_num(self) -> int:
         return self._param_unc_num(self.stanmodel)
 
     def param_unconstrain(self,
                           q: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
         self._param_unconstrain(self.stanmodel,
-                                self._constrained_parameters.size,
+                                self._K,
                                 q,
                                 self._dims,
                                 self._unconstrained_parameters)

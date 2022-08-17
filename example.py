@@ -49,8 +49,8 @@ sampler = mcmc.HMCDiag(model, stepsize=stepsize, steps=steps, metric_diag=metric
 M = 10000
 theta = np.empty([M, model.dims()])
 for m in range(M):
-    theta[m, :], _ = sampler.sample()
+    theta[m, :] = sampler.sample()
 
 
-print(f"Empirical mean: {theta.mean(0)}")
-print(f"Empirical std: {theta.std(0)}")
+print(f"Empirical mean: {np.round(theta.mean(0), 3)}")
+print(f"Empirical std: {np.round(theta.std(0), 3)}")
