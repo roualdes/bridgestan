@@ -65,6 +65,8 @@ def test_out_behavior():
 
     # out parameter is modified and reference is returned
     assert grads[0] is grads[1]
+    assert grads[0] is grad_out
+    assert grads[1] is grad_out
     assert np.allclose(grads[0], grads[1])
 
 # Multivariate Gaussian
