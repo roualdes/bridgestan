@@ -1,5 +1,4 @@
 import ctypes
-from multiprocessing.sharedctypes import Value
 import numpy as np
 import numpy.typing as npt
 
@@ -145,8 +144,8 @@ class PyBridgeStan:
             q,
             self._log_density,
             self._gradient,
-            propto,
-            jacobian,
+            int(propto),
+            int(jacobian),
         )
         return self._log_density[0]
 
