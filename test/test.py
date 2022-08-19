@@ -37,6 +37,36 @@ def test_bernoulli():
     assert np.isclose(smb.dims(), 1)
     assert np.isclose(smb.K(), 1)
 
+
+def test_out_behavior():
+
+    bernoulli_lib = "../stan/bernoulli/bernoulli_model.so"
+    bernoulli_data = "../stan/bernoulli/bernoulli.data.json"
+
+    smb = pbs.PyBridgeStan(bernoulli_lib, bernoulli_data)
+
+    grads = []
+    for _ in range(2):
+        x = np.random.uniform(size = smb.dims())
+        q = np.log(x / (1 - x)) # unconstrained scale
+        _, grad = smb.log_density_gradient(q, 1, 0)
+        grads.append(grad)
+
+    # default behavior is fresh array
+    assert grads[0] is not grads[1]
+
+    grads = []
+    grad_out = np.zeros(shape = smb.dims())
+    for _ in range(2):
+        x = np.random.uniform(size = smb.dims())
+        q = np.log(x / (1 - x)) # unconstrained scale
+        _, grad = smb.log_density_gradient(q, 1, 0, grad_out=grad_out)
+        grads.append(grad)
+
+    # out parameter is modified and reference is returned
+    assert grads[0] is grads[1]
+    assert np.allclose(grads[0], grads[1])
+
 # Multivariate Gaussian
 # CMDSTAN=/path/to/cmdstan/ make stan/multi/multi_model.so
 

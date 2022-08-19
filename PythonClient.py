@@ -6,7 +6,7 @@ import numpy.typing as npt
 from numpy.ctypeslib import ndpointer
 from typing import Tuple, Optional
 
-FloatArray = npt.NDArray[np.float64s]
+FloatArray = npt.NDArray[np.float64]
 double_array = ndpointer(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
 
 __all__ = ["PyBridgeStan"]
