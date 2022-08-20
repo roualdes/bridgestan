@@ -86,7 +86,7 @@ class PyBridgeStan:
         return self._param_num(self.stanmodel)
 
     def param_constrain(
-        self, q: FloatArray, *, out: Optional[FloatArray]
+        self, q: FloatArray, *, out: Optional[FloatArray] = None
     ) -> FloatArray:
         if out is not None:
             if out.size < self._dims:
