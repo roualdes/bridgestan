@@ -67,9 +67,6 @@ in Python or Julia.
 
 * From Julia: [`example.jl`](example.jl)
 
-These example files include hard coded paths that will need to be
-modified to work with local directory structures.
-
 
 ## Custom build instructions
 
@@ -166,8 +163,7 @@ Here are complete instructions by platform for installing both.
 
 To install CmdStan, follow the instructions in the guide,
 
-*
-[Getting Started with CmdStan](https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html)
+* [Getting Started with CmdStan](https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html)
 
 
 ### Ensuring tools are built/imported
