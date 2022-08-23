@@ -205,5 +205,3 @@ API, which in turn was derived from
 
 Thanks to Sebastian Weber (GitHub [@wds15](https://github.com/wds15))
 for enabling multi-threaded calls from Julia to a single Stan model instance.
-
-Thanks to Brian Ward (GitHub [@WardBrian](https://github.com/WardBrian)) for testing the makefile.
