@@ -164,3 +164,16 @@ def test_fr_gaussian():
 
     assert np.isclose(model.dims(), 14)
     assert np.isclose(model.K(), 20)
+
+if __name__ == "__main__":
+    print("test out behavior")
+    test_out_behavior()
+    print("test multi")
+    test_multi()
+    print("test bernoulli")
+    test_bernoulli()
+    print("test gaussian")
+    test_gaussian()
+    print("test fr_gaussian")
+    test_fr_gaussian()
+    print("\nIf no errors were reported, all tests passed.")
