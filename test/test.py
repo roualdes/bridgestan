@@ -27,15 +27,15 @@ def test_bernoulli():
         q = np.log(x / (1 - x)) # unconstrained scale
         logdensity, grad = smb.log_density_gradient(q, 1, 0)
 
-        assert np.isclose(logdensity, _bernoulli(y, x))
+        np.testing.assert_allclose(logdensity, _bernoulli(y, x))
 
         constrained_theta = smb.param_constrain(q)
-        assert np.isclose(constrained_theta, x)
+        np.testing.assert_allclose(constrained_theta, x)
 
-        assert np.isclose(smb.param_unconstrain(constrained_theta), q)
+        np.testing.assert_allclose(smb.param_unconstrain(constrained_theta), q)
 
-    assert np.isclose(smb.dims(), 1)
-    assert np.isclose(smb.K(), 1)
+    np.testing.assert_allclose(smb.dims(), 1)
+    np.testing.assert_allclose(smb.K(), 1)
 
 
 def test_out_behavior():
@@ -67,7 +67,7 @@ def test_out_behavior():
     assert grads[0] is grads[1]
     assert grads[0] is grad_out
     assert grads[1] is grad_out
-    assert np.allclose(grads[0], grads[1])
+    np.testing.assert_allclose(grads[0], grads[1])
 
 # Multivariate Gaussian
 # CMDSTAN=/path/to/cmdstan/ make stan/multi/multi_model.so
@@ -90,9 +90,8 @@ def test_multi():
         x = np.random.normal(size = smm.dims())
         logdensity, grad = smm.log_density_gradient(x)
 
-        assert np.isclose(logdensity, _multi(x))
-        assert np.allclose(grad, _grad_multi(x))
-
+        np.testing.assert_allclose(logdensity, _multi(x))
+        np.testing.assert_allclose(grad, _grad_multi(x))
 
 # Guassian with positive constrained standard deviation
 # CMDSTAN=/path/to/cmdstan/ make stan/gaussian/gaussian_model.so
@@ -115,8 +114,8 @@ def test_gaussian():
     for n in range(N):
         constrained_theta[n, :] = model.param_constrain(theta[n])
 
-    assert np.allclose(constrained_theta[:, 0], theta[:, 0])
-    assert np.allclose(constrained_theta[:, 1], np.exp(theta[:, 1]))
+    np.testing.assert_allclose(constrained_theta[:, 0], theta[:, 0])
+    np.testing.assert_allclose(constrained_theta[:, 1], np.exp(theta[:, 1]))
 
 
 # Full rank Gaussian
@@ -158,12 +157,12 @@ def test_fr_gaussian():
 
     cov = _covariance_constrain_transform(a, D)
     B = b.reshape(D, D)
-    assert np.allclose(cov, B)
+    np.testing.assert_allclose(cov, B)
 
-    assert np.allclose(model.param_unconstrain(constrained_theta[-1]), theta[-1])
+    np.testing.assert_allclose(model.param_unconstrain(constrained_theta[-1]), theta[-1])
 
-    assert np.isclose(model.dims(), 14)
-    assert np.isclose(model.K(), 20)
+    np.testing.assert_allclose(model.dims(), 14)
+    np.testing.assert_allclose(model.K(), 20)
 
 if __name__ == "__main__":
     print("")
