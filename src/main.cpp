@@ -95,7 +95,7 @@ struct model_functor {
  * @param[in] m Stan model
  * @param[in] propto `true` if log density drops constant terms
  * @param[in] jacobian `true` if log density includes
- * change-of-variables terms 
+ * change-of-variables terms
  * @param[in] out output stream for messages from model
  */
 template <typename M>
@@ -177,6 +177,9 @@ char* to_csv(const std::vector<std::string>& names) {
 }
 
 model_rng* construct(char* data_file, unsigned int seed, unsigned int chain_id) {
+  // enforce math lib thread locality for multi-threading
+  static thread_local stan::math::ChainableStack dummy;
+
   model_rng* mr = new model_rng();
   std::string data(data_file);
   if (data.empty()) {
@@ -236,6 +239,132 @@ const char* name(model_rng* mr) {
   return mr->name_;
 }
 
+const char* param_names(model_rng* mr, bool include_tp, bool include_gq) {
+  // first branch used most of the time
+  if (include_tp && include_gq) return mr->param_tp_gq_names_;
+  if (include_tp) return mr->param_tp_names_;
+  if (include_gq) return mr->param_gq_names_;
+  return mr->param_names_;
+}
+
+const char* param_unc_names(model_rng* mr) {
+  return mr->param_unc_names_;
+}
+
+int param_num2(model_rng* mr, bool include_tp, bool include_gq) {
+  // first branch used most of the time
+  if (include_tp && include_gq) return mr->param_tp_gq_num_;
+  if (include_tp) return mr->param_tp_num_;
+  if (include_gq) return mr->param_gq_num_;
+  return mr->param_num_;
+}
+
+int param_unc_num2(model_rng* mr) {
+  return mr->param_unc_num_;
+}
+
+void param_constrain2(model_rng* mr, bool include_tp, bool include_gq,
+                      const double* theta_unc, double* theta) {
+  using Eigen::VectorXd;
+  VectorXd params_unc = VectorXd::Map(theta_unc, param_unc_num2(mr));
+  Eigen::VectorXd params;
+  mr->model_->write_array(mr->rng_, params_unc, params,
+                          include_tp, include_gq, &std::cerr);
+  Eigen::VectorXd::Map(theta, param_num2(mr, include_tp, include_gq))
+      = params;
+}
+
+void param_unconstrain2(model_rng* mr, const double* theta,
+                        double* theta_unc) {
+  // get names and dims for var context
+  std::vector<std::string> indexed_names;
+  mr->model_->constrained_param_names(indexed_names, false, false);
+  std::vector<std::string> base_names;
+  mr->model_->get_param_names(base_names);
+  std::vector<std::vector<size_t>> base_dims;
+  mr->model_->get_dims(base_dims);
+  std::vector<std::string> names;
+  std::vector<std::vector<size_t>> dims;
+  // TODO(carpenter): replace quadratic algorithm with linear:
+  //    exploit order consistency; careful with simplex[1]
+  for (int b = 0; b < base_names.size(); ++b) {
+    for (int i = 0; i < indexed_names.size(); ++i) {
+      if (indexed_names[i].find(base_names[b]) != std::string::npos) {
+        names.push_back(base_names[b]);
+        dims.push_back(base_dims[b]);
+        break;
+      }
+    }
+  }
+  // copy input, unconstrain, copy output
+  Eigen::VectorXd params = Eigen::VectorXd::Map(theta, mr->param_unc_num_);
+  stan::io::array_var_context avc(names, params, dims);
+  Eigen::VectorXd unc_params;
+  mr->model_->transform_inits(avc, unc_params, &std::cout);
+  Eigen::VectorXd::Map(theta_unc, unc_params.size()) = unc_params;
+}
+
+void param_unconstrain_json(model_rng* mr, const char* json,
+                            double* theta_unc) {
+  std::stringstream in(json);
+  cmdstan::json::json_data inits_context(in);
+  Eigen::VectorXd params_unc;
+  mr->model_->transform_inits(inits_context, params_unc, &std::cerr);
+  Eigen::VectorXd::Map(theta_unc, params_unc.size()) = params_unc;
+}
+
+double log_density(model_rng* mr, bool propto, bool jacobian,
+                   const double* theta_unc) {
+  auto logp
+      = create_model_functor(mr->model_, propto, jacobian,
+                             std::cerr);
+  int N = param_unc_num2(mr);
+  Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
+  if (propto) {
+    // TODO(carpenter): avoid reverse pass for efficiency
+    double lp;
+    Eigen::VectorXd grad_vec(N);
+    stan::math::gradient(logp, params_unc, lp, grad_vec);
+    return lp;
+  }
+  return logp(params_unc.eval());
+}
+
+double log_density_gradient2(model_rng* mr, bool propto, bool jacobian,
+                             const double* theta_unc, double* grad) {
+  auto logp
+      = create_model_functor(mr->model_, propto, jacobian,
+                             std::cerr);
+  int N = param_unc_num2(mr);
+  Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
+  double lp;
+  Eigen::VectorXd grad_vec(N);
+  stan::math::gradient(logp, params_unc, lp, grad_vec);
+  Eigen::VectorXd::Map(grad, N) = grad_vec;
+  return lp;
+}
+
+double log_density_hessian(model_rng* mr, bool propto, bool jacobian,
+                           const double* theta_unc, double* grad,
+                           double* hessian) {
+  auto logp
+      = create_model_functor(mr->model_, propto, jacobian,
+                             std::cerr);
+  int N = param_unc_num2(mr);
+  Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
+  double lp;
+  Eigen::VectorXd grad_vec;
+  Eigen::MatrixXd hess_mat;
+  stan::math::internal::finite_diff_hessian_auto(logp, params_unc, lp,
+                                                 grad_vec, hess_mat);
+  Eigen::VectorXd::Map(grad, N) = grad_vec;
+  Eigen::MatrixXd::Map(hessian, N, N) = hess_mat;
+  return lp;
+}
+
+
+// ############################### OLD API ###########################
+
 /**
  * Create and return a pointer to a Stan model struct using specified
  * data and seed.
@@ -275,7 +404,7 @@ stanmodel* create(char* data_file_path_, unsigned int seed_) {
  * @param[out] grad_ pointer to gradient
  * @param[in] propto_ `true` if log density drops constant terms
  * @param[in] jacobian_ `true` if log density includes
- * change-of-variables terms 
+ * change-of-variables terms
  * @return number of unconstrained parameters
  */
 void log_density_gradient(stanmodel* sm_, int D_, double* q_,
