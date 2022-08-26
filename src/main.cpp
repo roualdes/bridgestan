@@ -280,9 +280,9 @@ void param_unconstrain2(model_rng* mr, const double* theta,
   std::vector<std::string> indexed_names;
   mr->model_->constrained_param_names(indexed_names, false, false);
   std::vector<std::string> base_names;
-  mr->model_->get_param_names(base_names);
+  mr->model_->get_param_names(base_names);  // includes tp, gq
   std::vector<std::vector<size_t>> base_dims;
-  mr->model_->get_dims(base_dims);
+  mr->model_->get_dims(base_dims);  // includes tp, gq
   std::vector<std::string> names;
   std::vector<std::vector<size_t>> dims;
   // TODO(carpenter): replace quadratic algorithm with linear:
