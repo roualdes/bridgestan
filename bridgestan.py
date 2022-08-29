@@ -196,7 +196,6 @@ class Bridge:
         hess = hess.reshape(self._dims, self._dims)
         return logp, grad, hess
 
-
     # def log_density_hessian(
     #     self,
     #     theta_unc: float_array,
