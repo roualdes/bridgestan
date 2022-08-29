@@ -109,12 +109,14 @@ def test_gaussian():
     theta_unc_test = model.param_unconstrain(theta)
     np.testing.assert_allclose(theta_unc, theta_unc_test)
 
+    theta_json = "{\"mu\": 0.2, \"sigma\": 1.9}"
+    theta_unc_j_test = model.param_unconstrain_json(theta_json)
+    np.testing.assert_allclose(theta_unc, theta_unc_j_test)
 
 # Full rank Gaussian
 # CMDSTAN=/path/to/cmdstan/ make stan/fr_gaussian/fr_gaussian_model.so
 
 def test_fr_gaussian():
-
     def cov_constrain(v, D):
         L = np.zeros([D, D])
         idxL = np.tril_indices(D)
@@ -143,7 +145,16 @@ def test_fr_gaussian():
     c = model.param_unconstrain(b)
     np.testing.assert_allclose(a, c)
 
+def test_simple():
+    lib = "../stan/simple/simple_model.so"
+    data = "../stan/simple/simple.data.json"
+    model = bs.Bridge(lib, data)
 
+    D = 5
+    y = np.random.uniform(size = D)
+    lp, grad, hess = model.log_density_hessian(y)
+    np.testing.assert_allclose(-y, grad)
+    np.testing.assert_allclose(-np.identity(D), hess)
 
 if __name__ == "__main__":
     print("")
@@ -159,5 +170,7 @@ if __name__ == "__main__":
     test_gaussian()
     print("running test: fr_gaussian")
     test_fr_gaussian()
+    print("running test: simple")
+    test_simple()
     print("------------------------------------------------------------")
     print("If no errors were reported, all tests passed.")
