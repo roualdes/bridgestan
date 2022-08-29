@@ -119,7 +119,7 @@ def test_gaussian():
 
 def test_fr_gaussian():
 
-    def _covariance_constrain_transform(v, D):
+    def cov_constrain(v, D):
         L = np.zeros([D, D])
         idxL = np.tril_indices(D)
         L[idxL] = v
@@ -127,41 +127,25 @@ def test_fr_gaussian():
         L[idxD] = np.exp(L[idxD])
         return np.matmul(L, L.T)
 
-
     lib = "../stan/fr_gaussian/fr_gaussian_model.so"
     data = "../stan/fr_gaussian/fr_gaussian.data.json"
     model = bs.Bridge(lib, data)
 
+    size = 16
+    unc_size = 10
+    np.testing.assert_allclose(model.K(), size)
+    np.testing.assert_allclose(model.dims(), unc_size)
+
     D = 4
-    N = 1
-    sampler = mcmc.HMCDiag(model, stepsize=0.01, steps=10)
+    a = np.random.normal(size=unc_size)
+    b = model.param_constrain(a, 0, 0);
 
-    theta = np.empty([N, model.dims()])
-    for n in range(N):
-        theta[n, :] = sampler.sample()
-
-    # Ad hoc scale down of parameters to prevent over-underflow
-    # This is ok since we are interested only in testing transformation
-    theta /= 10.
-
-    constrained_theta = np.empty([N, model.param_num()])
-    for n in range(N):
-        constrained_theta[n, :] = model.param_constrain(theta[n], 0, 0)
-
-    a = theta[-1][D:]
-    b = constrained_theta[-1][D:]
-
-    cov = _covariance_constrain_transform(a, D)
     B = b.reshape(D, D)
-    np.testing.assert_allclose(cov, B)
+    B_expected = cov_constrain(a, D)
+    np.testing.assert_allclose(B_expected, B)
 
-    #  FAILING
-    print("constrained_theta[-1] = ", constrained_theta[-1])
-    print("theta[-1] = ", theta[-1])
-    np.testing.assert_allclose(model.param_unconstrain(constrained_theta[-1]), theta[-1])
-
-    np.testing.assert_allclose(model.dims(), 14)
-    np.testing.assert_allclose(model.K(), 20)
+    c = model.param_unconstrain(b)
+    np.testing.assert_allclose(a, c)
 
 if __name__ == "__main__":
     print("")
@@ -175,7 +159,7 @@ if __name__ == "__main__":
     test_multi()
     print("running test: gaussian")
     test_gaussian()
-    # print("running test: fr_gaussian")
-    # test_fr_gaussian()
+    print("running test: fr_gaussian")
+    test_fr_gaussian()
     print("------------------------------------------------------------")
     print("If no errors were reported, all tests passed.")

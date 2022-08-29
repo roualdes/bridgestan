@@ -280,28 +280,33 @@ void param_constrain2(model_rng* mr, bool include_tp, bool include_gq,
 
 void param_unconstrain2(model_rng* mr, const double* theta,
                         double* theta_unc) {
-  // get names and dims for var context
-  std::vector<std::string> indexed_names;
-  mr->model_->constrained_param_names(indexed_names, false, false);
-  std::vector<std::string> base_names;
-  mr->model_->get_param_names(base_names);  // includes tp, gq
-  std::vector<std::vector<size_t>> base_dims;
+
+  using std::set;
+  using std::string;
+  using std::vector;
+  vector<vector<size_t>> base_dims;
   mr->model_->get_dims(base_dims);  // includes tp, gq
-  std::vector<std::string> names;
-  std::vector<std::vector<size_t>> dims;
-  // TODO(carpenter): replace quadratic algorithm with linear:
-  //    exploit order consistency; careful with simplex[1]
-  for (int b = 0; b < base_names.size(); ++b) {
-    for (int i = 0; i < indexed_names.size(); ++i) {
-      if (indexed_names[i].find(base_names[b]) != std::string::npos) {
-        names.push_back(base_names[b]);
-        dims.push_back(base_dims[b]);
-        break;
-      }
+  vector<string> base_names;
+  mr->model_->get_param_names(base_names);
+  vector<string> indexed_names;
+  mr->model_->constrained_param_names(indexed_names, false, false);
+  set<string> names_used;
+  for (const auto& name: indexed_names) {
+    size_t index = name.find('.');
+    if (index != std::string::npos)
+      names_used.emplace(name.substr(0, index));
+    else
+      names_used.emplace(name);
+  }
+  vector<string> names;
+  vector<vector<size_t>> dims;
+  for (size_t i = 0; i < base_names.size(); ++i) {
+    if (names_used.find(base_names[i]) != names_used.end()) {
+      names.emplace_back(base_names[i]);
+      dims.emplace_back(base_dims[i]);
     }
   }
-  // copy input, unconstrain, copy output
-  Eigen::VectorXd params = Eigen::VectorXd::Map(theta, mr->param_unc_num_);
+  Eigen::VectorXd params = Eigen::VectorXd::Map(theta, mr->param_num_);
   stan::io::array_var_context avc(names, params, dims);
   Eigen::VectorXd unc_params;
   mr->model_->transform_inits(avc, unc_params, &std::cout);
@@ -556,7 +561,7 @@ void param_unconstrain(stanmodel* sm_, int K_, double* q_, int D_,
 		       double* unc_params_) {
   std::vector<std::string> indexed_names = param_names_(sm_);
   stan::model::model_base* model
-    = static_cast<stan::model::model_base*>(sm_->model_);
+      = static_cast<stan::model::model_base*>(sm_->model_);
   std::vector<std::string> base_names;
   model->get_param_names(base_names);
   std::vector<std::vector<size_t>> base_dims;

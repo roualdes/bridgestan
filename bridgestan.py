@@ -108,7 +108,6 @@ class Bridge:
     def param_unconstrain(
         self,
         q: float_array,
-        *,
         out: Optional[float_array] = None,
     ) -> float_array:
         if out is not None:
