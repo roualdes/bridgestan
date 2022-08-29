@@ -206,24 +206,29 @@ model_rng* construct(char* data_file, unsigned int seed, unsigned int chain_id) 
   mr->param_unc_names_ = to_csv(names);
   mr->param_unc_num_ = names.size();
 
+  names.clear();
   mr->model_->constrained_param_names(names, false, false);
   mr->param_names_ = to_csv(names);
   mr->param_num_ = names.size();
 
+  names.clear();
   mr->model_->constrained_param_names(names, true, false);
   mr->param_tp_names_ = to_csv(names);
   mr->param_tp_num_ = names.size();
 
+  names.clear();
   mr->model_->constrained_param_names(names, false, true);
   mr->param_gq_names_ = to_csv(names);
   mr->param_gq_num_ = names.size();
 
+  names.clear();
   mr->model_->constrained_param_names(names, true, true);
   mr->param_tp_gq_names_ = to_csv(names);
   mr->param_tp_gq_num_ = names.size();
 
   return  mr;
 }
+
 
 void destruct(model_rng* mr) {
   free(mr->model_);
@@ -270,8 +275,7 @@ void param_constrain2(model_rng* mr, bool include_tp, bool include_gq,
   Eigen::VectorXd params;
   mr->model_->write_array(mr->rng_, params_unc, params,
                           include_tp, include_gq, &std::cerr);
-  Eigen::VectorXd::Map(theta, param_num2(mr, include_tp, include_gq))
-      = params;
+  Eigen::VectorXd::Map(theta, params.size()) = params;
 }
 
 void param_unconstrain2(model_rng* mr, const double* theta,
@@ -327,6 +331,7 @@ double log_density(model_rng* mr, bool propto, bool jacobian,
     stan::math::gradient(logp, params_unc, lp, grad_vec);
     return lp;
   }
+
   return logp(params_unc.eval());
 }
 
@@ -336,7 +341,7 @@ double log_density_gradient2(model_rng* mr, bool propto, bool jacobian,
       = create_model_functor(mr->model_, propto, jacobian,
                              std::cerr);
   int N = param_unc_num2(mr);
-  Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
+  Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, N);
   double lp;
   Eigen::VectorXd grad_vec(N);
   stan::math::gradient(logp, params_unc, lp, grad_vec);
