@@ -1,11 +1,11 @@
 import sys
 import os
+import json
 import numpy as np
 
 sys.path.append(os.getcwd() + '/..')
 
 import bridgestan as bs
-import MCMC as mcmc
 
 # Bernoulli
 # CMDSTAN=/path/to/cmdstan/ make stan/bernoulli/bernoulli_model.so
@@ -31,7 +31,7 @@ def test_out_behavior():
     for _ in range(2):
         x = np.random.uniform(size = smb.dims())
         q = np.log(x / (1 - x)) # unconstrained scale
-        _, grad = smb.log_density_gradient(q, 1, 0, grad_out=grad_out)
+        _, grad = smb.log_density_gradient(q, 1, 0, grad=grad_out)
         grads.append(grad)
 
     # out parameter is modified and reference is returned
@@ -100,18 +100,14 @@ def test_gaussian():
     model = bs.Bridge(lib, data)
     N = 10
 
-    sampler = mcmc.HMCDiag(model, stepsize = 0.01, steps = 10)
-    theta = np.empty([N, model.dims()])
+    theta = np.array([0.2, 1.9])
+    theta_unc = np.array([0.2, np.log(1.9)])
 
-    for n in range(N):
-        theta[n, :] = sampler.sample()
+    theta_test = model.param_constrain(theta_unc, 0, 0)
+    np.testing.assert_allclose(theta, theta_test)
 
-    constrained_theta = np.empty([N, model.param_num()])
-    for n in range(N):
-        constrained_theta[n, :] = model.param_constrain(theta[n], 0, 0)
-
-    np.testing.assert_allclose(constrained_theta[:, 0], theta[:, 0])
-    np.testing.assert_allclose(constrained_theta[:, 1], np.exp(theta[:, 1]))
+    theta_unc_test = model.param_unconstrain(theta)
+    np.testing.assert_allclose(theta_unc, theta_unc_test)
 
 
 # Full rank Gaussian
@@ -146,6 +142,8 @@ def test_fr_gaussian():
 
     c = model.param_unconstrain(b)
     np.testing.assert_allclose(a, c)
+
+
 
 if __name__ == "__main__":
     print("")
