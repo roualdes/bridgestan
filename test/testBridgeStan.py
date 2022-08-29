@@ -18,7 +18,7 @@ def test_out_behavior():
 
     grads = []
     for _ in range(2):
-        x = np.random.uniform(size = smb.dims())
+        x = np.random.uniform(size = smb.param_unc_num())
         q = np.log(x / (1 - x)) # unconstrained scale
         _, grad = smb.log_density_gradient(q, 1, 0)
         grads.append(grad)
@@ -27,9 +27,9 @@ def test_out_behavior():
     assert grads[0] is not grads[1]
 
     grads = []
-    grad_out = np.zeros(shape = smb.dims())
+    grad_out = np.zeros(shape = smb.param_unc_num())
     for _ in range(2):
-        x = np.random.uniform(size = smb.dims())
+        x = np.random.uniform(size = smb.param_unc_num())
         q = np.log(x / (1 - x)) # unconstrained scale
         _, grad = smb.log_density_gradient(q, 1, 0, grad=grad_out)
         grads.append(grad)
@@ -51,12 +51,12 @@ def test_bernoulli():
     bernoulli_lib = "../stan/bernoulli/bernoulli_model.so"
     bernoulli_data = "../stan/bernoulli/bernoulli.data.json"
     smb = bs.Bridge(bernoulli_lib, bernoulli_data)
-    np.testing.assert_allclose(smb.dims(), 1)
-    np.testing.assert_allclose(smb.K(), 1)
+    np.testing.assert_allclose(smb.param_unc_num(), 1)
+    np.testing.assert_allclose(smb.param_num(0, 0), 1)
     y = np.asarray([0, 1, 0, 0, 0, 0, 0, 0, 0, 1])
     R = 2
     for _ in range(R):
-        x = np.random.uniform(size = smb.dims())
+        x = np.random.uniform(size = smb.param_unc_num())
         q = np.log(x / (1 - x)) # unconstrained scale
         logdensity, grad = smb.log_density_gradient(q, 1, 0)
         np.testing.assert_allclose(logdensity, _bernoulli(y, x))
@@ -83,7 +83,7 @@ def test_multi():
     R = 1000
 
     for _ in range(R):
-        x = np.random.normal(size = smm.dims())
+        x = np.random.normal(size = smm.param_unc_num())
         logdensity, grad = smm.log_density_gradient(x)
 
         np.testing.assert_allclose(logdensity, _multi(x))
@@ -131,8 +131,8 @@ def test_fr_gaussian():
 
     size = 16
     unc_size = 10
-    np.testing.assert_allclose(model.K(), size)
-    np.testing.assert_allclose(model.dims(), unc_size)
+    np.testing.assert_allclose(model.param_num(0, 0), size)
+    np.testing.assert_allclose(model.param_unc_num(), unc_size)
 
     D = 4
     a = np.random.normal(size=unc_size)

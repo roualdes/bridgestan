@@ -10,7 +10,6 @@ double_array = ndpointer(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
 
 __all__ = ["PyBridgeStan"]
 
-
 class Bridge:
     def __init__(
         self, model_lib: str, model_data: str, seed: int = 204, chain_id: int = 0
@@ -32,8 +31,6 @@ class Bridge:
         self._param_num.restype = ctypes.c_int
         self._param_num.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_int]
 
-        self._K = self._param_num(self.model_rng, 0, 0)  # redundant
-
         self._param_constrain = self.stanlib.param_constrain2
         self._param_constrain.restype = ctypes.c_void_p
         self._param_constrain.argtypes = [
@@ -48,8 +45,6 @@ class Bridge:
         self._param_unc_num.restype = ctypes.c_int
         self._param_unc_num.argtypes = [ctypes.c_void_p]
 
-        self._dims = self._param_unc_num(self.model_rng)  # redundant
-
         self._param_unconstrain = self.stanlib.param_unconstrain2
         self._param_unconstrain.restype = ctypes.c_void_p
         self._param_unconstrain.argtypes = [ctypes.c_void_p, double_array, double_array]
@@ -61,9 +56,6 @@ class Bridge:
             ctypes.c_char_p,
             double_array,
         ]
-
-        self._log_density = np.zeros(shape=1)  # remove if possible
-        self._gradient = np.zeros(shape=self._dims)  # remove if possible
 
         self._log_density_gradient = self.stanlib.log_density_gradient2
         self._log_density_gradient.restype = ctypes.c_double
@@ -94,12 +86,11 @@ class Bridge:
         """Destroy Stan model and free memory"""
         self._destruct(self.model_rng)
 
-    def K(self) -> int:
-        """Number of constrained parameters"""
-        return self._K
-
     def param_num(self, include_tp: int = 0, include_gq: int = 0) -> int:
         return self._param_num(self.model_rng, include_tp, include_gq)
+
+    def param_unc_num(self) -> int:
+        return self._param_unc_num(self.model_rng)
 
     def param_constrain(
         self,
@@ -110,44 +101,40 @@ class Bridge:
     ) -> float_array:
         if theta is None:
             theta = np.zeros(self.param_num(include_tp, include_gq))
-        elif theta.size != self._dims:
+        elif theta.size != self.param_num(include_tp, include_gq):
+            D = self._param_num(self.model_rng, 0, 0)  # redundant
             raise ValueError(
                 "Out parameter must be at least the number of "
-                f"constrained params: {self._K}"
+                f"constrained params: {D}"
             )
         self._param_constrain(self.model_rng, include_tp, include_gq, theta_unc, theta)
         return theta
 
-    def dims(self) -> int:
-        """Number of unconstrained parameters"""
-        return self._dims
-
-    def param_unc_num(self) -> int:
-        return self._param_unc_num(self.model_rng)
+    def param_unconstrain(
+        self, theta: float_array, theta_unc: Optional[float_array] = None
+    ) -> float_array:
+        dims = self.param_unc_num()
+        if theta_unc is None:
+            theta_unc = np.zeros(shape=dims)
+        elif theta_unc.size != dims:
+            raise ValueError(
+                f"theta_unc size = {theta_unc.size} != dims size = {dims}"
+            )
+        self._param_unconstrain(self.model_rng, theta, theta_unc)
+        return theta_unc
 
     def param_unconstrain_json(
         self, theta_json: str, theta_unc: Optional[float_array] = None
     ) -> float_array:
+        dims = self.param_unc_num()
         if theta_unc is None:
-            theta_unc = np.zeros(shape=self._dims)
-        elif theta_unc.size != self._dims:
+            theta_unc = np.zeros(shape=dims)
+        elif theta_unc.size != dims:
             raise ValueError(
-                f"theta_unc size = {theta_unc.size} != dims size = {self._dims}"
+                f"theta_unc size = {theta_unc.size} != dims size = {dims}"
             )
         chars = theta_json.encode("UTF-8")
         self._param_unconstrain_json(self.model_rng, chars, theta_unc)
-        return theta_unc
-
-    def param_unconstrain(
-        self, theta: float_array, theta_unc: Optional[float_array] = None
-    ) -> float_array:
-        if theta_unc is None:
-            theta_unc = np.zeros(shape=self._dims)
-        elif theta_unc.size != self._dims:
-            raise ValueError(
-                f"theta_unc size = {theta_unc.size} != dims size = {self._dims}"
-            )
-        self._param_unconstrain(self.model_rng, theta, theta_unc)
         return theta_unc
 
     def log_density(
@@ -164,10 +151,11 @@ class Bridge:
         jacobian: int = 1,
         grad: Optional[float_array] = None,
     ) -> Tuple[float, float_array]:
+        dims = self.param_unc_num()
         if grad is None:
-            grad = np.zeros(shape=self._dims)
-        elif grad.size != self._dims:
-            raise ValueError(f"grad size = {grad.size} != dims size = {self._dims}")
+            grad = np.zeros(shape=dims)
+        elif grad.size != dims:
+            raise ValueError(f"grad size = {grad.size} != dims size = {dims}")
         logp = self._log_density_gradient(
             self.model_rng, int(propto), int(jacobian), theta_unc, grad
         )
@@ -181,45 +169,18 @@ class Bridge:
         grad: Optional[float_array] = None,
         hess: Optional[float_array] = None,
     ) -> Tuple[float, float_array]:
+        dims = self.param_unc_num()
         if grad is None:
-            grad = np.zeros(shape=self._dims)
-        elif grad.size != self._dims:
-            raise ValueError(f"grad size = {grad.size} != dims size = {self._dims}")
-        hess_size = self._dims * self._dims
+            grad = np.zeros(shape=dims)
+        elif grad.size != dims:
+            raise ValueError(f"grad size = {grad.size} != dims size = dims")
+        hess_size = dims * dims
         if hess is None:
             hess = np.zeros(shape=hess_size)
-        elif hess.size != self._dims * self._dims:
+        elif hess.size != hess_size:
             raise ValueError(f"hess size = {hess.size} != dims size^2 = {hess_size}")
         logp = self._log_density_hessian(
             self.model_rng, int(propto), int(jacobian), theta_unc, grad, hess
         )
-        hess = hess.reshape(self._dims, self._dims)
+        hess = hess.reshape(dims, dims)
         return logp, grad, hess
-
-    # def log_density_hessian(
-    #     self,
-    #     theta_unc: float_array,
-    #     propto: int = 1,
-    #     jacobian: int = 1,
-    #     grad: Optional[float_array] = None,
-    #     hess: Optional[float_array] = None,
-    # ) -> Tuple[float, float_array]:
-    #     if grad is None:
-    #         grad = np.zeros(shape=self._dims, dtype=np.float64)
-    #     elif grad.size != self._dims:
-    #         raise ValueError(f"grad size = {grad.size} != dims size = {self._dims}")
-    #     hess_size = self._dims * self._dims
-    #     if hess is None:
-    #         hess = np.zeros(shape=self._dims * self._dims, dtype=np.float64)
-    #     elif hess.size != hess_size:
-    #         raise ValueError(
-    #             f"hess size = {hess.size} != dims size squared = {hess_size}"
-    #         )
-    #     print("hess=", hess)
-    #     logp = self._log_density_gradient(self.model_rng, int(propto), int(jacobian), theta_unc, grad)
-
-    #     # logp = self._log_density_hessian(
-    #     # self.model_rng, int(propto), int(jacobian), theta_unc, grad, hess
-    #     # )
-    #     hess.reshape(self._dims, self._dims)
-    #     return logp, grad, hess
