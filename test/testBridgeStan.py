@@ -20,7 +20,7 @@ def test_out_behavior():
     for _ in range(2):
         x = np.random.uniform(size = smb.param_unc_num())
         q = np.log(x / (1 - x)) # unconstrained scale
-        _, grad = smb.log_density_gradient(q, 1, 0)
+        _, grad = smb.log_density_gradient(q, propto = 1, jacobian = 0)
         grads.append(grad)
 
     # default behavior is fresh array
@@ -31,7 +31,7 @@ def test_out_behavior():
     for _ in range(2):
         x = np.random.uniform(size = smb.param_unc_num())
         q = np.log(x / (1 - x)) # unconstrained scale
-        _, grad = smb.log_density_gradient(q, 1, 0, grad=grad_out)
+        _, grad = smb.log_density_gradient(q, propto = 1, jacobian = 0, grad=grad_out)
         grads.append(grad)
 
     # out parameter is modified and reference is returned
@@ -52,15 +52,15 @@ def test_bernoulli():
     bernoulli_data = "../stan/bernoulli/bernoulli.data.json"
     smb = bs.Bridge(bernoulli_lib, bernoulli_data)
     np.testing.assert_allclose(smb.param_unc_num(), 1)
-    np.testing.assert_allclose(smb.param_num(0, 0), 1)
+    np.testing.assert_allclose(smb.param_num(include_tp = False, include_gq = False), 1)
     y = np.asarray([0, 1, 0, 0, 0, 0, 0, 0, 0, 1])
     R = 2
     for _ in range(R):
         x = np.random.uniform(size = smb.param_unc_num())
         q = np.log(x / (1 - x)) # unconstrained scale
-        logdensity, grad = smb.log_density_gradient(q, 1, 0)
+        logdensity, grad = smb.log_density_gradient(q, propto = True, jacobian = False)
         np.testing.assert_allclose(logdensity, _bernoulli(y, x))
-        constrained_theta = smb.param_constrain(q, 0, 0)
+        constrained_theta = smb.param_constrain(q, include_tp = False, include_gq = False)
         np.testing.assert_allclose(constrained_theta, x)
         np.testing.assert_allclose(smb.param_unconstrain(constrained_theta), q)
 
@@ -103,7 +103,7 @@ def test_gaussian():
     theta = np.array([0.2, 1.9])
     theta_unc = np.array([0.2, np.log(1.9)])
 
-    theta_test = model.param_constrain(theta_unc, 0, 0)
+    theta_test = model.param_constrain(theta_unc, include_tp = 0, include_gq = 0)
     np.testing.assert_allclose(theta, theta_test)
 
     theta_unc_test = model.param_unconstrain(theta)
@@ -131,12 +131,12 @@ def test_fr_gaussian():
 
     size = 16
     unc_size = 10
-    np.testing.assert_allclose(model.param_num(0, 0), size)
+    np.testing.assert_allclose(model.param_num(include_tp = True, include_gq = True), size)
     np.testing.assert_allclose(model.param_unc_num(), unc_size)
 
     D = 4
     a = np.random.normal(size=unc_size)
-    b = model.param_constrain(a, 0, 0);
+    b = model.param_constrain(a, include_tp = False, include_gq = False)
 
     B = b.reshape(D, D)
     B_expected = cov_constrain(a, D)
@@ -145,7 +145,7 @@ def test_fr_gaussian():
     c = model.param_unconstrain(b)
     np.testing.assert_allclose(a, c)
 
-    names = model.param_names(1, 1)
+    names = model.param_names(include_tp = True, include_gq = True)
     pos = 0
     for j in range(1,5):
         for i in range(1, 5):

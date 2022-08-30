@@ -8,6 +8,7 @@
 #include <exception>
 #include <cmath>
 #include <vector>
+#include <set>
 #include <string>
 #include <stdexcept>
 #include <fstream>
@@ -144,14 +145,14 @@ extern "C" {
   };
   model_rng* construct(char* data_file, unsigned int seed,
 		       unsigned int chain_id);
-  void destruct(model_rng* mr);
+  int destruct(model_rng* mr);
   const char* name(model_rng* mr);
   const char* param_names(model_rng* mr, bool include_tp, bool include_gq);
   const char* param_unc_names(model_rng* mr);
   int param_num2(model_rng* mr, bool include_tp, bool include_gq);
   int param_unc_num2(model_rng* mr);
-  void param_constrain2(model_rng* mr, bool include_tp, bool include_gq,
-			const double* theta_unc, double* theta);
+  int param_constrain2(model_rng* mr, bool include_tp, bool include_gq,
+		       const double* theta_unc, double* theta);
   void param_unconstrain2(model_rng* mr, const double* theta,
 			  double* theta_unc);
   void param_unconstrain_json(model_rng* mr, const char* json,
@@ -176,7 +177,7 @@ char* to_csv(const std::vector<std::string>& names) {
   return strdup(s_c);
 }
 
-model_rng* construct(char* data_file, unsigned int seed, unsigned int chain_id) {
+model_rng* construct_impl(char* data_file, unsigned int seed, unsigned int chain_id) {
   // enforce math lib thread locality for multi-threading
   static thread_local stan::math::ChainableStack dummy;
 
@@ -229,15 +230,38 @@ model_rng* construct(char* data_file, unsigned int seed, unsigned int chain_id) 
   return  mr;
 }
 
-
-void destruct(model_rng* mr) {
-  free(mr->model_);
-  free(mr->name_);
-  free(mr->param_unc_names_);
-  free(mr->param_names_);
-  free(mr->param_tp_names_);
-  free(mr->param_gq_names_);
-  free(mr->param_tp_gq_names_);
+model_rng* construct(char* data_file, unsigned int seed,
+		     unsigned int chain_id) {
+  try {
+    return construct_impl(data_file, seed, chain_id);
+  } catch (const std::exception& e) {
+    std::cerr << "construct(" << data_file
+	      << ", " << seed
+	      << ", " << chain_id << ")"
+	      << " failed with exception: " << e.what()
+	      << std::endl;
+  } catch (...) {
+    std::cerr << "construct(" << data_file
+	      << ", " << seed << ", " << chain_id << ")"
+	      << " failed with unknwon exception" << std::endl;
+  }
+  return nullptr;
+}
+  
+int destruct(model_rng* mr) {
+  try {
+    free(mr->model_);
+    free(mr->name_);
+    free(mr->param_unc_names_);
+    free(mr->param_names_);
+    free(mr->param_tp_names_);
+    free(mr->param_gq_names_);
+    free(mr->param_tp_gq_names_);
+    return 0;
+  } catch (...) {
+    std::cerr << "destruct() failed." << std::endl;
+  }
+  return -1;
 }
 
 const char* name(model_rng* mr) {
@@ -268,18 +292,33 @@ int param_unc_num2(model_rng* mr) {
   return mr->param_unc_num_;
 }
 
-void param_constrain2(model_rng* mr, bool include_tp, bool include_gq,
-                      const double* theta_unc, double* theta) {
+void param_constrain2_impl(model_rng* mr, bool include_tp, bool include_gq,
+			  const double* theta_unc, double* theta) {
   using Eigen::VectorXd;
   VectorXd params_unc = VectorXd::Map(theta_unc, param_unc_num2(mr));
   Eigen::VectorXd params;
   mr->model_->write_array(mr->rng_, params_unc, params,
-                          include_tp, include_gq, &std::cerr);
+			  include_tp, include_gq, &std::cerr);
   Eigen::VectorXd::Map(theta, params.size()) = params;
 }
 
-void param_unconstrain2(model_rng* mr, const double* theta,
-                        double* theta_unc) {
+int param_constrain2(model_rng* mr, bool include_tp, bool include_gq,
+                      const double* theta_unc, double* theta) {
+  try {
+    param_constrain2_impl(mr, include_tp, include_gq, theta_unc, theta);
+    return 0;
+  } catch (const std::exception& e) {
+    std::cerr << "param_constrain() exception: " << e.what() << std::endl;
+  } catch (...) {
+    std::cerr << "param_constrain() unknown exception" << std::endl;
+  }
+  return 1;
+}
+    
+
+
+void param_unconstrain2_impl(model_rng* mr, const double* theta,
+			     double* theta_unc) {
 
   using std::set;
   using std::string;
@@ -311,6 +350,11 @@ void param_unconstrain2(model_rng* mr, const double* theta,
   Eigen::VectorXd unc_params;
   mr->model_->transform_inits(avc, unc_params, &std::cout);
   Eigen::VectorXd::Map(theta_unc, unc_params.size()) = unc_params;
+}
+
+void param_unconstrain2(model_rng* mr, const double* theta,
+			double* theta_unc) {
+  param_unconstrain2_impl(mr, theta, theta_unc);
 }
 
 void param_unconstrain_json(model_rng* mr, const char* json,
