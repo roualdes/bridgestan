@@ -71,11 +71,11 @@ class Bridge:
         ]
 
         self._param_unconstrain = self.stanlib.param_unconstrain2
-        self._param_unconstrain.restype = ctypes.c_void_p
+        self._param_unconstrain.restype = int
         self._param_unconstrain.argtypes = [ctypes.c_void_p, double_array, double_array]
 
         self._param_unconstrain_json = self.stanlib.param_unconstrain_json
-        self._param_unconstrain_json.restype = ctypes.c_void_p
+        self._param_unconstrain_json.restype = int
         self._param_unconstrain_json.argtypes = [
             ctypes.c_void_p,
             ctypes.c_char_p,
@@ -156,7 +156,9 @@ class Bridge:
             raise ValueError(
                 f"out size = {out.size} != unconstrained params size = {dims}"
             )
-        self._param_unconstrain(self.model_rng, theta, out)
+        rc = self._param_unconstrain(self.model_rng, theta, out)
+        if rc:
+            raise ValueError("param_unconstrain failed on C++ side; see stderr for messages")
         return out
 
     def param_unconstrain_json(
@@ -170,7 +172,9 @@ class Bridge:
                 f"out size = {out.size} != unconstrained params size = {dims}"
             )
         chars = theta_json.encode("UTF-8")
-        self._param_unconstrain_json(self.model_rng, chars, out)
+        rc = self._param_unconstrain_json(self.model_rng, chars, out)
+        if rc:
+            raise ValueErorr("param_unconstrain_json failed on C++ side; see stderr for messages")
         return out
 
     def log_density(

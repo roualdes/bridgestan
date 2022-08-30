@@ -153,10 +153,10 @@ extern "C" {
   int param_unc_num2(model_rng* mr);
   int param_constrain2(model_rng* mr, bool include_tp, bool include_gq,
 		       const double* theta_unc, double* theta);
-  void param_unconstrain2(model_rng* mr, const double* theta,
-			  double* theta_unc);
-  void param_unconstrain_json(model_rng* mr, const char* json,
-			      double* theta_unc);
+  int param_unconstrain2(model_rng* mr, const double* theta,
+			 double* theta_unc);
+  int param_unconstrain_json(model_rng* mr, const char* json,
+			     double* theta_unc);
   double log_density(model_rng* mr, bool propto, bool jacobian,
 		     const double* theta);
   double log_density_gradient2(model_rng* mr, bool propto, bool jacobian,
@@ -352,13 +352,21 @@ void param_unconstrain2_impl(model_rng* mr, const double* theta,
   Eigen::VectorXd::Map(theta_unc, unc_params.size()) = unc_params;
 }
 
-void param_unconstrain2(model_rng* mr, const double* theta,
+int param_unconstrain2(model_rng* mr, const double* theta,
 			double* theta_unc) {
-  param_unconstrain2_impl(mr, theta, theta_unc);
+  try {
+    param_unconstrain2_impl(mr, theta, theta_unc);
+    return 0;
+  } catch (const std::exception& e) {
+    std::cerr << "param_unconstrain exception: " << e.what() << std::endl;
+  } catch (...) {
+    std::cerr << "param_unconstrain unknown exception" << std::endl;
+  }
+  return -1;
 }
 
-void param_unconstrain_json(model_rng* mr, const char* json,
-                            double* theta_unc) {
+void param_unconstrain_json_impl(model_rng* mr, const char* json,
+				 double* theta_unc) {
   std::stringstream in(json);
   cmdstan::json::json_data inits_context(in);
   Eigen::VectorXd params_unc;
@@ -366,6 +374,19 @@ void param_unconstrain_json(model_rng* mr, const char* json,
   Eigen::VectorXd::Map(theta_unc, params_unc.size()) = params_unc;
 }
 
+int param_unconstrain_json(model_rng* mr, const char* json,
+                            double* theta_unc) {
+  try {
+    param_unconstrain_json_impl(mr, json, theta_unc);
+    return 0;
+  } catch (const std::exception& e) {
+    std::cerr << "param_unconstrain_json exception: " << e.what() << std::endl;
+  } catch (...) {
+    std::cerr << "param_unconstrain_json unknown exception" << std::endl;
+  }
+  return -1;
+}  
+  
 double log_density(model_rng* mr, bool propto, bool jacobian,
                    const double* theta_unc) {
   auto logp
