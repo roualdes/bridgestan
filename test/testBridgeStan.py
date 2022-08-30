@@ -27,17 +27,17 @@ def test_out_behavior():
     assert grads[0] is not grads[1]
 
     grads = []
-    grad_out = np.zeros(shape = smb.param_unc_num())
+    out_grad = np.zeros(shape = smb.param_unc_num())
     for _ in range(2):
         x = np.random.uniform(size = smb.param_unc_num())
         q = np.log(x / (1 - x)) # unconstrained scale
-        _, grad = smb.log_density_gradient(q, propto = 1, jacobian = 0, grad=grad_out)
-        grads.append(grad)
+        _, grad = smb.log_density_gradient(q, propto = 1, jacobian = 0, out=out_grad)
+        grads.append(out_grad)
 
     # out parameter is modified and reference is returned
     assert grads[0] is grads[1]
-    assert grads[0] is grad_out
-    assert grads[1] is grad_out
+    assert grads[0] is out_grad
+    assert grads[1] is out_grad
     np.testing.assert_allclose(grads[0], grads[1])
 
 

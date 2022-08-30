@@ -1,6 +1,7 @@
 import ctypes
 import numpy as np
 import numpy.typing as npt
+import os
 
 from numpy.ctypeslib import ndpointer
 from typing import List, Optional, Tuple
@@ -10,11 +11,17 @@ double_array = ndpointer(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
 
 __all__ = ["Bridge"]
 
+def validate_readable(f: str) -> bool:
+    if not os.path.isfile(f) or not os.access(f, os.R_OK):
+        raise ValueError("could not open file f =", f)
+
 class Bridge:
     def __init__(
         self, model_lib: str, model_data: str, *, seed: int = 1234, chain_id: int = 0
     ) -> None:
         """Construct Stan model interface and PRNG."""
+        validate_readable(model_lib)
+        validate_readable(model_data)
         self.stanlib = ctypes.CDLL(model_lib)
         self.seed = seed
         self.chain_id = chain_id
@@ -28,6 +35,10 @@ class Bridge:
         )
         if not self.model_rng:
             raise ValueError("could not construct model RNG")
+
+        self._name = self.stanlib.name
+        self._name.restype = str
+        self._name.argtypes = []
 
         self._param_num = self.stanlib.param_num2
         self._param_num.restype = ctypes.c_int
@@ -100,6 +111,9 @@ class Bridge:
         """Destroy Stan model and free memory"""
         self._destruct(self.model_rng)
 
+    def name(self) -> str:
+        return self._name()
+
     def param_num(self, *, include_tp: bool = False, include_gq: bool = False) -> int:
         return self._param_num(self.model_rng, int(include_tp), int(include_gq))
 
@@ -118,47 +132,46 @@ class Bridge:
         *,
         include_tp: bool,
         include_gq: bool,
-        theta: Optional[FloatArray] = None,
+        out: Optional[FloatArray] = None,
     ) -> FloatArray:
         dims = self.param_num(include_tp = include_tp, include_gq = include_gq)
-        if theta is None:
-            theta = np.zeros(dims)
-        elif theta.size != dims:
+        if out is None:
+            out = np.zeros(dims)
+        elif out.size != dims:
             raise ValueError(
-                "Out parameter must be same size as the number of "
-                f"constrained params: {dims}"
-            )
-        rc = self._param_constrain(self.model_rng, int(include_tp), int(include_gq), theta_unc, theta)
+                "Error: out must be same size as number of constrained parameters"
+                )
+        rc = self._param_constrain(self.model_rng, int(include_tp), int(include_gq), theta_unc, out)
         if rc:
             raise ValueError("param_constrain failed on C++ side; see stderr for messages")
-        return theta
+        return out
 
     def param_unconstrain(
-        self, theta: FloatArray, theta_unc: Optional[FloatArray] = None
+        self, theta: FloatArray, *, out: Optional[FloatArray] = None
     ) -> FloatArray:
         dims = self.param_unc_num()
-        if theta_unc is None:
-            theta_unc = np.zeros(shape=dims)
-        elif theta_unc.size != dims:
+        if out is None:
+            out = np.zeros(shape=dims)
+        elif out.size != dims:
             raise ValueError(
-                f"theta_unc size = {theta_unc.size} != dims size = {dims}"
+                f"out size = {out.size} != unconstrained params size = {dims}"
             )
-        self._param_unconstrain(self.model_rng, theta, theta_unc)
-        return theta_unc
+        self._param_unconstrain(self.model_rng, theta, out)
+        return out
 
     def param_unconstrain_json(
-        self, theta_json: str, theta_unc: Optional[FloatArray] = None
+        self, theta_json: str, *, out: Optional[FloatArray] = None
     ) -> FloatArray:
         dims = self.param_unc_num()
-        if theta_unc is None:
-            theta_unc = np.zeros(shape=dims)
+        if out is None:
+            out = np.zeros(shape=dims)
         elif theta_unc.size != dims:
             raise ValueError(
-                f"theta_unc size = {theta_unc.size} != dims size = {dims}"
+                f"out size = {out.size} != unconstrained params size = {dims}"
             )
         chars = theta_json.encode("UTF-8")
-        self._param_unconstrain_json(self.model_rng, chars, theta_unc)
-        return theta_unc
+        self._param_unconstrain_json(self.model_rng, chars, out)
+        return out
 
     def log_density(
         self, theta_unc: FloatArray, *, propto: bool = True, jacobian: bool = True,
@@ -173,17 +186,17 @@ class Bridge:
         *,
         propto: bool = True,
         jacobian: bool = True,
-        grad: Optional[FloatArray] = None,
+        out: Optional[FloatArray] = None,
     ) -> Tuple[float, FloatArray]:
         dims = self.param_unc_num()
-        if grad is None:
-            grad = np.zeros(shape=dims)
-        elif grad.size != dims:
-            raise ValueError(f"grad size = {grad.size} != dims size = {dims}")
+        if out is None:
+            out = np.zeros(shape=dims)
+        elif out.size != dims:
+            raise ValueError(f"out size = {out.size} != params size = {dims}")
         logp = self._log_density_gradient(
-            self.model_rng, int(propto), int(jacobian), theta_unc, grad
+            self.model_rng, int(propto), int(jacobian), theta_unc, out
         )
-        return logp, grad
+        return logp, out
 
     def log_density_hessian(
         self,
@@ -191,21 +204,21 @@ class Bridge:
         *,
         propto: bool = True,
         jacobian: bool = True,
-        grad: Optional[FloatArray] = None,
-        hess: Optional[FloatArray] = None,
+        out_grad: Optional[FloatArray] = None,
+        out_hess: Optional[FloatArray] = None,
     ) -> Tuple[float, FloatArray, FloatArray]:
         dims = self.param_unc_num()
-        if grad is None:
-            grad = np.zeros(shape=dims)
-        elif grad.size != dims:
-            raise ValueError(f"grad size = {grad.size} != dims size = dims")
+        if out_grad is None:
+            out_grad = np.zeros(shape=dims)
+        elif out_grad.size != dims:
+            raise ValueError(f"out_grad size = {out_grad.size} != params size = {dims}")
         hess_size = dims * dims
-        if hess is None:
-            hess = np.zeros(shape=hess_size)
-        elif hess.size != hess_size:
-            raise ValueError(f"hess size = {hess.size} != dims size^2 = {hess_size}")
+        if out_hess is None:
+            out_hess = np.zeros(shape=hess_size)
+        elif out_hess.size != hess_size:
+            raise ValueError(f"out_hess size = {out_hess.size} != params size^2 = {hess_size}")
         logp = self._log_density_hessian(
-            self.model_rng, int(propto), int(jacobian), theta_unc, grad, hess
+            self.model_rng, int(propto), int(jacobian), theta_unc, out_grad, out_hess
         )
-        hess = hess.reshape(dims, dims)
-        return logp, grad, hess
+        out_hess = out_hess.reshape(dims, dims)
+        return logp, out_grad, out_hess
