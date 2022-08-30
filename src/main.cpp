@@ -157,13 +157,13 @@ extern "C" {
 			 double* theta_unc);
   int param_unconstrain_json(model_rng* mr, const char* json,
 			     double* theta_unc);
-  double log_density(model_rng* mr, bool propto, bool jacobian,
-		     const double* theta);
-  double log_density_gradient2(model_rng* mr, bool propto, bool jacobian,
-			       const double* theta, double* grad);
-  double log_density_hessian(model_rng* mr, bool propto, bool jacobian,
-			     const double* theta, double* grad,
-			     double* hessian);
+  int log_density(model_rng* mr, bool propto, bool jacobian,
+		  const double* theta, double* lp);
+  int log_density_gradient2(model_rng* mr, bool propto, bool jacobian,
+			    const double* theta, double* val, double* grad);
+  int log_density_hessian(model_rng* mr, bool propto, bool jacobian,
+			  const double* theta, double* val, double* grad,
+			  double* hessian);
 }
 
 char* to_csv(const std::vector<std::string>& names) {
@@ -387,8 +387,8 @@ int param_unconstrain_json(model_rng* mr, const char* json,
   return -1;
 }  
   
-double log_density(model_rng* mr, bool propto, bool jacobian,
-                   const double* theta_unc) {
+void log_density_impl(model_rng* mr, bool propto, bool jacobian,
+		      const double* theta_unc, double* val) {
   auto logp
       = create_model_functor(mr->model_, propto, jacobian,
                              std::cerr);
@@ -399,14 +399,26 @@ double log_density(model_rng* mr, bool propto, bool jacobian,
     double lp;
     Eigen::VectorXd grad_vec(N);
     stan::math::gradient(logp, params_unc, lp, grad_vec);
-    return lp;
+    *val = lp;
   }
-
-  return logp(params_unc.eval());
+  *val = logp(params_unc.eval());
 }
 
-double log_density_gradient2(model_rng* mr, bool propto, bool jacobian,
-                             const double* theta_unc, double* grad) {
+int log_density(model_rng* mr, bool propto, bool jacobian,
+		const double* theta_unc, double* val) {
+  try {
+    log_density_impl(mr, propto, jacobian, theta_unc, val);
+    return 0;
+  } catch (const std::exception& e) {
+    std::cerr << "log_density() exception: " << e.what() << std::endl;
+  } catch (...) {
+    std::cerr << "log_density() unknown exception" << std::endl;
+  }
+  return -1;
+}
+
+double log_density_gradient_impl(model_rng* mr, bool propto, bool jacobian,
+				 const double* theta_unc, double* grad) {
   auto logp
       = create_model_functor(mr->model_, propto, jacobian,
                              std::cerr);
@@ -419,9 +431,25 @@ double log_density_gradient2(model_rng* mr, bool propto, bool jacobian,
   return lp;
 }
 
-double log_density_hessian(model_rng* mr, bool propto, bool jacobian,
-                           const double* theta_unc, double* grad,
-                           double* hessian) {
+
+int log_density_gradient2(model_rng* mr, bool propto, bool jacobian,
+			  const double* theta_unc, double* val, double* grad) {
+  try {
+    *val = log_density_gradient_impl(mr, propto, jacobian, theta_unc, grad);
+    return 0;
+  } catch (const std::exception& e) {
+    std::cerr << "exception in C++ log_density_gradient(): " << e.what()
+	      << std::endl;
+  } catch (...) {
+    std::cerr << "unknown exception in C++ log_density_gradient()"
+	      << std::endl;
+  }
+  return -1;
+}
+
+double log_density_hessian_impl(model_rng* mr, bool propto, bool jacobian,
+				const double* theta_unc, double* grad,
+				double* hessian) {
   auto logp
       = create_model_functor(mr->model_, propto, jacobian,
                              std::cerr);
@@ -435,6 +463,22 @@ double log_density_hessian(model_rng* mr, bool propto, bool jacobian,
   Eigen::VectorXd::Map(grad, N) = grad_vec;
   Eigen::MatrixXd::Map(hessian, N, N) = hess_mat;
   return lp;
+}
+
+int log_density_hessian(model_rng* mr, bool propto, bool jacobian,
+			const double* theta_unc, double* val, double* grad,
+			double* hessian) {
+  try {
+    *val = log_density_hessian_impl(mr, propto, jacobian, theta_unc, grad,
+				    hessian);
+    return 0;
+  } catch (const std::exception & e) {
+    std::cerr << "exception in C++ log_density_hessian(): " << e.what()
+	      << std::endl;
+  } catch (...) {
+    std::cerr << "unknown exception in C++ log_density_hessian()" << std::endl;
+  }
+  return -1;
 }
 
 

@@ -82,23 +82,35 @@ class Bridge:
             double_array,
         ]
 
+        self._log_density = self.stanlib.log_density
+        self._log_density.restype = ctypes.c_int
+        self._log_density.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_int,
+            ctypes.c_int,
+            double_array,
+            ctypes.POINTER(ctypes.c_double)
+        ]
+
         self._log_density_gradient = self.stanlib.log_density_gradient2
-        self._log_density_gradient.restype = ctypes.c_double
+        self._log_density_gradient.restype = ctypes.c_int
         self._log_density_gradient.argtypes = [
             ctypes.c_void_p,
             ctypes.c_int,
             ctypes.c_int,
             double_array,
+            ctypes.POINTER(ctypes.c_double),
             double_array,
         ]
 
         self._log_density_hessian = self.stanlib.log_density_hessian
-        self._log_density_hessian.restype = ctypes.c_double
+        self._log_density_hessian.restype = int
         self._log_density_hessian.argtypes = [
             ctypes.c_void_p,
             ctypes.c_int,
             ctypes.c_int,
             double_array,
+            ctypes.POINTER(ctypes.c_double),
             double_array,
             double_array,
         ]
@@ -167,7 +179,7 @@ class Bridge:
         dims = self.param_unc_num()
         if out is None:
             out = np.zeros(shape=dims)
-        elif theta_unc.size != dims:
+        elif out.size != dims:
             raise ValueError(
                 f"out size = {out.size} != unconstrained params size = {dims}"
             )
@@ -180,10 +192,12 @@ class Bridge:
     def log_density(
         self, theta_unc: FloatArray, *, propto: bool = True, jacobian: bool = True,
     ) -> float:
-        return self._log_density(
-            self.model_rng, int(propto), int(jacobian), theta_unc
-        )
-
+        lp = ctypes.pointer(ctypes.c_double())
+        rc = self._log_density(self.model_rng, int(propto), int(jacobian), theta_unc, lp)
+        if rc:
+            raise ValueError("C++ exception in log_density(); see stderr for messages")
+        return lp.contents.value
+        
     def log_density_gradient(
         self,
         theta_unc: FloatArray,
@@ -197,10 +211,13 @@ class Bridge:
             out = np.zeros(shape=dims)
         elif out.size != dims:
             raise ValueError(f"out size = {out.size} != params size = {dims}")
-        logp = self._log_density_gradient(
-            self.model_rng, int(propto), int(jacobian), theta_unc, out
+        lp = ctypes.pointer(ctypes.c_double())
+        rc = self._log_density_gradient(
+            self.model_rng, int(propto), int(jacobian), theta_unc, lp, out
         )
-        return logp, out
+        if rc:
+            raise ValueError("C++ exception in log_density_gradient(); see stderr for messages")
+        return lp.contents.value, out
 
     def log_density_hessian(
         self,
@@ -221,8 +238,11 @@ class Bridge:
             out_hess = np.zeros(shape=hess_size)
         elif out_hess.size != hess_size:
             raise ValueError(f"out_hess size = {out_hess.size} != params size^2 = {hess_size}")
-        logp = self._log_density_hessian(
-            self.model_rng, int(propto), int(jacobian), theta_unc, out_grad, out_hess
+        lp = ctypes.pointer(ctypes.c_double())
+        rc = self._log_density_hessian(
+            self.model_rng, int(propto), int(jacobian), theta_unc, lp, out_grad, out_hess
         )
+        if rc:
+            raise ValueError("C++ exception in log_density_hessian(); see stderr for messages")
         out_hess = out_hess.reshape(dims, dims)
-        return logp, out_grad, out_hess
+        return lp.contents.value, out_grad, out_hess
