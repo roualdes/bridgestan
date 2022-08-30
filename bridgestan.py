@@ -13,7 +13,7 @@ __all__ = ["Bridge"]
 
 def validate_readable(f: str) -> bool:
     if not os.path.isfile(f) or not os.access(f, os.R_OK):
-        raise ValueError("could not open file f =", f)
+        raise OSError("could not open file f =", f)
 
 class Bridge:
     def __init__(
@@ -34,7 +34,7 @@ class Bridge:
             str.encode(model_data), self.seed, self.chain_id
         )
         if not self.model_rng:
-            raise ValueError("could not construct model RNG")
+            raise RuntimeError("could not construct model RNG")
 
         self._name = self.stanlib.name
         self._name.restype = str
@@ -155,7 +155,7 @@ class Bridge:
                 )
         rc = self._param_constrain(self.model_rng, int(include_tp), int(include_gq), theta_unc, out)
         if rc:
-            raise ValueError("param_constrain failed on C++ side; see stderr for messages")
+            raise RuntimeError("param_constrain failed on C++ side; see stderr for messages")
         return out
 
     def param_unconstrain(
@@ -170,7 +170,7 @@ class Bridge:
             )
         rc = self._param_unconstrain(self.model_rng, theta, out)
         if rc:
-            raise ValueError("param_unconstrain failed on C++ side; see stderr for messages")
+            raise RuntimeError("param_unconstrain failed on C++ side; see stderr for messages")
         return out
 
     def param_unconstrain_json(
@@ -186,7 +186,7 @@ class Bridge:
         chars = theta_json.encode("UTF-8")
         rc = self._param_unconstrain_json(self.model_rng, chars, out)
         if rc:
-            raise ValueErorr("param_unconstrain_json failed on C++ side; see stderr for messages")
+            raise RutimeError("param_unconstrain_json failed on C++ side; see stderr for messages")
         return out
 
     def log_density(
@@ -195,7 +195,7 @@ class Bridge:
         lp = ctypes.pointer(ctypes.c_double())
         rc = self._log_density(self.model_rng, int(propto), int(jacobian), theta_unc, lp)
         if rc:
-            raise ValueError("C++ exception in log_density(); see stderr for messages")
+            raise RuntimeError("C++ exception in log_density(); see stderr for messages")
         return lp.contents.value
         
     def log_density_gradient(
@@ -216,7 +216,7 @@ class Bridge:
             self.model_rng, int(propto), int(jacobian), theta_unc, lp, out
         )
         if rc:
-            raise ValueError("C++ exception in log_density_gradient(); see stderr for messages")
+            raise RuntimeError("C++ exception in log_density_gradient(); see stderr for messages")
         return lp.contents.value, out
 
     def log_density_hessian(
@@ -243,6 +243,6 @@ class Bridge:
             self.model_rng, int(propto), int(jacobian), theta_unc, lp, out_grad, out_hess
         )
         if rc:
-            raise ValueError("C++ exception in log_density_hessian(); see stderr for messages")
+            raise RuntimeError("C++ exception in log_density_hessian(); see stderr for messages")
         out_hess = out_hess.reshape(dims, dims)
         return lp.contents.value, out_grad, out_hess
