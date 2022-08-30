@@ -145,6 +145,19 @@ def test_fr_gaussian():
     c = model.param_unconstrain(b)
     np.testing.assert_allclose(a, c)
 
+    names = model.param_names(1, 1)
+    pos = 0
+    for j in range(1,5):
+        for i in range(1, 5):
+           np.testing.assert_string_equal(names[pos], f"Omega.{i}.{j}")
+           pos += 1
+
+    names_unc = model.param_unc_names()
+    pos = 0
+    for n in range(1, 11):
+        np.testing.assert_string_equal(names_unc[pos], f"Omega.{n}")
+        pos += 1
+
 def test_simple():
     lib = "../stan/simple/simple_model.so"
     data = "../stan/simple/simple.data.json"

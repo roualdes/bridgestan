@@ -3,7 +3,7 @@ import numpy as np
 import numpy.typing as npt
 
 from numpy.ctypeslib import ndpointer
-from typing import Tuple, Optional
+from typing import List, Optional, Tuple
 
 float_array = npt.NDArray[np.float64]
 double_array = ndpointer(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
@@ -31,6 +31,22 @@ class Bridge:
         self._param_num.restype = ctypes.c_int
         self._param_num.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_int]
 
+        self._param_unc_num = self.stanlib.param_unc_num2
+        self._param_unc_num.restype = ctypes.c_int
+        self._param_unc_num.argtypes = [ctypes.c_void_p]
+
+        self._param_names = self.stanlib.param_names
+        self._param_names.restype = ctypes.c_char_p
+        self._param_names.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_int,
+            ctypes.c_int,
+        ]
+
+        self._param_unc_names = self.stanlib.param_unc_names
+        self._param_unc_names.restype = ctypes.c_char_p
+        self._param_unc_names.argtypes = [ctypes.c_void_p]
+
         self._param_constrain = self.stanlib.param_constrain2
         self._param_constrain.restype = ctypes.c_void_p
         self._param_constrain.argtypes = [
@@ -40,10 +56,6 @@ class Bridge:
             double_array,
             double_array,
         ]
-
-        self._param_unc_num = self.stanlib.param_unc_num2
-        self._param_unc_num.restype = ctypes.c_int
-        self._param_unc_num.argtypes = [ctypes.c_void_p]
 
         self._param_unconstrain = self.stanlib.param_unconstrain2
         self._param_unconstrain.restype = ctypes.c_void_p
@@ -91,6 +103,12 @@ class Bridge:
 
     def param_unc_num(self) -> int:
         return self._param_unc_num(self.model_rng)
+
+    def param_names(self, include_tp: int = 0, include_gq: int = 0) -> List[str]:
+        return self._param_names(self.model_rng, include_tp, include_gq).decode('utf-8').split(',')
+
+    def param_unc_names(self) -> List[str]:
+        return self._param_unc_names(self.model_rng).decode('utf-8').split(',')
 
     def param_constrain(
         self,
