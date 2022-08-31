@@ -64,7 +64,8 @@ class Bridge:
             model from C++.
         """
         validate_readable(model_lib)
-        validate_readable(model_data)
+        if not model_data is None:
+            validate_readable(model_data)
         self.stanlib = ctypes.CDLL(model_lib)
         self.seed = seed
         self.chain_id = chain_id
@@ -168,7 +169,8 @@ class Bridge:
         """
         Destroy the Stan model and free memory.
         """
-        self._destruct(self.model_rng)
+        if hasattr(self, "model_rng"):
+            self._destruct(self.model_rng)
 
     def name(self) -> str:
         """
@@ -207,8 +209,8 @@ class Bridge:
         For example, the scalar `a` has
         indexed name `a`, the vector entry `a[1]` has indexed name `a.1`
         and the matrix entry `a[2, 3]` has indexed name `a.2.3`.
-        Parameter order of the output is column major for matrices and
-        row major for arrays.
+        Parameter order of the output is column major and more
+        generally last-index major for containers.
 
         :param include_tp: `True` to include transformed parameters.
         :param include_gq: `True` to include generated quantities.
@@ -234,8 +236,8 @@ class Bridge:
         self,
         theta_unc: FloatArray,
         *,
-        include_tp: bool,
-        include_gq: bool,
+        include_tp: bool = False,
+        include_gq: bool = False,
         out: Optional[FloatArray] = None,
     ) -> FloatArray:
         """

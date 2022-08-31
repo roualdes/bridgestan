@@ -7,14 +7,141 @@ sys.path.append(os.getcwd() + '/..')
 
 import bridgestan as bs
 
-# Bernoulli
-# CMDSTAN=/path/to/cmdstan/ make stan/bernoulli/bernoulli_model.so
+def test_constructor():
+    std_so = "../stan/stdnormal/stdnormal_model.so"
+
+    # implicit destructor tests in success and fail cases
+
+    # test empty data
+    b1 = bs.Bridge(std_so)
+    np.testing.assert_allclose(bool(b1), True)
+
+    # test load data
+    bernoulli_so = "../stan/bernoulli/bernoulli_model.so"
+    bernoulli_data = "../stan/bernoulli/bernoulli.data.json"
+    b2 = bs.Bridge(bernoulli_so, bernoulli_data)
+    np.testing.assert_allclose(bool(b2), True)
+
+    # test missing so file
+    with np.testing.assert_raises(FileNotFoundError):
+        b3 = bs.Bridge("nope, not going to find it")
+
+    # test missing data file
+    with np.testing.assert_raises(FileNotFoundError):
+        b3 = bs.Bridge(bernoulli_so, "nope, not going to find it")
+
+def test_name():
+    std_so = "../stan/stdnormal/stdnormal_model.so"
+    b = bs.Bridge(std_so)
+    np.testing.assert_equal("stdnormal_model", b.name())
+
+def test_param_num():
+    full_so = "../stan/full/full_model.so"
+    b = bs.Bridge(full_so)
+    np.testing.assert_equal(1, b.param_num())
+    np.testing.assert_equal(1, b.param_num(include_tp = False))
+    np.testing.assert_equal(1, b.param_num(include_gq = False))
+    np.testing.assert_equal(1, b.param_num(include_tp = False, include_gq = False))
+    np.testing.assert_equal(3, b.param_num(include_gq = True))
+    np.testing.assert_equal(3, b.param_num(include_tp = False, include_gq = True))
+    np.testing.assert_equal(2, b.param_num(include_tp = True))
+    np.testing.assert_equal(2, b.param_num(include_tp = True, include_gq = False))
+    np.testing.assert_equal(4, b.param_num(include_tp = True, include_gq = True));
+
+def test_param_unc_num():
+    simplex_so = "../stan/simplex/simplex_model.so"
+    b = bs.Bridge(simplex_so)
+    np.testing.assert_equal(5, b.param_num())
+    np.testing.assert_equal(4, b.param_unc_num())
+
+def test_param_names():
+    matrix_so = "../stan/matrix/matrix_model.so"
+    b = bs.Bridge(matrix_so)
+    np.testing.assert_array_equal(['A.1.1', 'A.2.1', 'A.3.1', 'A.1.2', 'A.2.2', 'A.3.2'], b.param_names())
+    np.testing.assert_array_equal(['A.1.1', 'A.2.1', 'A.3.1', 'A.1.2', 'A.2.2', 'A.3.2'], b.param_names(include_tp = False))
+    np.testing.assert_array_equal(['A.1.1', 'A.2.1', 'A.3.1', 'A.1.2', 'A.2.2', 'A.3.2'], b.param_names(include_gq = False))
+    np.testing.assert_array_equal(['A.1.1', 'A.2.1', 'A.3.1', 'A.1.2', 'A.2.2', 'A.3.2'], b.param_names(include_tp = False, include_gq = False))
+    np.testing.assert_array_equal(['A.1.1', 'A.2.1', 'A.3.1', 'A.1.2', 'A.2.2', 'A.3.2', 'B.1.1', 'B.2.1', 'B.3.1', 'B.1.2', 'B.2.2', 'B.3.2'],
+                            b.param_names(include_tp=True))
+    np.testing.assert_array_equal(['A.1.1', 'A.2.1', 'A.3.1', 'A.1.2', 'A.2.2', 'A.3.2', 'B.1.1', 'B.2.1', 'B.3.1', 'B.1.2', 'B.2.2', 'B.3.2'],
+                            b.param_names(include_tp=True, include_gq = False))
+    np.testing.assert_array_equal(['A.1.1', 'A.2.1', 'A.3.1', 'A.1.2', 'A.2.2', 'A.3.2', 'c'],
+                                      b.param_names(include_gq=True))
+    np.testing.assert_array_equal(['A.1.1', 'A.2.1', 'A.3.1', 'A.1.2', 'A.2.2', 'A.3.2', 'c'],
+                                      b.param_names(include_tp=False, include_gq=True))
+    np.testing.assert_array_equal(['A.1.1', 'A.2.1', 'A.3.1', 'A.1.2', 'A.2.2', 'A.3.2', 'B.1.1', 'B.2.1', 'B.3.1', 'B.1.2', 'B.2.2', 'B.3.2', 'c'],
+                            b.param_names(include_tp=True, include_gq=True))
+
+def test_param_unc_names():
+    matrix_so = "../stan/matrix/matrix_model.so"
+    b1 = bs.Bridge(matrix_so)
+    np.testing.assert_array_equal(['A.1.1', 'A.2.1', 'A.3.1', 'A.1.2', 'A.2.2', 'A.3.2'], b1.param_unc_names())
+
+    simplex_so = "../stan/simplex/simplex_model.so"
+    b2 = bs.Bridge(simplex_so)
+    np.testing.assert_array_equal(['theta.1', 'theta.2', 'theta.3', 'theta.4'], b2.param_unc_names())
+
+def cov_constrain(v, D):
+    L = np.zeros([D, D])
+    idxL = np.tril_indices(D)
+    L[idxL] = v
+    idxD = np.diag_indices(D)
+    L[idxD] = np.exp(L[idxD])
+    return np.matmul(L, L.T)
+
+def test_param_constrain():
+    fr_gaussian_so = "../stan/fr_gaussian/fr_gaussian_model.so"
+    fr_gaussian_data = "../stan/fr_gaussian/fr_gaussian.data.json"
+    bridge = bs.Bridge(fr_gaussian_so, fr_gaussian_data)
+
+    D = 4
+    size = 16
+    unc_size = 10
+    a = np.random.normal(size=unc_size)
+    B_expected = cov_constrain(a, D)
+
+    b = bridge.param_constrain(a, include_tp = False, include_gq = False)
+    B = b.reshape(D, D)
+    np.testing.assert_allclose(B_expected, B)
+
+    b = bridge.param_constrain(a, include_gq = False)
+    B = b.reshape(D, D)
+    np.testing.assert_allclose(B_expected, B)
+
+    b = bridge.param_constrain(a, include_tp = False)
+    B = b.reshape(D, D)
+    np.testing.assert_allclose(B_expected, B)
+
+    b = bridge.param_constrain(a)
+    B = b.reshape(D, D)
+    np.testing.assert_allclose(B_expected, B)
+
+    full_so = "../stan/full/full_model.so"
+    bridge2 = bs.Bridge(full_so)
+
+    b2 = bridge.param_constrain(a)
+    np.testing.assert_equal(1, bridge2.param_constrain(a).size)
+    np.testing.assert_equal(2, bridge2.param_constrain(a, include_tp = True).size)
+    np.testing.assert_equal(3, bridge2.param_constrain(a, include_gq = True).size)
+    np.testing.assert_equal(4, bridge2.param_constrain(a, include_tp = True, include_gq = True).size)
+
+
+def test_param_unconstrain():
+    fr_gaussian_so = "../stan/fr_gaussian/fr_gaussian_model.so"
+    fr_gaussian_data = "../stan/fr_gaussian/fr_gaussian.data.json"
+    bridge = bs.Bridge(fr_gaussian_so, fr_gaussian_data)
+
+    unc_size = 10
+    a = np.random.normal(size=unc_size)
+    b = bridge.param_constrain(a)
+    c = model.param_unconstrain(b)
+    np.testing.assert_allclose(a, c)
 
 def test_out_behavior():
-    bernoulli_lib = "../stan/bernoulli/bernoulli_model.so"
+    bernoulli_so = "../stan/bernoulli/bernoulli_model.so"
     bernoulli_data = "../stan/bernoulli/bernoulli.data.json"
 
-    smb = bs.Bridge(bernoulli_lib, bernoulli_data)
+    smb = bs.Bridge(bernoulli_so, bernoulli_data)
 
     grads = []
     for _ in range(2):
@@ -40,17 +167,12 @@ def test_out_behavior():
     assert grads[1] is out_grad
     np.testing.assert_allclose(grads[0], grads[1])
 
-
-
-# Bernoulli
-# CMDSTAN=/path/to/cmdstan/ make stan/bernoulli/bernoulli_model.so
-
 def test_bernoulli():
     def _bernoulli(y, p):
         return np.sum(y * np.log(p) + (1 - y) * np.log(1 - p))
-    bernoulli_lib = "../stan/bernoulli/bernoulli_model.so"
+    bernoulli_so = "../stan/bernoulli/bernoulli_model.so"
     bernoulli_data = "../stan/bernoulli/bernoulli.data.json"
-    smb = bs.Bridge(bernoulli_lib, bernoulli_data)
+    smb = bs.Bridge(bernoulli_so, bernoulli_data)
     np.testing.assert_string_equal(smb.name(), "bernoulli_model")
     np.testing.assert_allclose(smb.param_unc_num(), 1)
     np.testing.assert_allclose(smb.param_num(include_tp = False, include_gq = False), 1)
@@ -65,22 +187,17 @@ def test_bernoulli():
         np.testing.assert_allclose(constrained_theta, x)
         np.testing.assert_allclose(smb.param_unconstrain(constrained_theta), q)
 
-
-# Multivariate Gaussian
-# CMDSTAN=/path/to/cmdstan/ make stan/multi/multi_model.so
-
 def test_multi():
-
     def _multi(x):
         return -0.5 * np.dot(x, x)
 
     def _grad_multi(x):
         return -x
 
-    multi_lib = "../stan/multi/multi_model.so"
+    multi_so = "../stan/multi/multi_model.so"
     multi_data = "../stan/multi/multi.data.json"
 
-    smm = bs.Bridge(multi_lib, multi_data)
+    smm = bs.Bridge(multi_so, multi_data)
     R = 1000
 
     for _ in range(R):
@@ -89,9 +206,6 @@ def test_multi():
 
         np.testing.assert_allclose(logdensity, _multi(x))
         np.testing.assert_allclose(grad, _grad_multi(x))
-
-# Guassian with positive constrained standard deviation
-# CMDSTAN=/path/to/cmdstan/ make stan/gaussian/gaussian_model.so
 
 def test_gaussian():
 
@@ -112,9 +226,6 @@ def test_gaussian():
     theta_json = "{\"mu\": 0.2, \"sigma\": 1.9}"
     theta_unc_j_test = model.param_unconstrain_json(theta_json)
     np.testing.assert_allclose(theta_unc, theta_unc_j_test)
-
-# Full rank Gaussian
-# CMDSTAN=/path/to/cmdstan/ make stan/fr_gaussian/fr_gaussian_model.so
 
 def test_fr_gaussian():
     def cov_constrain(v, D):
@@ -173,17 +284,34 @@ if __name__ == "__main__":
     print("")
     print("TESTING BrigeStan Python API")
     print("------------------------------------------------------------")
-    print("running test: out behavior")
+    print("test: constructor")
+    test_constructor()
+    print("test: name")
+    test_name()
+    print("test: param_num")
+    test_param_num()
+    print("test: param_unc_num")
+    test_param_unc_num()
+    print("test: param_names")
+    test_param_names()
+    print("test: param_unc_names")
+    test_param_unc_names()
+    print("test: param_constrain")
+    test_param_constrain()
+    print("test: param_unconstrain")
+    test_param_constrain()
+
+    print("test: out behavior")
     test_out_behavior()
-    print("running test: bernoulli")
+    print("test: bernoulli")
     test_bernoulli()
-    print("running test: multi")
+    print("test: multi")
     test_multi()
-    print("running test: gaussian")
+    print("test: gaussian")
     test_gaussian()
-    print("running test: fr_gaussian")
+    print("test: fr_gaussian")
     test_fr_gaussian()
-    print("running test: simple")
+    print("test: simple")
     test_simple()
     print("------------------------------------------------------------")
     print("If no errors were reported, all tests passed.")
