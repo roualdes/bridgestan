@@ -176,7 +176,7 @@ class Bridge:
 
         :return: The name of Stan model.
         """
-        return self._name(self.model_rng).decode('utf-8')
+        return self._name(self.model_rng).decode("utf-8")
 
     def param_num(self, *, include_tp: bool = False, include_gq: bool = False) -> int:
         """
