@@ -106,7 +106,7 @@ class Bridge:
         self._param_unc_names.argtypes = [ctypes.c_void_p]
 
         self._param_constrain = self.stanlib.param_constrain2
-        self._param_constrain.restype = int
+        self._param_constrain.restype = ctypes.c_int
         self._param_constrain.argtypes = [
             ctypes.c_void_p,
             ctypes.c_int,
@@ -116,11 +116,11 @@ class Bridge:
         ]
 
         self._param_unconstrain = self.stanlib.param_unconstrain2
-        self._param_unconstrain.restype = int
+        self._param_unconstrain.restype = ctypes.c_int
         self._param_unconstrain.argtypes = [ctypes.c_void_p, double_array, double_array]
 
         self._param_unconstrain_json = self.stanlib.param_unconstrain_json
-        self._param_unconstrain_json.restype = int
+        self._param_unconstrain_json.restype = ctypes.c_int
         self._param_unconstrain_json.argtypes = [
             ctypes.c_void_p,
             ctypes.c_char_p,
@@ -149,7 +149,7 @@ class Bridge:
         ]
 
         self._log_density_hessian = self.stanlib.log_density_hessian
-        self._log_density_hessian.restype = int
+        self._log_density_hessian.restype = ctypes.c_int
         self._log_density_hessian.argtypes = [
             ctypes.c_void_p,
             ctypes.c_int,
@@ -161,7 +161,7 @@ class Bridge:
         ]
 
         self._destruct = self.stanlib.destruct
-        self._destruct.restype = int
+        self._destruct.restype = ctypes.c_int
         self._destruct.argtypes = [ctypes.c_void_p]
 
     def __del__(self) -> None:
@@ -332,7 +332,7 @@ class Bridge:
         chars = theta_json.encode("UTF-8")
         rc = self._param_unconstrain_json(self.model_rng, chars, out)
         if rc:
-            raise RutimeError(
+            raise RuntimeError(
                 "param_unconstrain_json failed on C++ side; see stderr for messages"
             )
         return out
