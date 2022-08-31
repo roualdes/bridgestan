@@ -186,7 +186,7 @@ class Bridge:
         chars = theta_json.encode("UTF-8")
         rc = self._param_unconstrain_json(self.model_rng, chars, out)
         if rc:
-            raise RutimeError("param_unconstrain_json failed on C++ side; see stderr for messages")
+            raise RuntimeError("param_unconstrain_json failed on C++ side; see stderr for messages")
         return out
 
     def log_density(
@@ -197,7 +197,7 @@ class Bridge:
         if rc:
             raise RuntimeError("C++ exception in log_density(); see stderr for messages")
         return lp.contents.value
-        
+
     def log_density_gradient(
         self,
         theta_unc: FloatArray,

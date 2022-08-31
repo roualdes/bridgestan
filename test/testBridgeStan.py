@@ -98,7 +98,6 @@ def test_gaussian():
     data = "../stan/gaussian/gaussian.data.json"
 
     model = bs.Bridge(lib, data)
-    N = 10
 
     theta = np.array([0.2, 1.9])
     theta_unc = np.array([0.2, np.log(1.9)])
