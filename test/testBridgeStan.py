@@ -172,17 +172,27 @@ def test_param_unconstrain_json():
         theta_unc_j_test3 = bridge.param_unconstrain_json(theta_json, out = scratch_bad)
 
 def test_log_density():
+    def _log_jacobian(p):
+        return np.log(p * (1 - p))
     def _bernoulli(y, p):
         return np.sum(y * np.log(p) + (1 - y) * np.log(1 - p))
+    def _bernoulli_jacobian(y, p):
+        return _bernoulli(y, p) + _log_jacobian(p)
     bernoulli_so = "../stan/bernoulli/bernoulli_model.so"
     bernoulli_data = "../stan/bernoulli/bernoulli.data.json"
     bridge = bs.Bridge(bernoulli_so, bernoulli_data)
     y = np.asarray([0, 1, 0, 0, 0, 0, 0, 0, 0, 1])
     for _ in range(2):
-        x = np.random.uniform(size = smb.param_unc_num())
+        x = np.random.uniform(size = bridge.param_unc_num())
         x_unc = np.log(x / (1 - x))
-        lp = bridge.log_density([x_unc, ], propto = True, jacobian = False)
-        np.testing.assert_allclose(logdensity, _bernoulli(y, x))
+        lp = bridge.log_density(np.array([x_unc]), propto = False, jacobian = False)
+        np.testing.assert_allclose(lp, _bernoulli(y, x))
+        lp2 = bridge.log_density(np.array([x_unc]), propto = False, jacobian = True)
+        np.testing.assert_allclose(lp2, _bernoulli_jacobian(y, x))
+        lp3 = bridge.log_density(np.array([x_unc]), propto = True, jacobian = True)
+        np.testing.assert_allclose(lp3, _bernoulli_jacobian(y, x))
+        lp4 = bridge.log_density(np.array([x_unc]), propto = True, jacobian = False)
+        np.testing.assert_allclose(lp4, _bernoulli(y, x))
 
 
 def test_out_behavior():
@@ -350,6 +360,8 @@ if __name__ == "__main__":
     test_param_unconstrain()
     print("test: param_unconstrain_json")
     test_param_unconstrain_json()
+    print("test: log_density")
+    test_log_density()
 
     print("test: out behavior")
     test_out_behavior()

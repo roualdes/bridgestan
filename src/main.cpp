@@ -247,7 +247,7 @@ model_rng* construct(char* data_file, unsigned int seed,
   }
   return nullptr;
 }
-  
+
 int destruct(model_rng* mr) {
   try {
     free(mr->model_);
@@ -314,7 +314,7 @@ int param_constrain2(model_rng* mr, bool include_tp, bool include_gq,
   }
   return 1;
 }
-    
+
 
 
 void param_unconstrain2_impl(model_rng* mr, const double* theta,
@@ -385,8 +385,8 @@ int param_unconstrain_json(model_rng* mr, const char* json,
     std::cerr << "param_unconstrain_json unknown exception" << std::endl;
   }
   return -1;
-}  
-  
+}
+
 void log_density_impl(model_rng* mr, bool propto, bool jacobian,
 		      const double* theta_unc, double* val) {
   auto logp
@@ -400,6 +400,7 @@ void log_density_impl(model_rng* mr, bool propto, bool jacobian,
     Eigen::VectorXd grad_vec(N);
     stan::math::gradient(logp, params_unc, lp, grad_vec);
     *val = lp;
+    return;
   }
   *val = logp(params_unc.eval());
 }
