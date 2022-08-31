@@ -37,11 +37,14 @@ param_unc_num <- function(ptr){
 
 
 log_density <- function(ptr, theta, propto=TRUE, jacobian=TRUE){
-    .C("log_density_R", as.raw(ptr),
+    vars <- .C("log_density_R", as.raw(ptr),
             as.logical(propto), as.logical(jacobian), as.numeric(theta),
             val=double(1),
-            return_code=as.integer(0))$val
-    # todo return code handling
+            return_code=as.integer(0))
+    if (vars$return_code) {
+        stop("C++ exception in log_density(); see stderr for messages")
+    }
+    vars$val
 }
 
 log_density_gradient <- function(ptr, theta, propto=TRUE, jacobian=TRUE){
@@ -50,8 +53,10 @@ log_density_gradient <- function(ptr, theta, propto=TRUE, jacobian=TRUE){
             as.logical(propto), as.logical(jacobian), as.numeric(theta),
             val=double(1), gradient=double(dims),
             return_code=as.integer(0))
+    if (vars$return_code) {
+        stop("C++ exception in log_density_gradient(); see stderr for messages")
+    }
     list(val=vars$val, grad=vars$gradient)
-    # todo return code handling
 }
 
 log_density_hessian <- function(ptr, theta, propto=TRUE, jacobian=TRUE){
@@ -60,8 +65,10 @@ log_density_hessian <- function(ptr, theta, propto=TRUE, jacobian=TRUE){
             as.logical(propto), as.logical(jacobian), as.numeric(theta),
             val=double(1), gradient=double(dims), hess=double(dims*dims),
             return_code=as.integer(0))
+    if (vars$return_code) {
+        stop("C++ exception in log_density_hessian(); see stderr for messages")
+    }
     list(val=vars$val, grad=vars$gradient, hess=matrix(vars$hess,nrow=dims,byrow=TRUE))
-    # todo return code handling
 }
 
 data <- "./stan/simple/simple.data.json"
