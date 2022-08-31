@@ -125,6 +125,14 @@ def test_param_constrain():
     np.testing.assert_equal(3, bridge2.param_constrain(a, include_gq = True).size)
     np.testing.assert_equal(4, bridge2.param_constrain(a, include_tp = True, include_gq = True).size)
 
+    # out tests, matched and mismatched
+    scratch = np.zeros(16)
+    b = bridge.param_constrain(a, out = scratch)
+    B = b.reshape(D, D)
+    np.testing.assert_allclose(B_expected, B)
+    scratch_wrong = np.zeros(10)
+    with np.testing.assert_raises(ValueError):
+        bridge.param_constrain(a, out = scratch_wrong)
 
 def test_param_unconstrain():
     fr_gaussian_so = "../stan/fr_gaussian/fr_gaussian_model.so"
@@ -134,8 +142,48 @@ def test_param_unconstrain():
     unc_size = 10
     a = np.random.normal(size=unc_size)
     b = bridge.param_constrain(a)
-    c = model.param_unconstrain(b)
+    c = bridge.param_unconstrain(b)
     np.testing.assert_allclose(a, c)
+
+    scratch = np.zeros(10)
+    c2 = bridge.param_unconstrain(b, out = scratch)
+    np.testing.assert_allclose(a, c2)
+    scratch_wrong = np.zeros(16)
+    with np.testing.assert_raises(ValueError):
+        bridge.param_unconstrain(b, out = scratch_wrong)
+
+def test_param_unconstrain_json():
+    gaussian_so = "../stan/gaussian/gaussian_model.so"
+    gaussian_data = "../stan/gaussian/gaussian.data.json"
+    bridge = bs.Bridge(gaussian_so, gaussian_data)
+
+    # theta = np.array([0.2, 1.9])
+    theta_unc = np.array([0.2, np.log(1.9)])
+    theta_json = "{\"mu\": 0.2, \"sigma\": 1.9}"
+    theta_unc_j_test = bridge.param_unconstrain_json(theta_json)
+    np.testing.assert_allclose(theta_unc, theta_unc_j_test)
+
+    scratch = np.zeros(2)
+    theta_unc_j_test2 = bridge.param_unconstrain_json(theta_json, out = scratch)
+    np.testing.assert_allclose(theta_unc, theta_unc_j_test2)
+
+    scratch_bad = np.zeros(10)
+    with np.testing.assert_raises(ValueError):
+        theta_unc_j_test3 = bridge.param_unconstrain_json(theta_json, out = scratch_bad)
+
+def test_log_density():
+    def _bernoulli(y, p):
+        return np.sum(y * np.log(p) + (1 - y) * np.log(1 - p))
+    bernoulli_so = "../stan/bernoulli/bernoulli_model.so"
+    bernoulli_data = "../stan/bernoulli/bernoulli.data.json"
+    bridge = bs.Bridge(bernoulli_so, bernoulli_data)
+    y = np.asarray([0, 1, 0, 0, 0, 0, 0, 0, 0, 1])
+    for _ in range(2):
+        x = np.random.uniform(size = smb.param_unc_num())
+        x_unc = np.log(x / (1 - x))
+        lp = bridge.log_density([x_unc, ], propto = True, jacobian = False)
+        np.testing.assert_allclose(logdensity, _bernoulli(y, x))
+
 
 def test_out_behavior():
     bernoulli_so = "../stan/bernoulli/bernoulli_model.so"
@@ -299,7 +347,9 @@ if __name__ == "__main__":
     print("test: param_constrain")
     test_param_constrain()
     print("test: param_unconstrain")
-    test_param_constrain()
+    test_param_unconstrain()
+    print("test: param_unconstrain_json")
+    test_param_unconstrain_json()
 
     print("test: out behavior")
     test_out_behavior()
