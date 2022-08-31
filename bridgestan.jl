@@ -17,9 +17,9 @@ end
 mutable struct StanModel
     lib::Ptr{Nothing}
     stanmodel::Ptr{StanModelStruct}
-    data::String
-    seed::UInt32
-    chain_id::UInt32
+    const data::String
+    const seed::UInt32
+    const chain_id::UInt32
 
     function StanModel(stanlib_::String, datafile_::String, seed_ = 204, chain_id_ = 0)
         seed = convert(UInt32, seed_)
@@ -172,7 +172,7 @@ function log_density_hessian(sm::StanModel, q; propto = true, jacobian = true)
     end
 end
 
-function destruct(sm::StanModel)
+function destruct!(sm::StanModel)
     ccall(Libc.Libdl.dlsym(sm.lib, "destruct"),
           Cint,
           (Ptr{StanModelStruct},),
