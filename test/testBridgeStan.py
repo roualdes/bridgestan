@@ -51,6 +51,7 @@ def test_bernoulli():
     bernoulli_lib = "../stan/bernoulli/bernoulli_model.so"
     bernoulli_data = "../stan/bernoulli/bernoulli.data.json"
     smb = bs.Bridge(bernoulli_lib, bernoulli_data)
+    np.testing.assert_string_equal(smb.name(), "bernoulli_model")
     np.testing.assert_allclose(smb.param_unc_num(), 1)
     np.testing.assert_allclose(smb.param_num(include_tp = False, include_gq = False), 1)
     y = np.asarray([0, 1, 0, 0, 0, 0, 0, 0, 0, 1])

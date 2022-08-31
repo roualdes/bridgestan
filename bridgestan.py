@@ -37,8 +37,8 @@ class Bridge:
             raise RuntimeError("could not construct model RNG")
 
         self._name = self.stanlib.name
-        self._name.restype = str
-        self._name.argtypes = []
+        self._name.restype = ctypes.c_char_p
+        self._name.argtypes = [ctypes.c_void_p]
 
         self._param_num = self.stanlib.param_num2
         self._param_num.restype = ctypes.c_int
@@ -124,7 +124,7 @@ class Bridge:
         self._destruct(self.model_rng)
 
     def name(self) -> str:
-        return self._name()
+        return self._name(self.model_rng).decode('utf-8')
 
     def param_num(self, *, include_tp: bool = False, include_gq: bool = False) -> int:
         return self._param_num(self.model_rng, int(include_tp), int(include_gq))

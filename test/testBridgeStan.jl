@@ -14,6 +14,9 @@ using Test
     data = joinpath(@__DIR__, "../stan/bernoulli/bernoulli.data.json")
 
     model = bridgestan.StanModel(lib, data)
+
+    @test bridgestan.name(model) == "bernoulli_model"
+
     y = [0, 1, 0, 0, 0, 0, 0, 0, 0, 1]
     R = 1000
 
