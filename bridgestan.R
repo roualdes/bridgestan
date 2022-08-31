@@ -1,38 +1,50 @@
 #!/home/brian/miniconda3/envs/r-env/bin/Rscript
 
-dyn.load("./stan/simple/simple_model.so")
+package_name <- "simple_model"
+dyn.load("./stan/simple/simple_model.so", PACKAGE=package_name)
+
+# todo R6 class with finalizer for destruct
 
 construct <- function(data, rng_seed, chain_id) {
     .C("construct_R",
         as.character(data), as.integer(rng_seed), as.integer(chain_id),
-        ptr_out=as.raw(rep(0:8)))$ptr_out
-
+        ptr_out=raw(8),
+        PACKAGE=package_name)$ptr_out -> ptr_out
+    if (all(ptr_out == 0)){
+        stop("could not construct model RNG")
+    }
+    ptr_out
 }
 
 name <- function(ptr){
     .C("name_R", as.raw(ptr),
-        name_out=as.character(""))$name_out
+        name_out=as.character(""),
+        PACKAGE=package_name)$name_out
 }
 param_names <- function(ptr, include_tp=FALSE, include_gq=FALSE){
     .C("param_names_R", as.raw(ptr),
         as.logical(include_tp), as.logical(include_gq),
-        names_out=as.character(""))$names_out -> names
+        names_out=as.character(""),
+        PACKAGE=package_name)$names_out -> names
     strsplit(names, ",")
 }
 param_unc_names <- function(ptr){
     .C("param_unc_names_R", as.raw(ptr),
-        names_out=as.character(""))$names_out -> names
+        names_out=as.character(""),
+        PACKAGE=package_name)$names_out -> names
     strsplit(names, ",")
 }
 
 param_num <- function(ptr, include_tp=FALSE, include_gq=FALSE){
     .C("param_num_R", as.raw(ptr),
         as.logical(include_tp), as.logical(include_gq),
-        num=as.integer(0))$num
+        num=as.integer(0),
+        PACKAGE=package_name)$num
 }
 param_unc_num <- function(ptr){
     .C("param_unc_num_R", as.raw(ptr),
-        num=as.integer(0))$num
+        num=as.integer(0),
+        PACKAGE=package_name)$num
 }
 
 
@@ -40,7 +52,8 @@ log_density <- function(ptr, theta, propto=TRUE, jacobian=TRUE){
     vars <- .C("log_density_R", as.raw(ptr),
             as.logical(propto), as.logical(jacobian), as.numeric(theta),
             val=double(1),
-            return_code=as.integer(0))
+            return_code=as.integer(0),
+            PACKAGE=package_name)
     if (vars$return_code) {
         stop("C++ exception in log_density(); see stderr for messages")
     }
@@ -52,7 +65,8 @@ log_density_gradient <- function(ptr, theta, propto=TRUE, jacobian=TRUE){
     vars <- .C("log_density_gradient_R", as.raw(ptr),
             as.logical(propto), as.logical(jacobian), as.numeric(theta),
             val=double(1), gradient=double(dims),
-            return_code=as.integer(0))
+            return_code=as.integer(0),
+            PACKAGE=package_name)
     if (vars$return_code) {
         stop("C++ exception in log_density_gradient(); see stderr for messages")
     }
@@ -64,7 +78,8 @@ log_density_hessian <- function(ptr, theta, propto=TRUE, jacobian=TRUE){
     vars <- .C("log_density_hessian_R", as.raw(ptr),
             as.logical(propto), as.logical(jacobian), as.numeric(theta),
             val=double(1), gradient=double(dims), hess=double(dims*dims),
-            return_code=as.integer(0))
+            return_code=as.integer(0),
+            PACKAGE=package_name)
     if (vars$return_code) {
         stop("C++ exception in log_density_hessian(); see stderr for messages")
     }
