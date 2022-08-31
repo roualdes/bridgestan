@@ -35,6 +35,15 @@ param_unc_num <- function(ptr){
         num=as.integer(0))$num
 }
 
+
+log_density <- function(ptr, theta, propto=TRUE, jacobian=TRUE){
+    .C("log_density_R", as.raw(ptr),
+            as.logical(propto), as.logical(jacobian), as.numeric(theta),
+            val=double(1),
+            return_code=as.integer(0))$val
+    # todo return code handling
+}
+
 log_density_gradient <- function(ptr, theta, propto=TRUE, jacobian=TRUE){
     dims <- param_unc_num(ptr)
     vars <- .C("log_density_gradient_R", as.raw(ptr),
@@ -42,6 +51,17 @@ log_density_gradient <- function(ptr, theta, propto=TRUE, jacobian=TRUE){
             val=double(1), gradient=double(dims),
             return_code=as.integer(0))
     list(val=vars$val, grad=vars$gradient)
+    # todo return code handling
+}
+
+log_density_hessian <- function(ptr, theta, propto=TRUE, jacobian=TRUE){
+    dims <- param_unc_num(ptr)
+    vars <- .C("log_density_hessian_R", as.raw(ptr),
+            as.logical(propto), as.logical(jacobian), as.numeric(theta),
+            val=double(1), gradient=double(dims), hess=double(dims*dims),
+            return_code=as.integer(0))
+    list(val=vars$val, grad=vars$gradient, hess=matrix(vars$hess,nrow=dims,byrow=TRUE))
+    # todo return code handling
 }
 
 data <- "./stan/simple/simple.data.json"
@@ -54,3 +74,5 @@ x <- runif(5)
 print("grad(x) should be -x:", x)
 print(x)
 print(log_density_gradient(ptr,x)$grad)
+print("Hessian should be -I:")
+print(log_density_hessian(ptr,x)$hess)
