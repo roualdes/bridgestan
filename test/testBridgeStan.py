@@ -194,6 +194,44 @@ def test_log_density():
         lp4 = bridge.log_density(np.array([x_unc]), propto = True, jacobian = False)
         np.testing.assert_allclose(lp4, _bernoulli(y, x))
 
+def test_log_density_gradient():
+    def _multi(x):
+        return -0.5 * np.dot(x, x)
+
+    def _grad_multi(x):
+        return -x
+
+    multi_so = "../stan/multi/multi_model.so"
+    multi_data = "../stan/multi/multi.data.json"
+    bridge = bs.Bridge(multi_so, multi_data)
+    for _ in range(2):
+        x = np.random.normal(size = bridge.param_unc_num())
+        logdensity, grad = bridge.log_density_gradient(x)
+        np.testing.assert_allclose(logdensity, _multi(x))
+        np.testing.assert_allclose(grad, _grad_multi(x))
+        logdensity, grad = bridge.log_density_gradient(x, propto=True, jacobian=True)
+        np.testing.assert_allclose(logdensity, _multi(x))
+        np.testing.assert_allclose(grad, _grad_multi(x))
+        logdensity, grad = bridge.log_density_gradient(x, propto=True)
+        np.testing.assert_allclose(logdensity, _multi(x))
+        np.testing.assert_allclose(grad, _grad_multi(x))
+        logdensity, grad = bridge.log_density_gradient(x, jacobian=True)
+        np.testing.assert_allclose(logdensity, _multi(x))
+        np.testing.assert_allclose(grad, _grad_multi(x))
+
+    for _ in range(2):
+        x = np.random.normal(size = bridge.param_unc_num())
+        scratch = np.zeros(bridge.param_unc_num())
+        logdensity, grad = bridge.log_density_gradient(x, out = scratch)
+        np.testing.assert_allclose(logdensity, _multi(x))
+        np.testing.assert_allclose(grad, _grad_multi(x))
+
+    scratch_bad = np.zeros(bridge.param_unc_num() + 10)
+    with np.testing.assert_raises(ValueError):
+        bridge.log_density_gradient(x, out = scratch_bad)
+
+    # TODO(carpenter): add tests for propto != True and/or jacobian != True
+    # TODO(carpenter): add tests for models throwing exceptions
 
 def test_out_behavior():
     bernoulli_so = "../stan/bernoulli/bernoulli_model.so"
@@ -362,6 +400,8 @@ if __name__ == "__main__":
     test_param_unconstrain_json()
     print("test: log_density")
     test_log_density()
+    print("test: log_density_gradient")
+    test_log_density_gradient()
 
     print("test: out behavior")
     test_out_behavior()
