@@ -639,6 +639,8 @@ extern "C"{
   void param_unc_names_R(model_rng** model, char const** name_out);
   void param_num_R(model_rng** model, int* include_tp, int* include_gq, int* num_out);
   void param_unc_num_R(model_rng** model, int* num_out);
+
+  void log_density_gradient_R(model_rng** model, int* propto, int* jacobian, const double* theta, double* val, double* grad, int* return_code);
 }
 
 void construct_R(char** data, int* rng, int* chain, model_rng** ptr_out){
@@ -661,4 +663,8 @@ void param_num_R(model_rng** model, int* include_tp, int* include_gq, int* num_o
 }
 void param_unc_num_R(model_rng** model, int* num_out){
   *num_out = param_unc_num(*model);
+}
+
+void log_density_gradient_R(model_rng** model, int* propto, int* jacobian, const double* theta, double* val, double* grad, int* return_code){
+  *return_code = log_density_gradient(*model, *propto, *jacobian, theta, val, grad);
 }

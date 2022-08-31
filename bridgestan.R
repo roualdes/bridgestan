@@ -1,6 +1,6 @@
 #!/home/brian/miniconda3/envs/r-env/bin/Rscript
 
-dyn.load("./stan/bernoulli/bernoulli_model.so")
+dyn.load("./stan/simple/simple_model.so")
 
 construct <- function(data, rng_seed, chain_id) {
     .C("construct_R",
@@ -35,8 +35,22 @@ param_unc_num <- function(ptr){
         num=as.integer(0))$num
 }
 
-data <- "./stan/bernoulli/bernoulli.data.json"
+log_density_gradient <- function(ptr, theta, propto=TRUE, jacobian=TRUE){
+    dims <- param_unc_num(ptr)
+    vars <- .C("log_density_gradient_R", as.raw(ptr),
+            as.logical(propto), as.logical(jacobian), as.numeric(theta),
+            val=double(1), gradient=double(dims),
+            return_code=as.integer(0))
+    list(val=vars$val, grad=vars$gradient)
+}
+
+data <- "./stan/simple/simple.data.json"
 ptr = construct(data, 1234, 0)
+
 print(name(ptr))
 print(param_names(ptr))
-print(param_unc_num(ptr))
+
+x <- runif(5)
+print("grad(x) should be -x:", x)
+print(x)
+print(log_density_gradient(ptr,x)$grad)
