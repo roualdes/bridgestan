@@ -1,6 +1,8 @@
-import sys
-import os
+import contextlib
+import io
 import json
+import os
+import sys
 import numpy as np
 
 sys.path.append(os.getcwd() + '/..')
@@ -8,11 +10,11 @@ sys.path.append(os.getcwd() + '/..')
 import bridgestan as bs
 
 def test_constructor():
-    std_so = "../stan/stdnormal/stdnormal_model.so"
 
     # implicit destructor tests in success and fail cases
 
     # test empty data
+    std_so = "../stan/stdnormal/stdnormal_model.so"
     b1 = bs.Bridge(std_so)
     np.testing.assert_allclose(bool(b1), True)
 
@@ -29,6 +31,15 @@ def test_constructor():
     # test missing data file
     with np.testing.assert_raises(FileNotFoundError):
         b3 = bs.Bridge(bernoulli_so, "nope, not going to find it")
+
+
+    # test data load exception
+    throw_data_so = "../stan/throw_data/throw_data_model.so"
+    print("construct() EXPECTION MSG ON NEXT LINE IS NOT AN ERROR")
+    with np.testing.assert_raises(RuntimeError):
+        b4 = bs.Bridge(throw_data_so)
+
+    # TODO(carpenter): test get right error message on stderr
 
 def test_name():
     std_so = "../stan/stdnormal/stdnormal_model.so"
@@ -171,13 +182,14 @@ def test_param_unconstrain_json():
     with np.testing.assert_raises(ValueError):
         theta_unc_j_test3 = bridge.param_unconstrain_json(theta_json, out = scratch_bad)
 
+def _log_jacobian(p):
+    return np.log(p * (1 - p))
+def _bernoulli(y, p):
+    return np.sum(y * np.log(p) + (1 - y) * np.log(1 - p))
+def _bernoulli_jacobian(y, p):
+    return _bernoulli(y, p) + _log_jacobian(p)
+
 def test_log_density():
-    def _log_jacobian(p):
-        return np.log(p * (1 - p))
-    def _bernoulli(y, p):
-        return np.sum(y * np.log(p) + (1 - y) * np.log(1 - p))
-    def _bernoulli_jacobian(y, p):
-        return _bernoulli(y, p) + _log_jacobian(p)
     bernoulli_so = "../stan/bernoulli/bernoulli_model.so"
     bernoulli_data = "../stan/bernoulli/bernoulli.data.json"
     bridge = bs.Bridge(bernoulli_so, bernoulli_data)
@@ -194,49 +206,149 @@ def test_log_density():
         lp4 = bridge.log_density(np.array([x_unc]), propto = True, jacobian = False)
         np.testing.assert_allclose(lp4, _bernoulli(y, x))
 
+    throw_lp_so = "../stan/throw_lp/throw_lp_model.so"
+    bridge2 = bs.Bridge(throw_lp_so)
+    y2 = np.array(np.random.uniform(1))
+    print("log_density() EXPECTION MSG ON NEXT LINE IS NOT AN ERROR")
+    with np.testing.assert_raises(RuntimeError):
+        bridge2.log_density(y2)
+
 def test_log_density_gradient():
-    def _multi(x):
-        return -0.5 * np.dot(x, x)
+    def _logp(y_unc):
+        y = np.exp(y_unc)
+        return -0.5 * y**2;
+    def _propto_false(y_unc):
+        return -0.5 * np.log(2 * np.pi)
+    def _jacobian_true(y_unc):
+        return y_unc
 
-    def _grad_multi(x):
-        return -x
+    def _grad_logp(y_unc):
+        y = np.exp(y_unc)
+        return -y**2
+    def _grad_propto_false(y_unc):
+        return 0
+    def _grad_jacobian_true(y_unc):
+        return 1
 
-    multi_so = "../stan/multi/multi_model.so"
-    multi_data = "../stan/multi/multi.data.json"
-    bridge = bs.Bridge(multi_so, multi_data)
-    for _ in range(2):
-        x = np.random.normal(size = bridge.param_unc_num())
-        logdensity, grad = bridge.log_density_gradient(x)
-        np.testing.assert_allclose(logdensity, _multi(x))
-        np.testing.assert_allclose(grad, _grad_multi(x))
-        logdensity, grad = bridge.log_density_gradient(x, propto=True, jacobian=True)
-        np.testing.assert_allclose(logdensity, _multi(x))
-        np.testing.assert_allclose(grad, _grad_multi(x))
-        logdensity, grad = bridge.log_density_gradient(x, propto=True)
-        np.testing.assert_allclose(logdensity, _multi(x))
-        np.testing.assert_allclose(grad, _grad_multi(x))
-        logdensity, grad = bridge.log_density_gradient(x, jacobian=True)
-        np.testing.assert_allclose(logdensity, _multi(x))
-        np.testing.assert_allclose(grad, _grad_multi(x))
+    jacobian_so = "../stan/jacobian/jacobian_model.so"
+    bridge = bs.Bridge(jacobian_so)
 
-    for _ in range(2):
-        x = np.random.normal(size = bridge.param_unc_num())
-        scratch = np.zeros(bridge.param_unc_num())
-        logdensity, grad = bridge.log_density_gradient(x, out = scratch)
-        np.testing.assert_allclose(logdensity, _multi(x))
-        np.testing.assert_allclose(grad, _grad_multi(x))
+    y = np.abs(np.random.normal(1))
+    y_unc = np.log(y)
+    y_unc_arr = np.array(y_unc)
+    logdensity, grad = bridge.log_density_gradient(y_unc_arr, propto=True, jacobian=True)
+    np.testing.assert_allclose(_logp(y_unc) + _jacobian_true(y_unc), logdensity)
+    np.testing.assert_allclose(_grad_logp(y_unc) + _grad_jacobian_true(y_unc), grad[0])
+    #
+    logdensity, grad = bridge.log_density_gradient(y_unc_arr, propto=True, jacobian=False)
+    np.testing.assert_allclose(_logp(y_unc), logdensity)
+    np.testing.assert_allclose(_grad_logp(y_unc), grad[0])
+    #
+    logdensity, grad = bridge.log_density_gradient(y_unc_arr, propto=False, jacobian=True)
+    np.testing.assert_allclose(_logp(y_unc) + _propto_false(y_unc) + _jacobian_true(y_unc), logdensity)
+    np.testing.assert_allclose(_grad_logp(y_unc) + _grad_propto_false(y_unc) + _grad_jacobian_true(y_unc), grad[0])
+    #
+    logdensity, grad = bridge.log_density_gradient(y_unc_arr, propto=False, jacobian=True)
+    np.testing.assert_allclose(_logp(y_unc) + _propto_false(y_unc) + _jacobian_true(y_unc), logdensity)
+    np.testing.assert_allclose(_grad_logp(y_unc) + _grad_propto_false(y_unc) + _grad_jacobian_true(y_unc), grad[0])
+    #
+    logdensity, grad = bridge.log_density_gradient(y_unc_arr, propto=False, jacobian=False)
+    np.testing.assert_allclose(_logp(y_unc) + _propto_false(y_unc), logdensity)
+    np.testing.assert_allclose(_grad_logp(y_unc) + _grad_propto_false(y_unc), grad[0])
 
+    # test use of scratch
+    scratch = np.zeros(bridge.param_unc_num())
+    logdensity, grad = bridge.log_density_gradient(y_unc_arr, propto = True, jacobian = True, out = scratch)
+    np.testing.assert_allclose(_logp(y_unc) + _jacobian_true(y_unc), logdensity)
+    np.testing.assert_allclose(_grad_logp(y_unc) + _grad_jacobian_true(y_unc), grad[0])
+    #
     scratch_bad = np.zeros(bridge.param_unc_num() + 10)
     with np.testing.assert_raises(ValueError):
-        bridge.log_density_gradient(x, out = scratch_bad)
+        bridge.log_density_gradient(y_unc, out = scratch_bad)
 
-    # TODO(carpenter): add tests for propto != True and/or jacobian != True
-    # TODO(carpenter): add tests for models throwing exceptions
+def test_log_density_hessian():
+    def _logp(y_unc):
+        y = np.exp(y_unc)
+        return -0.5 * y**2;
+    def _propto_false(y_unc):
+        return -0.5 * np.log(2 * np.pi)
+    def _jacobian_true(y_unc):
+        return y_unc
+
+    def _grad_logp(y_unc):
+        y = np.exp(y_unc)
+        return -y**2
+    def _grad_propto_false(y_unc):
+        return 0
+    def _grad_jacobian_true(y_unc):
+        return 1
+
+    def _hess_logp(y_unc):
+        y = np.exp(y_unc)
+        return -2.0 * y**2
+    def _hess_propto_false(y_unc):
+        return 0
+    def _hess_jacobian_true(y_unc):
+        return 0
+
+    jacobian_so = "../stan/jacobian/jacobian_model.so"
+    bridge = bs.Bridge(jacobian_so)
+
+    # test value, gradient, hessian, all combos +/- propto, +/- jacobian
+    y = np.abs(np.random.normal(1))
+    y_unc = np.log(y)
+    y_unc_arr = np.array(y_unc)
+    logdensity, grad, hess = bridge.log_density_hessian(y_unc_arr, propto=True, jacobian=True)
+    np.testing.assert_allclose(_logp(y_unc) + _jacobian_true(y_unc), logdensity)
+    np.testing.assert_allclose(_grad_logp(y_unc) + _grad_jacobian_true(y_unc), grad[0])
+    np.testing.assert_allclose(_hess_logp(y_unc) + _hess_jacobian_true(y_unc), hess[0, 0])
+    #
+    logdensity, grad, hess = bridge.log_density_hessian(y_unc_arr, propto=True, jacobian=False)
+    np.testing.assert_allclose(_logp(y_unc), logdensity)
+    np.testing.assert_allclose(_grad_logp(y_unc), grad[0])
+    np.testing.assert_allclose(_hess_logp(y_unc), hess[0, 0])
+    #
+    logdensity, grad, hess = bridge.log_density_hessian(y_unc_arr, propto=False, jacobian=True)
+    np.testing.assert_allclose(_logp(y_unc) + _propto_false(y_unc) + _jacobian_true(y_unc), logdensity)
+    np.testing.assert_allclose(_grad_logp(y_unc) + _grad_propto_false(y_unc) + _grad_jacobian_true(y_unc), grad[0])
+    np.testing.assert_allclose(_hess_logp(y_unc) + _hess_propto_false(y_unc) + _hess_jacobian_true(y_unc), hess[0, 0])
+    #
+    logdensity, grad, hess = bridge.log_density_hessian(y_unc_arr, propto=False, jacobian=True)
+    np.testing.assert_allclose(_logp(y_unc) + _propto_false(y_unc) + _jacobian_true(y_unc), logdensity)
+    np.testing.assert_allclose(_grad_logp(y_unc) + _grad_propto_false(y_unc) + _grad_jacobian_true(y_unc), grad[0])
+    np.testing.assert_allclose(_hess_logp(y_unc) + _hess_propto_false(y_unc) + _hess_jacobian_true(y_unc), hess[0, 0])
+    #
+    logdensity, grad, hess = bridge.log_density_hessian(y_unc_arr, propto=False, jacobian=False)
+    np.testing.assert_allclose(_logp(y_unc) + _propto_false(y_unc), logdensity)
+    np.testing.assert_allclose(_grad_logp(y_unc) + _grad_propto_false(y_unc), grad[0])
+    np.testing.assert_allclose(_hess_logp(y_unc) + _hess_propto_false(y_unc), hess[0, 0])
+
+    # test use of scratch
+    scratch = np.zeros(bridge.param_unc_num())
+    logdensity, grad, hess = bridge.log_density_hessian(y_unc_arr, propto = True, jacobian = True, out_grad = scratch)
+    np.testing.assert_allclose(_logp(y_unc) + _jacobian_true(y_unc), logdensity)
+    np.testing.assert_allclose(_grad_logp(y_unc) + _grad_jacobian_true(y_unc), grad[0])
+    #
+    scratch_bad = np.zeros(bridge.param_unc_num() + 10)
+    with np.testing.assert_raises(ValueError):
+        bridge.log_density_hessian(y_unc, out_grad = scratch_bad)
+
+    # test with 5 x 5 Hessian
+    simple_so = "../stan/simple/simple_model.so"
+    simple_data = "../stan/simple/simple.data.json"
+    bridge2 = bs.Bridge(simple_so, simple_data)
+
+    D = 5
+    y = np.random.uniform(size = D)
+    lp, grad, hess = bridge2.log_density_hessian(y)
+    np.testing.assert_allclose(-y, grad)
+    np.testing.assert_allclose(-np.identity(D), hess)
+
+
 
 def test_out_behavior():
     bernoulli_so = "../stan/bernoulli/bernoulli_model.so"
     bernoulli_data = "../stan/bernoulli/bernoulli.data.json"
-
     smb = bs.Bridge(bernoulli_so, bernoulli_data)
 
     grads = []
@@ -262,6 +374,9 @@ def test_out_behavior():
     assert grads[0] is out_grad
     assert grads[1] is out_grad
     np.testing.assert_allclose(grads[0], grads[1])
+
+
+# BONUS TESTS
 
 def test_bernoulli():
     def _bernoulli(y, p):
@@ -294,14 +409,10 @@ def test_multi():
     multi_data = "../stan/multi/multi.data.json"
 
     smm = bs.Bridge(multi_so, multi_data)
-    R = 1000
-
-    for _ in range(R):
-        x = np.random.normal(size = smm.param_unc_num())
-        logdensity, grad = smm.log_density_gradient(x)
-
-        np.testing.assert_allclose(logdensity, _multi(x))
-        np.testing.assert_allclose(grad, _grad_multi(x))
+    x = np.random.normal(size = smm.param_unc_num())
+    logdensity, grad = smm.log_density_gradient(x)
+    np.testing.assert_allclose(logdensity, _multi(x))
+    np.testing.assert_allclose(grad, _grad_multi(x))
 
 def test_gaussian():
 
@@ -365,16 +476,7 @@ def test_fr_gaussian():
         np.testing.assert_string_equal(names_unc[pos], f"Omega.{n}")
         pos += 1
 
-def test_simple():
-    lib = "../stan/simple/simple_model.so"
-    data = "../stan/simple/simple.data.json"
-    model = bs.Bridge(lib, data)
 
-    D = 5
-    y = np.random.uniform(size = D)
-    lp, grad, hess = model.log_density_hessian(y)
-    np.testing.assert_allclose(-y, grad)
-    np.testing.assert_allclose(-np.identity(D), hess)
 
 if __name__ == "__main__":
     print("")
@@ -402,7 +504,8 @@ if __name__ == "__main__":
     test_log_density()
     print("test: log_density_gradient")
     test_log_density_gradient()
-
+    print("test: log_density_hessian")
+    test_log_density_hessian()
     print("test: out behavior")
     test_out_behavior()
     print("test: bernoulli")
@@ -413,7 +516,7 @@ if __name__ == "__main__":
     test_gaussian()
     print("test: fr_gaussian")
     test_fr_gaussian()
-    print("test: simple")
-    test_simple()
     print("------------------------------------------------------------")
     print("If no errors were reported, all tests passed.")
+
+# TODO(carpenter): add tests for models throwing exceptions

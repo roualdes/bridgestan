@@ -169,7 +169,7 @@ class Bridge:
         """
         Destroy the Stan model and free memory.
         """
-        if hasattr(self, "model_rng"):
+        if hasattr(self, "model_rng") and hasattr(self, "_destruct"):
             self._destruct(self.model_rng)
 
     def name(self) -> str:
