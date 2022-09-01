@@ -14,6 +14,10 @@ simple$log_density_hessian(x)$hess
 
 
 bernoulli <- Bridge$new("../stan/bernoulli/bernoulli_model.so", "../stan/bernoulli/bernoulli.data.json", 1234, 0)
+
+# try to foul up
+dyn.load("./test.so")
+
 bernoulli$name()
 simple$name()
 x <- runif(bernoulli$param_unc_num())

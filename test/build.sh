@@ -8,3 +8,4 @@ do
 done
 wait
 cd "$BRIDGESTAN/test"
+gcc -fpic -shared -o test.so test.c
