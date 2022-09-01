@@ -1,19 +1,317 @@
+#include "model_functor.hpp"
 #include <cmdstan/io/json/json_data.hpp>
 #include <stan/math.hpp>
-#include <stan/io/empty_var_context.hpp>
 #include <stan/io/array_var_context.hpp>
+#include <stan/io/empty_var_context.hpp>
 #include <stan/model/model_base.hpp>
 
 #include <algorithm>
-#include <exception>
 #include <cmath>
-#include <vector>
-#include <set>
-#include <string>
-#include <stdexcept>
+#include <exception>
 #include <fstream>
 #include <iostream>
+#include <set>
 #include <sstream>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+extern "C" {
+
+  /**
+   * This structure holds a pointer to a model, holds a pseudorandom
+   * number generator, and holds pointers to the parameter names in
+   * CSV format.  Instances should be created using the `construct()`
+   * function, which allocates all of the components.  Instances
+   * should be destroyed using the `destruct()` function, which
+   * frees all of the allocated components.
+   */
+  struct model_rng {
+    /** Stan model */
+    stan::model::model_base* model_;
+
+    /** pseudorandom number generator */
+    boost::ecuyer1988 rng_;
+
+    /** number of unconstrained parameters */
+    int param_unc_num_ = -1;
+
+    /** number of parameters */
+    int param_num_ = -1;
+
+    /** number of parameters + transformed parameters */
+    int param_tp_num_ = -1;
+
+    /** number of parameters + generated quantities */
+    int param_gq_num_ = -1;
+
+    /** number of parameters + transformed parameters + generated quantities */
+    int param_tp_gq_num_ = -1;
+
+    /** name of the Stan model */
+    char* name_ = nullptr;
+
+    /** name of the Stan model */
+    char* param_unc_names_ = nullptr;
+
+    /** CSV list of parameter names */
+    char* param_names_ = nullptr;
+
+    /** CSV list of parameter, transformed parameter names */
+    char* param_tp_names_ = nullptr;
+
+    /** CSV list of parameter, generated quantity names */
+    char* param_gq_names_ = nullptr;
+
+    /**
+     * CSV list of parameter, transformed parameters, generated
+     * quantity names
+     */
+    char* param_tp_gq_names_ = nullptr;
+  };
+
+  /**
+   * Convert the specified sequence of names to comma-separated value
+   * format.  This does a heap allocation, so the resulting string
+   * must be freed to prevent a memory leak.  The CSV is output
+   * without additional space around the commas.
+   *
+   * @param names sequence of names to convert
+   * @return CSV formatted sequence of names
+   */
+  char* to_csv(const std::vector<std::string>& names) {
+    std::stringstream ss;
+    for (size_t i = 0; i < names.size(); ++i) {
+      if (i > 0) ss << ',';
+      ss << names[i];
+    }
+    std::string s = ss.str();
+    const char* s_c = s.c_str();
+    return strdup(s_c);
+  }
+
+
+
+  /**
+   * Construct an instance of a model and pseudorandom number
+   * generator (PRNG) wrapper.  Data must be encoded in JSON as
+   * indicated in the *CmdStan Reference Manual*.
+   *
+   * @param[in] data_file C-style path to JSON-encoded data file
+   * @param[in] seed seed for PRNG
+   * @param[in] chain_id identifier for concurrent sequence of PRNG
+   * draws
+   * @return pointer to constructed model or `nullptr` if construction
+   * fails
+   */
+  model_rng* construct(char* data_file, unsigned int seed,
+		       unsigned int chain_id);
+
+  /**
+   * Destroy the model and return 0 for success and -1 if there is an
+   * exception while freeing memory.
+   *
+   * @param[in] mr pointer to model and RNG structure
+   * @return 0 for success and -1 if there is an exception freeing one
+   * of the model components.
+   */
+  int destruct(model_rng* mr);
+
+  /**
+   * Return the name of the specified model as a C-style string.
+   *
+   * The returned string should not be modified; it is freed when the
+   * model and RNG wrapper is destroyed.
+   *
+   * @param[in] mr pointer to model and RNG structure
+   * @return name of model
+   */
+  const char* name(model_rng* mr);
+
+
+  /**
+   * Return a comma-separated sequence of indexed parameter names,
+   * including the transformed parameters and/or generated quantities
+   * as specified.
+   *
+   * The parameters are returned in the order they are declared.
+   * Multivariate parameters are return in column-major (more
+   * generally last-index major) order.  Parameters are separated with
+   * periods (`.`).  For example, `a[3]` is written `a.3` and `b[2,
+   * 3]` as `b.2.3`.  The numbering follows Stan and is indexed from 1.
+   *
+   * The returned string should not be modified; it is freed when the
+   * model and RNG wrapper is destroyed.
+   *
+   * @param[in] mr pointer to model and RNG structure
+   * @param[in] include_tp `true` to include transformed parameters
+   * @param[in] include_gq `true` to include generated quantities
+   * @return CSV-separated, indexed, parameter names
+   */
+  const char* param_names(model_rng* mr, bool include_tp, bool include_gq);
+
+  /**
+   * Return a comma-separated sequence of unconstrained parameters.
+   * Only parameters are unconstrained, so there are no unconstrained
+   * transformed parameters or generated quantities.
+   *
+   * The parameters are returned in the order they are declared.
+   * Multivariate parameters are return in column-major (more
+   * generally last-index major) order.  Parameters are separated with
+   * periods (`.`).  For example, `a[3]` is written `a.3` and `b[2,
+   * 3]` as `b.2.3`.  The numbering follows Stan and is indexed from 1.
+   *
+   * The returned string should not be modified; it is freed when the
+   * model and RNG wrapper is destroyed.
+   *
+   * @param[in] mr pointer to model and RNG structure
+   * @return CSV-separated, indexed, unconstrained parameter names
+   */
+  const char* param_unc_names(model_rng* mr);
+
+  /**
+   * Return the number of scalar parameters, optionally including the
+   * number of transformed parameters and/or generated quantities.
+   * For example, a 2 x 3 matrix counts as 6 scalar parameters.
+   *
+   * @param[in] mr pointer to model and RNG structure
+   * @param[in] include_tp `true` to include transformed parameters
+   * @param[in] include_gq `true` to include generated quantities
+   * @return number of parameters
+   */
+  int param_num2(model_rng* mr, bool include_tp, bool include_gq);
+
+  /**
+   * Return the number of unconstrained parameters.  The number of
+   * unconstrained parameters might be smaller than the number of
+   * parameters if the unconstrained space has fewer dimensions than
+   * the constrained (e.g., for simplexes or correlation matrices).
+   *
+   * @param[in] mr pointer to model and RNG structure
+   * @return number of unconstrained parameters
+   */
+  int param_unc_num2(model_rng* mr);
+
+
+  /**
+   * Set the sequence of constrained parameters based on the specified
+   * unconstrained parameters, including transformed parameters and/or
+   * generated quantities as specified, and return a return code of 0
+   * for success and -1 for failure.  Parameter order is as declared
+   * in the Stan program, with multivariate parameters given in
+   * last-index-major order.
+   *
+   * @param[in] mr pointer to model and RNG structure
+   * @param[in] include_tp `true` to include transformed parameters
+   * @param[in] include_gq `true` to include generated quantities
+   * @param[in] theta_unc sequence of unconstrained parameters
+   * @param[out] theta sequence of constrained parameters
+   * @return code 0 if successful and code -1 if there is an exception
+   * in the underlying Stan code
+   */
+  int param_constrain2(model_rng* mr, bool include_tp, bool include_gq,
+		       const double* theta_unc, double* theta);
+
+
+  /**
+   * Set the sequence of unconstrained parameters based on the
+   * specified constrained parameters, and return a return code of 0
+   * for success and -1 for failure.  Parameter order is as declared
+   * in the Stan program, with multivariate parameters given in
+   * last-index-major order.
+   *
+   * @param[in] mr pointer to model and RNG structure
+   * @param[in] theta sequence of constrained parameters
+   * @param[out] theta_unc sequence of unconstrained parameters
+   * @return code 0 if successful and code -1 if there is an exception
+   * in the underlying Stan code
+   */
+  int param_unconstrain2(model_rng* mr, const double* theta,
+			 double* theta_unc);
+
+  /**
+   * Set the sequence of unconstrained parameters based on the JSON
+   * specification of the constrained parameters, and return a return
+   * code of 0 for success and -1 for failure.  Parameter order is as
+   * declared in the Stan program, with multivariate parameters given
+   * in last-index-major order.  The JSON schema assumed is fully
+   * defined in the *CmdStan Reference Manual*.
+   *
+   * @param[in] mr pointer to model and RNG structure
+   * @param[in] json json-encoded constrained parameters
+   * @param[out] theta_unc sequence of unconstrained parameters
+   * @return code 0 if successful and code -1 if there is an exception
+   * in the underlying Stan code
+   */
+  int param_unconstrain_json(model_rng* mr, const char* json,
+			     double* theta_unc);
+
+
+  /**
+   * Set the log density of the specified parameters, dropping
+   * constants if `propto` is `true` and including the Jacobian terms
+   * resulting from constraining parameters if `jacobian` is `true`,
+   * and return a return code of 0 for success and -1 if there is an
+   * exception executing the Stan program.
+   *
+   * @param[in] mr pointer to model and RNG structure
+   * @param[in] propto `true` to discard constant terms
+   * @param[in] jacobian `true` to include change-of-variables terms
+   * @param[in] theta unconstrained parameters
+   * @param[out] lp log density to be set
+   * @return code 0 if successful and code -1 if there is an exception
+   * in the underlying Stan code
+   */
+  int log_density(model_rng* mr, bool propto, bool jacobian,
+		  const double* theta, double* lp);
+
+  /**
+   * Set the log density and gradient of the specified parameters,
+   * dropping constants if `propto` is `true` and including the
+   * Jacobian terms resulting from constraining parameters if
+   * `jacobian` is `true`, and return a return code of 0 for success
+   * and -1 if there is an exception executing the Stan program.  The
+   * gradient must have enough space to hold the gradient.
+   *
+   * The gradients are computed using automatic differentiation.
+   *
+   * @param[in] mr pointer to model and RNG structure
+   * @param[in] propto `true` to discard constant terms
+   * @param[in] jacobian `true` to include change-of-variables terms
+   * @param[in] theta unconstrained parameters
+   * @param[out] val log density to be set
+   * @param[out] grad gradient to set
+   * @return code 0 if successful and code -1 if there is an exception
+   * in the underlying Stan code
+   */
+  int log_density_gradient2(model_rng* mr, bool propto, bool jacobian,
+			    const double* theta, double* val, double* grad);
+
+  /**
+   * Set the log density, gradient, and Hessian of the specified parameters,
+   * dropping constants if `propto` is `true` and including the
+   * Jacobian terms resulting from constraining parameters if
+   * `jacobian` is `true`, and return a return code of 0 for success
+   * and -1 if there is an exception executing the Stan program.  The
+   * pointer `grad` must have enough space to hold the gradient.  The
+   * pointer `Hessian` must have enough space to hold the Hessian.
+   *
+   * The gradients are computed using automatic differentiation.  the
+   * Hessians are
+   *
+   * @param[in] mr pointer to model and RNG structure
+   * @param[in] propto `true` to discard constant terms
+   * @param[in] jacobian `true` to include change-of-variables terms
+   * @param[in] theta unconstrained parameters
+   * @param[out] lp log density to be set
+   * @param[out] grad gradient to set
+   * @return code 0 if successful and code -1 if there is an exception
+   * in the underlying Stan code
+   */
+  int log_density_hessian(model_rng* mr, bool propto, bool jacobian,
+			  const double* theta, double* val, double* grad,
+			  double* hessian);
+}
 
 /**
  * Allocate and return a new model as a reference given the specified
@@ -26,156 +324,6 @@
  */
 stan::model::model_base& new_model(stan::io::var_context &data_context,
                                    unsigned int seed, std::ostream *msg_stream);
-
-/**
- * Functor for a model of the specified template type and its log
- * density configuration in terms of dropping constants and/or the
- * change-of-variables adjustment.
- *
- * @tparam M type of model
- */
-template <class M>
-struct model_functor {
-  /** Stan model */
-  const M& model_;
-
-  /** `true` if including constant terms */
-  const bool propto_;
-
-  /** `true` if including change-of-variables terms */
-  const bool jacobian_;
-
-  /** Output stream for messages from Stan model */
-  std::ostream& out_;
-
-  /**
-   * Construct a model functor from the specified model, output
-   * stream, and specification of whether constants should be dropped
-   * and whether the change-of-variables terms should be dropped.
-   *
-   * @param[in] m Stan model
-   * @param[in] propto `true` if log density drops constant terms
-   * @param[in] jacobian `true` if log density includes change-of-variables
-   * terms
-   * @param[in] out output stream for messages from model
-   */
-  model_functor(const M& m, bool propto, bool jacobian, std::ostream& out)
-    : model_(m), propto_(propto), jacobian_(jacobian), out_(out) { }
-
-  /**
-   * Return the log density for the specified unconstrained
-   * parameters, including normalizing terms and change-of-variables
-   * terms as specified in the constructor.
-   *
-   * @tparam T real scalar type for the arguments and return
-   * @param theta unconstrained parameters
-   * @throw std::exception if model throws exception evaluating log density
-   */
-  template <typename T>
-  T operator()(const Eigen::Matrix<T, Eigen::Dynamic, 1>& theta) const {
-    // const cast is safe---theta not modified
-    auto params_r = const_cast<Eigen::Matrix<T, Eigen::Dynamic, 1>&>(theta);
-    return propto_
-      ? (jacobian_
-         ? model_->template log_prob<true, true, T>(params_r, &out_)
-         : model_->template log_prob<true, false, T>(params_r, &out_))
-      : (jacobian_
-         ? model_->template log_prob<false, true, T>(params_r, &out_)
-         : model_->template log_prob<false, false, T>(params_r, &out_));
-  }
-};
-
-/**
- * Return an appropriately typed model functor from the specified
- * model, given the specified output stream and flags indicating
- * whether to drop constant terms and include change-of-variables
- * terms.  Unlike the `model_functor` constructor, this factory
- * function provides type inference for `M`.
- *
- * @tparam M type of Stan model
- * @param[in] m Stan model
- * @param[in] propto `true` if log density drops constant terms
- * @param[in] jacobian `true` if log density includes
- * change-of-variables terms
- * @param[in] out output stream for messages from model
- */
-template <typename M>
-model_functor<M> create_model_functor(const M& m, bool propto, bool jacobian,
-                                      std::ostream& out) {
-  return model_functor<M>(m, propto, jacobian, out);
-}
-
-struct stanmodel_struct;
-typedef struct stanmodel_struct stanmodel;
-
-extern "C" {
-  struct stanmodel_struct {
-    void* model_;
-    boost::ecuyer1988 base_rng_;
-  };
-  stanmodel* create(char* data_file_path_, unsigned int seed_);
-  void destroy(stanmodel* sm_);
-  int get_num_unc_params(stanmodel* sm_);
-  int param_num(stanmodel* sm_);
-  int param_unc_num(stanmodel* sm_);
-  void param_constrain(stanmodel* sm_, int D_, double* q_, int K_,
-		       double* params_);
-  void param_unconstrain(stanmodel* sm_, int D_, double* q_, int K_,
-			 double* unc_params_);
-  void log_density_gradient(stanmodel* sm_, int D_, double* q_,
-			    double* log_density_, double* grad_,
-			    int propto_, int jacobian_);
-}
-
-extern "C" {
-  struct model_rng {
-    stan::model::model_base* model_;
-    boost::ecuyer1988 rng_;
-    int param_unc_num_ = -1;
-    int param_num_ = -1;
-    int param_tp_num_ = -1;
-    int param_gq_num_ = -1;
-    int param_tp_gq_num_ = -1;
-    char* name_ = nullptr;
-    char* param_unc_names_ = nullptr;
-    char* param_names_ = nullptr;
-    char* param_tp_names_ = nullptr;
-    char* param_gq_names_ = nullptr;
-    char* param_tp_gq_names_ = nullptr;
-  };
-  model_rng* construct(char* data_file, unsigned int seed,
-		       unsigned int chain_id);
-  int destruct(model_rng* mr);
-  const char* name(model_rng* mr);
-  const char* param_names(model_rng* mr, bool include_tp, bool include_gq);
-  const char* param_unc_names(model_rng* mr);
-  int param_num2(model_rng* mr, bool include_tp, bool include_gq);
-  int param_unc_num2(model_rng* mr);
-  int param_constrain2(model_rng* mr, bool include_tp, bool include_gq,
-		       const double* theta_unc, double* theta);
-  int param_unconstrain2(model_rng* mr, const double* theta,
-			 double* theta_unc);
-  int param_unconstrain_json(model_rng* mr, const char* json,
-			     double* theta_unc);
-  int log_density(model_rng* mr, bool propto, bool jacobian,
-		  const double* theta, double* lp);
-  int log_density_gradient2(model_rng* mr, bool propto, bool jacobian,
-			    const double* theta, double* val, double* grad);
-  int log_density_hessian(model_rng* mr, bool propto, bool jacobian,
-			  const double* theta, double* val, double* grad,
-			  double* hessian);
-}
-
-char* to_csv(const std::vector<std::string>& names) {
-  std::stringstream ss;
-  for (size_t i = 0; i < names.size(); ++i) {
-    if (i > 0) ss << ',';
-    ss << names[i];
-  }
-  std::string s = ss.str();
-  const char* s_c = s.c_str();
-  return strdup(s_c);
-}
 
 model_rng* construct_impl(char* data_file, unsigned int seed, unsigned int chain_id) {
   // enforce math lib thread locality for multi-threading
@@ -314,8 +462,6 @@ int param_constrain2(model_rng* mr, bool include_tp, bool include_gq,
   }
   return 1;
 }
-
-
 
 void param_unconstrain2_impl(model_rng* mr, const double* theta,
 			     double* theta_unc) {
@@ -482,234 +628,6 @@ int log_density_hessian(model_rng* mr, bool propto, bool jacobian,
   return -1;
 }
 
-
-// ############################### OLD API ###########################
-
-/**
- * Create and return a pointer to a Stan model struct using specified
- * data and seed.
- *
- * @param[in] sm_ Stan model
- * @param[in] data_file_path_ path at which data for model is found
- * @param[in] seed_ seed to initialize base rng
- * @return pointer to Stan model struct
- */
-stanmodel* create(char* data_file_path_, unsigned int seed_) {
-  stanmodel* sm = new stanmodel();
-  std::string data_file_path(data_file_path_);
-
-  if (data_file_path.empty()) {
-    stan::io::empty_var_context empty_data;
-    sm->model_ = &new_model(empty_data, seed_, &std::cerr);
-  } else {
-    std::ifstream in(data_file_path);
-    if (!in.good())
-      throw std::runtime_error("Cannot read input file: " + data_file_path);
-    cmdstan::json::json_data data(in);
-    in.close();
-    sm->model_ = &new_model(data, seed_, &std::cerr);
-  }
-  boost::ecuyer1988 rng(seed_);
-  sm->base_rng_ = rng;
-  return sm;
-}
-
-/**
- * Compute the log density and gradient of the underlying Stan model.
- *
- * @param[in] sm_ Stan model
- * @param[in] D_ number of unconstrained parameters
- * @param[in] q_ pointer to unconstrained parameters
- * @param[out] log_density_ pointer to log density
- * @param[out] grad_ pointer to gradient
- * @param[in] propto_ `true` if log density drops constant terms
- * @param[in] jacobian_ `true` if log density includes
- * change-of-variables terms
- * @return number of unconstrained parameters
- */
-void log_density_gradient(stanmodel* sm_, int D_, double* q_,
-			  double* log_density_, double* grad_,
-			  int propto_, int jacobian_) {
-  const Eigen::Map<Eigen::VectorXd> params_unc(q_, D_);
-  Eigen::VectorXd grad(D_);
-  std::ostream& msgs = std::cout;
-  static thread_local stan::math::ChainableStack thread_instance;
-  stan::model::model_base* model
-    = static_cast<stan::model::model_base*>(sm_->model_);
-  auto model_functor = create_model_functor(model, propto_, jacobian_, msgs);
-  stan::math::gradient(model_functor, params_unc, *log_density_, grad);
-  for (Eigen::VectorXd::Index d = 0; d < D_; ++d) {
-    grad_[d] = grad(d);
-  }
-}
-
-/**
- * Return the number of unconstrained parameters.
- *
- * TODO deprecate this function in favor of param_unc_num()
- *
- * @param[in] sm_ Stan model
- * @return number of unconstrained parameters
- */
-int get_num_unc_params(stanmodel* sm_) {
-  bool include_generated_quantities = false;
-  bool include_transformed_parameters = false;
-  std::vector<std::string> names;
-  stan::model::model_base* model
-    = static_cast<stan::model::model_base*>(sm_->model_);
-  model->unconstrained_param_names(names, include_generated_quantities,
-                                   include_transformed_parameters);
-  return names.size();
-}
-
-/**
- * Return the names of the constrained parameters.
- *
- * @param[in] sm_ Stan model
- * @return vector of the names of the constrained parameters
- */
-// TODO do we need this to return into Python/Julia?
-std::vector<std::string> param_names_(stanmodel* sm_) {
-  bool include_transformed_parameters = false;
-  bool include_generated_quantities = false;
-  std::vector<std::string> names;
-
-  stan::model::model_base* model
-    = static_cast<stan::model::model_base*>(sm_->model_);
-  model->constrained_param_names(names,
-                                 include_transformed_parameters,
-                                 include_generated_quantities);
-  return names;
-}
-
-/**
- * Return the number of constrained parameters.
- *
- * @param[in] sm_ Stan model
- * @return number of constrained parameters
- */
-int param_num(stanmodel* sm_) {
-  bool include_transformed_parameters = false;
-  bool include_generated_quantities = false;
-  std::vector<std::string> names = param_names_(sm_);
-  return names.size();
-}
-
-/**
- * Transform unconstrained parameters into constrained parameters.  The
- * constrained and unconstrained parameters need not have the same length.
- *
- * @param[in] sm_ Stan model
- * @param[in] D_ number of unconstrained parameters
- * @param[in] q_ pointer to unconstrained parameters
- * @param[in] K_ number of constrained parameters
- * @param[out] params_ pointer to constrained parameters
- */
-void param_constrain(stanmodel* sm_, int D_, double* q_, int K_,
-		     double* params_) {
-  bool include_transformed_parameters = false;
-  bool include_generated_quantities = false;
-  std::ostream& msgs = std::cout;
-  Eigen::VectorXd params_unc(D_);
-  for (Eigen::VectorXd::Index d = 0; d < D_; ++d) {
-    params_unc(d) = q_[d];
-  }
-  Eigen::VectorXd params;
-  stan::model::model_base* model
-    = static_cast<stan::model::model_base*>(sm_->model_);
-  model->write_array(sm_->base_rng_, params_unc, params,
-                     include_transformed_parameters,
-                     include_generated_quantities, &msgs);
-  for (Eigen::VectorXd::Index k = 0; k < K_; ++k) {
-    params_[k] = params(k);
-  }
-}
-
-/**
- * Return the names of the unconstrained parameters.
- *
- * @param[in] sm_ Stan model
- * @return vector of the names of the unconstrained parameters
- */
-// TODO do we need this to return into Python/Julia?
-std::vector<std::string> param_unc_names_(stanmodel* sm_) {
-  bool include_transformed_parameters = false;
-  bool include_generated_quantities = false;
-  std::vector<std::string> names;
-  stan::model::model_base* model
-    = static_cast<stan::model::model_base*>(sm_->model_);
-  model->unconstrained_param_names(names,
-                                   include_transformed_parameters,
-                                   include_generated_quantities);
-  return names;
-}
-
-/**
- * Return the number of unconstrained parameters.
- *
- * @param[in] sm_ Stan model
- * @return number of unconstrained parameters
- */
-int param_unc_num(stanmodel* sm_) {
-  bool include_transformed_parameters = false;
-  bool include_generated_quantities = false;
-  std::vector<std::string> names = param_unc_names_(sm_);
-  return names.size();
-}
-
-/**
- * Transform constrained parameters into unconstrained parameters.  The
- * constrained and unconstrained parameters need not have the same length.
- *
- * @param[in] sm_ Stan model
- * @param[in] K_ number of constrained parameters
- * @param[in] q_ pointer to constrained parameters
- * @param[in] D_ number of unconstrained parameters
- * @param[out] unc_params_ pointer to unconstrained parameters
- */
-void param_unconstrain(stanmodel* sm_, int K_, double* q_, int D_,
-		       double* unc_params_) {
-  std::vector<std::string> indexed_names = param_names_(sm_);
-  stan::model::model_base* model
-      = static_cast<stan::model::model_base*>(sm_->model_);
-  std::vector<std::string> base_names;
-  model->get_param_names(base_names);
-  std::vector<std::vector<size_t>> base_dims;
-  model->get_dims(base_dims);
-  std::vector<std::string> names;
-  std::vector<std::vector<size_t>> dims;
-  for (int b = 0; b < base_names.size(); ++b) {
-    std::string bname = base_names[b];
-    for (int i = 0; i < indexed_names.size(); ++i) {
-      std::string iname = indexed_names[i];
-      bool found = iname.find(bname) != std::string::npos;
-      if (found) {
-        names.push_back(bname);
-        dims.push_back(base_dims[b]);
-        break;
-      }
-    }
-  }
-  Eigen::VectorXd params_unc(K_);
-  for (Eigen::VectorXd::Index k = 0; k < K_; ++k) {
-    params_unc(k) = q_[k];
-  }
-  stan::io::array_var_context avc(names, params_unc, dims);
-  Eigen::VectorXd unc_params;
-  std::ostream& err_ = std::cout;
-  model->transform_inits(avc, unc_params, &err_);
-  for (Eigen::VectorXd::Index d = 0; d < D_; ++d) {
-    unc_params_[d] = unc_params(d);
-  }
-}
-
-/**
- * Destroy Stan model struct and free appropriate memory.
- *
- * @param[in] sm_ Stan model
- */
-void destroy(stanmodel* sm_) {
-  if (sm_ == NULL) return;
-  delete static_cast<stan::model::model_base*>(sm_->model_);
-  delete sm_;
-}
+// TODO(carpenter): remove classic interface
+// TODO(carpenter): rename to bridgestan.cpp
+#include "classic.hpp"
