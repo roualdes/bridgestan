@@ -640,7 +640,10 @@ extern "C"{
   void param_unc_names_R(model_rng** model, char const** name_out);
   void param_num_R(model_rng** model, int* include_tp, int* include_gq, int* num_out);
   void param_unc_num_R(model_rng** model, int* num_out);
-
+  void param_constrain_R(model_rng** model, int* include_tp, int* include_gq,
+		       const double* theta_unc, double* theta, int* return_code);
+  void param_unconstrain_R(model_rng** model, const double* theta, double* theta_unc, int* return_code);
+  void param_unconstrain_json_R(model_rng** model, char const** json, double* theta_unc, int* return_code);
   void log_density_R(model_rng** model, int* propto, int* jacobian, const double* theta, double* val, int* return_code);
   void log_density_gradient_R(model_rng** model, int* propto, int* jacobian, const double* theta, double* val, double* grad, int* return_code);
   void log_density_hessian_R(model_rng** model, int* propto, int* jacobian, const double* theta, double* val, double* grad, double* hess, int* return_code);
@@ -667,7 +670,16 @@ void param_num_R(model_rng** model, int* include_tp, int* include_gq, int* num_o
 void param_unc_num_R(model_rng** model, int* num_out){
   *num_out = param_unc_num(*model);
 }
-
+void param_constrain_R(model_rng** model, int* include_tp, int* include_gq,
+		                 const double* theta_unc, double* theta, int* return_code){
+  *return_code = param_constrain(*model, *include_tp, *include_gq, theta_unc, theta);
+}
+void param_unconstrain_R(model_rng** model, const double* theta, double* theta_unc, int* return_code){
+  *return_code = param_unconstrain(*model, theta, theta_unc);
+}
+void param_unconstrain_json_R(model_rng** model, char const** json, double* theta_unc, int* return_code){
+  *return_code = param_unconstrain_json(*model, *json, theta_unc);
+}
 void log_density_R(model_rng** model, int* propto, int* jacobian, const double* theta, double* val, int* return_code){
   *return_code = log_density(*model, *propto, *jacobian, theta, val);
 }
