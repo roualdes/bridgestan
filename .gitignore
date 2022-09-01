@@ -8,6 +8,12 @@ notes.org
 
 # Python
 __pycache__/
+.ipynb_checkpoints/
+.pytest_cache/
+
+# R
+.Rhistory
+.RData
 
 # Julia
 .juliahistory
