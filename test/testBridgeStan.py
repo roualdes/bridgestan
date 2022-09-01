@@ -145,6 +145,21 @@ def test_param_constrain():
     with np.testing.assert_raises(ValueError):
         bridge.param_constrain(a, out = scratch_wrong)
 
+    # exception handling test in transformed parameters/model (compiled same way)
+    throw_tp_so = "../stan/throw_tp/throw_tp_model.so"
+    bridge2 = bs.Bridge(throw_tp_so)
+
+    y = np.array(np.random.uniform(1))
+    bridge2.param_constrain(y,include_tp = False)
+    with np.testing.assert_raises(RuntimeError):
+        bridge2.param_constrain(y,include_tp = True)
+
+    throw_gq_so = "../stan/throw_gq/throw_gq_model.so"
+    bridge3 = bs.Bridge(throw_gq_so)
+    bridge3.param_constrain(y,include_gq = False)
+    with np.testing.assert_raises(RuntimeError):
+        bridge3.param_constrain(y,include_gq = True)
+
 def test_param_unconstrain():
     fr_gaussian_so = "../stan/fr_gaussian/fr_gaussian_model.so"
     fr_gaussian_data = "../stan/fr_gaussian/fr_gaussian.data.json"
@@ -518,5 +533,3 @@ if __name__ == "__main__":
     test_fr_gaussian()
     print("------------------------------------------------------------")
     print("If no errors were reported, all tests passed.")
-
-# TODO(carpenter): add tests for models throwing exceptions
