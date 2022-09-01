@@ -35,7 +35,7 @@ def test_constructor():
 
     # test data load exception
     throw_data_so = "../stan/throw_data/throw_data_model.so"
-    print("construct() EXPECTION MSG ON NEXT LINE IS NOT AN ERROR")
+    print("construct() EXCEPTION MSG ON NEXT LINE IS NOT AN ERROR")
     with np.testing.assert_raises(RuntimeError):
         b4 = bs.Bridge(throw_data_so)
 
@@ -151,12 +151,14 @@ def test_param_constrain():
 
     y = np.array(np.random.uniform(1))
     bridge2.param_constrain(y,include_tp = False)
+    print("param_constrain() EXCEPTION MSG ON NEXT LINE IS NOT AN ERROR")
     with np.testing.assert_raises(RuntimeError):
         bridge2.param_constrain(y,include_tp = True)
 
     throw_gq_so = "../stan/throw_gq/throw_gq_model.so"
     bridge3 = bs.Bridge(throw_gq_so)
     bridge3.param_constrain(y,include_gq = False)
+    print("param_constrain() EXCEPTION MSG ON NEXT LINE IS NOT AN ERROR")
     with np.testing.assert_raises(RuntimeError):
         bridge3.param_constrain(y,include_gq = True)
 
@@ -224,7 +226,7 @@ def test_log_density():
     throw_lp_so = "../stan/throw_lp/throw_lp_model.so"
     bridge2 = bs.Bridge(throw_lp_so)
     y2 = np.array(np.random.uniform(1))
-    print("log_density() EXPECTION MSG ON NEXT LINE IS NOT AN ERROR")
+    print("log_density() EXCEPTION MSG ON NEXT LINE IS NOT AN ERROR")
     with np.testing.assert_raises(RuntimeError):
         bridge2.log_density(y2)
 
