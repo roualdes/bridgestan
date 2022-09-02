@@ -628,6 +628,3 @@ int log_density_hessian(model_rng* mr, bool propto, bool jacobian,
   }
   return -1;
 }
-
-// TODO(carpenter): rename to bridgestan.cpp
-
