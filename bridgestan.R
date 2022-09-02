@@ -2,8 +2,15 @@
 Bridge <- R6::R6Class("Bridge",
   public = list(
     initialize = function(lib, data, rng_seed, chain_id) {
+      if (.Platform$OS.type == "windows"){
+        lib_old <- lib
+        lib <- paste(tools::file_path_sans_ext(lib), ".dll")
+        file.copy(from=lib_old, to=lib)
+      }
+
       private$lib <- lib
       private$lib_name <- tools::file_path_sans_ext(basename(lib))
+
       dyn.load(lib, PACKAGE = private$lib_name)
       .C("construct_R",
         as.character(data), as.integer(rng_seed), as.integer(chain_id),
