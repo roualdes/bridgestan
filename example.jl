@@ -1,24 +1,22 @@
-include("./JuliaClient.jl")
+include("./bridgestan.jl")
 
 # Bernoulli
 # CMDSTAN=/path/to/cmdstan/ make stan/bernoulli/bernoulli
 
 bernoulli_lib = joinpath(@__DIR__, "stan/bernoulli/bernoulli_model.so")
 bernoulli_data = joinpath(@__DIR__, "stan/bernoulli/bernoulli.data.json")
-blib = Libc.Libdl.dlopen(bernoulli_lib)
 
-smb = JBS.StanModel(blib, bernoulli_data);
-x = rand(smb.dims);
+smb = bridgestan.StanModel(bernoulli_lib, bernoulli_data);
+x = rand(bridgestan.param_unc_num(smb));
 q = @. log(x / (1 - x));        # unconstrained scale
 
-JBS.log_density_gradient!(smb, q, jacobian = 0)
+lp, grad = bridgestan.log_density_gradient(smb, q, jacobian = 0)
 
 println()
 println("log_density and gradient of Bernoulli model:")
-println((smb.log_density, smb.gradient))
+println((lp, grad))
 println()
 
-## JBS.destroy(smb)
 
 
 # Multivariate Gaussian
@@ -26,32 +24,29 @@ println()
 
 multi_lib = joinpath(@__DIR__, "stan/multi/multi_model.so")
 multi_data = joinpath(@__DIR__, "stan/multi/multi.data.json")
-mlib = Libc.Libdl.dlopen(multi_lib)
 
-smm = JBS.StanModel(mlib, multi_data)
-x = randn(smm.dims);
+smm = bridgestan.StanModel(multi_lib, multi_data)
+x = randn(bridgestan.param_unc_num(smm));
 
-JBS.log_density_gradient!(smm, x)
+lp, grad = bridgestan.log_density_gradient(smm, x)
 
 println("log_density and gradient of Multivariate Gaussian model:")
-println((smm.log_density, smm.gradient))
+println((lp, grad))
 println()
-
-## JBS.destroy(smm)
 
 
 # HMC
 include("./MCMC.jl")
 using Statistics
 
-model = JBS.StanModel(mlib, multi_data);
+model = bridgestan.StanModel(multi_lib, multi_data);
 
 stepsize = 0.25
 steps = 10
 hmcd = HMCDiag(model, stepsize, steps);
 
 M = 10_000
-theta = zeros(M, model.dims)
+theta = zeros(M, bridgestan.param_unc_num(model))
 for m in 1:M
     theta[m, :] .= sample(hmcd)
 end
