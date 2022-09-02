@@ -27,14 +27,14 @@ Bridge <- R6::R6Class("Bridge",
         names_out = as.character(""),
         PACKAGE = private$lib_name
       )$names_out -> names
-      strsplit(names, ",")
+      strsplit(names, ",")[[1]]
     },
     param_unc_names = function() {
       .C("param_unc_names_R", as.raw(private$model),
         names_out = as.character(""),
         PACKAGE = private$lib_name
       )$names_out -> names
-      strsplit(names, ",")
+      strsplit(names, ",")[[1]]
     },
     param_num = function(include_tp = FALSE, include_gq = FALSE) {
       .C("param_num_R", as.raw(private$model),
@@ -108,7 +108,7 @@ Bridge <- R6::R6Class("Bridge",
       if (vars$return_code) {
         stop("C++ exception in log_density_gradient(); see stderr for messages")
       }
-      list(val = vars$val, grad = vars$gradient)
+      list(val = vars$val, gradient = vars$gradient)
     },
     log_density_hessian = function(theta, propto = TRUE, jacobian = TRUE) {
       dims <- self$param_unc_num()
@@ -121,7 +121,7 @@ Bridge <- R6::R6Class("Bridge",
       if (vars$return_code) {
         stop("C++ exception in log_density_hessian(); see stderr for messages")
       }
-      list(val = vars$val, grad = vars$gradient, hess = matrix(vars$hess, nrow = dims, byrow = TRUE))
+      list(val = vars$val, gradient = vars$gradient, hessian = matrix(vars$hess, nrow = dims, byrow = TRUE))
     }
   ),
   private = list(
