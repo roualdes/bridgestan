@@ -70,27 +70,6 @@ extern "C" {
     char* param_tp_gq_names_ = nullptr;
   };
 
-  /**
-   * Convert the specified sequence of names to comma-separated value
-   * format.  This does a heap allocation, so the resulting string
-   * must be freed to prevent a memory leak.  The CSV is output
-   * without additional space around the commas.
-   *
-   * @param names sequence of names to convert
-   * @return CSV formatted sequence of names
-   */
-  char* to_csv(const std::vector<std::string>& names) {
-    std::stringstream ss;
-    for (size_t i = 0; i < names.size(); ++i) {
-      if (i > 0) ss << ',';
-      ss << names[i];
-    }
-    std::string s = ss.str();
-    const char* s_c = s.c_str();
-    return strdup(s_c);
-  }
-
-
 
   /**
    * Construct an instance of a model and pseudorandom number
@@ -179,7 +158,7 @@ extern "C" {
    * @param[in] include_gq `true` to include generated quantities
    * @return number of parameters
    */
-  int param_num2(model_rng* mr, bool include_tp, bool include_gq);
+  int param_num(model_rng* mr, bool include_tp, bool include_gq);
 
   /**
    * Return the number of unconstrained parameters.  The number of
@@ -190,7 +169,7 @@ extern "C" {
    * @param[in] mr pointer to model and RNG structure
    * @return number of unconstrained parameters
    */
-  int param_unc_num2(model_rng* mr);
+  int param_unc_num(model_rng* mr);
 
 
   /**
@@ -209,7 +188,7 @@ extern "C" {
    * @return code 0 if successful and code -1 if there is an exception
    * in the underlying Stan code
    */
-  int param_constrain2(model_rng* mr, bool include_tp, bool include_gq,
+  int param_constrain(model_rng* mr, bool include_tp, bool include_gq,
 		       const double* theta_unc, double* theta);
 
 
@@ -226,7 +205,7 @@ extern "C" {
    * @return code 0 if successful and code -1 if there is an exception
    * in the underlying Stan code
    */
-  int param_unconstrain2(model_rng* mr, const double* theta,
+  int param_unconstrain(model_rng* mr, const double* theta,
 			 double* theta_unc);
 
   /**
@@ -284,7 +263,7 @@ extern "C" {
    * @return code 0 if successful and code -1 if there is an exception
    * in the underlying Stan code
    */
-  int log_density_gradient2(model_rng* mr, bool propto, bool jacobian,
+  int log_density_gradient(model_rng* mr, bool propto, bool jacobian,
 			    const double* theta, double* val, double* grad);
 
   /**
@@ -312,6 +291,28 @@ extern "C" {
 			  const double* theta, double* val, double* grad,
 			  double* hessian);
 }
+
+
+/**
+ * Convert the specified sequence of names to comma-separated value
+ * format.  This does a heap allocation, so the resulting string
+ * must be freed to prevent a memory leak.  The CSV is output
+ * without additional space around the commas.
+ *
+ * @param names sequence of names to convert
+ * @return CSV formatted sequence of names
+ */
+char* to_csv(const std::vector<std::string>& names) {
+  std::stringstream ss;
+  for (size_t i = 0; i < names.size(); ++i) {
+    if (i > 0) ss << ',';
+    ss << names[i];
+  }
+  std::string s = ss.str();
+  const char* s_c = s.c_str();
+  return strdup(s_c);
+}
+
 
 /**
  * Allocate and return a new model as a reference given the specified
@@ -428,7 +429,7 @@ const char* param_unc_names(model_rng* mr) {
   return mr->param_unc_names_;
 }
 
-int param_num2(model_rng* mr, bool include_tp, bool include_gq) {
+int param_num(model_rng* mr, bool include_tp, bool include_gq) {
   // first branch used most of the time
   if (include_tp && include_gq) return mr->param_tp_gq_num_;
   if (include_tp) return mr->param_tp_num_;
@@ -436,21 +437,21 @@ int param_num2(model_rng* mr, bool include_tp, bool include_gq) {
   return mr->param_num_;
 }
 
-int param_unc_num2(model_rng* mr) {
+int param_unc_num(model_rng* mr) {
   return mr->param_unc_num_;
 }
 
 void param_constrain2_impl(model_rng* mr, bool include_tp, bool include_gq,
 			  const double* theta_unc, double* theta) {
   using Eigen::VectorXd;
-  VectorXd params_unc = VectorXd::Map(theta_unc, param_unc_num2(mr));
+  VectorXd params_unc = VectorXd::Map(theta_unc, param_unc_num(mr));
   Eigen::VectorXd params;
   mr->model_->write_array(mr->rng_, params_unc, params,
 			  include_tp, include_gq, &std::cerr);
   Eigen::VectorXd::Map(theta, params.size()) = params;
 }
 
-int param_constrain2(model_rng* mr, bool include_tp, bool include_gq,
+int param_constrain(model_rng* mr, bool include_tp, bool include_gq,
                       const double* theta_unc, double* theta) {
   try {
     param_constrain2_impl(mr, include_tp, include_gq, theta_unc, theta);
@@ -498,7 +499,7 @@ void param_unconstrain2_impl(model_rng* mr, const double* theta,
   Eigen::VectorXd::Map(theta_unc, unc_params.size()) = unc_params;
 }
 
-int param_unconstrain2(model_rng* mr, const double* theta,
+int param_unconstrain(model_rng* mr, const double* theta,
 			double* theta_unc) {
   try {
     param_unconstrain2_impl(mr, theta, theta_unc);
@@ -538,7 +539,7 @@ void log_density_impl(model_rng* mr, bool propto, bool jacobian,
   auto logp
       = create_model_functor(mr->model_, propto, jacobian,
                              std::cerr);
-  int N = param_unc_num2(mr);
+  int N = param_unc_num(mr);
   Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
   if (propto) {
     // TODO(carpenter): avoid reverse pass for efficiency
@@ -569,7 +570,7 @@ double log_density_gradient_impl(model_rng* mr, bool propto, bool jacobian,
   auto logp
       = create_model_functor(mr->model_, propto, jacobian,
                              std::cerr);
-  int N = param_unc_num2(mr);
+  int N = param_unc_num(mr);
   Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, N);
   double lp;
   Eigen::VectorXd grad_vec(N);
@@ -579,7 +580,7 @@ double log_density_gradient_impl(model_rng* mr, bool propto, bool jacobian,
 }
 
 
-int log_density_gradient2(model_rng* mr, bool propto, bool jacobian,
+int log_density_gradient(model_rng* mr, bool propto, bool jacobian,
 			  const double* theta_unc, double* val, double* grad) {
   try {
     *val = log_density_gradient_impl(mr, propto, jacobian, theta_unc, grad);
@@ -600,7 +601,7 @@ double log_density_hessian_impl(model_rng* mr, bool propto, bool jacobian,
   auto logp
       = create_model_functor(mr->model_, propto, jacobian,
                              std::cerr);
-  int N = param_unc_num2(mr);
+  int N = param_unc_num(mr);
   Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
   double lp;
   Eigen::VectorXd grad_vec;
@@ -628,6 +629,5 @@ int log_density_hessian(model_rng* mr, bool propto, bool jacobian,
   return -1;
 }
 
-// TODO(carpenter): remove classic interface
 // TODO(carpenter): rename to bridgestan.cpp
-#include "classic.hpp"
+

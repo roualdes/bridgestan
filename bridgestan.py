@@ -86,11 +86,11 @@ class Bridge:
         self._name.restype = ctypes.c_char_p
         self._name.argtypes = [ctypes.c_void_p]
 
-        self._param_num = self.stanlib.param_num2
+        self._param_num = self.stanlib.param_num
         self._param_num.restype = ctypes.c_int
         self._param_num.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_int]
 
-        self._param_unc_num = self.stanlib.param_unc_num2
+        self._param_unc_num = self.stanlib.param_unc_num
         self._param_unc_num.restype = ctypes.c_int
         self._param_unc_num.argtypes = [ctypes.c_void_p]
 
@@ -106,7 +106,7 @@ class Bridge:
         self._param_unc_names.restype = ctypes.c_char_p
         self._param_unc_names.argtypes = [ctypes.c_void_p]
 
-        self._param_constrain = self.stanlib.param_constrain2
+        self._param_constrain = self.stanlib.param_constrain
         self._param_constrain.restype = ctypes.c_int
         self._param_constrain.argtypes = [
             ctypes.c_void_p,
@@ -116,7 +116,7 @@ class Bridge:
             double_array,
         ]
 
-        self._param_unconstrain = self.stanlib.param_unconstrain2
+        self._param_unconstrain = self.stanlib.param_unconstrain
         self._param_unconstrain.restype = ctypes.c_int
         self._param_unconstrain.argtypes = [ctypes.c_void_p, double_array, double_array]
 
@@ -138,7 +138,7 @@ class Bridge:
             ctypes.POINTER(ctypes.c_double),
         ]
 
-        self._log_density_gradient = self.stanlib.log_density_gradient2
+        self._log_density_gradient = self.stanlib.log_density_gradient
         self._log_density_gradient.restype = ctypes.c_int
         self._log_density_gradient.argtypes = [
             ctypes.c_void_p,

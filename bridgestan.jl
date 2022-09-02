@@ -87,7 +87,7 @@ end
 
 function param_constrain(sm::StanModel, theta_unc; include_tp=false, include_gq=false)
     out::Vector{Float64} = zeros(param_num(sm, include_tp=include_tp, include_gq=include_gq))
-    rc = ccall(Libc.Libdl.dlsym(sm.lib, "param_constrain2"),
+    rc = ccall(Libc.Libdl.dlsym(sm.lib, "param_constrain"),
                Cint,
                (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}),
                sm.stanmodel, include_tp, include_gq, theta_unc, out)
@@ -101,7 +101,7 @@ end
 
 function param_unconstrain(sm::StanModel, theta)
     out::Vector{Float64} = zeros(param_unc_num(sm))
-    rc = ccall(Libc.Libdl.dlsym(sm.lib, "param_unconstrain2"),
+    rc = ccall(Libc.Libdl.dlsym(sm.lib, "param_unconstrain"),
                Cint,
                (Ptr{StanModelStruct}, Ref{Cdouble}, Ref{Cdouble}),
                sm.stanmodel, theta, out)
@@ -142,7 +142,7 @@ function log_density_gradient(sm::StanModel, q; propto = true, jacobian = true)
     lp = Ref{Float64}(0.0)
     grad::Vector{Float64} = zeros(param_unc_num(sm))
 
-    rc = ccall(Libc.Libdl.dlsym(sm.lib, "log_density_gradient2"),
+    rc = ccall(Libc.Libdl.dlsym(sm.lib, "log_density_gradient"),
               Cint,
               (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}, Ref{Cdouble}),
               sm.stanmodel, propto, jacobian, q, lp, grad)
