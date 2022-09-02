@@ -27,12 +27,12 @@ ifdef STAN_OPENCL
 	STANCFLAGS += --use-opencl
 endif
 
-MAIN ?= src/main.cpp
-MAIN_SO = $(patsubst %.cpp,%.so,$(MAIN))
+BRIDGE ?= src/bridgestan.cpp
+BRIDGE_SO = $(patsubst %.cpp,%.so,$(BRIDGE))
 
 ## COMPILE (e.g., COMPILE.cpp == clang++ ...) was set by (MATH)make/compiler_flags
 ## UNKNOWNS:  OUTPUT_OPTION???  LDLIBS???
-$(MAIN_SO) : $(MAIN)
+$(BRIDGE_SO) : $(BRIDGE)
 	@echo ''
 	@echo '--- Compiling Stan bridge C++ code ---'
 	@mkdir -p $(dir $@)
@@ -51,19 +51,19 @@ $(MAIN_SO) : $(MAIN)
 .PRECIOUS: %.hpp
 
 ## builds executable (suffix depends on platform)
-%_model.so : %.hpp $(MAIN_SO) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
+%_model.so : %.hpp $(BRIDGE_SO) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	@echo ''
 	@echo '--- Compiling C++ code ---'
 	$(COMPILE.cpp) $(CXXFLAGS_PROGRAM) -fPIC $(CXXFLAGS_THREADS) -x c++ -o $(subst  \,/,$*).o $(subst \,/,$<)
 	@echo '--- Linking C++ code ---'
-	$(LINK.cpp) -shared -lm -fPIC -o $(patsubst %.hpp, %_model.so, $(subst \,/,$<)) $(subst \,/,$*.o) $(MAIN_SO) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
+	$(LINK.cpp) -shared -lm -fPIC -o $(patsubst %.hpp, %_model.so, $(subst \,/,$<)) $(subst \,/,$*.o) $(BRIDGE_SO) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	$(RM) $(subst  \,/,$*).o
 
 ## calculate dependencies for %$(EXE) target
 ifneq (,$(STAN_TARGETS))
-$(patsubst %,%.d,$(STAN_TARGETS)) : DEPTARGETS += -MT $(patsubst %.d,%$(EXE),$@) -include $< -include $(MAIN)
+$(patsubst %,%.d,$(STAN_TARGETS)) : DEPTARGETS += -MT $(patsubst %.d,%$(EXE),$@) -include $< -include $(BRIDGE)
 -include $(patsubst %,%.d,$(STAN_TARGETS))
--include $(patsubst %.cpp,%.d,$(MAIN))
+-include $(patsubst %.cpp,%.d,$(BRIDGE))
 endif
 
 ## compiles and instantiates TBB library (only if not done automatically on platform)
@@ -80,7 +80,7 @@ clean-deps:
 	$(RM) $(call findfiles,src,*.dSYM) $(call findfiles,src/stan,*.dSYM) $(call findfiles,$(MATH)/stan,*.dSYM)
 
 clean-all: clean clean-deps
-	$(RM) $(MAIN_SO)
+	$(RM) $(BRIDGE_SO)
 	$(RM) -r $(wildcard $(BOOST)/stage/lib $(BOOST)/bin.v2 $(BOOST)/tools/build/src/engine/bootstrap/ $(BOOST)/tools/build/src/engine/bin.* $(BOOST)/project-config.jam* $(BOOST)/b2 $(BOOST)/bjam $(BOOST)/bootstrap.log)
 
 clean-program:
@@ -96,7 +96,7 @@ endif
 # print compilation command line config
 .PHONY: compile_info
 compile_info:
-	@echo '$(LINK.cpp) $(CXXFLAGS_PROGRAM) $(MAIN_SO) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)'
+	@echo '$(LINK.cpp) $(CXXFLAGS_PROGRAM) $(BRIDGE_SO) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)'
 
 ## print value of makefile variable (e.g., make print-TBB_TARGETS)
 .PHONY: print-%
