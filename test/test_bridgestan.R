@@ -16,10 +16,13 @@ simple$log_density_hessian(x)$hess
 bernoulli <- Bridge$new("../stan/bernoulli/bernoulli_model.so", "../stan/bernoulli/bernoulli.data.json", 1234, 0)
 
 # try to foul up
-dyn.load("./test.so")
+# if you delete the PACKAGE=... lines in the client,
+# the next two $name() calls will output the wrong thing.
+dyn.load("./test_collisions.so")
 
 bernoulli$name()
 simple$name()
+
 x <- runif(bernoulli$param_unc_num())
 q <- log(x / (1 - x))
 print("x and constrain(q) should match")
