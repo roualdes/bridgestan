@@ -14,13 +14,14 @@ test_that("simple_model has 5 unconstrained parameters", {
     expect_equal(simple$param_unc_num(), 5)
 })
 
-x <- runif(5)
 
 test_that("simple_model grad(x) is -x",{
+    x <- runif(5)
     expect_equal(-x, simple$log_density_gradient(x)$gradient)
 })
 
 test_that("simple_model Hessian is -I",{
+    x <- runif(5)
     expect_equal(-diag(5), simple$log_density_hessian(x)$hessian)
 })
 
@@ -37,13 +38,15 @@ test_that("loading another library didn't break prior ones", {
 
 })
 
-x <- runif(bernoulli$param_unc_num())
-q <- log(x / (1 - x))
 test_that("bernoulli constrain works", {
+    x <- runif(bernoulli$param_unc_num())
+    q <- log(x / (1 - x))
     expect_equal(x, bernoulli$param_constrain(q))
 })
 
 test_that("bernoulli unconstrain works", {
+    x <- runif(bernoulli$param_unc_num())
+    q <- log(x / (1 - x))
     expect_equal(q, bernoulli$param_unconstrain(x))
     expect_equal(q, bernoulli$param_unconstrain_json(paste("{\"theta\":", as.character(x), "}")))
 })
