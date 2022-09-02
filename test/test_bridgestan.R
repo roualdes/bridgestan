@@ -31,8 +31,11 @@ bernoulli <- Bridge$new("../stan/bernoulli/bernoulli_model.so", "../stan/bernoul
 
 
 test_that("loading another library didn't break prior ones", {
-    dyn.load("./test_collisions.so")
-
+    if (.Platform$OS.type == "windows"){
+        dyn.load("./test_collisions.dll")
+    } else {
+        dyn.load("./test_collisions.so")
+    }
     expect_equal(bernoulli$name(), "bernoulli_model")
     expect_equal(simple$name(), "simple_model")
 
