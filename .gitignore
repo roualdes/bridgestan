@@ -3,6 +3,7 @@
 *.o
 *.so
 *.hpp
+*.dll
 
 notes.org
 
