@@ -65,7 +65,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: [3.9, "3.10"]
-      steps:
+    steps:
       - name: Check out github
         uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
