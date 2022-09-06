@@ -1,12 +1,9 @@
-name: scikit-stan tests
+name: bridgestan tests
 
 on:
   push:
     branches:
-      - 'develop'
       - 'main'
-    tags:
-      - '**'
   pull_request:
   workflow_dispatch: {}
 
@@ -29,7 +26,7 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies (python)
+      - name: Install cmdstanpy for cmdstan install
         run: |
           pip install cmdstanpy
 
@@ -49,15 +46,16 @@ jobs:
         run: |
           python -m cmdstanpy.install_cmdstan --compiler --version "${{ env.CMDSTAN_VERSION }}" --cores 2
 
+      # we use the cache here to build the Stan models once for multiple interfaces
       - uses: actions/cache@v2
         id: test-models
         with:
           path: ./stan/
-          key: ${{ github.sha }}
+          key: ${{ github.sha }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
 
       - name: Build test models
         run: |
-          bash test/build.sh
+          bash stan/build_all.sh
 
 
   test_python_client:
