@@ -1,0 +1,93 @@
+name: scikit-stan tests
+
+on:
+  push:
+    branches:
+      - 'develop'
+      - 'main'
+    tags:
+      - '**'
+  pull_request:
+  workflow_dispatch: {}
+
+env:
+  CMDSTAN_VERSION: "2.30.1"
+
+jobs:
+  build_test_models:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: [3.9]
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Check out github
+        uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies (python)
+        run: |
+          pip install cmdstanpy
+
+      - name: CmdStan installation cacheing
+        uses: actions/cache@v2
+        with:
+          path: ~/.cmdstan
+          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+
+      - name: Install CmdStan (Linux, macOS)
+        if: matrix.os != 'windows-latest'
+        run: |
+          python -m cmdstanpy.install_cmdstan --version "${{ env.CMDSTAN_VERSION }}" --cores 2
+
+      - name: Install CmdStan (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          python -m cmdstanpy.install_cmdstan --compiler --version "${{ env.CMDSTAN_VERSION }}" --cores 2
+
+      - uses: actions/cache@v2
+        id: test-models
+        with:
+          path: ./stan/
+          key: ${{ github.sha }}
+
+      - name: Build test models
+        run: |
+          bash test/build.sh
+
+
+  test_python_client:
+    needs: [build_test_models]
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: [3.9, "3.10"]
+      steps:
+      - name: Check out github
+        uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Restore built models
+        uses: actions/cache@v2
+        id: test-models
+        with:
+          path: ./stan/
+          key: ${{ github.sha }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+
+      - name: Install package
+        run: |
+          cd python/
+          pip install .
+
+      - name: Run tests
+        run: |
+          cd python/
+          pytest -v
