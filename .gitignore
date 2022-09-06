@@ -11,6 +11,8 @@ notes.org
 __pycache__/
 .ipynb_checkpoints/
 .pytest_cache/
+*.egg-info/
+*.pyc
 
 # R
 .Rhistory

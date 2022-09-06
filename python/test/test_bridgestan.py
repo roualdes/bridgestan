@@ -1,11 +1,7 @@
 import os
-import sys
 import numpy as np
 
-sys.path.append(os.getcwd() + "/..")
-
 import bridgestan as bs
-
 
 def test_constructor():
 

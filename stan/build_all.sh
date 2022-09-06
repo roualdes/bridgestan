@@ -7,5 +7,6 @@ do
     CMDSTAN="$CMDSTAN" make -j4 O=0 stan/"$model"/"$model"_model.so &
 done
 wait
-cd "$BRIDGESTAN/test"
+
+cd "$BRIDGESTAN/R/test"
 gcc -fpic -shared -o test_collisions.so test_collisions.c

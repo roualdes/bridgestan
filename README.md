@@ -7,7 +7,7 @@ transforms.  The motivation was developing inference algorithms in
 Python and Julia for arbitrary Stan models.
 
 Stan is a probabilistic programming language for coding statistical
-models.  For an introduction to what can be coded in Stan, see the 
+models.  For an introduction to what can be coded in Stan, see the
 [*Stan User's Guide*](https://mc-stan.org/docs/stan-users-guide/index.html).
 
 
@@ -63,9 +63,9 @@ The forward slash (`/`) at the end of `cmdstan/` is necessary.
 This repository includes examples of calling Stan through BridgeStan
 in Python or Julia.
 
-* From Python: [`example.py`](example.py)
+* From Python: [`example.py`](julia/example.py)
 
-* From Julia: [`example.jl`](example.jl)
+* From Julia: [`example.jl`](python/example.jl)
 
 
 ## Custom build instructions
@@ -117,13 +117,13 @@ STAN_THREADS=true
 
 ## Tips
 
-### Windows paths 
+### Windows paths
 
-On Windows, BridgeStan requires *forward slashes* in the path to 
-CmdStan, as in the following example. 
+On Windows, BridgeStan requires *forward slashes* in the path to
+CmdStan, as in the following example.
 
 ```
-mingw32-make.exe CMDSTAN="C:/path/to/cmdstan/" ./stan/multi/multi_model.so 
+mingw32-make.exe CMDSTAN="C:/path/to/cmdstan/" ./stan/multi/multi_model.so
 ```
 
 ### Sizes and `param_constrain()` and `param_unconstrain()`
@@ -150,7 +150,7 @@ languages installed.
 
 ### Prereq: C++ toolchain
 
-Stan requires a C++ tool chain consisting of 
+Stan requires a C++ tool chain consisting of
 
 * A C++11 compiler
 * The Gnu make utility for *nix *or* mingw for Windows
@@ -192,7 +192,7 @@ You can verify CmdStan works end-to-end by using the resulting
 executable to fit some data.
 
 ```
-./<bridgestan-dir>/stan/multi/multi sample data file=<bridgestan-dir>/stan/multi/multi.data.json 
+./<bridgestan-dir>/stan/multi/multi sample data file=<bridgestan-dir>/stan/multi/multi.data.json
 ```
 
 
