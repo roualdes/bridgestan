@@ -10,13 +10,6 @@ Welcome to BridgeStan's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   julia
-   python
-   r
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   install
+   how-it-works
+   languages
