@@ -1,5 +1,4 @@
-include("../bridgestan.jl")
-
+using Bridgestan
 using Test
 
 @testset "bernoulli" begin
@@ -10,33 +9,33 @@ using Test
         sum(yn -> yn * log(p) + (1 - yn) * log(1 - p), y)
     end
 
-    lib = joinpath(@__DIR__, "../stan/bernoulli/bernoulli_model.so")
-    data = joinpath(@__DIR__, "../stan/bernoulli/bernoulli.data.json")
+    lib = joinpath(@__DIR__, "../../stan/bernoulli/bernoulli_model.so")
+    data = joinpath(@__DIR__, "../../stan/bernoulli/bernoulli.data.json")
 
-    model = bridgestan.StanModel(lib, data)
+    model = Bridgestan.StanModel(lib, data)
 
-    @test bridgestan.name(model) == "bernoulli_model"
+    @test Bridgestan.name(model) == "bernoulli_model"
 
     y = [0, 1, 0, 0, 0, 0, 0, 0, 0, 1]
     R = 1000
 
     for _ in 1:R
-        x = rand(bridgestan.param_num(model))
+        x = rand(Bridgestan.param_num(model))
         q = @. log(x / (1 - x)) # unconstrained scale
-        (log_density, gradient) = bridgestan.log_density_gradient(model, q, jacobian = 0)
+        (log_density, gradient) = Bridgestan.log_density_gradient(model, q, jacobian = 0)
 
         p = x[1]
         @test isapprox(log_density, bernoulli(y, p))
 
-        constrained_parameters = bridgestan.param_constrain(model, q)
+        constrained_parameters = Bridgestan.param_constrain(model, q)
         @test isapprox(constrained_parameters, x)
 
-        unconstrained_parameters= bridgestan.param_unconstrain(model, constrained_parameters)
+        unconstrained_parameters= Bridgestan.param_unconstrain(model, constrained_parameters)
         @test isapprox(unconstrained_parameters, q)
     end
 
-    @test isapprox(bridgestan.param_num(model), 1)
-    @test isapprox(bridgestan.param_unc_num(model), 1)
+    @test isapprox(Bridgestan.param_num(model), 1)
+    @test isapprox(Bridgestan.param_unc_num(model), 1)
 end
 
 
@@ -52,11 +51,11 @@ end
         return -x
     end
 
-    lib = joinpath(@__DIR__, "../stan/multi/multi_model.so")
-    data = joinpath(@__DIR__, "../stan/multi/multi.data.json")
+    lib = joinpath(@__DIR__, "../../stan/multi/multi_model.so")
+    data = joinpath(@__DIR__, "../../stan/multi/multi.data.json")
 
     nt = Threads.nthreads()
-    models = Tuple(bridgestan.StanModel(lib, data) for _ in 1:nt)
+    models = Tuple(Bridgestan.StanModel(lib, data) for _ in 1:nt)
 
     R = 1000
     ld = Vector{Bool}(undef, R)
@@ -64,8 +63,8 @@ end
 
     @sync for it in 1:nt
         Threads.@spawn for r in it:nt:R
-            x = randn(bridgestan.param_num(models[it]))
-            (lp, grad) = bridgestan.log_density_gradient(models[it], x)
+            x = randn(Bridgestan.param_num(models[it]))
+            (lp, grad) = Bridgestan.log_density_gradient(models[it], x)
 
             ld[r] = isapprox(lp, gaussian(x))
             g[r] = isapprox(grad, grad_gaussian(x))
@@ -81,23 +80,23 @@ end
     # Guassian with positive constrained standard deviation
     # CMDSTAN=/path/to/cmdstan/ make stan/gaussian/gaussian_model.so
 
-    lib = joinpath(@__DIR__, "../stan/gaussian/gaussian_model.so")
-    data = joinpath(@__DIR__, "../stan/gaussian/gaussian.data.json")
+    lib = joinpath(@__DIR__, "../../stan/gaussian/gaussian_model.so")
+    data = joinpath(@__DIR__, "../../stan/gaussian/gaussian.data.json")
 
-    model = bridgestan.StanModel(lib, data)
+    model = Bridgestan.StanModel(lib, data)
 
     theta = [0.2, 1.9]
     theta_unc = [0.2, log(1.9)]
 
 
-    theta_test = bridgestan.param_constrain(model, theta_unc)
+    theta_test = Bridgestan.param_constrain(model, theta_unc)
     @test isapprox(theta, theta_test)
 
-    theta_unc_test = bridgestan.param_unconstrain(model, theta)
+    theta_unc_test = Bridgestan.param_unconstrain(model, theta)
     @test isapprox(theta_unc, theta_unc_test)
 
     theta_json = "{\"mu\": 0.2, \"sigma\": 1.9}"
-    theta_unc_j_test = bridgestan.param_unconstrain_json(model, theta_json)
+    theta_unc_j_test = Bridgestan.param_unconstrain_json(model, theta_json)
     @test isapprox(theta_unc, theta_unc_j_test)
 end
 
@@ -115,28 +114,28 @@ end
         return L * L'
     end
 
-    lib = joinpath(@__DIR__, "../stan/fr_gaussian/fr_gaussian_model.so")
-    data = joinpath(@__DIR__, "../stan/fr_gaussian/fr_gaussian.data.json")
+    lib = joinpath(@__DIR__, "../../stan/fr_gaussian/fr_gaussian_model.so")
+    data = joinpath(@__DIR__, "../../stan/fr_gaussian/fr_gaussian.data.json")
 
-    model = bridgestan.StanModel(lib, data)
+    model = Bridgestan.StanModel(lib, data)
 
     size = 16
     unc_size = 10
 
-    @test isapprox(size, bridgestan.param_num(model, include_tp=true, include_gq=true))
-    @test isapprox(unc_size, bridgestan.param_unc_num(model))
+    @test isapprox(size, Bridgestan.param_num(model, include_tp=true, include_gq=true))
+    @test isapprox(unc_size, Bridgestan.param_unc_num(model))
 
     D = 4
     a = randn(unc_size)
-    b = bridgestan.param_constrain(model, a)
+    b = Bridgestan.param_constrain(model, a)
     B = reshape(b, (D,D))
     B_expected = _covariance_constrain_transform(a, D)
     @test isapprox(B_expected, B)
 
-    c = bridgestan.param_unconstrain(model, b)
+    c = Bridgestan.param_unconstrain(model, b)
     @test isapprox(a, c)
 
-    names = bridgestan.param_names(model, include_tp=true, include_gq=true)
+    names = Bridgestan.param_names(model, include_tp=true, include_gq=true)
     name_eq = Vector{Bool}(undef, size)
     pos = 1
     for j = 1:4
@@ -147,7 +146,7 @@ end
     end
     @test all(name_eq)
 
-    unc_names = bridgestan.param_unc_names(model)
+    unc_names = Bridgestan.param_unc_names(model)
     name_unc_eq = Vector{Bool}(undef, unc_size)
     for n = 1:10
         name_unc_eq[n] = unc_names[n] == ("Omega." * string(n))
@@ -157,14 +156,14 @@ end
 
 
 @testset "simple" begin
-    lib = joinpath(@__DIR__, "../stan/simple/simple_model.so")
-    data = joinpath(@__DIR__, "../stan/simple/simple.data.json")
+    lib = joinpath(@__DIR__, "../../stan/simple/simple_model.so")
+    data = joinpath(@__DIR__, "../../stan/simple/simple.data.json")
 
-    model = bridgestan.StanModel(lib, data)
+    model = Bridgestan.StanModel(lib, data)
 
     D = 5
     y = rand(D)
-    lp, grad, hess = bridgestan.log_density_hessian(model, y)
+    lp, grad, hess = Bridgestan.log_density_hessian(model, y)
 
     @test isapprox(-y, grad)
     using LinearAlgebra

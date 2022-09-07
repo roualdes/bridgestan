@@ -104,3 +104,34 @@ jobs:
           cd python/
           pytest -v
 
+
+  test_julia_client:
+    needs: [build_test_models]
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+      fail-fast: false
+    steps:
+      - name: Check out github
+        uses: actions/checkout@v2
+      - name: Set up Julia
+        uses: julia-actions/setup-julia@v1
+
+      - name: Restore CmdStan
+        uses: actions/cache@v2
+        with:
+          path: ~/.cmdstan
+          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+
+      - name: Restore built models
+        uses: actions/cache@v2
+        id: test-models
+        with:
+          path: ./stan/
+          key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+
+      - name: Run tests
+        run: |
+          julia --project=./julia -e "using Pkg; Pkg.test()"
+
