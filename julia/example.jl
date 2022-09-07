@@ -1,16 +1,16 @@
-include("./bridgestan.jl")
+using Bridgestan
 
 # Bernoulli
 # CMDSTAN=/path/to/cmdstan/ make stan/bernoulli/bernoulli
 
-bernoulli_lib = joinpath(@__DIR__, "stan/bernoulli/bernoulli_model.so")
-bernoulli_data = joinpath(@__DIR__, "stan/bernoulli/bernoulli.data.json")
+bernoulli_lib = joinpath(@__DIR__, "../stan/bernoulli/bernoulli_model.so")
+bernoulli_data = joinpath(@__DIR__, "../stan/bernoulli/bernoulli.data.json")
 
-smb = bridgestan.StanModel(bernoulli_lib, bernoulli_data);
-x = rand(bridgestan.param_unc_num(smb));
+smb = Bridgestan.StanModel(bernoulli_lib, bernoulli_data);
+x = rand(Bridgestan.param_unc_num(smb));
 q = @. log(x / (1 - x));        # unconstrained scale
 
-lp, grad = bridgestan.log_density_gradient(smb, q, jacobian = 0)
+lp, grad = Bridgestan.log_density_gradient(smb, q, jacobian = 0)
 
 println()
 println("log_density and gradient of Bernoulli model:")
@@ -22,13 +22,13 @@ println()
 # Multivariate Gaussian
 # CMDSTAN=/path/to/cmdstan/ make stan/multi/multi
 
-multi_lib = joinpath(@__DIR__, "stan/multi/multi_model.so")
-multi_data = joinpath(@__DIR__, "stan/multi/multi.data.json")
+multi_lib = joinpath(@__DIR__, "../stan/multi/multi_model.so")
+multi_data = joinpath(@__DIR__, "../stan/multi/multi.data.json")
 
-smm = bridgestan.StanModel(multi_lib, multi_data)
-x = randn(bridgestan.param_unc_num(smm));
+smm = Bridgestan.StanModel(multi_lib, multi_data)
+x = randn(Bridgestan.param_unc_num(smm));
 
-lp, grad = bridgestan.log_density_gradient(smm, x)
+lp, grad = Bridgestan.log_density_gradient(smm, x)
 
 println("log_density and gradient of Multivariate Gaussian model:")
 println((lp, grad))
@@ -39,14 +39,14 @@ println()
 include("./MCMC.jl")
 using Statistics
 
-model = bridgestan.StanModel(multi_lib, multi_data);
+model = Bridgestan.StanModel(multi_lib, multi_data);
 
 stepsize = 0.25
 steps = 10
 hmcd = HMCDiag(model, stepsize, steps);
 
 M = 10_000
-theta = zeros(M, bridgestan.param_unc_num(model))
+theta = zeros(M, Bridgestan.param_unc_num(model))
 for m in 1:M
     theta[m, :] .= sample(hmcd)
 end
