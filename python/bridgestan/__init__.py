@@ -35,7 +35,7 @@ class Bridge:
     :param model_lib: A path to a compiled shared object.
     :param model_data: A path to data in JSON format.
     :param seed: A pseudo random number generator seed.
-    :param chain_id A unique identifier for concurrent chains of
+    :param chain_id: A unique identifier for concurrent chains of
         pseudorandom numbers.
     :raises FileNotFoundError: If `model_lib` is not readable or `model_data`
         is specified and not a path to a readable file.
