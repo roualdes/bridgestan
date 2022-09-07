@@ -1,5 +1,5 @@
 struct HMCDiag
-    model::bridgestan.StanModel
+    model::Bridgestan.StanModel
     stepsize::Float64
     steps::Int64
     metric::Vector{Float64}
@@ -11,22 +11,22 @@ function HMCDiag(model, stepsize, steps)
         model,
         stepsize,
         steps,
-        ones(bridgestan.param_unc_num(model)),
-        randn(bridgestan.param_unc_num(model)))
+        ones(Bridgestan.param_unc_num(model)),
+        randn(Bridgestan.param_unc_num(model)))
 end
 
 function joint_logp(hmc::HMCDiag, theta, rho)
-    logp, _ = bridgestan.log_density_gradient(hmc.model, theta)
+    logp, _ = Bridgestan.log_density_gradient(hmc.model, theta)
     return logp - 0.5 * rho' * (hmc.metric .* rho)
 end
 
 function leapfrog(hmc::HMCDiag, theta, rho)
     e = hmc.stepsize .* hmc.metric
-    lp, grad = bridgestan.log_density_gradient(hmc.model, theta)
+    lp, grad = Bridgestan.log_density_gradient(hmc.model, theta)
     rho_p = rho + 0.5 * hmc.stepsize .* grad
     for n in 1:hmc.steps
         theta .+= e .* rho_p
-        lp, grad = bridgestan.log_density_gradient(hmc.model, theta)
+        lp, grad = Bridgestan.log_density_gradient(hmc.model, theta)
         if n != hmc.steps
             rho_p .+= e .* grad
         end
@@ -36,7 +36,7 @@ function leapfrog(hmc::HMCDiag, theta, rho)
 end
 
 function sample(hmc::HMCDiag)
-    rho = randn(bridgestan.param_unc_num(model))
+    rho = randn(Bridgestan.param_unc_num(model))
     logp = joint_logp(hmc, hmc.theta, rho)
     theta_prop, rho_prop = leapfrog(hmc, hmc.theta, rho)
     logp_prop = joint_logp(hmc, theta_prop, rho_prop)

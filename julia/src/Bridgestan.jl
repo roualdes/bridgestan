@@ -1,4 +1,4 @@
-module bridgestan
+module Bridgestan
 
 export
     StanModel,
