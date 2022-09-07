@@ -1,4 +1,7 @@
+.. py:currentmodule:: bridgestan
+
 Python Interface: bridgestan.py
 ===============================
 
-API doc will go here.
+.. autoclass:: bridgestan.Bridge
+   :members:
