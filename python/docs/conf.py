@@ -7,8 +7,8 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "BridgeStan"
-copyright = "2022, Bob Carpenter, Brian Ward, Edward A. Roualdes"
-author = "Bob Carpenter, Brian Ward, Edward A. Roualdes"
+copyright = "2022, BridgeStan Developers"
+author = "BridgeStan Developers"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -33,6 +33,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
+html_show_sphinx = False
 
 html_theme_options = {
     "icon_links": [
