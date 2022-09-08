@@ -135,3 +135,42 @@ jobs:
         run: |
           julia --project=./julia -e "using Pkg; Pkg.test()"
 
+  test_R_client:
+    needs: [build_test_models]
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+      fail-fast: false
+    steps:
+      - name: Check out github
+        uses: actions/checkout@v2
+
+      - name: Install R
+        uses: r-lib/actions/setup-r@v2
+
+      - name: Install R dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::R6
+            any::testthat
+
+      - name: Restore CmdStan
+        uses: actions/cache@v2
+        with:
+          path: ~/.cmdstan
+          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+
+      - name: Restore built models
+        uses: actions/cache@v2
+        id: test-models
+        with:
+          path: ./stan/
+          key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+
+      - name: Run tests
+        run: |
+          cd R/tests/
+          gcc -fpic -shared -o test_collisions.so test_collisions.c
+          Rscript test_bridgestan.R
