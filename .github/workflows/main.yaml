@@ -133,7 +133,7 @@ jobs:
 
       - name: Run tests
         run: |
-          julia --project=./julia -t 2 -e "using Pkg; Pkg.test()"
+          julia --project=./julia -e "using Pkg; Pkg.test()"
 
   test_R_client:
     needs: [build_test_models]
