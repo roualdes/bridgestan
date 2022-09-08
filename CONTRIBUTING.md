@@ -53,7 +53,7 @@ We use [Gnu make](https://www.gnu.org/software/make/) for builds.  If you have i
 
 * We use the C++1y standard for compilation (`-std=c++1y` in both clang and gcc).  This is partway between C++11 and C++14, and is what Stan requires.
 
-* We try to write standards-compliant code that does not depend on features of specific platforms (except where needed for compatibility).
+* We try to write standards-compliant code that does not depend on features of specific platforms (except where needed for compatibility).  Specifically, we do not use OS-dependent or compiler-dependent C++.  Our C++ code does not depend on the `R.h` or `Python.h` headers, for example.  On the other hand, adding new signatures to work with a specific language's style of foreign function interface is permitted (an example can be found in the R interface, which requires a particular pointer-based style).
 
 * We try to follow the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html), but (a) we allow C++ exceptions, and (b) we allow reference arguments.
 
@@ -64,7 +64,7 @@ We use [Gnu make](https://www.gnu.org/software/make/) for builds.  If you have i
 
 ### Python development
 
-* Python development relies on the external dependency:
+* Python development relies on the external dependencies:
     * [pytest](https://docs.pytest.org/en/7.1.x/) 
     * [NumPy](https://numpy.org/)
 
@@ -82,11 +82,15 @@ We use [Gnu make](https://www.gnu.org/software/make/) for builds.  If you have i
     * [R6 package](https://cran.r-project.org/web/packages/R6/index.html) for reference classes
     * [testthat](https://testthat.r-lib.org) for unit testing
 
+* We use the most basic [.C interface](https://www.biostat.jhsph.edu/~rpeng/docs/interface.pdf) for calling C from R.
+
 ### Julia development
 
 * Julia dependencies beyond those included in this repo:
     * [Test](https://docs.julialang.org/en/v1/stdlib/Test/)
     * [LinearAlgebra](https://docs.julialang.org/en/v1/stdlib/LinearAlgebra/)
+
+* We use Julia's C foreign function interface, which is documented for [base C](https://docs.julialang.org/en/v1/base/c/) and the [C standard library](https://docs.julialang.org/en/v1/stdlib/Libdl/).
 
 
 ## Proposing a new interface language
