@@ -22,6 +22,13 @@ CXX_TYPE ?= clang
 -include $(MATH)make/dependencies
 -include $(MATH)make/libraries
 
+## set compiler standard to C++1y to match Stan
+ifdef STANCFLAGS
+	STANCFLAGS += -std=c++1y
+else
+	STANCFLAGS = -std=c++1y
+endif
+
 ## set flags for stanc compiler (math calls MIGHT? set STAN_OPENCL)
 ifdef STAN_OPENCL
 	STANCFLAGS += --use-opencl
