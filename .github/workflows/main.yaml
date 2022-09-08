@@ -9,6 +9,7 @@ on:
 
 env:
   CMDSTAN_VERSION: "2.30.1"
+  CACHE_VERSION: 1
 
 jobs:
   build_test_models:
@@ -34,7 +35,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cmdstan
-          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Install CmdStan
         run: |
@@ -46,7 +47,7 @@ jobs:
         id: test-models
         with:
           path: ./stan/
-          key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+          key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Build test models (Unix)
         if: matrix.os != 'windows-latest' && steps.test-models.outputs.cache-hit != 'true'
@@ -84,14 +85,14 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cmdstan
-          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Restore built models
         uses: actions/cache@v2
         id: test-models
         with:
           path: ./stan/
-          key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+          key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Install package
         run: |
@@ -122,18 +123,18 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cmdstan
-          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Restore built models
         uses: actions/cache@v2
         id: test-models
         with:
           path: ./stan/
-          key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+          key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Run tests
         run: |
-          julia --project=./julia -e "using Pkg; Pkg.test()"
+          julia --project=./julia -t 2 -e "using Pkg; Pkg.test()"
 
   test_R_client:
     needs: [build_test_models]
@@ -160,14 +161,14 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cmdstan
-          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Restore built models
         uses: actions/cache@v2
         id: test-models
         with:
           path: ./stan/
-          key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+          key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Run tests
         run: |
