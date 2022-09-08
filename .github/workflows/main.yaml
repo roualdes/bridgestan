@@ -9,7 +9,7 @@ on:
 
 env:
   CMDSTAN_VERSION: "2.30.1"
-  CACHE_VERSION: 1
+  CACHE_VERSION: 2
 
 jobs:
   build_test_models:
@@ -35,7 +35,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cmdstan
-          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
+          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
 
       - name: Install CmdStan
         run: |
@@ -85,7 +85,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cmdstan
-          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
+          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
 
       - name: Restore built models
         uses: actions/cache@v2
@@ -123,7 +123,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cmdstan
-          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
+          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
 
       - name: Restore built models
         uses: actions/cache@v2
@@ -161,7 +161,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cmdstan
-          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
+          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
 
       - name: Restore built models
         uses: actions/cache@v2
