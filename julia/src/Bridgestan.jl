@@ -36,9 +36,10 @@ mutable struct StanModel
 
         function f(sm)
             ccall(Libc.Libdl.dlsym(sm.lib, "destruct"),
-                  UInt32,
-                  (Ptr{StanModelStruct},),
-                  sm.stanmodel)
+                UInt32,
+                (Ptr{StanModelStruct},),
+                sm.stanmodel)
+            @async Libc.Libdl.dlclose(sm.lib)
         end
 
         finalizer(f, sm)
@@ -172,11 +173,5 @@ function log_density_hessian(sm::StanModel, q; propto = true, jacobian = true)
     end
 end
 
-function destruct!(sm::StanModel)
-    ccall(Libc.Libdl.dlsym(sm.lib, "destruct"),
-          Cint,
-          (Ptr{StanModelStruct},),
-          sm.stanmodel)
-end
 
 end
