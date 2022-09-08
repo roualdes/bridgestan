@@ -1,7 +1,7 @@
 source("../bridgestan.R")
 library(testthat)
 
-simple <- Bridge$new("../stan/simple/simple_model.so", "../stan/simple/simple.data.json", 1234, 0)
+simple <- Bridge$new("../../stan/simple/simple_model.so", "../../stan/simple/simple.data.json", 1234, 0)
 test_that("simple_model name is correct", {
     expect_identical(simple$name(), "simple_model")
 })
@@ -26,7 +26,7 @@ test_that("simple_model Hessian is -I",{
 })
 
 
-bernoulli <- Bridge$new("../stan/bernoulli/bernoulli_model.so", "../stan/bernoulli/bernoulli.data.json", 1234, 0)
+bernoulli <- Bridge$new("../../stan/bernoulli/bernoulli_model.so", "../../stan/bernoulli/bernoulli.data.json", 1234, 0)
 
 
 

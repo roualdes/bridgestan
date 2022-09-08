@@ -170,5 +170,6 @@ jobs:
 
       - name: Run tests
         run: |
-          cd R/test/
+          cd R/tests/
+          gcc -fpic -shared -o test_collisions.so test_collisions.c
           Rscript test_bridgestan.R
