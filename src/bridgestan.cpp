@@ -327,9 +327,6 @@ stan::model::model_base& new_model(stan::io::var_context &data_context,
                                    unsigned int seed, std::ostream *msg_stream);
 
 model_rng* construct_impl(char* data_file, unsigned int seed, unsigned int chain_id) {
-  // enforce math lib thread locality for multi-threading
-  static thread_local stan::math::ChainableStack dummy;
-
   model_rng* mr = new model_rng();
   std::string data(data_file);
   if (data.empty()) {
@@ -441,7 +438,7 @@ int param_unc_num(model_rng* mr) {
   return mr->param_unc_num_;
 }
 
-void param_constrain2_impl(model_rng* mr, bool include_tp, bool include_gq,
+void param_constrain_impl(model_rng* mr, bool include_tp, bool include_gq,
 			  const double* theta_unc, double* theta) {
   using Eigen::VectorXd;
   VectorXd params_unc = VectorXd::Map(theta_unc, param_unc_num(mr));
@@ -454,7 +451,7 @@ void param_constrain2_impl(model_rng* mr, bool include_tp, bool include_gq,
 int param_constrain(model_rng* mr, bool include_tp, bool include_gq,
                       const double* theta_unc, double* theta) {
   try {
-    param_constrain2_impl(mr, include_tp, include_gq, theta_unc, theta);
+    param_constrain_impl(mr, include_tp, include_gq, theta_unc, theta);
     return 0;
   } catch (const std::exception& e) {
     std::cerr << "param_constrain() exception: " << e.what() << std::endl;
@@ -464,7 +461,7 @@ int param_constrain(model_rng* mr, bool include_tp, bool include_gq,
   return 1;
 }
 
-void param_unconstrain2_impl(model_rng* mr, const double* theta,
+void param_unconstrain_impl(model_rng* mr, const double* theta,
 			     double* theta_unc) {
 
   using std::set;
@@ -502,7 +499,7 @@ void param_unconstrain2_impl(model_rng* mr, const double* theta,
 int param_unconstrain(model_rng* mr, const double* theta,
 			double* theta_unc) {
   try {
-    param_unconstrain2_impl(mr, theta, theta_unc);
+    param_unconstrain_impl(mr, theta, theta_unc);
     return 0;
   } catch (const std::exception& e) {
     std::cerr << "param_unconstrain exception: " << e.what() << std::endl;
@@ -543,6 +540,8 @@ void log_density_impl(model_rng* mr, bool propto, bool jacobian,
   Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
   if (propto) {
     // TODO(carpenter): avoid reverse pass for efficiency
+    // enforce math lib thread locality for multi-threading
+    static thread_local stan::math::ChainableStack thread_instance;
     double lp;
     Eigen::VectorXd grad_vec(N);
     stan::math::gradient(logp, params_unc, lp, grad_vec);
@@ -567,6 +566,8 @@ int log_density(model_rng* mr, bool propto, bool jacobian,
 
 double log_density_gradient_impl(model_rng* mr, bool propto, bool jacobian,
 				 const double* theta_unc, double* grad) {
+  // enforce math lib thread locality for multi-threading
+  static thread_local stan::math::ChainableStack thread_instance;
   auto logp
       = create_model_functor(mr->model_, propto, jacobian,
                              std::cerr);
@@ -598,6 +599,8 @@ int log_density_gradient(model_rng* mr, bool propto, bool jacobian,
 double log_density_hessian_impl(model_rng* mr, bool propto, bool jacobian,
 				const double* theta_unc, double* grad,
 				double* hessian) {
+  // enforce math lib thread locality for multi-threading
+  static thread_local stan::math::ChainableStack thread_instance;
   auto logp
       = create_model_functor(mr->model_, propto, jacobian,
                              std::cerr);

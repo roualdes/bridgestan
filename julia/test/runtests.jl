@@ -55,7 +55,7 @@ end
     data = joinpath(@__DIR__, "../../stan/multi/multi.data.json")
 
     nt = Threads.nthreads()
-    models = Tuple(Bridgestan.StanModel(lib, data) for _ in 1:nt)
+    model = Bridgestan.StanModel(lib, data)
 
     R = 1000
     ld = Vector{Bool}(undef, R)
@@ -63,8 +63,8 @@ end
 
     @sync for it in 1:nt
         Threads.@spawn for r in it:nt:R
-            x = randn(Bridgestan.param_num(models[it]))
-            (lp, grad) = Bridgestan.log_density_gradient(models[it], x)
+            x = randn(Bridgestan.param_num(model))
+            (lp, grad) = Bridgestan.log_density_gradient(model, x)
 
             ld[r] = isapprox(lp, gaussian(x))
             g[r] = isapprox(grad, grad_gaussian(x))
