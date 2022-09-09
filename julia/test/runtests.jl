@@ -238,7 +238,7 @@ end
     lp2 = BridgeStan.log_density(model, x_unc; propto = false, jacobian = true)
     @test isapprox([lp2], _bernoulli_jacobian(y, x))
     lp3 = BridgeStan.log_density(model, x_unc; propto = true, jacobian = true)
-    @test isapprox([lp2], _bernoulli_jacobian(y, x))
+    @test isapprox([lp3], _bernoulli_jacobian(y, x))
     lp4 = BridgeStan.log_density(model, x_unc; propto = true, jacobian = false)
     @test isapprox([lp4], _bernoulli(y, x))
 
