@@ -294,6 +294,7 @@ def test_log_density():
         lp2 = bridge.log_density(np.array([x_unc]), propto=False, jacobian=True)
         np.testing.assert_allclose(lp2, _bernoulli_jacobian(y, x))
         lp3 = bridge.log_density(np.array([x_unc]), propto=True, jacobian=True)
+        print(_bernoulli_jacobian(y,x))
         np.testing.assert_allclose(lp3, _bernoulli_jacobian(y, x))
         lp4 = bridge.log_density(np.array([x_unc]), propto=True, jacobian=False)
         np.testing.assert_allclose(lp4, _bernoulli(y, x))
@@ -344,17 +345,6 @@ def test_log_density_gradient():
     )
     np.testing.assert_allclose(_logp(y_unc), logdensity)
     np.testing.assert_allclose(_grad_logp(y_unc), grad[0])
-    #
-    logdensity, grad = bridge.log_density_gradient(
-        y_unc_arr, propto=False, jacobian=True
-    )
-    np.testing.assert_allclose(
-        _logp(y_unc) + _propto_false(y_unc) + _jacobian_true(y_unc), logdensity
-    )
-    np.testing.assert_allclose(
-        _grad_logp(y_unc) + _grad_propto_false(y_unc) + _grad_jacobian_true(y_unc),
-        grad[0],
-    )
     #
     logdensity, grad = bridge.log_density_gradient(
         y_unc_arr, propto=False, jacobian=True
