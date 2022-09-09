@@ -107,12 +107,18 @@ STANCFLAGS+= --warn-pedantic --O1
 
 In order for Python or Julia to be able to call a single Stan model
 concurrently from multiple threads or for a Stan model to execute its
-own code in parallel, the following flag must be set in `make/local`.
+own code in parallel, the following flag must be set in `make/local`
+or on the command line.
 
 ```
 # Enable threading
 STAN_THREADS=true
 ```
+
+Note that this flag changes a lot of the internals of the Stan library
+and as such, **all models used in the same process** should have the same
+setting. Mixing models which had `STAN_THREADS` enabled with those that didn't
+will most likely lead to segmentation faults or other crashes.
 
 
 ## Tips

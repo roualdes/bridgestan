@@ -540,6 +540,8 @@ void log_density_impl(model_rng* mr, bool propto, bool jacobian,
   Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
   if (propto) {
     // TODO(carpenter): avoid reverse pass for efficiency
+    // enforce math lib thread locality for multi-threading
+    static thread_local stan::math::ChainableStack thread_instance;
     double lp;
     Eigen::VectorXd grad_vec(N);
     stan::math::gradient(logp, params_unc, lp, grad_vec);
