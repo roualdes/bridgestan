@@ -468,11 +468,8 @@ end
         return -x
     end
 
-    lib = joinpath(@__DIR__, "../../stan/multi/multi_model.so")
-    data = joinpath(@__DIR__, "../../stan/multi/multi.data.json")
-
+    model = load_test_model("multi")
     nt = Threads.nthreads()
-    model = BridgeStan.StanModel(lib, data)
 
     R = 1000
     ld = Vector{Bool}(undef, R)
@@ -497,10 +494,7 @@ end
     # Guassian with positive constrained standard deviation
     # CMDSTAN=/path/to/cmdstan/ make stan/gaussian/gaussian_model.so
 
-    lib = joinpath(@__DIR__, "../../stan/gaussian/gaussian_model.so")
-    data = joinpath(@__DIR__, "../../stan/gaussian/gaussian.data.json")
-
-    model = BridgeStan.StanModel(lib, data)
+    model = load_test_model("gaussian")
 
     theta = [0.2, 1.9]
     theta_unc = [0.2, log(1.9)]
@@ -522,10 +516,7 @@ end
     # Full rank Gaussian
     # CMDSTAN=/path/to/cmdstan/ make stan/fr_gaussian/fr_gaussian_model.so
 
-    lib = joinpath(@__DIR__, "../../stan/fr_gaussian/fr_gaussian_model.so")
-    data = joinpath(@__DIR__, "../../stan/fr_gaussian/fr_gaussian.data.json")
-
-    model = BridgeStan.StanModel(lib, data)
+    model = load_test_model("fr_gaussian")
 
     size = 16
     unc_size = 10
@@ -564,10 +555,7 @@ end
 
 
 @testset "simple" begin
-    lib = joinpath(@__DIR__, "../../stan/simple/simple_model.so")
-    data = joinpath(@__DIR__, "../../stan/simple/simple.data.json")
-
-    model = BridgeStan.StanModel(lib, data)
+    model = load_test_model("simple")
 
     D = 5
     y = rand(D)
