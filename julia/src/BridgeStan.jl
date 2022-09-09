@@ -1,15 +1,18 @@
-module Bridgestan
+module BridgeStan
 
 export
     StanModel,
-    log_density_gradient!,
-    K,
+    name,
     param_num,
-    param_constrain!,
-    dims,
     param_unc_num,
-    param_unconstrain!,
-    destroy
+    param_names,
+    param_unc_names,
+    param_constrain,
+    param_unconstrain,
+    param_unconstrain_json,
+    log_density,
+    log_density_gradient,
+    log_density_hessian
 
 mutable struct StanModelStruct
 end
