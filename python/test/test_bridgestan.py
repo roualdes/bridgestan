@@ -294,7 +294,6 @@ def test_log_density():
         lp2 = bridge.log_density(np.array([x_unc]), propto=False, jacobian=True)
         np.testing.assert_allclose(lp2, _bernoulli_jacobian(y, x))
         lp3 = bridge.log_density(np.array([x_unc]), propto=True, jacobian=True)
-        print(_bernoulli_jacobian(y,x))
         np.testing.assert_allclose(lp3, _bernoulli_jacobian(y, x))
         lp4 = bridge.log_density(np.array([x_unc]), propto=True, jacobian=False)
         np.testing.assert_allclose(lp4, _bernoulli(y, x))
