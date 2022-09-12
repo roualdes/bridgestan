@@ -1,5 +1,5 @@
 
-Bridge <- R6::R6Class("Bridge",
+StanModel <- R6::R6Class("StanModel",
   public = list(
     initialize = function(lib, data, rng_seed, chain_id) {
       if (.Platform$OS.type == "windows"){

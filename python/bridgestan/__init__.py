@@ -9,7 +9,7 @@ from typing import List, Optional, Tuple
 FloatArray = npt.NDArray[np.float64]
 double_array = ndpointer(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
 
-__all__ = ["Bridge"]
+__all__ = ["StanModel"]
 
 
 def validate_readable(f: str) -> bool:
@@ -23,9 +23,9 @@ def validate_readable(f: str) -> bool:
         raise FileNotFoundError("could not open file f =", f)
 
 
-class Bridge:
+class StanModel:
     """
-    A Bridge instance encapsulates a Stan model instantiated with data
+    A StanModel instance encapsulates a Stan model instantiated with data
     and provides methods to access parameter names, transforms, log
     densities, gradients, and Hessians.
 
@@ -51,7 +51,7 @@ class Bridge:
         chain_id: int = 0,
     ) -> None:
         """
-        Construct a Bridge object to a Stan model and data given
+        Construct a StanModel object for a Stan model and data given
         constructor arguments.
 
         :param model_lib: A system path to compiled shared object.
