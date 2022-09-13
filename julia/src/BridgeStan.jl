@@ -122,7 +122,7 @@ end
 
 function param_constrain!(
     sm::StanModel,
-    theta_unc,
+    theta_unc::Vector{Float64},
     out::Vector{Float64};
     include_tp = false,
     include_gq = false,
@@ -149,13 +149,18 @@ function param_constrain!(
     out
 end
 
-function param_constrain(sm::StanModel, theta_unc; include_tp = false, include_gq = false)
+function param_constrain(
+    sm::StanModel,
+    theta_unc::Vector{Float64};
+    include_tp = false,
+    include_gq = false,
+)
     out = zeros(param_num(sm, include_tp = include_tp, include_gq = include_gq))
     param_constrain!(sm, theta_unc, out; include_tp = include_tp, include_gq = include_gq)
 end
 
 
-function param_unconstrain!(sm::StanModel, theta, out::Vector{Float64})
+function param_unconstrain!(sm::StanModel, theta::Vector{Float64}, out::Vector{Float64})
     dims = param_unc_num(sm)
     if length(out) != dims
         throw(
@@ -179,7 +184,7 @@ function param_unconstrain!(sm::StanModel, theta, out::Vector{Float64})
     out
 end
 
-function param_unconstrain(sm::StanModel, theta)
+function param_unconstrain(sm::StanModel, theta::Vector{Float64})
     out = zeros(param_unc_num(sm))
     param_unconstrain!(sm, theta, out)
 end
@@ -213,7 +218,7 @@ function param_unconstrain_json(sm::StanModel, theta::String)
     param_unconstrain_json!(sm, theta, out)
 end
 
-function log_density(sm::StanModel, q; propto = true, jacobian = true)
+function log_density(sm::StanModel, q::Vector{Float64}; propto = true, jacobian = true)
     lp = Ref(0.0)
     rc = ccall(
         Libc.Libdl.dlsym(sm.lib, "log_density"),
@@ -233,7 +238,7 @@ end
 
 function log_density_gradient!(
     sm::StanModel,
-    q,
+    q::Vector{Float64},
     out::Vector{Float64};
     propto = true,
     jacobian = true,
@@ -265,14 +270,19 @@ function log_density_gradient!(
     (lp[], out)
 end
 
-function log_density_gradient(sm::StanModel, q; propto = true, jacobian = true)
+function log_density_gradient(
+    sm::StanModel,
+    q::Vector{Float64};
+    propto = true,
+    jacobian = true,
+)
     grad = zeros(param_unc_num(sm))
     log_density_gradient!(sm, q, grad; propto = propto, jacobian = jacobian)
 end
 
 function log_density_hessian!(
     sm::StanModel,
-    q,
+    q::Vector{Float64},
     out_grad::Vector{Float64},
     out_hess::Vector{Float64};
     propto = true,
@@ -321,7 +331,12 @@ function log_density_hessian!(
     (lp[], out_grad, reshape(out_hess, (dims, dims)))
 end
 
-function log_density_hessian(sm::StanModel, q; propto = true, jacobian = true)
+function log_density_hessian(
+    sm::StanModel,
+    q::Vector{Float64};
+    propto = true,
+    jacobian = true,
+)
     dims = param_unc_num(sm)
     grad = zeros(dims)
     hess = zeros(dims * dims)
