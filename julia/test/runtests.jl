@@ -232,7 +232,7 @@ end
     model = load_test_model("bernoulli")
     y = [0, 1, 0, 0, 0, 0, 0, 0, 0, 1]
     x = rand(BridgeStan.param_unc_num(model))
-    x_unc = log(x / (1 .- x))
+    x_unc = @. log(x / (1 - x))
     lp = BridgeStan.log_density(model, x_unc; propto = false, jacobian = false)
     @test isapprox([lp], _bernoulli(y, x))
     lp2 = BridgeStan.log_density(model, x_unc; propto = false, jacobian = true)
