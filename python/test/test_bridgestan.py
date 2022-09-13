@@ -357,17 +357,6 @@ def test_log_density_gradient():
     )
     #
     logdensity, grad = bridge.log_density_gradient(
-        y_unc_arr, propto=False, jacobian=True
-    )
-    np.testing.assert_allclose(
-        _logp(y_unc) + _propto_false(y_unc) + _jacobian_true(y_unc), logdensity
-    )
-    np.testing.assert_allclose(
-        _grad_logp(y_unc) + _grad_propto_false(y_unc) + _grad_jacobian_true(y_unc),
-        grad[0],
-    )
-    #
-    logdensity, grad = bridge.log_density_gradient(
         y_unc_arr, propto=False, jacobian=False
     )
     np.testing.assert_allclose(_logp(y_unc) + _propto_false(y_unc), logdensity)
