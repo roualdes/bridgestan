@@ -4,8 +4,5 @@ $models = "throw_tp",  "throw_gq",  "throw_lp",  "throw_data",  "jacobian",  "ma
 
 $cmdstanfixed = $env:CMDSTAN.replace('\', '/')
 foreach ($model in $models) {
-    mingw32-make.exe CMDSTAN="$($cmdstanfixed)/" -j4 O=0 "stan/$($model)/$($model)_model.so"
+    mingw32-make.exe CMDSTAN="$($cmdstanfixed)/" STAN_THREADS="True" -j4 O=0 "stan/$($model)/$($model)_model.so"
 }
-
-cd "$($env:BRIDGESTAN)/R/test"
-gcc.exe -fpic -shared -o test_collisions.dll test_collisions.c
