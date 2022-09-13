@@ -4,7 +4,7 @@ StanModel <- R6::R6Class("StanModel",
     initialize = function(lib, data, rng_seed, chain_id) {
       if (.Platform$OS.type == "windows"){
         lib_old <- lib
-        lib <- paste(tools::file_path_sans_ext(lib), ".dll")
+        lib <- paste0(tools::file_path_sans_ext(lib), ".dll")
         file.copy(from=lib_old, to=lib)
       }
 
