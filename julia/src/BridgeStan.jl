@@ -107,7 +107,7 @@ function param_names(sm::StanModel; include_tp = false, include_gq = false)
         include_tp,
         include_gq,
     )
-    [string(s) for s in split(unsafe_string(cstr), ',')]
+    string.(split(unsafe_string(cstr), ','))
 end
 
 function param_unc_names(sm::StanModel)
@@ -117,7 +117,7 @@ function param_unc_names(sm::StanModel)
         (Ptr{StanModelStruct},),
         sm.stanmodel,
     )
-    [string(s) for s in split(unsafe_string(cstr), ',')]
+    string.(split(unsafe_string(cstr), ','))
 end
 
 function param_constrain!(
@@ -145,9 +145,8 @@ function param_constrain!(
     )
     if rc != 0
         error("param_constrain failed on C++ side; see stderr for messages")
-    else
-        out
     end
+    out
 end
 
 function param_constrain(sm::StanModel, theta_unc; include_tp = false, include_gq = false)
@@ -176,9 +175,8 @@ function param_unconstrain!(sm::StanModel, theta, out::Vector{Float64})
     )
     if rc != 0
         error("param_unconstrain failed on C++ side; see stderr for messages")
-    else
-        out
     end
+    out
 end
 
 function param_unconstrain(sm::StanModel, theta)
@@ -206,9 +204,8 @@ function param_unconstrain_json!(sm::StanModel, theta::String, out::Vector{Float
     )
     if rc != 0
         error("param_unconstrain_json failed on C++ side; see stderr for messages")
-    else
-        out
     end
+    out
 end
 
 function param_unconstrain_json(sm::StanModel, theta::String)
@@ -217,7 +214,7 @@ function param_unconstrain_json(sm::StanModel, theta::String)
 end
 
 function log_density(sm::StanModel, q; propto = true, jacobian = true)
-    lp = Ref{Float64}(0.0)
+    lp = Ref(0.0)
     rc = ccall(
         Libc.Libdl.dlsym(sm.lib, "log_density"),
         Cint,
@@ -230,9 +227,8 @@ function log_density(sm::StanModel, q; propto = true, jacobian = true)
     )
     if rc != 0
         error("log_density failed on C++ side; see stderr for messages")
-    else
-        lp[]
     end
+    lp[]
 end
 
 function log_density_gradient!(
@@ -242,7 +238,7 @@ function log_density_gradient!(
     propto = true,
     jacobian = true,
 )
-    lp = Ref{Float64}(0.0)
+    lp = Ref(0.0)
     dims = param_unc_num(sm)
     if length(out) != dims
         throw(
@@ -265,9 +261,8 @@ function log_density_gradient!(
     )
     if rc != 0
         error("log_density_gradient failed on C++ side; see stderr for messages")
-    else
-        (lp[], out)
     end
+    (lp[], out)
 end
 
 function log_density_gradient(sm::StanModel, q; propto = true, jacobian = true)
@@ -283,7 +278,7 @@ function log_density_hessian!(
     propto = true,
     jacobian = true,
 )
-    lp = Ref{Float64}(0.0)
+    lp = Ref(0.0)
     dims = param_unc_num(sm)
     if length(out_grad) != dims
         throw(
@@ -321,9 +316,9 @@ function log_density_hessian!(
     )
     if rc != 0
         error("log_density_hessian failed on C++ side; see stderr for messages")
-    else
-        (lp[], out_grad, reshape(out_hess, (dims, dims)))
+
     end
+    (lp[], out_grad, reshape(out_hess, (dims, dims)))
 end
 
 function log_density_hessian(sm::StanModel, q; propto = true, jacobian = true)
