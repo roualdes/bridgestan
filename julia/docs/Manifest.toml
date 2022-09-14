@@ -2,7 +2,7 @@
 
 julia_version = "1.8.0"
 manifest_format = "2.0"
-project_hash = "68d108abde6d4526329eadc1b777c3f9b32e977e"
+project_hash = "8d9f1f626a960b2807847e892981e43785258d4d"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -11,6 +11,11 @@ version = "0.0.1"
 
 [[deps.Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
+
+[[deps.BridgeStan]]
+path = ".."
+uuid = "c88b6f0a-829e-4b0b-94b7-f06ab5908f5a"
+version = "0.1.0"
 
 [[deps.Dates]]
 deps = ["Printf"]

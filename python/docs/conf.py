@@ -80,7 +80,7 @@ import pathlib
 try:
     print("Building Julia doc")
     subprocess.run(
-        ["julia", "--project", "make.jl"],
+        ["julia", '--project="."', "./make.jl"],
         cwd=pathlib.Path(__file__).parent.parent.parent / "julia" / "docs",
         check=True,
     )
