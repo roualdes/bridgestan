@@ -20,7 +20,7 @@ We follow the practices laid out in the [GitHub Terms of Service](https://docs.g
 
 We follow standard open source and GitHub practices:
 
-* We discuss bugs, features, and implementations through [GitHub Issues](https://github.com/roualdes/bridgestan/issues). 
+* We discuss bugs, features, and implementations through [GitHub Issues](https://github.com/roualdes/bridgestan/issues).
 
 * We add unit tests when changing or adding code.
 
@@ -33,11 +33,12 @@ We follow standard open source and GitHub practices:
 
 We use [Sphinx](https://www.sphinx-doc.org/en/master/) to generate documentation, with the goal of publishing on [Read the Docs](https://readthedocs.org) for the first release.  The docs are currently hosted on the [GitHub pages](https://roualdes.github.io/bridgestan/) for this repository.
 
-We use the following developer-specific tools for documentation. 
+We use the following developer-specific tools for documentation.
 
-* [Sphinx 5.0 or above](https://www.sphinx-doc.org/en/master/) 
-* [nbsphinx](https://nbsphinx.readthedocs.io/en/0.8.9/) 
-* [pydata-sphinx-theme](https://pydata-sphinx-theme.readthedocs.io/en/stable/) 
+* [Sphinx 5.0 or above](https://www.sphinx-doc.org/en/master/)
+* [nbsphinx](https://nbsphinx.readthedocs.io/en/0.8.9/)
+* [pydata-sphinx-theme](https://pydata-sphinx-theme.readthedocs.io/en/stable/)
+* [MySt-Parser](https://myst-parser.readthedocs.io/en/latest/)
 
 
 ## Builds
@@ -65,7 +66,7 @@ We use [Gnu make](https://www.gnu.org/software/make/) for builds.  If you have i
 ### Python development
 
 * Python development relies on the external dependencies:
-    * [pytest](https://docs.pytest.org/en/7.1.x/) 
+    * [pytest](https://docs.pytest.org/en/7.1.x/)
     * [NumPy](https://numpy.org/)
 
 * We integrate a C wrapper of Stan's model class using the [ctypes](https://docs.python.org/3/library/ctypes.html) foreign function interface.

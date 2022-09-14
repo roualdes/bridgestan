@@ -20,6 +20,14 @@ export StanModel,
 
 mutable struct StanModelStruct end
 
+"""
+    StanModel(stanlib_, datafile_="", seed_=204, chain_id_=0)
+
+A StanModel instance encapsulates a Stan model instantiated with data.
+
+The constructor a Stan model from the supplied library file path and data file path.
+If seed or chain_id are supplied, these are used to initialize the RNG used by the model.
+"""
 mutable struct StanModel
     lib::Ptr{Nothing}
     stanmodel::Ptr{StanModelStruct}
@@ -27,7 +35,7 @@ mutable struct StanModel
     const seed::UInt32
     const chain_id::UInt32
 
-    function StanModel(stanlib_::String, datafile_::String = "", seed_ = 204, chain_id_ = 0)
+    function StanModel(stanlib_::String, datafile_::String="", seed_=204, chain_id_=0)
         seed = convert(UInt32, seed_)
         chain_id = convert(UInt32, chain_id_)
 
@@ -68,6 +76,11 @@ mutable struct StanModel
     end
 end
 
+"""
+    name(sm)
+
+Return the name of the model `sm`
+"""
 function name(sm::StanModel)
     cstr = ccall(
         Libc.Libdl.dlsym(sm.lib, "name"),
@@ -78,7 +91,17 @@ function name(sm::StanModel)
     unsafe_string(cstr)
 end
 
-function param_num(sm::StanModel; include_tp = false, include_gq = false)
+"""
+    param_num(sm; include_tp=false, include_gq=false)
+
+Return the number of (constrained) parameters in the model.
+
+This is the total of all the sizes of items declared in the `parameters` block
+of the model. If `include_tp` or `include_gq` are true, items declared
+in the `transformed parameters` and `generate quantities` blocks are included,
+respectively.
+"""
+function param_num(sm::StanModel; include_tp=false, include_gq=false)
     ccall(
         Libc.Libdl.dlsym(sm.lib, "param_num"),
         Cint,
@@ -89,6 +112,16 @@ function param_num(sm::StanModel; include_tp = false, include_gq = false)
     )
 end
 
+
+"""
+    param_unc_num(sm)
+
+Return the number of unconstrained parameters in the model.
+
+This function is mainly different from `param_num`
+when variables are declared with constraints. For example,
+`simplex[5]` has a constrained size of 5, but an unconstrained size of 4.
+"""
 function param_unc_num(sm::StanModel)
     ccall(
         Libc.Libdl.dlsym(sm.lib, "param_unc_num"),
@@ -98,7 +131,7 @@ function param_unc_num(sm::StanModel)
     )
 end
 
-function param_names(sm::StanModel; include_tp = false, include_gq = false)
+function param_names(sm::StanModel; include_tp=false, include_gq=false)
     cstr = ccall(
         Libc.Libdl.dlsym(sm.lib, "param_names"),
         Cstring,
@@ -124,10 +157,10 @@ function param_constrain!(
     sm::StanModel,
     theta_unc::Vector{Float64},
     out::Vector{Float64};
-    include_tp = false,
-    include_gq = false,
+    include_tp=false,
+    include_gq=false
 )
-    dims = param_num(sm; include_tp = include_tp, include_gq = include_gq)
+    dims = param_num(sm; include_tp=include_tp, include_gq=include_gq)
     if length(out) != dims
         throw(
             DimensionMismatch("out must be same size as number of constrained parameters"),
@@ -152,11 +185,11 @@ end
 function param_constrain(
     sm::StanModel,
     theta_unc::Vector{Float64};
-    include_tp = false,
-    include_gq = false,
+    include_tp=false,
+    include_gq=false
 )
-    out = zeros(param_num(sm, include_tp = include_tp, include_gq = include_gq))
-    param_constrain!(sm, theta_unc, out; include_tp = include_tp, include_gq = include_gq)
+    out = zeros(param_num(sm, include_tp=include_tp, include_gq=include_gq))
+    param_constrain!(sm, theta_unc, out; include_tp=include_tp, include_gq=include_gq)
 end
 
 
@@ -218,7 +251,7 @@ function param_unconstrain_json(sm::StanModel, theta::String)
     param_unconstrain_json!(sm, theta, out)
 end
 
-function log_density(sm::StanModel, q::Vector{Float64}; propto = true, jacobian = true)
+function log_density(sm::StanModel, q::Vector{Float64}; propto=true, jacobian=true)
     lp = Ref(0.0)
     rc = ccall(
         Libc.Libdl.dlsym(sm.lib, "log_density"),
@@ -240,8 +273,8 @@ function log_density_gradient!(
     sm::StanModel,
     q::Vector{Float64},
     out::Vector{Float64};
-    propto = true,
-    jacobian = true,
+    propto=true,
+    jacobian=true
 )
     lp = Ref(0.0)
     dims = param_unc_num(sm)
@@ -273,11 +306,11 @@ end
 function log_density_gradient(
     sm::StanModel,
     q::Vector{Float64};
-    propto = true,
-    jacobian = true,
+    propto=true,
+    jacobian=true
 )
     grad = zeros(param_unc_num(sm))
-    log_density_gradient!(sm, q, grad; propto = propto, jacobian = jacobian)
+    log_density_gradient!(sm, q, grad; propto=propto, jacobian=jacobian)
 end
 
 function log_density_hessian!(
@@ -285,8 +318,8 @@ function log_density_hessian!(
     q::Vector{Float64},
     out_grad::Vector{Float64},
     out_hess::Vector{Float64};
-    propto = true,
-    jacobian = true,
+    propto=true,
+    jacobian=true
 )
     lp = Ref(0.0)
     dims = param_unc_num(sm)
@@ -334,13 +367,13 @@ end
 function log_density_hessian(
     sm::StanModel,
     q::Vector{Float64};
-    propto = true,
-    jacobian = true,
+    propto=true,
+    jacobian=true
 )
     dims = param_unc_num(sm)
     grad = zeros(dims)
     hess = zeros(dims * dims)
-    log_density_hessian!(sm, q, grad, hess; propto = propto, jacobian = jacobian)
+    log_density_hessian!(sm, q, grad, hess; propto=propto, jacobian=jacobian)
 end
 
 end
