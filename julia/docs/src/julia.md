@@ -1,4 +1,4 @@
-# Julia Interface: bridgestan.jl
+# Julia Interface: BridgeStan.jl
 
 % NB: This file is generated from the one in julia/docs/src/julia.md
 
