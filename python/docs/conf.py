@@ -74,15 +74,20 @@ intersphinx_mapping = {
 }
 
 # julia doc build
+import os
 import subprocess
 import pathlib
 
 try:
     print("Building Julia doc")
     subprocess.run(
-        ["julia", '--project="."', "./make.jl"],
+        ["julia", '--project=.', "./make.jl"],
         cwd=pathlib.Path(__file__).parent.parent.parent / "julia" / "docs",
         check=True,
     )
 except Exception as e:
-    print("Failed to build julia docs!\n", e)
+    # fail loudly in Github Actions
+    if os.environ.get("CI", "").lower() == "true":
+        raise e
+    else:
+        print("Failed to build julia docs!\n", e)
