@@ -20,6 +20,14 @@ export StanModel,
 
 mutable struct StanModelStruct end
 
+"""
+    StanModel(stanlib_, datafile_="", seed_=204, chain_id_=0)
+
+A StanModel instance encapsulates a Stan model instantiated with data.
+
+The constructor a Stan model from the supplied library file path and data file path.
+If seed or chain_id are supplied, these are used to initialize the RNG used by the model.
+"""
 mutable struct StanModel
     lib::Ptr{Nothing}
     stanmodel::Ptr{StanModelStruct}
@@ -68,6 +76,11 @@ mutable struct StanModel
     end
 end
 
+"""
+    name(sm)
+
+Return the name of the model `sm`
+"""
 function name(sm::StanModel)
     cstr = ccall(
         Libc.Libdl.dlsym(sm.lib, "name"),
@@ -78,6 +91,16 @@ function name(sm::StanModel)
     unsafe_string(cstr)
 end
 
+"""
+    param_num(sm; include_tp=false, include_gq=false)
+
+Return the number of (constrained) parameters in the model.
+
+This is the total of all the sizes of items declared in the `parameters` block
+of the model. If `include_tp` or `include_gq` are true, items declared
+in the `transformed parameters` and `generate quantities` blocks are included,
+respectively.
+"""
 function param_num(sm::StanModel; include_tp = false, include_gq = false)
     ccall(
         Libc.Libdl.dlsym(sm.lib, "param_num"),
@@ -89,6 +112,16 @@ function param_num(sm::StanModel; include_tp = false, include_gq = false)
     )
 end
 
+
+"""
+    param_unc_num(sm)
+
+Return the number of unconstrained parameters in the model.
+
+This function is mainly different from `param_num`
+when variables are declared with constraints. For example,
+`simplex[5]` has a constrained size of 5, but an unconstrained size of 4.
+"""
 function param_unc_num(sm::StanModel)
     ccall(
         Libc.Libdl.dlsym(sm.lib, "param_unc_num"),
@@ -98,6 +131,18 @@ function param_unc_num(sm::StanModel)
     )
 end
 
+"""
+    param_names(sm; include_tp=false, include_gq=false)
+
+Return the indexed names of the (constrained) parameters,
+including transformed parameters and/or generated quantities as indicated.
+
+For containers, indexes are separated by periods (.).
+
+For example, the scalar `a` has indexed name `"a"`, the vector entry `a[1]`
+has indexed name `"a.1"` and the matrix entry `a[2, 3]` has indexed names `"a.2.3"`.
+Parameter order of the output is column major and more generally last-index major for containers.
+"""
 function param_names(sm::StanModel; include_tp = false, include_gq = false)
     cstr = ccall(
         Libc.Libdl.dlsym(sm.lib, "param_names"),
@@ -110,6 +155,14 @@ function param_names(sm::StanModel; include_tp = false, include_gq = false)
     string.(split(unsafe_string(cstr), ','))
 end
 
+"""
+    param_unc_names(sm)
+
+Return the indexed names of the unconstrained parameters.
+
+For example, a scalar unconstrained parameter `b` has indexed name `b`
+and a vector entry `b[3]` has indexed name `b.3`.
+"""
 function param_unc_names(sm::StanModel)
     cstr = ccall(
         Libc.Libdl.dlsym(sm.lib, "param_unc_names"),
@@ -120,6 +173,18 @@ function param_unc_names(sm::StanModel)
     string.(split(unsafe_string(cstr), ','))
 end
 
+"""
+    param_constrain!(sm, theta_unc, out; include_tp=false, include_gq=false)
+
+This turns a vector of unconstrained params into constrained parameters
+and (if `include_tp` and `include_gq` are set, respectively) transformed parameters
+and generated quantities.
+
+The result is stored in the vector `out`, and a reference is returned. See
+`param_constrain` for a version which allocates fresh memory.
+
+This is the inverse of `param_unconstrain!`.
+"""
 function param_constrain!(
     sm::StanModel,
     theta_unc::Vector{Float64},
@@ -149,6 +214,19 @@ function param_constrain!(
     out
 end
 
+"""
+    param_constrain(sm, theta_unc, out; include_tp=false, include_gq=false)
+
+This turns a vector of unconstrained params into constrained parameters
+and (if `include_tp` and `include_gq` are set, respectively)
+transformed parameters and generated quantities.
+
+This allocates new memory for the output each call.
+See `param_constrain!` for a version which allows
+re-using existing memory.
+
+This is the inverse of `param_unconstrain`.
+"""
 function param_constrain(
     sm::StanModel,
     theta_unc::Vector{Float64};
@@ -159,7 +237,19 @@ function param_constrain(
     param_constrain!(sm, theta_unc, out; include_tp = include_tp, include_gq = include_gq)
 end
 
+"""
+    param_unconstrain!(sm, theta, out)
 
+This turns a vector of constrained params into unconstrained parameters.
+
+It is assumed that these will be in the same order as internally represented by the model (e.g.,
+in the same order as `param_unc_names(sm)`). If structured input is needed, use `param_unconstrain_json!`
+
+The result is stored in the vector `out`, and a reference is returned. See
+`param_unconstrain` for a version which allocates fresh memory.
+
+This is the inverse of `param_constrain!`.
+"""
 function param_unconstrain!(sm::StanModel, theta::Vector{Float64}, out::Vector{Float64})
     dims = param_unc_num(sm)
     if length(out) != dims
@@ -184,11 +274,35 @@ function param_unconstrain!(sm::StanModel, theta::Vector{Float64}, out::Vector{F
     out
 end
 
+"""
+    param_unconstrain(sm, theta)
+
+This turns a vector of constrained params into unconstrained parameters.
+
+It is assumed that these will be in the same order as internally represented by the model (e.g.,
+in the same order as `param_unc_names(sm)`). If structured input is needed, use `param_unconstrain_json`
+
+This allocates new memory for the output each call.
+See `param_unconstrain!` for a version which allows
+re-using existing memory.
+
+This is the inverse of `param_constrain`.
+"""
 function param_unconstrain(sm::StanModel, theta::Vector{Float64})
     out = zeros(param_unc_num(sm))
     param_unconstrain!(sm, theta, out)
 end
 
+"""
+    param_unconstrain_json!(sm, theta, out)
+
+This accepts a JSON string of constrained parameters and returns the unconstrained parameters.
+
+The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json.html).
+
+The result is stored in the vector `out`, and a reference is returned. See
+`param_unconstrain_json` for a version which allocates fresh memory.
+"""
 function param_unconstrain_json!(sm::StanModel, theta::String, out::Vector{Float64})
     dims = param_unc_num(sm)
     if length(out) != dims
@@ -213,11 +327,30 @@ function param_unconstrain_json!(sm::StanModel, theta::String, out::Vector{Float
     out
 end
 
+"""
+    param_unconstrain_json(sm, theta)
+
+This accepts a JSON string of constrained parameters and returns the unconstrained parameters.
+
+The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json.html).
+
+This allocates new memory for the output each call.
+See `param_unconstrain_json!` for a version which allows
+re-using existing memory.
+"""
 function param_unconstrain_json(sm::StanModel, theta::String)
     out = zeros(param_unc_num(sm))
     param_unconstrain_json!(sm, theta, out)
 end
 
+"""
+    log_density(sm, q; propto=true, jacobian=true)
+
+Return the log density of the specified unconstrained parameters.
+
+This calculation drops constant terms that do not depend on the parameters if `propto` is `true`
+and includes change of variables terms for constrained parameters if `jacobian` is `true`.
+"""
 function log_density(sm::StanModel, q::Vector{Float64}; propto = true, jacobian = true)
     lp = Ref(0.0)
     rc = ccall(
@@ -236,6 +369,18 @@ function log_density(sm::StanModel, q::Vector{Float64}; propto = true, jacobian 
     lp[]
 end
 
+
+"""
+    log_density_gradient!(sm, q, out; propto=true, jacobian=true)
+
+Returns a tuple of the log density and gradient of the specified unconstrained parameters.
+
+This calculation drops constant terms that do not depend on the parameters if `propto` is `true`
+and includes change of variables terms for constrained parameters if `jacobian` is `true`.
+
+The gradient is stored in the vector `out`, and a reference is returned. See
+`log_density_gradient` for a version which allocates fresh memory.
+"""
 function log_density_gradient!(
     sm::StanModel,
     q::Vector{Float64},
@@ -270,6 +415,19 @@ function log_density_gradient!(
     (lp[], out)
 end
 
+"""
+    log_density_gradient(sm, q; propto=true, jacobian=true)
+
+Returns a tuple of the log density and gradient of the specified unconstrained parameters.
+
+This calculation drops constant terms that do not depend on the parameters if `propto` is `true`
+and includes change of variables terms for constrained parameters if `jacobian` is `true`.
+
+
+This allocates new memory for the gradient output each call.
+See `log_density_gradient!` for a version which allows
+re-using existing memory.
+"""
 function log_density_gradient(
     sm::StanModel,
     q::Vector{Float64};
@@ -280,6 +438,18 @@ function log_density_gradient(
     log_density_gradient!(sm, q, grad; propto = propto, jacobian = jacobian)
 end
 
+"""
+    log_density_hessian!(sm, q, out_grad, out_hess; propto=true, jacobian=true)
+
+Returns a tuple of the log density, gradient, and Hessian  of the specified unconstrained parameters.
+
+This calculation drops constant terms that do not depend on the parameters if `propto` is `true`
+and includes change of variables terms for constrained parameters if `jacobian` is `true`.
+
+The gradient is stored in the vector `out_grad` and the
+Hessian is stored in `out_hess` and references are returned. See
+`log_density_hessian` for a version which allocates fresh memory.
+"""
 function log_density_hessian!(
     sm::StanModel,
     q::Vector{Float64},
@@ -331,6 +501,18 @@ function log_density_hessian!(
     (lp[], out_grad, reshape(out_hess, (dims, dims)))
 end
 
+"""
+    log_density_hessian(sm, q; propto=true, jacobian=true)
+
+Returns a tuple of the log density, gradient, and Hessian  of the specified unconstrained parameters.
+
+This calculation drops constant terms that do not depend on the parameters if `propto` is `true`
+and includes change of variables terms for constrained parameters if `jacobian` is `true`.
+
+This allocates new memory for the gradient and Hessian output each call.
+See `log_density_gradient!` for a version which allows
+re-using existing memory.
+"""
 function log_density_hessian(
     sm::StanModel,
     q::Vector{Float64};
