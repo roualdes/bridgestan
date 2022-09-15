@@ -7,6 +7,8 @@
 % Please only make edits in the later file, since the first is DELETED each re-build.
 ```
 
+---
+
 ```@docs
 StanModel
 log_density

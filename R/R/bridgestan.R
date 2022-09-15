@@ -91,7 +91,7 @@ StanModel <- R6::R6Class("StanModel",
     },
     #' @description
     #' Return the number of unconstrained parameters in the model.
-    #''
+    #'
     #' This function is mainly different from `param_num` when variables are declared with constraints.
     #' For example, `simplex[5]` has a constrained size of 5, but an unconstrained size of 4.
     #' @return The number of parameters in the model.
