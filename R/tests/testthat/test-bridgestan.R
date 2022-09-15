@@ -1,4 +1,4 @@
-base = Sys.getenv("BRIDGESTAN")
+base = "../../.."
 
 
 simple <- StanModel$new(file.path(base, "/stan/simple/simple_model.so"), file.path(base, "/stan/simple/simple.data.json"), 1234, 0)

@@ -2,14 +2,17 @@
 % Please edit documentation in R/bridgestan.R
 \name{StanModel}
 \alias{StanModel}
-\title{StanModel
-A class for connecting to BridgeStan compiled models.}
+\title{StanModel}
 \description{
 StanModel
-A class for connecting to BridgeStan compiled models.
 
 StanModel
-A class for connecting to BridgeStan compiled models.
+}
+\details{
+R6 Class representing a compiled Bridgestan model.
+
+This model exposes log_density, gradient, and Hessian information
+as well as constraining and unconstraining transforms.
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -154,54 +157,147 @@ The number of parameters in the model.
 \if{html}{\out{<a id="method-StanModel-param_constrain"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-param_constrain}{}}}
 \subsection{Method \code{param_constrain()}}{
+This turns a vector of unconstrained params into constrained parameters
+See also `StanModel$param_unconstrain()`, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$param_constrain(theta_unc, include_tp = FALSE, include_gq = FALSE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{theta_unc}}{The vector of unconstrained parameters}
+
+\item{\code{include_tp}}{Whether to also output the transformed parameters of the model.}
+
+\item{\code{include_gq}}{Whether to also output the generated quantities of the model.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The constrained parameters of the model.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-StanModel-param_unconstrain"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-param_unconstrain}{}}}
 \subsection{Method \code{param_unconstrain()}}{
+This turns a vector of constrained params into unconstrained parameters.
+
+It is assumed that these will be in the same order as internally represented by
+the model (e.g., in the same order as `StanModel$param_names()`).
+If structured input is needed, use `StanModel$param_unconstrain_json()`.
+See also `StanModel$param_constrain()`, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$param_unconstrain(theta)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{theta}}{The vector of constrained parameters}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The unconstrained parameters of the model.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-StanModel-param_unconstrain_json"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-param_unconstrain_json}{}}}
 \subsection{Method \code{param_unconstrain_json()}}{
+This accepts a JSON string of constrained parameters and returns the unconstrained parameters.
+
+The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json.html).
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$param_unconstrain_json(json)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{json}}{Character vector containing a string representation of JSON data.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The unconstrained parameters of the model.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-StanModel-log_density"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-log_density}{}}}
 \subsection{Method \code{log_density()}}{
+Return the log density of the specified unconstrained parameters.
+See also `StanModel$param_unconstrain()`, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density(theta, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{theta}}{The vector of unconstrained parameters}
+
+\item{\code{propto}}{If `TRUE`, drop terms which do not depend on the parameters.}
+
+\item{\code{jacobian}}{If `TRUE`, include change of variables terms for constrained parameters.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The log density.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-StanModel-log_density_gradient"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-log_density_gradient}{}}}
 \subsection{Method \code{log_density_gradient()}}{
+Return the log density and gradient of the specified unconstrained parameters.
+See also `StanModel$param_unconstrain()`, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density_gradient(theta, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{theta}}{The vector of unconstrained parameters}
+
+\item{\code{propto}}{If `TRUE`, drop terms which do not depend on the parameters.}
+
+\item{\code{jacobian}}{If `TRUE`, include change of variables terms for constrained parameters.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+List containing entries `val` (the log density) and `gradient` (the gradient).
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-StanModel-log_density_hessian"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-log_density_hessian}{}}}
 \subsection{Method \code{log_density_hessian()}}{
+Return the log density, gradient, and Hessian of the specified unconstrained parameters.
+See also `StanModel$param_unconstrain()`, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density_hessian(theta, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{theta}}{The vector of unconstrained parameters}
+
+\item{\code{propto}}{If `TRUE`, drop terms which do not depend on the parameters.}
+
+\item{\code{jacobian}}{If `TRUE`, include change of variables terms for constrained parameters.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+List containing entries `val` (the log density), `gradient` (the gradient), and `hessian` (the Hessian).
+}
 }
 }

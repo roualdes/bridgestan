@@ -1,3 +1,5 @@
+#' StanModel
+#'
 #' R6 Class representing a compiled Bridgestan model.
 #'
 #' This model exposes log_density, gradient, and Hessian information
@@ -99,6 +101,13 @@ StanModel <- R6::R6Class("StanModel",
         PACKAGE = private$lib_name
       )$num
     },
+    #' @description
+    #' This turns a vector of unconstrained params into constrained parameters
+    #' See also `StanModel$param_unconstrain()`, the inverse of this function.
+    #' @param theta_unc The vector of unconstrained parameters
+    #' @param include_tp Whether to also output the transformed parameters of the model.
+    #' @param include_gq Whether to also output the generated quantities of the model.
+    #' @return The constrained parameters of the model.
     param_constrain = function(theta_unc, include_tp = FALSE, include_gq = FALSE) {
       vars <- .C("param_constrain_R", as.raw(private$model),
         as.logical(include_tp), as.logical(include_gq), as.numeric(theta_unc),
@@ -111,6 +120,15 @@ StanModel <- R6::R6Class("StanModel",
       }
       vars$theta
     },
+    #' @description
+    #' This turns a vector of constrained params into unconstrained parameters.
+    #'
+    #' It is assumed that these will be in the same order as internally represented by
+    #' the model (e.g., in the same order as `StanModel$param_names()`).
+    #' If structured input is needed, use `StanModel$param_unconstrain_json()`.
+    #' See also `StanModel$param_constrain()`, the inverse of this function.
+    #' @param theta The vector of constrained parameters
+    #' @return The unconstrained parameters of the model.
     param_unconstrain = function(theta) {
       vars <- .C("param_unconstrain_R", as.raw(private$model),
         as.numeric(theta),
@@ -123,6 +141,12 @@ StanModel <- R6::R6Class("StanModel",
       }
       vars$theta_unc
     },
+    #' @description
+    #' This accepts a JSON string of constrained parameters and returns the unconstrained parameters.
+    #'
+    #' The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json.html).
+    #' @param json Character vector containing a string representation of JSON data.
+    #' @return The unconstrained parameters of the model.
     param_unconstrain_json = function(json) {
       vars <- .C("param_unconstrain_json_R", as.raw(private$model),
         as.character(json),
@@ -135,6 +159,13 @@ StanModel <- R6::R6Class("StanModel",
       }
       vars$theta_unc
     },
+    #' @description
+    #' Return the log density of the specified unconstrained parameters.
+    #' See also `StanModel$param_unconstrain()`, the inverse of this function.
+    #' @param theta The vector of unconstrained parameters
+    #' @param propto If `TRUE`, drop terms which do not depend on the parameters.
+    #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
+    #' @return The log density.
     log_density = function(theta, propto = TRUE, jacobian = TRUE) {
       vars <- .C("log_density_R", as.raw(private$model),
         as.logical(propto), as.logical(jacobian), as.numeric(theta),
@@ -147,6 +178,13 @@ StanModel <- R6::R6Class("StanModel",
       }
       vars$val
     },
+    #' @description
+    #' Return the log density and gradient of the specified unconstrained parameters.
+    #' See also `StanModel$param_unconstrain()`, the inverse of this function.
+    #' @param theta The vector of unconstrained parameters
+    #' @param propto If `TRUE`, drop terms which do not depend on the parameters.
+    #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
+    #' @return List containing entries `val` (the log density) and `gradient` (the gradient).
     log_density_gradient = function(theta, propto = TRUE, jacobian = TRUE) {
       dims <- self$param_unc_num()
       vars <- .C("log_density_gradient_R", as.raw(private$model),
@@ -160,6 +198,13 @@ StanModel <- R6::R6Class("StanModel",
       }
       list(val = vars$val, gradient = vars$gradient)
     },
+    #' @description
+    #' Return the log density, gradient, and Hessian of the specified unconstrained parameters.
+    #' See also `StanModel$param_unconstrain()`, the inverse of this function.
+    #' @param theta The vector of unconstrained parameters
+    #' @param propto If `TRUE`, drop terms which do not depend on the parameters.
+    #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
+    #' @return List containing entries `val` (the log density), `gradient` (the gradient), and `hessian` (the Hessian).
     log_density_hessian = function(theta, propto = TRUE, jacobian = TRUE) {
       dims <- self$param_unc_num()
       vars <- .C("log_density_hessian_R", as.raw(private$model),
