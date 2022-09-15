@@ -163,6 +163,7 @@ jobs:
           packages: |
             any::R6
             any::testthat
+            any::devtools
 
       - name: Restore CmdStan
         uses: actions/cache@v2
