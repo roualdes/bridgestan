@@ -1,6 +1,17 @@
-
+#' R6 Class representing a compiled Bridgestan model.
+#'
+#' This model exposes log_density, gradient, and Hessian information
+#' as well as constraining and unconstraining transforms.
+#' @export
 StanModel <- R6::R6Class("StanModel",
   public = list(
+    #' @description
+    #' Create a Stan Model instace.
+    #' @param lib A path to a compiled Bridgestan Shared Object file.
+    #' @param data A path to a JSON data file for the model.
+    #' @param rng_seed Seed for the RNG in the model object.
+    #' @param chain_id Used to offset the RNG by a fixed amount.
+    #' @return A new StanModel.
     initialize = function(lib, data, rng_seed, chain_id) {
       if (.Platform$OS.type == "windows"){
         lib_old <- lib
@@ -22,12 +33,25 @@ StanModel <- R6::R6Class("StanModel",
       }
       private$model <- ptr_out
     },
+    #' @description
+    #' Get the name of this StanModel
+    #' @return A character vector of the name.
     name = function() {
       .C("name_R", as.raw(private$model),
         name_out = as.character(""),
         PACKAGE = private$lib_name
       )$name_out
     },
+    #' @description
+    #' Return the indexed names of the (constrained) parameters.
+    #' For containers, indexes are separated by periods (.).
+    #'
+    #' For example, the scalar a has indexed name a, the vector entry a[1] has
+    #' indexed name a.1 and the matrix entry a[2, 3] has indexed name a.2.3. Parameter
+    #' order of the output is column major and more generally last-index major for containers.
+    #' @param include_tp Whether to include variables from transformed parameters.
+    #' @param include_gq Whether to include variables from generated quantities.
+    #' @return A list of character vectors of the names.
     param_names = function(include_tp = FALSE, include_gq = FALSE) {
       .C("param_names_R", as.raw(private$model),
         as.logical(include_tp), as.logical(include_gq),
@@ -36,6 +60,14 @@ StanModel <- R6::R6Class("StanModel",
       )$names_out -> names
       strsplit(names, ",")[[1]]
     },
+    #' @description
+    #' Return the indexed names of the unconstrained parameters.
+    #' For containers, indexes are separated by periods (.).
+    #'
+    #' For example, the scalar a has indexed name a, the vector entry a[1] has
+    #' indexed name a.1 and the matrix entry a[2, 3] has indexed name a.2.3. Parameter
+    #' order of the output is column major and more generally last-index major for containers.
+    #' @return A list of character vectors of the names.
     param_unc_names = function() {
       .C("param_unc_names_R", as.raw(private$model),
         names_out = as.character(""),
@@ -43,6 +75,11 @@ StanModel <- R6::R6Class("StanModel",
       )$names_out -> names
       strsplit(names, ",")[[1]]
     },
+    #' @description
+    #' Return the number of (constrained) parameters in the model.
+    #' @param include_tp Whether to include variables from transformed parameters.
+    #' @param include_gq Whether to include variables from generated quantities.
+    #' @return The number of parameters in the model.
     param_num = function(include_tp = FALSE, include_gq = FALSE) {
       .C("param_num_R", as.raw(private$model),
         as.logical(include_tp), as.logical(include_gq),
@@ -50,6 +87,12 @@ StanModel <- R6::R6Class("StanModel",
         PACKAGE = private$lib_name
       )$num
     },
+    #' @description
+    #' Return the number of unconstrained parameters in the model.
+    #''
+    #' This function is mainly different from `param_num` when variables are declared with constraints.
+    #' For example, `simplex[5]` has a constrained size of 5, but an unconstrained size of 4.
+    #' @return The number of parameters in the model.
     param_unc_num = function() {
       .C("param_unc_num_R", as.raw(private$model),
         num = as.integer(0),

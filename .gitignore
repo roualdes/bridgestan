@@ -18,6 +18,8 @@ _build/
 # R
 .Rhistory
 .RData
+*.tar.gz
+bridgestan.Rcheck/
 
 # Julia
 .juliahistory

@@ -179,9 +179,11 @@ jobs:
 
       - name: Run tests
         run: |
-          cd R/tests/
+          export BRIDGESTAN=$(pwd)
+          cd R/test/testthat
           gcc -fpic -shared -o test_collisions.so test_collisions.c
-          Rscript test_bridgestan.R
+          cd ../..
+          Rscript -e "devtools::test()"
 
   # Seperate for now, weird dynamic linking issues need resolving in GHA runner
   test_clients_windows:
@@ -218,6 +220,7 @@ jobs:
           packages: |
             any::R6
             any::testthat
+            any::devtools
 
       - name: Set up Julia
         uses: julia-actions/setup-julia@v1
@@ -228,6 +231,8 @@ jobs:
 
       - name: Run R tests
         run: |
-          cd R/tests/
+          $env:BRIDGESTAN = $(pwd)
+          cd R/test/testthat
           gcc -fpic -shared -o test_collisions.dll test_collisions.c
-          Rscript test_bridgestan.R
+          cd ../..
+          Rscript -e "devtools::test()"
