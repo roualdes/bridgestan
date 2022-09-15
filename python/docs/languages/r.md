@@ -16,7 +16,7 @@
 
 `R6` Class representing a compiled Bridgestan model.
 
-This model exposes log_density, gradient, and Hessian information
+This model exposes log density, gradient, and Hessian information
 as well as constraining and unconstraining transforms.
 
 #### Methods

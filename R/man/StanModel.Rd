@@ -11,7 +11,7 @@ StanModel
 \details{
 R6 Class representing a compiled Bridgestan model.
 
-This model exposes log_density, gradient, and Hessian information
+This model exposes log density, gradient, and Hessian information
 as well as constraining and unconstraining transforms.
 }
 \section{Methods}{
@@ -142,7 +142,7 @@ The number of parameters in the model.
 \if{latex}{\out{\hypertarget{method-StanModel-param_unc_num}{}}}
 \subsection{Method \code{param_unc_num()}}{
 Return the number of unconstrained parameters in the model.
-'
+
 This function is mainly different from `param_num` when variables are declared with constraints.
 For example, `simplex[5]` has a constrained size of 5, but an unconstrained size of 4.
 \subsection{Usage}{
