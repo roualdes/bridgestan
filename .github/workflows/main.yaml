@@ -180,7 +180,7 @@ jobs:
       - name: Run tests
         run: |
           export BRIDGESTAN=$(pwd)
-          cd R/test/testthat
+          cd R/tests/testthat
           gcc -fpic -shared -o test_collisions.so test_collisions.c
           cd ../..
           Rscript -e "devtools::test()"
@@ -232,7 +232,7 @@ jobs:
       - name: Run R tests
         run: |
           $env:BRIDGESTAN = $(pwd)
-          cd R/test/testthat
+          cd R/tests/testthat
           gcc -fpic -shared -o test_collisions.dll test_collisions.c
           cd ../..
           Rscript -e "devtools::test()"
