@@ -1,5 +1,5 @@
 Package: bridgestan
-Title: Bridgestan, Accessing Stan Model Functions in R
+Title: BridgeStan, Accessing Stan Model Functions in R
 Version: 0.0.1
 Authors@R:
     person(given="Brian", family="Ward", , "bward@flatironinstitute.org", role = c("aut", "cre"))

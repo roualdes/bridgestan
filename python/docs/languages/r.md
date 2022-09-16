@@ -14,7 +14,7 @@
 
 ### *R6::R6Class* `StanModel`
 
-`R6` Class representing a compiled Bridgestan model.
+`R6` Class representing a compiled BridgeStan model.
 
 This model exposes log density, gradient, and Hessian information
 as well as constraining and unconstraining transforms.
@@ -34,7 +34,7 @@ StanModel$new(lib, data, rng_seed, chain_id)
 
 _Arguments_
 
-  - `lib` A path to a compiled Bridgestan Shared Object file.
+  - `lib` A path to a compiled BridgeStan Shared Object file.
 
   - `data` A path to a JSON data file for the model.
 
