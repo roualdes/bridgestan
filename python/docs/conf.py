@@ -81,23 +81,11 @@ breathe_default_project = "bridgestan"
 
 
 
-# julia doc build
+# Julia and C++ doc build
 import os
 import subprocess
 import pathlib
 
-try:
-    print("Checking C++ doc availability")
-    import breathe
-    subprocess.run(["doxygen", "-v"], check=True, capture_output=True)
-except Exception as e:
-    if os.environ.get("CI", "").lower() == "true":
-        raise e
-    else:
-        print("Breathe/doxygen not installed, skipping C++ Doc")
-        exclude_patterns = ["languages/cpp-api.rst"]
-else:
-    extensions.append("breathe")
 
 try:
     print("Building Julia doc")
@@ -112,3 +100,16 @@ except Exception as e:
         raise e
     else:
         print("Failed to build julia docs!\n", e)
+
+try:
+    print("Checking C++ doc availability")
+    import breathe
+    subprocess.run(["doxygen", "-v"], check=True, capture_output=True)
+except Exception as e:
+    if os.environ.get("CI", "").lower() == "true":
+        raise e
+    else:
+        print("Breathe/doxygen not installed, skipping C++ Doc")
+        exclude_patterns = ["languages/cpp-api.rst"]
+else:
+    extensions.append("breathe")
