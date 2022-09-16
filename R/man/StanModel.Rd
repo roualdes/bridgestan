@@ -77,8 +77,8 @@ A character vector of the name.
 Return the indexed names of the (constrained) parameters.
 For containers, indexes are separated by periods (.).
 
-For example, the scalar a has indexed name a, the vector entry a[1] has
-indexed name a.1 and the matrix entry a[2, 3] has indexed name a.2.3. Parameter
+For example, the scalar a has indexed name a, the vector entry a\link{1} has
+indexed name a.1 and the matrix entry a\link{2, 3} has indexed name a.2.3. Parameter
 order of the output is column major and more generally last-index major for containers.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$param_names(include_tp = FALSE, include_gq = FALSE)}\if{html}{\out{</div>}}
@@ -104,8 +104,8 @@ A list of character vectors of the names.
 Return the indexed names of the unconstrained parameters.
 For containers, indexes are separated by periods (.).
 
-For example, the scalar a has indexed name a, the vector entry a[1] has
-indexed name a.1 and the matrix entry a[2, 3] has indexed name a.2.3. Parameter
+For example, the scalar a has indexed name a, the vector entry a\link{1} has
+indexed name a.1 and the matrix entry a\link{2, 3} has indexed name a.2.3. Parameter
 order of the output is column major and more generally last-index major for containers.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$param_unc_names()}\if{html}{\out{</div>}}
@@ -143,8 +143,8 @@ The number of parameters in the model.
 \subsection{Method \code{param_unc_num()}}{
 Return the number of unconstrained parameters in the model.
 
-This function is mainly different from `param_num` when variables are declared with constraints.
-For example, `simplex[5]` has a constrained size of 5, but an unconstrained size of 4.
+This function is mainly different from \code{param_num} when variables are declared with constraints.
+For example, \code{simplex[5]} has a constrained size of 5, but an unconstrained size of 4.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$param_unc_num()}\if{html}{\out{</div>}}
 }
@@ -158,7 +158,7 @@ The number of parameters in the model.
 \if{latex}{\out{\hypertarget{method-StanModel-param_constrain}{}}}
 \subsection{Method \code{param_constrain()}}{
 This turns a vector of unconstrained params into constrained parameters
-See also `StanModel$param_unconstrain()`, the inverse of this function.
+See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$param_constrain(theta_unc, include_tp = FALSE, include_gq = FALSE)}\if{html}{\out{</div>}}
 }
@@ -185,9 +185,9 @@ The constrained parameters of the model.
 This turns a vector of constrained params into unconstrained parameters.
 
 It is assumed that these will be in the same order as internally represented by
-the model (e.g., in the same order as `StanModel$param_names()`).
-If structured input is needed, use `StanModel$param_unconstrain_json()`.
-See also `StanModel$param_constrain()`, the inverse of this function.
+the model (e.g., in the same order as \code{StanModel$param_names()}).
+If structured input is needed, use \code{StanModel$param_unconstrain_json()}.
+See also \code{StanModel$param_constrain()}, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$param_unconstrain(theta)}\if{html}{\out{</div>}}
 }
@@ -209,7 +209,7 @@ The unconstrained parameters of the model.
 \subsection{Method \code{param_unconstrain_json()}}{
 This accepts a JSON string of constrained parameters and returns the unconstrained parameters.
 
-The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json.html).
+The JSON is expected to be in the \href{https://mc-stan.org/docs/cmdstan-guide/json.html}{JSON Format for CmdStan}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$param_unconstrain_json(json)}\if{html}{\out{</div>}}
 }
@@ -230,7 +230,7 @@ The unconstrained parameters of the model.
 \if{latex}{\out{\hypertarget{method-StanModel-log_density}{}}}
 \subsection{Method \code{log_density()}}{
 Return the log density of the specified unconstrained parameters.
-See also `StanModel$param_unconstrain()`, the inverse of this function.
+See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density(theta, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
 }
@@ -240,9 +240,9 @@ See also `StanModel$param_unconstrain()`, the inverse of this function.
 \describe{
 \item{\code{theta}}{The vector of unconstrained parameters}
 
-\item{\code{propto}}{If `TRUE`, drop terms which do not depend on the parameters.}
+\item{\code{propto}}{If \code{TRUE}, drop terms which do not depend on the parameters.}
 
-\item{\code{jacobian}}{If `TRUE`, include change of variables terms for constrained parameters.}
+\item{\code{jacobian}}{If \code{TRUE}, include change of variables terms for constrained parameters.}
 }
 \if{html}{\out{</div>}}
 }
@@ -255,7 +255,7 @@ The log density.
 \if{latex}{\out{\hypertarget{method-StanModel-log_density_gradient}{}}}
 \subsection{Method \code{log_density_gradient()}}{
 Return the log density and gradient of the specified unconstrained parameters.
-See also `StanModel$param_unconstrain()`, the inverse of this function.
+See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density_gradient(theta, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
 }
@@ -265,14 +265,14 @@ See also `StanModel$param_unconstrain()`, the inverse of this function.
 \describe{
 \item{\code{theta}}{The vector of unconstrained parameters}
 
-\item{\code{propto}}{If `TRUE`, drop terms which do not depend on the parameters.}
+\item{\code{propto}}{If \code{TRUE}, drop terms which do not depend on the parameters.}
 
-\item{\code{jacobian}}{If `TRUE`, include change of variables terms for constrained parameters.}
+\item{\code{jacobian}}{If \code{TRUE}, include change of variables terms for constrained parameters.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-List containing entries `val` (the log density) and `gradient` (the gradient).
+List containing entries \code{val} (the log density) and \code{gradient} (the gradient).
 }
 }
 \if{html}{\out{<hr>}}
@@ -280,7 +280,7 @@ List containing entries `val` (the log density) and `gradient` (the gradient).
 \if{latex}{\out{\hypertarget{method-StanModel-log_density_hessian}{}}}
 \subsection{Method \code{log_density_hessian()}}{
 Return the log density, gradient, and Hessian of the specified unconstrained parameters.
-See also `StanModel$param_unconstrain()`, the inverse of this function.
+See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density_hessian(theta, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
 }
@@ -290,14 +290,14 @@ See also `StanModel$param_unconstrain()`, the inverse of this function.
 \describe{
 \item{\code{theta}}{The vector of unconstrained parameters}
 
-\item{\code{propto}}{If `TRUE`, drop terms which do not depend on the parameters.}
+\item{\code{propto}}{If \code{TRUE}, drop terms which do not depend on the parameters.}
 
-\item{\code{jacobian}}{If `TRUE`, include change of variables terms for constrained parameters.}
+\item{\code{jacobian}}{If \code{TRUE}, include change of variables terms for constrained parameters.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-List containing entries `val` (the log density), `gradient` (the gradient), and `hessian` (the Hessian).
+List containing entries \code{val} (the log density), \code{gradient} (the gradient), and \code{hessian} (the Hessian).
 }
 }
 }

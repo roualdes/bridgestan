@@ -26,3 +26,4 @@ bridgestan.Rcheck/
 build/
 
 .DS_Store
+.Rproj.user
