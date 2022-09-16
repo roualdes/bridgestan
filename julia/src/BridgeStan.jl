@@ -243,7 +243,7 @@ end
 This turns a vector of constrained params into unconstrained parameters.
 
 It is assumed that these will be in the same order as internally represented by the model (e.g.,
-in the same order as `param_unc_names(sm)`). If structured input is needed, use `param_unconstrain_json!`
+in the same order as `param_names(sm)`). If structured input is needed, use `param_unconstrain_json!`
 
 The result is stored in the vector `out`, and a reference is returned. See
 `param_unconstrain` for a version which allocates fresh memory.

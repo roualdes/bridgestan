@@ -1,7 +1,7 @@
-source("../bridgestan.R")
-library(testthat)
+base = "../../.."
 
-simple <- StanModel$new("../../stan/simple/simple_model.so", "../../stan/simple/simple.data.json", 1234, 0)
+
+simple <- StanModel$new(file.path(base, "/stan/simple/simple_model.so"), file.path(base, "/stan/simple/simple.data.json"), 1234, 0)
 test_that("simple_model name is correct", {
     expect_identical(simple$name(), "simple_model")
 })
@@ -26,17 +26,19 @@ test_that("simple_model Hessian is -I",{
 })
 
 
-bernoulli <- StanModel$new("../../stan/bernoulli/bernoulli_model.so", "../../stan/bernoulli/bernoulli.data.json", 1234, 0)
+bernoulli <- StanModel$new(file.path(base, "/stan/bernoulli/bernoulli_model.so"), file.path(base, "/stan/bernoulli/bernoulli.data.json"), 1234, 0)
 
 test_that("loading another library didn't break prior ones", {
     if (.Platform$OS.type == "windows"){
-        dyn.load("./test_collisions.dll")
+        dll = "./test_collisions.dll"
     } else {
-        dyn.load("./test_collisions.so")
+        dll = "./test_collisions.so"
     }
-    expect_equal(bernoulli$name(), "bernoulli_model")
-    expect_equal(simple$name(), "simple_model")
-
+    if (file.exists(dll)) {
+      dyn.load(dll)
+      expect_equal(bernoulli$name(), "bernoulli_model")
+      expect_equal(simple$name(), "simple_model")
+    }
 })
 
 test_that("bernoulli constrain works", {
