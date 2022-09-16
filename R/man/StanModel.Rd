@@ -9,7 +9,7 @@ StanModel
 StanModel
 }
 \details{
-R6 Class representing a compiled Bridgestan model.
+R6 Class representing a compiled BridgeStan model.
 
 This model exposes log density, gradient, and Hessian information
 as well as constraining and unconstraining transforms.
@@ -43,7 +43,7 @@ Create a Stan Model instace.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{lib}}{A path to a compiled Bridgestan Shared Object file.}
+\item{\code{lib}}{A path to a compiled BridgeStan Shared Object file.}
 
 \item{\code{data}}{A path to a JSON data file for the model.}
 

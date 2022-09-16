@@ -11,5 +11,5 @@ Welcome to BridgeStan's documentation!
    :caption: Contents:
 
    install
-   how-it-works
    languages
+   how-it-works

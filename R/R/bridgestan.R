@@ -1,6 +1,6 @@
 #' StanModel
 #'
-#' R6 Class representing a compiled Bridgestan model.
+#' R6 Class representing a compiled BridgeStan model.
 #'
 #' This model exposes log density, gradient, and Hessian information
 #' as well as constraining and unconstraining transforms.
@@ -9,7 +9,7 @@ StanModel <- R6::R6Class("StanModel",
   public = list(
     #' @description
     #' Create a Stan Model instace.
-    #' @param lib A path to a compiled Bridgestan Shared Object file.
+    #' @param lib A path to a compiled BridgeStan Shared Object file.
     #' @param data A path to a JSON data file for the model.
     #' @param rng_seed Seed for the RNG in the model object.
     #' @param chain_id Used to offset the RNG by a fixed amount.
