@@ -20,10 +20,10 @@ _build/
 .RData
 *.tar.gz
 bridgestan.Rcheck/
+.Rproj.user
 
 # Julia
 .juliahistory
 build/
 
 .DS_Store
-.Rproj.user

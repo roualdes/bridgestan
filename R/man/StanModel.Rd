@@ -77,8 +77,8 @@ A character vector of the name.
 Return the indexed names of the (constrained) parameters.
 For containers, indexes are separated by periods (.).
 
-For example, the scalar a has indexed name a, the vector entry a\link{1} has
-indexed name a.1 and the matrix entry a\link{2, 3} has indexed name a.2.3. Parameter
+For example, the scalar \code{a} has indexed name "a", the vector entry \code{a[1]} has
+indexed name "a.1" and the matrix entry \code{a[2, 3]} has indexed name "a.2.3". Parameter
 order of the output is column major and more generally last-index major for containers.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$param_names(include_tp = FALSE, include_gq = FALSE)}\if{html}{\out{</div>}}
@@ -104,8 +104,8 @@ A list of character vectors of the names.
 Return the indexed names of the unconstrained parameters.
 For containers, indexes are separated by periods (.).
 
-For example, the scalar a has indexed name a, the vector entry a\link{1} has
-indexed name a.1 and the matrix entry a\link{2, 3} has indexed name a.2.3. Parameter
+For example, the scalar \code{a} has indexed name "a", the vector entry \code{a[1]} has
+indexed name "a.1" and the matrix entry \code{a[2, 3]} has indexed name "a.2.3". Parameter
 order of the output is column major and more generally last-index major for containers.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$param_unc_names()}\if{html}{\out{</div>}}

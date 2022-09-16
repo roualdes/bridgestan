@@ -48,8 +48,8 @@ StanModel <- R6::R6Class("StanModel",
     #' Return the indexed names of the (constrained) parameters.
     #' For containers, indexes are separated by periods (.).
     #'
-    #' For example, the scalar a has indexed name a, the vector entry a[1] has
-    #' indexed name a.1 and the matrix entry a[2, 3] has indexed name a.2.3. Parameter
+    #' For example, the scalar `a` has indexed name "a", the vector entry `a[1]` has
+    #' indexed name "a.1" and the matrix entry `a[2, 3]` has indexed name "a.2.3". Parameter
     #' order of the output is column major and more generally last-index major for containers.
     #' @param include_tp Whether to include variables from transformed parameters.
     #' @param include_gq Whether to include variables from generated quantities.
@@ -66,8 +66,8 @@ StanModel <- R6::R6Class("StanModel",
     #' Return the indexed names of the unconstrained parameters.
     #' For containers, indexes are separated by periods (.).
     #'
-    #' For example, the scalar a has indexed name a, the vector entry a[1] has
-    #' indexed name a.1 and the matrix entry a[2, 3] has indexed name a.2.3. Parameter
+    #' For example, the scalar `a` has indexed name "a", the vector entry `a[1]` has
+    #' indexed name "a.1" and the matrix entry `a[2, 3]` has indexed name "a.2.3". Parameter
     #' order of the output is column major and more generally last-index major for containers.
     #' @return A list of character vectors of the names.
     param_unc_names = function() {

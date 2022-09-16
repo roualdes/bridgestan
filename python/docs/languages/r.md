@@ -4,7 +4,7 @@
 % Maybe it will be one day
 % Used:
 % roxygen2::roxygenize()
-% tools::Rd2txt_options(underline_titles=FALSE, itemBullet="* ")
+% tools::Rd2txt_options(underline_titles=FALSE, itemBullet="* ", showURLs=TRUE)
 % tools::Rd2txt('./man/StanModel.Rd', 'r.txt')
 
 
