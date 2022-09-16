@@ -32,12 +32,12 @@ jobs:
       - name: Install dependencies (python)
         run: |
           python -m pip install --upgrade pip wheel
-          python -m pip install --upgrade "sphinx>5" nbsphinx ipython ipykernel ipywidgets pydata-sphinx-theme myst-parser
+          python -m pip install --upgrade "sphinx>5" nbsphinx ipython ipykernel ipywidgets pydata-sphinx-theme breathe myst-parser
 
       - name: Install os dependencies
         run: |
           sudo apt-get update -y
-          sudo apt-get install pandoc -y
+          sudo apt-get install pandoc doxygen -y
 
       - name: Set up Julia
         uses: julia-actions/setup-julia@v1

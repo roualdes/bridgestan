@@ -73,15 +73,36 @@ intersphinx_mapping = {
     "cmdstanpy": ("https://mc-stan.org/cmdstanpy/", None),
 }
 
+
+breathe_projects = { "bridgestan": "./_build/cppxml/" }
+breathe_projects_source = { "bridgestan": ("../../src/", ["bridgestan.cpp"])
+}
+breathe_default_project = "bridgestan"
+
+
+
 # julia doc build
 import os
 import subprocess
 import pathlib
 
 try:
+    print("Checking C++ doc availability")
+    import breathe
+    subprocess.run(["doxygen", "-v"], check=True, capture_output=True)
+except Exception as e:
+    if os.environ.get("CI", "").lower() == "true":
+        raise e
+    else:
+        print("Breathe/doxygen not installed, skipping C++ Doc")
+        exclude_patterns = ["languages/cpp-api.rst"]
+else:
+    extensions.append("breathe")
+
+try:
     print("Building Julia doc")
     subprocess.run(
-        ["julia", '--project=.', "./make.jl"],
+        ["julia", "--project=.", "./make.jl"],
         cwd=pathlib.Path(__file__).parent.parent.parent / "julia" / "docs",
         check=True,
     )
