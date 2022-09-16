@@ -74,11 +74,10 @@ intersphinx_mapping = {
 }
 
 
-breathe_projects = { "bridgestan": "./_build/cppxml/" }
-breathe_projects_source = { "bridgestan": ("../../src/", ["bridgestan.cpp"])
-}
+breathe_projects = {"bridgestan": "./_build/cppxml/"}
+breathe_projects_source = {"bridgestan": ("../../src/", ["bridgestan.cpp"])}
 breathe_default_project = "bridgestan"
-
+breathe_doxygen_config_options = {"EXCLUDE_SYMBOLS": "to_csv"}
 
 
 # Julia and C++ doc build
@@ -104,6 +103,7 @@ except Exception as e:
 try:
     print("Checking C++ doc availability")
     import breathe
+
     subprocess.run(["doxygen", "-v"], check=True, capture_output=True)
 except Exception as e:
     if os.environ.get("CI", "").lower() == "true":

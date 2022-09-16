@@ -16,6 +16,14 @@
 #include <string>
 #include <vector>
 
+/**
+ * @name Core API
+ *
+ * These functions expose all the capabilities of a Stan model through
+ * a C-compatible interface.
+ * 
+ * @{
+ */
 extern "C" {
 
   /**
@@ -282,8 +290,9 @@ extern "C" {
    * @param[in] propto `true` to discard constant terms
    * @param[in] jacobian `true` to include change-of-variables terms
    * @param[in] theta unconstrained parameters
-   * @param[out] lp log density to be set
+   * @param[out] val log density to be set
    * @param[out] grad gradient to set
+   * @param[out] hessian Hessian to set
    * @return code 0 if successful and code -1 if there is an exception
    * in the underlying Stan code
    */
@@ -291,7 +300,7 @@ extern "C" {
 			  const double* theta, double* val, double* grad,
 			  double* hessian);
 }
-
+/**@}*/
 
 /**
  * Convert the specified sequence of names to comma-separated value
@@ -632,9 +641,13 @@ int log_density_hessian(model_rng* mr, bool propto, bool jacobian,
   return -1;
 }
 
-
-// R specific versions. Must use pointers for all arguments and returns
-// We don't want to depend on language specific headers, but these are narrow shims
+/**
+ * @name R Shim Functions
+ * Wrappers for other functions to make calling from R possible
+ * Must use pointers for all arguments and returns
+ *
+ * @{
+ */
 extern "C"{
   void construct_R(char** data, int* rng, int* chain, model_rng** ptr_out);
   void destruct_R(model_rng** model, int* return_code);
@@ -692,3 +705,4 @@ void log_density_gradient_R(model_rng** model, int* propto, int* jacobian, const
 void log_density_hessian_R(model_rng** model, int* propto, int* jacobian, const double* theta, double* val, double* grad, double* hess, int* return_code){
   *return_code = log_density_hessian(*model, *propto, *jacobian, theta, val, grad, hess);
 }
+/**@}*/
