@@ -85,6 +85,7 @@ import os
 import subprocess
 import pathlib
 
+RUNNING_IN_CI = os.environ.get("CI") or os.environ.get("READTHEDOCS")
 
 try:
     print("Building Julia doc")
@@ -95,7 +96,7 @@ try:
     )
 except Exception as e:
     # fail loudly in Github Actions
-    if os.environ.get("CI", "").lower() == "true":
+    if RUNNING_IN_CI:
         raise e
     else:
         print("Failed to build julia docs!\n", e)
@@ -106,7 +107,7 @@ try:
 
     subprocess.run(["doxygen", "-v"], check=True, capture_output=True)
 except Exception as e:
-    if os.environ.get("CI", "").lower() == "true":
+    if RUNNING_IN_CI:
         raise e
     else:
         print("Breathe/doxygen not installed, skipping C++ Doc")
