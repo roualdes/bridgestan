@@ -9,4 +9,4 @@ See :doc:`../how-it-works` for more details.
 
 .. autodoxygenfile:: bridgestan.cpp
     :project: bridgestan
-    :sections: innerclass public-types detaileddescription public-attrib private-attrib user-defined func
+    :sections: innerclass public-types detaileddescription  private-attrib user-defined

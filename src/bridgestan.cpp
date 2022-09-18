@@ -21,7 +21,7 @@
  *
  * These functions expose all the capabilities of a Stan model through
  * a C-compatible interface.
- * 
+ *
  * @{
  */
 extern "C" {
@@ -643,8 +643,8 @@ int log_density_hessian(model_rng* mr, bool propto, bool jacobian,
 
 /**
  * @name R Shim Functions
- * Wrappers for other functions to make calling from R possible
- * Must use pointers for all arguments and returns
+ * Wrappers for other functions to make calling from R possible.
+ * Must use pointers for all arguments and returns.
  *
  * @{
  */
