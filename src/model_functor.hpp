@@ -1,9 +1,8 @@
 #ifndef MODEL_FUNCTOR_HPP
 #define MODEL_FUNCTOR_HPP
 
-#include <stan/math.hpp>
-#include <iostream>
-
+#include <Eigen/Dense>
+#include <ostream>
 
 /**
  * Functor for a model of the specified template type and its log
@@ -13,7 +12,8 @@
  * @tparam M type of model
  */
 template <class M>
-struct model_functor {
+class model_functor {
+ private:
   /** Stan model */
   const M& model_;
 
@@ -26,6 +26,7 @@ struct model_functor {
   /** Output stream for messages from Stan model */
   std::ostream& out_;
 
+ public:
   /**
    * Construct a model functor from the specified model, output
    * stream, and specification of whether constants should be dropped
