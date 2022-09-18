@@ -1,4 +1,4 @@
-#include "model_rng.h"
+#include "model_rng.hpp"
 #include <cmdstan/io/json/json_data.hpp>
 #include <stan/io/array_var_context.hpp>
 #include <stan/io/empty_var_context.hpp>

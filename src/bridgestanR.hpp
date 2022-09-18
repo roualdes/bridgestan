@@ -1,7 +1,7 @@
 #ifndef BRIDGESTANR_H
 #define BRIDGESTANR_H
 
-#include "model_rng.h"
+#include "model_rng.hpp"
 
 // Shim to convert to R interface requirement of void with pointer args
 // All calls directly delegated to versions without _R suffix

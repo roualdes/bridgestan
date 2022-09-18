@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-
 extern "C" {
   /**
    * This structure holds a pointer to a model, holds a pseudorandom

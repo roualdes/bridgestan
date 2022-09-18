@@ -1,5 +1,4 @@
-
-#include "bridgestan.h"
+#include "bridgestan.hpp"
 #include "model_functor.hpp"
 #include "model_rng.cpp"
 #include "bridgestanR.cpp"

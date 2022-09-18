@@ -1,7 +1,7 @@
 #ifndef BRIDGESTAN_H
 #define BRIDGESTAN_H
 
-#include "model_rng.h"
+#include "model_rng.hpp"
 
 extern "C" {
   /**
