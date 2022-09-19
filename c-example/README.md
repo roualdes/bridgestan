@@ -2,8 +2,8 @@
 
 This shows how one could write a C program which calls BridgeStan.
 
-Any compiled language with a C foreign function interface should
-be able to work on a similar principal.
+Any compiled language with a C foreign function interface and
+the ability to link against C libraries should be able to work similarly.
 
 ## Usage - dynamic linking
 
@@ -43,6 +43,7 @@ still exist when the executable is run.
 
 The makefile here also shows how to create a `.a` static library using the BridgeStan
 source, and then compiling an executable which is independent of the location of the model.
+This can use the same source file as dynamic linking, it is just the build which differs.
 
 ```shell
 make example_static
