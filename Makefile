@@ -39,6 +39,11 @@ STAN_FLAGS=$(STAN_FLAG_THREADS)$(STAN_FLAG_OPENCL)
 BRIDGE ?= src/bridgestan.cpp
 BRIDGE_SO = $(patsubst %.cpp,%$(STAN_FLAGS).so,$(BRIDGE))
 
+$(STANC):
+	@echo 'stanc could not be found. Make sure CmdStan is installed and built, and that the path specificied is correct:'
+	@echo '$(CMDSTAN)'
+	exit 1
+
 ## COMPILE (e.g., COMPILE.cpp == clang++ ...) was set by (MATH)make/compiler_flags
 ## UNKNOWNS:  OUTPUT_OPTION???  LDLIBS???
 $(BRIDGE_SO) : $(BRIDGE)
