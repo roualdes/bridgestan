@@ -10,4 +10,4 @@ BridgeStan currently has clients in three languages:
     languages/python
     languages/julia
     languages/r
-    languages/cpp-api
+    languages/c-api
