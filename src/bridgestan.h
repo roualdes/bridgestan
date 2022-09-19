@@ -219,7 +219,7 @@ int log_density_gradient(model_rng* mr, bool propto, bool jacobian,
  * @param[in] propto `true` to discard constant terms
  * @param[in] jacobian `true` to include change-of-variables terms
  * @param[in] theta unconstrained parameters
- * @param[out] lp log density to be set
+ * @param[out] val log density to be set
  * @param[out] grad gradient to set
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code

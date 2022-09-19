@@ -40,6 +40,11 @@ We use the following developer-specific tools for documentation.
 * [pydata-sphinx-theme](https://pydata-sphinx-theme.readthedocs.io/en/stable/)
 * [MySt-Parser](https://myst-parser.readthedocs.io/en/latest/)
 
+If you wish to build the C++ portions of the documentation, you should also have:
+
+* [Doxygen](https://doxygen.nl/)
+* [Breathe](https://breathe.readthedocs.io/en/stable/index.html)
+
 
 ## Builds
 

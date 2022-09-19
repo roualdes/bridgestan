@@ -41,7 +41,7 @@ This will compile the file ``stan/multi/multi.stan`` into a shared library objec
 Interface: Python
 -----------------
 
-If you would like to install the `Python interface <languages/python.html>`__,
+If you would like to install the :doc:`Python interface <languages/python>`,
 you can either install it directly from Github with
 
 .. code-block:: shell
@@ -62,7 +62,7 @@ Note that the Python package depends on NumPy and will install it if it is not a
 Interface: Julia
 ----------------
 
-If you would like to install the `Julia interface <languages/julia.html>`__,
+If you would like to install the :doc:`Julia interface <languages/julia>`,
 you can either install it directly from Github with
 
 .. code-block:: julia
@@ -81,7 +81,7 @@ from the BridgeStan folder.
 Interface: R
 ----------------
 
-If you would like to install the `R interface <languages/r.html>`__,
+If you would like to install the :doc:`R interface <languages/r>`,
 you can either install it directly from Github with
 
 .. code-block:: R
