@@ -1,61 +1,87 @@
+# BUILD MODEL SHARED OBJECT
+
+# To run this example with the included regression model:
+#
+# (1) change to the bridgestan directory,
+# (2) compile the regression model, and
+# (3) execute this script
+#
+# > cd bridgestan
+# > make CMDSTAN=<path-to-cmdstan>/ stan/regression/regression_model.so
+# > python3 python/example.py
+
+# REQUIRED IMPORTS
 import bridgestan as bs
-import MCMC as mcmc
 import numpy as np
 
-# small shim to add dims(), required by MCMC impl
-class StaModelDims(bs.StanModel):
-    def dims(self) -> int:
-        return self.param_unc_num()
+# CONSTRUCT MODEL
+lib = "../stan/regression/regression_model.so"
+data = "../stan/regression/regression.data.json"
+model = bs.StanModel(lib, data)
 
-# Bernoulli
-# CMDSTAN=/path/to/cmdstan/ make stan/bernoulli/bernoulli
+print("MODEL NAME: name")
+name = model.name()
+print(f"model name = {name}\n")
 
-bernoulli_lib = "./stan/bernoulli/bernoulli_model.so"
-bernoulli_data = "./stan/bernoulli/bernoulli.data.json"
+print("NUMBER OF PARAMETERS: param_num")
+for tp in [True, False]:
+    for gq in [True, False]:
+        D = model.param_num(include_tp = tp, include_gq = gq)
+        print(f"tp = {tp:b}, gq = {gq:b}, number of parameters = {D}\n")
 
-smb = StaModelDims(bernoulli_lib, bernoulli_data)
-x = np.random.uniform(size = smb.dims())
-q = np.log(x / (1 - x))         # unconstrained scale
+print("PARAMETER NAMES: param_names")
+for tp in [True, False]:
+    for gq in [True, False]:
+        names = model.param_names(include_tp = tp, include_gq = gq)
+        print(f"tp = {tp:b}, gq = {gq:b}, parameter names = {names}\n")
 
-print()
-print("log_density and gradient of Bernoulli model:")
-print(smb.log_density_gradient(q, propto = 1, jacobian = 0))
-print()
+print("NUMBER OF UNCONSTRAINED PARAMETERS: param_unc_num")
+D = model.param_unc_num()
+print(f"number of unconstrained paramerers = {D}\n")
 
-## del smb
+print("UNCONSTRAINED PARAMETER NAMES: param_unc_names")
+names = model.param_unc_names()
+print(f"unconstrained parameter names = {names}\n")
 
+print("SET UNCONSTRAINED PARAMETERS TO TEST")
+alpha = 0.2; beta = 0.9; log_sigma = np.log(0.25)
+theta_unc = np.array([alpha, beta, log_sigma])
+print(f"theta_unc = {theta_unc}\n")
 
-# Multivariate Gaussian
-# CMDSTAN=/path/to/cmdstan/ make stan/multi/multi
+print("LOG DENSITY: log_density")
+for propto in [True, False]:
+    for jacobian in [True, False]:
+        log_p = model.log_density(theta_unc, propto=propto, jacobian=jacobian)
+        print(f"propto = {propto:b}, jacobian = {jacobian:b}, log density = {log_p}\n")
 
-multi_lib = "./stan/multi/multi_model.so"
-multi_data = "./stan/multi/multi.data.json"
+print("LOG DENSITY & GRADIENT: log_density_gradient")
+for propto in [True, False]:
+    for jacobian in [True, False]:
+        log_p, grad = model.log_density_gradient(theta_unc, propto=propto, jacobian=jacobian)
+        print(f"propto = {propto:b}; jacobian = {jacobian:b}; log density = {log_p}")
+        print(f"  gradient = {grad}\n")
 
-smm = StaModelDims(multi_lib, multi_data)
-x = np.random.uniform(size = smm.param_num())
+print("LOG DENSITY & GRADIENT & HESSIAN: log_density_hessian")
+for propto in [True, False]:
+    for jacobian in [True, False]:
+        log_p, grad, hess = model.log_density_hessian(theta_unc, propto=propto, jacobian=jacobian)
+        print(f"propto = {propto:b}; jacobian = {jacobian:b}; log density = {log_p}")
+        print(f"  gradient = {grad}")
+        print(f"  hessian = {hess}\n")
 
-print("log_density and gradient of Multivariate Gaussian model:")
-print(smm.log_density_gradient(x))
-print()
+print("CONSTRAINING TRANSFORM & TRANSFORMED PARAMETERS & GENERATED QUANTITIES: param_constrain")
+for tp in [True, False]:
+    for gq in [True, False]:
+        # each eval generates random generated quantities
+        theta = model.param_constrain(theta_unc, include_tp = tp, include_gq = gq)
+        print(f"tp = {tp:b}, gq = {gq:b}, params = {theta}\n")
 
-## del smm
+print("UNCONSTRAINING TRANSFORM: param_unconstrain")
+theta = model.param_constrain(theta_unc, include_tp = False, include_gq = False)
+theta_unc_roundtrip = model.param_unconstrain(theta)
+print(f"unconstrained parameters = {theta_unc_roundtrip}\n")
 
-
-# HMC
-
-model = StaModelDims(multi_lib, multi_data, seed=1234)
-
-stepsize = 0.25
-steps = 10
-metric_diag = np.ones(model.dims())
-sampler = mcmc.HMCDiag(model, stepsize=stepsize, steps=steps, metric_diag=metric_diag)
-
-
-M = 10000
-theta = np.empty([M, model.dims()])
-for m in range(M):
-    theta[m, :] = sampler.sample()
-
-
-print(f"Empirical mean: {np.round(theta.mean(0), 3)}")
-print(f"Empirical std: {np.round(theta.std(0), 3)}")
+print("UNCONSTRAINING TRANSFORM FROM JSON: param_unconstrain_json")
+theta_json = '{ "alpha": 0.2, "beta": 0.9, "sigma": 0.25 }'
+theta_unc_roundtrip_json = model.param_unconstrain_json(theta_json)
+print(f"unconstrained parameters from JSON = {theta_unc_roundtrip_json}\n")
