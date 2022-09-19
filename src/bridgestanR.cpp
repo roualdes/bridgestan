@@ -1,4 +1,4 @@
-#include "bridgestan.hpp"
+#include "bridgestan.h"
 
 void construct_R(char** data, int* rng, int* chain, model_rng** ptr_out){
   *ptr_out = construct(*data, *rng, *chain );

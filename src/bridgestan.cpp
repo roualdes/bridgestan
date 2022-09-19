@@ -1,4 +1,4 @@
-#include "bridgestan.hpp"
+#include "bridgestan.h"
 #include "model_functor.hpp"
 #include "model_rng.cpp"
 #include "bridgestanR.cpp"
@@ -16,7 +16,7 @@ model_rng* construct(char* data_file, unsigned int seed,
   } catch (...) {
     std::cerr << "construct(" << data_file
 	      << ", " << seed << ", " << chain_id << ")"
-	      << " failed with unknwon exception" << std::endl;
+	      << " failed with unknown exception" << std::endl;
   }
   return nullptr;
 }
