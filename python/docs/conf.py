@@ -89,11 +89,11 @@ RUNNING_IN_CI = os.environ.get("CI") or os.environ.get("READTHEDOCS")
 
 try:
     print("Building Julia doc")
-    # subprocess.run(
-    #     ["julia", "--project=.", "./make.jl"],
-    #     cwd=pathlib.Path(__file__).parent.parent.parent / "julia" / "docs",
-    #     check=True,
-    # )
+    subprocess.run(
+        ["julia", "--project=.", "./make.jl"],
+        cwd=pathlib.Path(__file__).parent.parent.parent / "julia" / "docs",
+        check=True,
+    )
 except Exception as e:
     # fail loudly in Github Actions
     if RUNNING_IN_CI:
