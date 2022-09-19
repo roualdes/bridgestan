@@ -1,14 +1,17 @@
 # BridgeStan
 
-BridgeStan provides efficient in-memory access through Python or Julia
-to the methods of a [Stan](https://mc-stan.org) model, including log
-densities, gradients, Hessians, and constraining and unconstraining
+BridgeStan provides efficient in-memory access through Python, Julia,
+and R to the methods of a [Stan](https://mc-stan.org) model, including
+log densities, gradients, Hessians, and constraining and unconstraining
 transforms.  The motivation was developing inference algorithms in
-Python and Julia for arbitrary Stan models.
+higher-level languages for arbitrary Stan models.
 
 Stan is a probabilistic programming language for coding statistical
 models.  For an introduction to what can be coded in Stan, see the
 [*Stan User's Guide*](https://mc-stan.org/docs/stan-users-guide/index.html).
+
+
+More documentation is available at https://roualdes.github.io/bridgestan/
 
 
 #### Compatibility
@@ -33,7 +36,7 @@ working before proceeding.
 
 To download BridgeStan into directory `<parent-dir>`, use the following.
 
-```
+```shell
 $ cd <parent-dir>
 $ git clone https://gitlab.com/roualdes/bridgestan.git
 ```
@@ -67,6 +70,7 @@ in Python or Julia.
 
 * From Julia: [`example.jl`](python/example.jl)
 
+Additional examples can be found in the `test` folder for each interface.
 
 ## Custom build instructions
 
@@ -107,12 +111,18 @@ STANCFLAGS+= --warn-pedantic --O1
 
 In order for Python or Julia to be able to call a single Stan model
 concurrently from multiple threads or for a Stan model to execute its
-own code in parallel, the following flag must be set in `make/local`.
+own code in parallel, the following flag must be set in `make/local`
+or on the command line.
 
 ```
 # Enable threading
 STAN_THREADS=true
 ```
+
+Note that this flag changes a lot of the internals of the Stan library
+and as such, **all models used in the same process** should have the same
+setting. Mixing models which had `STAN_THREADS` enabled with those that didn't
+will most likely lead to segmentation faults or other crashes.
 
 
 ## Tips
@@ -122,7 +132,7 @@ STAN_THREADS=true
 On Windows, BridgeStan requires *forward slashes* in the path to
 CmdStan, as in the following example.
 
-```
+```shell
 mingw32-make.exe CMDSTAN="C:/path/to/cmdstan/" ./stan/multi/multi_model.so
 ```
 
@@ -138,22 +148,25 @@ parameterization (i.e., a Cholesky factor).
 ### Parameter ordering
 
 Parameters are ordered for I/O in the same order they are declared in
-the underlying Stan program.
-
+the underlying Stan program. The `param_names()` and `param_unc_names()`
+functions give the canonical orderings for constrained and unconstrained
+parameters respectively.
 
 ## Prerequisites
 
-### Prereq: Julia *or* Python
+### Prereq: Julia, Python, *or* R
 
-To use BridgeStan from Julia or Python 3, you will need to have those
+To use BridgeStan from Julia, Python 3, or R, you will need to have those
 languages installed.
+
+The interfaces may depend on different packages in their respective languages.
 
 ### Prereq: C++ toolchain
 
 Stan requires a C++ tool chain consisting of
 
 * A C++11 compiler
-* The Gnu make utility for *nix *or* mingw for Windows
+* The Gnu `make` utility for \*nix *or* mingw for Windows
 
 Here are complete instructions by platform for installing both.
 
@@ -177,7 +190,7 @@ Stan program.  We will assume
 To verify the compiler chain is installed correctly, the following
 should run without errors.
 
-```
+```shell
 cd <cmdstan-dir>
 make <bridgestan-dir>/stan/multi/multi
 ```
@@ -186,12 +199,12 @@ The second command brings in the latest version of Stan.
 
 This will require internet access the first time you run it in order
 to download the appropriate Stan compiler for your platform into
-`<cmdstan-dir>/bin/stanc`
+`<cmdstan-dir>/bin/stanc[.exe]`
 
 You can verify CmdStan works end-to-end by using the resulting
 executable to fit some data.
 
-```
+```shell
 ./<bridgestan-dir>/stan/multi/multi sample data file=<bridgestan-dir>/stan/multi/multi.data.json
 ```
 

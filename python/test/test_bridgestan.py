@@ -1,49 +1,52 @@
-import os
 import numpy as np
+from pathlib import Path
 
 import bridgestan as bs
+
+STAN_FOLDER = Path(__file__).parent.parent.parent / "stan"
+
 
 def test_constructor():
 
     # implicit destructor tests in success and fail cases
 
     # test empty data
-    std_so = "../stan/stdnormal/stdnormal_model.so"
-    b1 = bs.Bridge(std_so)
+    std_so = str(STAN_FOLDER / "stdnormal" / "stdnormal_model.so")
+    b1 = bs.StanModel(std_so)
     np.testing.assert_allclose(bool(b1), True)
 
     # test load data
-    bernoulli_so = "../stan/bernoulli/bernoulli_model.so"
-    bernoulli_data = "../stan/bernoulli/bernoulli.data.json"
-    b2 = bs.Bridge(bernoulli_so, bernoulli_data)
+    bernoulli_so = str(STAN_FOLDER / "bernoulli" / "bernoulli_model.so")
+    bernoulli_data = str(STAN_FOLDER / "bernoulli" / "bernoulli.data.json")
+    b2 = bs.StanModel(bernoulli_so, bernoulli_data)
     np.testing.assert_allclose(bool(b2), True)
 
     # test missing so file
     with np.testing.assert_raises(FileNotFoundError):
-        b3 = bs.Bridge("nope, not going to find it")
+        b3 = bs.StanModel("nope, not going to find it")
 
     # test missing data file
     with np.testing.assert_raises(FileNotFoundError):
-        b3 = bs.Bridge(bernoulli_so, "nope, not going to find it")
+        b3 = bs.StanModel(bernoulli_so, "nope, not going to find it")
 
     # test data load exception
-    throw_data_so = "../stan/throw_data/throw_data_model.so"
+    throw_data_so = str(STAN_FOLDER / "throw_data" / "throw_data_model.so")
     print("construct() EXCEPTION MSG ON NEXT LINE IS NOT AN ERROR")
     with np.testing.assert_raises(RuntimeError):
-        b4 = bs.Bridge(throw_data_so)
+        b4 = bs.StanModel(throw_data_so)
 
     # TODO(carpenter): test get right error message on stderr
 
 
 def test_name():
-    std_so = "../stan/stdnormal/stdnormal_model.so"
-    b = bs.Bridge(std_so)
+    std_so = str(STAN_FOLDER / "stdnormal" / "stdnormal_model.so")
+    b = bs.StanModel(std_so)
     np.testing.assert_equal("stdnormal_model", b.name())
 
 
 def test_param_num():
-    full_so = "../stan/full/full_model.so"
-    b = bs.Bridge(full_so)
+    full_so = str(STAN_FOLDER / "full" / "full_model.so")
+    b = bs.StanModel(full_so)
     np.testing.assert_equal(1, b.param_num())
     np.testing.assert_equal(1, b.param_num(include_tp=False))
     np.testing.assert_equal(1, b.param_num(include_gq=False))
@@ -56,15 +59,15 @@ def test_param_num():
 
 
 def test_param_unc_num():
-    simplex_so = "../stan/simplex/simplex_model.so"
-    b = bs.Bridge(simplex_so)
+    simplex_so = str(STAN_FOLDER / "simplex" / "simplex_model.so")
+    b = bs.StanModel(simplex_so)
     np.testing.assert_equal(5, b.param_num())
     np.testing.assert_equal(4, b.param_unc_num())
 
 
 def test_param_names():
-    matrix_so = "../stan/matrix/matrix_model.so"
-    b = bs.Bridge(matrix_so)
+    matrix_so = str(STAN_FOLDER / "matrix" / "matrix_model.so")
+    b = bs.StanModel(matrix_so)
     np.testing.assert_array_equal(
         ["A.1.1", "A.2.1", "A.3.1", "A.1.2", "A.2.2", "A.3.2"], b.param_names()
     )
@@ -143,14 +146,14 @@ def test_param_names():
 
 
 def test_param_unc_names():
-    matrix_so = "../stan/matrix/matrix_model.so"
-    b1 = bs.Bridge(matrix_so)
+    matrix_so = str(STAN_FOLDER / "matrix" / "matrix_model.so")
+    b1 = bs.StanModel(matrix_so)
     np.testing.assert_array_equal(
         ["A.1.1", "A.2.1", "A.3.1", "A.1.2", "A.2.2", "A.3.2"], b1.param_unc_names()
     )
 
-    simplex_so = "../stan/simplex/simplex_model.so"
-    b2 = bs.Bridge(simplex_so)
+    simplex_so = str(STAN_FOLDER / "simplex" / "simplex_model.so")
+    b2 = bs.StanModel(simplex_so)
     np.testing.assert_array_equal(
         ["theta.1", "theta.2", "theta.3", "theta.4"], b2.param_unc_names()
     )
@@ -166,9 +169,9 @@ def cov_constrain(v, D):
 
 
 def test_param_constrain():
-    fr_gaussian_so = "../stan/fr_gaussian/fr_gaussian_model.so"
-    fr_gaussian_data = "../stan/fr_gaussian/fr_gaussian.data.json"
-    bridge = bs.Bridge(fr_gaussian_so, fr_gaussian_data)
+    fr_gaussian_so = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian_model.so")
+    fr_gaussian_data = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian.data.json")
+    bridge = bs.StanModel(fr_gaussian_so, fr_gaussian_data)
 
     D = 4
     size = 16
@@ -192,8 +195,8 @@ def test_param_constrain():
     B = b.reshape(D, D)
     np.testing.assert_allclose(B_expected, B)
 
-    full_so = "../stan/full/full_model.so"
-    bridge2 = bs.Bridge(full_so)
+    full_so = str(STAN_FOLDER / "full" / "full_model.so")
+    bridge2 = bs.StanModel(full_so)
 
     b2 = bridge.param_constrain(a)
     np.testing.assert_equal(1, bridge2.param_constrain(a).size)
@@ -213,8 +216,8 @@ def test_param_constrain():
         bridge.param_constrain(a, out=scratch_wrong)
 
     # exception handling test in transformed parameters/model (compiled same way)
-    throw_tp_so = "../stan/throw_tp/throw_tp_model.so"
-    bridge2 = bs.Bridge(throw_tp_so)
+    throw_tp_so = str(STAN_FOLDER / "throw_tp" / "throw_tp_model.so")
+    bridge2 = bs.StanModel(throw_tp_so)
 
     y = np.array(np.random.uniform(1))
     bridge2.param_constrain(y, include_tp=False)
@@ -222,8 +225,8 @@ def test_param_constrain():
     with np.testing.assert_raises(RuntimeError):
         bridge2.param_constrain(y, include_tp=True)
 
-    throw_gq_so = "../stan/throw_gq/throw_gq_model.so"
-    bridge3 = bs.Bridge(throw_gq_so)
+    throw_gq_so = str(STAN_FOLDER / "throw_gq" / "throw_gq_model.so")
+    bridge3 = bs.StanModel(throw_gq_so)
     bridge3.param_constrain(y, include_gq=False)
     print("param_constrain() EXCEPTION MSG ON NEXT LINE IS NOT AN ERROR")
     with np.testing.assert_raises(RuntimeError):
@@ -231,9 +234,9 @@ def test_param_constrain():
 
 
 def test_param_unconstrain():
-    fr_gaussian_so = "../stan/fr_gaussian/fr_gaussian_model.so"
-    fr_gaussian_data = "../stan/fr_gaussian/fr_gaussian.data.json"
-    bridge = bs.Bridge(fr_gaussian_so, fr_gaussian_data)
+    fr_gaussian_so = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian_model.so")
+    fr_gaussian_data = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian.data.json")
+    bridge = bs.StanModel(fr_gaussian_so, fr_gaussian_data)
 
     unc_size = 10
     a = np.random.normal(size=unc_size)
@@ -250,9 +253,9 @@ def test_param_unconstrain():
 
 
 def test_param_unconstrain_json():
-    gaussian_so = "../stan/gaussian/gaussian_model.so"
-    gaussian_data = "../stan/gaussian/gaussian.data.json"
-    bridge = bs.Bridge(gaussian_so, gaussian_data)
+    gaussian_so = str(STAN_FOLDER / "gaussian" / "gaussian_model.so")
+    gaussian_data = str(STAN_FOLDER / "gaussian" / "gaussian.data.json")
+    bridge = bs.StanModel(gaussian_so, gaussian_data)
 
     # theta = np.array([0.2, 1.9])
     theta_unc = np.array([0.2, np.log(1.9)])
@@ -282,9 +285,9 @@ def _bernoulli_jacobian(y, p):
 
 
 def test_log_density():
-    bernoulli_so = "../stan/bernoulli/bernoulli_model.so"
-    bernoulli_data = "../stan/bernoulli/bernoulli.data.json"
-    bridge = bs.Bridge(bernoulli_so, bernoulli_data)
+    bernoulli_so = str(STAN_FOLDER / "bernoulli" / "bernoulli_model.so")
+    bernoulli_data = str(STAN_FOLDER / "bernoulli" / "bernoulli.data.json")
+    bridge = bs.StanModel(bernoulli_so, bernoulli_data)
     y = np.asarray([0, 1, 0, 0, 0, 0, 0, 0, 0, 1])
     for _ in range(2):
         x = np.random.uniform(size=bridge.param_unc_num())
@@ -298,8 +301,8 @@ def test_log_density():
         lp4 = bridge.log_density(np.array([x_unc]), propto=True, jacobian=False)
         np.testing.assert_allclose(lp4, _bernoulli(y, x))
 
-    throw_lp_so = "../stan/throw_lp/throw_lp_model.so"
-    bridge2 = bs.Bridge(throw_lp_so)
+    throw_lp_so = str(STAN_FOLDER / "throw_lp" / "throw_lp_model.so")
+    bridge2 = bs.StanModel(throw_lp_so)
     y2 = np.array(np.random.uniform(1))
     print("log_density() EXCEPTION MSG ON NEXT LINE IS NOT AN ERROR")
     with np.testing.assert_raises(RuntimeError):
@@ -327,8 +330,8 @@ def test_log_density_gradient():
     def _grad_jacobian_true(y_unc):
         return 1
 
-    jacobian_so = "../stan/jacobian/jacobian_model.so"
-    bridge = bs.Bridge(jacobian_so)
+    jacobian_so = str(STAN_FOLDER / "jacobian" / "jacobian_model.so")
+    bridge = bs.StanModel(jacobian_so)
 
     y = np.abs(np.random.normal(1))
     y_unc = np.log(y)
@@ -344,17 +347,6 @@ def test_log_density_gradient():
     )
     np.testing.assert_allclose(_logp(y_unc), logdensity)
     np.testing.assert_allclose(_grad_logp(y_unc), grad[0])
-    #
-    logdensity, grad = bridge.log_density_gradient(
-        y_unc_arr, propto=False, jacobian=True
-    )
-    np.testing.assert_allclose(
-        _logp(y_unc) + _propto_false(y_unc) + _jacobian_true(y_unc), logdensity
-    )
-    np.testing.assert_allclose(
-        _grad_logp(y_unc) + _grad_propto_false(y_unc) + _grad_jacobian_true(y_unc),
-        grad[0],
-    )
     #
     logdensity, grad = bridge.log_density_gradient(
         y_unc_arr, propto=False, jacobian=True
@@ -417,8 +409,8 @@ def test_log_density_hessian():
     def _hess_jacobian_true(y_unc):
         return 0
 
-    jacobian_so = "../stan/jacobian/jacobian_model.so"
-    bridge = bs.Bridge(jacobian_so)
+    jacobian_so = str(STAN_FOLDER / "jacobian" / "jacobian_model.so")
+    bridge = bs.StanModel(jacobian_so)
 
     # test value, gradient, hessian, all combos +/- propto, +/- jacobian
     y = np.abs(np.random.normal(1))
@@ -492,9 +484,9 @@ def test_log_density_hessian():
         bridge.log_density_hessian(y_unc, out_grad=scratch_bad)
 
     # test with 5 x 5 Hessian
-    simple_so = "../stan/simple/simple_model.so"
-    simple_data = "../stan/simple/simple.data.json"
-    bridge2 = bs.Bridge(simple_so, simple_data)
+    simple_so = str(STAN_FOLDER / "simple" / "simple_model.so")
+    simple_data = str(STAN_FOLDER / "simple" / "simple.data.json")
+    bridge2 = bs.StanModel(simple_so, simple_data)
 
     D = 5
     y = np.random.uniform(size=D)
@@ -504,9 +496,9 @@ def test_log_density_hessian():
 
 
 def test_out_behavior():
-    bernoulli_so = "../stan/bernoulli/bernoulli_model.so"
-    bernoulli_data = "../stan/bernoulli/bernoulli.data.json"
-    smb = bs.Bridge(bernoulli_so, bernoulli_data)
+    bernoulli_so = str(STAN_FOLDER / "bernoulli" / "bernoulli_model.so")
+    bernoulli_data = str(STAN_FOLDER / "bernoulli" / "bernoulli.data.json")
+    smb = bs.StanModel(bernoulli_so, bernoulli_data)
 
     grads = []
     for _ in range(2):
@@ -540,9 +532,9 @@ def test_bernoulli():
     def _bernoulli(y, p):
         return np.sum(y * np.log(p) + (1 - y) * np.log(1 - p))
 
-    bernoulli_so = "../stan/bernoulli/bernoulli_model.so"
-    bernoulli_data = "../stan/bernoulli/bernoulli.data.json"
-    smb = bs.Bridge(bernoulli_so, bernoulli_data)
+    bernoulli_so = str(STAN_FOLDER / "bernoulli" / "bernoulli_model.so")
+    bernoulli_data = str(STAN_FOLDER / "bernoulli" / "bernoulli.data.json")
+    smb = bs.StanModel(bernoulli_so, bernoulli_data)
     np.testing.assert_string_equal(smb.name(), "bernoulli_model")
     np.testing.assert_allclose(smb.param_unc_num(), 1)
     np.testing.assert_allclose(smb.param_num(include_tp=False, include_gq=False), 1)
@@ -565,10 +557,10 @@ def test_multi():
     def _grad_multi(x):
         return -x
 
-    multi_so = "../stan/multi/multi_model.so"
-    multi_data = "../stan/multi/multi.data.json"
+    multi_so = str(STAN_FOLDER / "multi" / "multi_model.so")
+    multi_data = str(STAN_FOLDER / "multi" / "multi.data.json")
 
-    smm = bs.Bridge(multi_so, multi_data)
+    smm = bs.StanModel(multi_so, multi_data)
     x = np.random.normal(size=smm.param_unc_num())
     logdensity, grad = smm.log_density_gradient(x)
     np.testing.assert_allclose(logdensity, _multi(x))
@@ -577,10 +569,10 @@ def test_multi():
 
 def test_gaussian():
 
-    lib = "../stan/gaussian/gaussian_model.so"
-    data = "../stan/gaussian/gaussian.data.json"
+    lib = str(STAN_FOLDER / "gaussian" / "gaussian_model.so")
+    data = str(STAN_FOLDER / "gaussian" / "gaussian.data.json")
 
-    model = bs.Bridge(lib, data)
+    model = bs.StanModel(lib, data)
 
     theta = np.array([0.2, 1.9])
     theta_unc = np.array([0.2, np.log(1.9)])
@@ -605,9 +597,9 @@ def test_fr_gaussian():
         L[idxD] = np.exp(L[idxD])
         return np.matmul(L, L.T)
 
-    lib = "../stan/fr_gaussian/fr_gaussian_model.so"
-    data = "../stan/fr_gaussian/fr_gaussian.data.json"
-    model = bs.Bridge(lib, data)
+    lib = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian_model.so")
+    data = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian.data.json")
+    model = bs.StanModel(lib, data)
 
     size = 16
     unc_size = 10

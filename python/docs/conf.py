@@ -22,6 +22,7 @@ extensions = [
     "sphinx.ext.githubpages",
     "nbsphinx",
     "sphinx.ext.mathjax",
+    "myst_parser",
 ]
 
 templates_path = ["_templates"]
@@ -33,6 +34,10 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
+html_css_files = [
+    "css/Documenter.css",
+]
+
 html_show_sphinx = False
 
 html_theme_options = {
@@ -67,3 +72,22 @@ intersphinx_mapping = {
     "numpy": ("https://numpy.org/doc/stable/", None),
     "cmdstanpy": ("https://mc-stan.org/cmdstanpy/", None),
 }
+
+# julia doc build
+import os
+import subprocess
+import pathlib
+
+try:
+    print("Building Julia doc")
+    subprocess.run(
+        ["julia", '--project=.', "./make.jl"],
+        cwd=pathlib.Path(__file__).parent.parent.parent / "julia" / "docs",
+        check=True,
+    )
+except Exception as e:
+    # fail loudly in Github Actions
+    if os.environ.get("CI", "").lower() == "true":
+        raise e
+    else:
+        print("Failed to build julia docs!\n", e)

@@ -3,5 +3,7 @@
 Python Interface: bridgestan.py
 ===============================
 
-.. autoclass:: bridgestan.Bridge
+----
+
+.. autoclass:: bridgestan.StanModel
    :members:

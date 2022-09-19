@@ -1,0 +1,4 @@
+[deps]
+BridgeStan = "c88b6f0a-829e-4b0b-94b7-f06ab5908f5a"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+DocumenterMarkdown = "997ab1e6-3595-5248-9280-8efb232c3433"

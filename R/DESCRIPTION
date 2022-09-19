@@ -1,0 +1,18 @@
+Package: bridgestan
+Title: BridgeStan, Accessing Stan Model Functions in R
+Version: 0.0.1
+Authors@R:
+    person(given="Brian", family="Ward", , "bward@flatironinstitute.org", role = c("aut", "cre"))
+License: BSD_3_clause
+Description: BridgeStan provides efficient in-memory access to the methods of a Stan model,
+    including log densities, gradients, Hessians, and constraining and unconstraining
+    transforms.
+Encoding: UTF-8
+RoxygenNote: 7.2.1
+Roxygen: list(markdown = TRUE, r6 = TRUE)
+Suggests:
+    testthat (>= 3.0.0)
+Imports:
+    R6 (>= 2.4.0)
+Config/testthat/edition: 3
+

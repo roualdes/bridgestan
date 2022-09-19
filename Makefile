@@ -25,10 +25,24 @@ CXX_TYPE ?= clang
 ## set flags for stanc compiler (math calls MIGHT? set STAN_OPENCL)
 ifdef STAN_OPENCL
 	STANCFLAGS += --use-opencl
+	STAN_FLAG_OPENCL=_opencl
+else
+	STAN_FLAG_OPENCL=
 endif
+ifdef STAN_THREADS
+	STAN_FLAG_THREADS=_threads
+else
+	STAN_FLAG_THREADS=
+endif
+STAN_FLAGS=$(STAN_FLAG_THREADS)$(STAN_FLAG_OPENCL)
 
 BRIDGE ?= src/bridgestan.cpp
-BRIDGE_SO = $(patsubst %.cpp,%.so,$(BRIDGE))
+BRIDGE_SO = $(patsubst %.cpp,%$(STAN_FLAGS).so,$(BRIDGE))
+
+$(STANC):
+	@echo 'stanc could not be found. Make sure CmdStan is installed and built, and that the path specificied is correct:'
+	@echo '$(CMDSTAN)'
+	exit 1
 
 ## COMPILE (e.g., COMPILE.cpp == clang++ ...) was set by (MATH)make/compiler_flags
 ## UNKNOWNS:  OUTPUT_OPTION???  LDLIBS???
