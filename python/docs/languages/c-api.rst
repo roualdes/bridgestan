@@ -7,7 +7,9 @@ Core API
 --------
 
 The following are the C functions exposed by the BridgeStan library in ``bridgestan.h``.
-These are wrapped in the various high-level interfaces.
+These are wrapped in the various high-level interfaces. An example calling
+these functions from pure-C can be found in the ``c-example/`` subdirectory
+of the repository.
 
 These functions are actually implemented in C++, see :doc:`../how-it-works` for more details.
 
