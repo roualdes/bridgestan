@@ -90,7 +90,7 @@ def compile_model(stan_file: str, args: List[str] = []) -> Path[str]:
     verify_bridgestan_path(BRIDGESTAN_PATH)
 
     file_path = Path(stan_file).resolve()
-    if not file_path.exists:
+    if not file_path.exists():
         raise FileNotFoundError(f"File '{stan_file}' does not exist")
     if file_path.suffix != ".stan":
         raise ValueError(f"File '{stan_file}' does not end in .stan")

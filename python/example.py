@@ -15,9 +15,9 @@ import bridgestan as bs
 import numpy as np
 
 # CONSTRUCT MODEL
-lib = "../stan/regression/regression_model.so"
+stan = "../stan/regression/regression.stan"
 data = "../stan/regression/regression.data.json"
-model = bs.StanModel(lib, data)
+model = bs.StanModel.from_stan_file(stan, data)
 
 print("MODEL NAME: name")
 name = model.name()
