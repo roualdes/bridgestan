@@ -13,13 +13,17 @@ MAKE = os.getenv(
 
 BRIDGESTAN_PATH = os.getenv("BRIDGESTAN", str(PYTHON_FOLDER.parent))
 CMDSTAN_PATH = os.getenv("CMDSTAN", "")
-if CMDSTAN_PATH is None:
+if not CMDSTAN_PATH:
     try:
-        CMDSTAN_PATH = sorted(
-            (filter(Path.is_dir, (Path.home() / ".cmdstan").iterdir()))
-        )[0]
+        import cmdstanpy
+        CMDSTAN_PATH = cmdstanpy.cmdstan_path()
     except:
-        pass
+        try:
+            CMDSTAN_PATH = sorted(
+                (filter(Path.is_dir, (Path.home() / ".cmdstan").iterdir()))
+            )[0]
+        except:
+            pass
 
 
 def set_cmdstan_path(path: str) -> None:
