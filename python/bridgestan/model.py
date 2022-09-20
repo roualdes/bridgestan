@@ -200,7 +200,7 @@ class StanModel:
             self._destruct(self.model_rng)
 
     def __repr__(self) -> str:
-        data = f'{self.data_path!r}, ' if self.data_path else ""
+        data = f"{self.data_path!r}, " if self.data_path else ""
         return f"StanModel({self.lib_path!r}, {data}seed={self.seed}, chain_id={self.chain_id})"
 
     def name(self) -> str:

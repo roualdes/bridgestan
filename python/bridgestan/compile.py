@@ -16,6 +16,7 @@ CMDSTAN_PATH = os.getenv("CMDSTAN", "")
 if not CMDSTAN_PATH:
     try:
         import cmdstanpy
+
         CMDSTAN_PATH = cmdstanpy.cmdstan_path()
     except:
         try:
