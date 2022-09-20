@@ -5,7 +5,6 @@ CMDSTANSRC ?= $(CMDSTAN)src/
 STANC ?= $(CMDSTAN)bin/stanc$(EXE)
 STAN ?= $(CMDSTAN)stan/
 MATH ?= $(STAN)lib/stan_math/
-# TBB_TARGETS = $(MATH)lib/tbb/libtbb.dylib
 RAPIDJSON ?= $(CMDSTAN)lib/rapidjson_1.1.0/
 
 ## required C++ includes
@@ -44,8 +43,6 @@ $(STANC):
 	@echo '$(CMDSTAN)'
 	exit 1
 
-## COMPILE (e.g., COMPILE.cpp == clang++ ...) was set by (MATH)make/compiler_flags
-## UNKNOWNS:  OUTPUT_OPTION???  LDLIBS???
 $(BRIDGE_O) : $(BRIDGE)
 	@echo ''
 	@echo '--- Compiling Stan bridge C++ code ---'
@@ -73,39 +70,12 @@ $(BRIDGE_O) : $(BRIDGE)
 	$(LINK.cpp) -shared -lm -fPIC -o $(patsubst %.hpp, %_model.so, $(subst \,/,$<)) $(subst \,/,$*.o) $(BRIDGE_O) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	$(RM) $(subst  \,/,$*).o
 
-## calculate dependencies for %$(EXE) target
-ifneq (,$(STAN_TARGETS))
-$(patsubst %,%.d,$(STAN_TARGETS)) : DEPTARGETS += -MT $(patsubst %.d,%$(EXE),$@) -include $< -include $(BRIDGE)
--include $(patsubst %,%.d,$(STAN_TARGETS))
--include $(patsubst %.cpp,%.d,$(BRIDGE))
-endif
 
-## compiles and instantiates TBB library (only if not done automatically on platform)
-.PHONY: install-tbb
-install-tbb: $(TBB_TARGETS)
-
-## clean targets (complex because they don't depend on unix find);
-## findfiles defined ??? (MATH makefiles???)
-.PHONY: clean clean-deps clean-all clean-program
-clean-deps:
-	@echo '  removing dependency files'
-	$(RM) $(call findfiles,src,*.d) $(call findfiles,src/stan,*.d) $(call findfiles,$(MATH)/stan,*.d) $(call findfiles,$(STAN)/src/stan/,*.d)
-	$(RM) $(call findfiles,src,*.d.*) $(call findfiles,src/stan,*.d.*) $(call findfiles,$(MATH)/stan,*.d.*)
-	$(RM) $(call findfiles,src,*.dSYM) $(call findfiles,src/stan,*.dSYM) $(call findfiles,$(MATH)/stan,*.dSYM)
-
-clean-all: clean clean-deps
-	$(RM) $(BRIDGE_O)
-	$(RM) -r $(wildcard $(BOOST)/stage/lib $(BOOST)/bin.v2 $(BOOST)/tools/build/src/engine/bootstrap/ $(BOOST)/tools/build/src/engine/bin.* $(BOOST)/project-config.jam* $(BOOST)/b2 $(BOOST)/bjam $(BOOST)/bootstrap.log)
-
-clean-program:
-ifndef STANPROG
-	$(error STANPROG not set)
-endif
-	$(RM) "$(wildcard $(patsubst %.stan,%.d,$(basename ${STANPROG}).stan))"
-	$(RM) "$(wildcard $(patsubst %.stan,%.hpp,$(basename ${STANPROG}).stan))"
-	$(RM) "$(wildcard $(patsubst %.stan,%.o,$(basename ${STANPROG}).stan))"
-	$(RM) "$(wildcard $(patsubst %.stan,%$(EXE),$(basename ${STANPROG}).stan))"
-	$(RM) "$(wildcard $(patsubst %.stan,%_model.so,$(basename ${STANPROG}).stan))"
+.PHONY: clean
+clean:
+	$(RM) src/*.o
+	$(RM) stan/**/*.so
+	$(RM) stan/**/*.hpp
 
 # print compilation command line config
 .PHONY: compile_info
