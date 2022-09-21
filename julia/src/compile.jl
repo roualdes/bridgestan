@@ -26,6 +26,14 @@ function validate_stan_dir(path::AbstractString)
     end
 end
 
+"""
+    set_cmdstan_path(path)
+
+Set the path to CmdStan used by BridgeStan.
+
+By default this is set to the value of the environment variable
+`CMDSTAN`, or to the newest installation available in `~/.cmdstan/`.
+"""
 function set_cmdstan_path(path::AbstractString)
     if !isdir(path)
         error("Path does not exist!\n$path")
@@ -34,11 +42,31 @@ function set_cmdstan_path(path::AbstractString)
 end
 
 
+"""
+    set_bridgestan_path(path)
+
+Set the path BridgeStan.
+
+By default this is set to the value of the environment variable
+`BRIDGESTAN`.
+"""
 function set_bridgestan_path(path::AbstractString)
     validate_stan_dir(path)
     global BRIDGESTAN_PATH = path
 end
 
+
+"""
+    compile_model(stan_file, args=[])
+
+Run BridgeStan’s Makefile on a `.stan` file, creating the `.so` used by StanModel.
+Additional arguments to `make` can be passed as a vector, for example `["STAN_THREADS=true"]`
+enables the model's threading capabilities.
+
+This function assumes that the paths to BridgeStan and CmdStan are both valid.
+These can be set with `set_bridgestan_path()` and `set_cmdstan_path()` if their default
+ values do not match your system configuration.
+"""
 function compile_model(stan_file::AbstractString, args::AbstractVector{String}=String[])
     validate_stan_dir(BRIDGESTAN_PATH)
 

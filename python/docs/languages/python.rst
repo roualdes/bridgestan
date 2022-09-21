@@ -13,7 +13,7 @@ StanModel interface
 
 
 Compilation utilities
--------------------
+---------------------
 
 .. autofunction:: bridgestan.compile_model
 .. autofunction:: bridgestan.set_bridgestan_path

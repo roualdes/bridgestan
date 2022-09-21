@@ -30,6 +30,13 @@ set_cmdstan_path = Compile.set_cmdstan_path
 set_bridgestan_path = Compile.set_bridgestan_path
 compile_model = Compile.compile_model
 
+"""
+    StanModel_from_stan_file(stan_file, datafile_="", seed_=204, chain_id_=0)
+
+Construct a StanModel instance from a `.stan` file, compiling if necessary.
+
+This is equivalent to calling `compile_model` and then the constructor of StanModel.
+"""
 function StanModel_from_stan_file(stan_file::String, datafile_::String="", seed_=204, chain_id_=0)
     library = compile_model(stan_file)
     StanModel(library, datafile_, seed_, chain_id_)

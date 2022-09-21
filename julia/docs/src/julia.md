@@ -9,8 +9,11 @@
 
 ---
 
+## StanModel interface
+
 ```@docs
 StanModel
+StanModel_from_stan_file
 log_density
 log_density_gradient
 log_density_hessian
@@ -27,4 +30,11 @@ log_density_hessian!
 param_constrain!
 param_unconstrain!
 param_unconstrain_json!
+```
+
+## Compilation utilities
+```@docs
+compile_model
+set_bridgestan_path
+set_cmdstan_path
 ```
