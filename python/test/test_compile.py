@@ -1,7 +1,8 @@
 from pathlib import Path
 
-import bridgestan as bs
 import pytest
+
+import bridgestan as bs
 
 STAN_FOLDER = Path(__file__).parent.parent.parent / "test_models"
 

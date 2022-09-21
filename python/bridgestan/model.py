@@ -1,25 +1,16 @@
 import ctypes
+import os
+from typing import List, Optional, Tuple
+
 import numpy as np
 import numpy.typing as npt
-import os
-
 from numpy.ctypeslib import ndpointer
-from typing import List, Optional, Tuple
+
 from .compile import compile_model
+from .util import validate_readable
 
 FloatArray = npt.NDArray[np.float64]
 double_array = ndpointer(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
-
-
-def validate_readable(f: str) -> bool:
-    """
-    Raise a `FileNotFoundError` if the specified file is not readable.
-    :param f: The file name.
-    :raises FileNotFoundError: If the file is not found or is found and
-        is not readable.
-    """
-    if not os.path.isfile(f) or not os.access(f, os.R_OK):
-        raise FileNotFoundError("could not open file f =", f)
 
 
 class StanModel:
@@ -36,8 +27,8 @@ class StanModel:
     :param seed: A pseudo random number generator seed.
     :param chain_id: A unique identifier for concurrent chains of
         pseudorandom numbers.
-    :raises FileNotFoundError: If `model_lib` is not readable or `model_data`
-        is specified and not a path to a readable file.
+    :raises FileNotFoundError or PermissionError: If ``model_lib`` is not readable or
+        ``model_data`` is specified and not a path to a readable file.
     :raises RuntimeError: If there is an error instantiating the Stan model.
     """
 
@@ -58,7 +49,8 @@ class StanModel:
         :param seed: A pseudo random number generator seed.
         :param chain_id: A unique identifier for concurrent chains of
             pseudorandom numbers.
-        :raises FileNotFoundError: If any of the specified files is not readable.
+        :raises FileNotFoundError or PermissionError: If ``model_lib`` is not readable or
+            ``model_data`` is specified and not a path to a readable file.
         :raises RuntimeError: If there is an error instantiating the
             model from C++.
         """
@@ -185,7 +177,8 @@ class StanModel:
         :param seed: A pseudo random number generator seed.
         :param chain_id: A unique identifier for concurrent chains of
             pseudorandom numbers.
-        :raises FileNotFoundError: If `stan_file` does not exist.
+        :raises FileNotFoundError or PermissionError: If `stan_file` does not exist
+            or is not readable.
         :raises ValueError: If BridgeStan cannot be located.
         :raises RuntimeError: If compilation fails.
         """

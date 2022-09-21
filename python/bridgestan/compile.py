@@ -1,9 +1,12 @@
-from typing import List
 import os
-import subprocess
-from pathlib import Path
 import platform
+import subprocess
 import warnings
+from pathlib import Path
+from typing import List
+
+from .util import validate_readable
+
 
 def verify_bridgestan_path(path: str) -> None:
     folder = Path(path).resolve()
@@ -107,15 +110,15 @@ def compile_model(stan_file: str, args: List[str] = []) -> Path[str]:
     :param args: A list of additional arguments to pass to Make.
         For example, ``["STAN_THREADS=True"]`` will enable
         threading for the compiled model.
-    :raises FileNotFoundError: If `stan_file` does not exist.
+    :raises FileNotFoundError or PermissionError: If `stan_file` does not exist
+        or is not readable.
     :raises ValueError: If BridgeStan cannot be located.
     :raises RuntimeError: If compilation fails.
     """
     verify_bridgestan_path(BRIDGESTAN_PATH)
 
     file_path = Path(stan_file).resolve()
-    if not file_path.exists():
-        raise FileNotFoundError(f"File '{stan_file}' does not exist")
+    validate_readable(str(file_path))
     if file_path.suffix != ".stan":
         raise ValueError(f"File '{stan_file}' does not end in .stan")
 
