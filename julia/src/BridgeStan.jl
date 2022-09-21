@@ -35,11 +35,21 @@ compile_model = Compile.compile_model
 
 Construct a StanModel instance from a `.stan` file, compiling if necessary.
 
-This is equivalent to calling `compile_model` and then the constructor of StanModel.
+This is equivalent to calling `compile_model` and then the constructor of StanModel.ju
 """
 function StanModel_from_stan_file(stan_file::String, datafile_::String="", seed_=204, chain_id_=0)
     library = compile_model(stan_file)
     StanModel(library, datafile_, seed_, chain_id_)
 end
+
+function __init__()
+    if Compile.get_bridgestan() == ""
+        @warn "BridgeStan path was not set, compilation will not work until you call `set_bridgestan_path()`"
+    end
+    if Compile.get_cmdstan() == ""
+        @warn "CmdStan path was not set, compilation will not work until you call `set_cmdstan_path()`"
+    end
+end
+
 
 end
