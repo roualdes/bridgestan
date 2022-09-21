@@ -9,7 +9,7 @@ on:
 
 env:
   CMDSTAN_VERSION: "2.30.1"
-  CACHE_VERSION: 2
+  CACHE_VERSION: 3
 
 jobs:
   build_test_models:
@@ -57,7 +57,7 @@ jobs:
           make example
           make example_static
           rm ../src/bridgestan.o
-          rm ../stan/full/full_model.a
+          rm ../test_models/full/full_model.a
 
           ./example
           ./example_static
@@ -68,7 +68,7 @@ jobs:
         uses: actions/cache@v2
         id: test-models
         with:
-          path: ./stan/
+          path: ./test_models/
           key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Build test models (Unix)
@@ -76,7 +76,7 @@ jobs:
         run: |
           export CMDSTAN=$(python -c "import cmdstanpy; print(cmdstanpy.cmdstan_path())")/
           export BRIDGESTAN=$(pwd)
-          bash stan/build_all.sh
+          bash test_models/build_all.sh
         shell: bash
 
       - name: Build test models (Windows)
@@ -84,7 +84,7 @@ jobs:
         run: |
           $env:BRIDGESTAN = $(pwd)
           $env:CMDSTAN = $(python -c "import cmdstanpy; print(cmdstanpy.cmdstan_path())")
-          ./stan/build_all.ps1
+          ./test_models/build_all.ps1
         shell: pwsh
 
 
@@ -114,7 +114,7 @@ jobs:
         uses: actions/cache@v2
         id: test-models
         with:
-          path: ./stan/
+          path: ./test_models/
           key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Install package
@@ -151,7 +151,7 @@ jobs:
         uses: actions/cache@v2
         id: test-models
         with:
-          path: ./stan/
+          path: ./test_models/
           key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Run tests
@@ -190,7 +190,7 @@ jobs:
         uses: actions/cache@v2
         id: test-models
         with:
-          path: ./stan/
+          path: ./test_models/
           key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Run tests
@@ -198,7 +198,7 @@ jobs:
           cd R/tests/testthat
           gcc -fpic -shared -o test_collisions.so test_collisions.c
           cd ../..
-          Rscript -e "devtools::test()"
+          Rscript -e "devtools::test(reporter = c(\"summary\", \"fail\"))"
 
   # Seperate for now, weird dynamic linking issues need resolving in GHA runner
   test_clients_windows:
@@ -223,7 +223,7 @@ jobs:
         uses: actions/cache@v2
         id: test-models
         with:
-          path: ./stan/
+          path: ./test_models/
           key: ${{ hashFiles('**/*.stan', 'src/*') }}-windows-latest-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Install R
@@ -249,4 +249,4 @@ jobs:
           cd R/tests/testthat
           gcc -fpic -shared -o test_collisions.dll test_collisions.c
           cd ../..
-          Rscript -e "devtools::test()"
+          Rscript -e "devtools::test(reporter = c(\"summary\", \"fail\"))"

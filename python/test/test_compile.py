@@ -3,8 +3,7 @@ from pathlib import Path
 import bridgestan as bs
 import pytest
 
-HERE = Path(__file__).parent
-STAN_FOLDER = HERE.parent.parent / "stan"
+STAN_FOLDER = Path(__file__).parent.parent.parent / "test_models"
 
 
 def test_compile_good():
@@ -31,7 +30,7 @@ def test_compile_nonexistant():
 
 
 def test_compile_syntax_error():
-    stanfile = HERE / "data" / "syntax_error.stan"
+    stanfile = STAN_FOLDER / "syntax_error" / "syntax_error.stan"
     with pytest.raises(RuntimeError, match=r"Syntax error"):
         bs.compile_model(stanfile)
 
@@ -50,5 +49,5 @@ def test_compile_bad_bridgestan():
     with pytest.raises(ValueError, match=r"does not exist"):
         bs.compile.set_bridgestan_path("dummy")
     with pytest.raises(ValueError, match=r"does not contain file 'Makefile'"):
-        bs.compile.set_bridgestan_path(str(HERE))
+        bs.compile.set_bridgestan_path(str(STAN_FOLDER))
     bs.compile.set_bridgestan_path(old_path)

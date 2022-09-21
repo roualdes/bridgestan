@@ -30,11 +30,11 @@ a terminal in your BridgeStan folder and running
 .. code-block:: shell
 
     # MacOS and Linux
-    make CMDSTAN=/path/to/cmdstan/here/ stan/multi/multi_model.so
+    make CMDSTAN=/path/to/cmdstan/here/ test_models/multi/multi_model.so
     # Windows
-    mingw32-make.exe CMDSTAN=C:/path/to/cmdstan/with/forward/slashes/ stan/multi/multi_model.so
+    mingw32-make.exe CMDSTAN=C:/path/to/cmdstan/with/forward/slashes/ test_models/multi/multi_model.so
 
-This will compile the file ``stan/multi/multi.stan`` into a shared library object for use with BridgeStan.
+This will compile the file ``test_models/multi/multi.stan`` into a shared library object for use with BridgeStan.
 
 
 

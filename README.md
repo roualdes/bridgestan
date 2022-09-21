@@ -51,12 +51,12 @@ is working.
 
 ### Compiling the Stan program
 
-To compile the Stan model in `stan/multi/multi.stan` to a binary
+To compile the Stan model in `test_models/multi/multi.stan` to a binary
 shared object (`.so` file), use the following.
 
 ```
 $ cd bridgestan
-$ CMDSTAN=/path/to/cmdstan/ make stan/multi/multi_model.so
+$ CMDSTAN=/path/to/cmdstan/ make test_models/multi/multi_model.so
 ```
 
 The forward slash (`/`) at the end of `cmdstan/` is necessary.
@@ -133,7 +133,7 @@ On Windows, BridgeStan requires *forward slashes* in the path to
 CmdStan, as in the following example.
 
 ```shell
-mingw32-make.exe CMDSTAN="C:/path/to/cmdstan/" ./stan/multi/multi_model.so
+mingw32-make.exe CMDSTAN="C:/path/to/cmdstan/" ./test_models/multi/multi_model.so
 ```
 
 ### Sizes and `param_constrain()` and `param_unconstrain()`
@@ -192,7 +192,7 @@ should run without errors.
 
 ```shell
 cd <cmdstan-dir>
-make <bridgestan-dir>/stan/multi/multi
+make <bridgestan-dir>/test_models/multi/multi
 ```
 
 The second command brings in the latest version of Stan.
@@ -205,7 +205,7 @@ You can verify CmdStan works end-to-end by using the resulting
 executable to fit some data.
 
 ```shell
-./<bridgestan-dir>/stan/multi/multi sample data file=<bridgestan-dir>/stan/multi/multi.data.json
+./<bridgestan-dir>/test_models/multi/multi sample data file=<bridgestan-dir>/test_models/multi/multi.data.json
 ```
 
 

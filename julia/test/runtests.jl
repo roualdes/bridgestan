@@ -3,9 +3,9 @@ using Test
 using Printf
 
 function load_test_model(name::String, with_data = true)
-    lib = joinpath(@__DIR__, @sprintf("../../stan/%s/%s_model.so", name, name))
+    lib = joinpath(@__DIR__, @sprintf("../../test_models/%s/%s_model.so", name, name))
     if with_data
-        data = joinpath(@__DIR__, @sprintf("../../stan/%s/%s.data.json", name, name))
+        data = joinpath(@__DIR__, @sprintf("../../test_models/%s/%s.data.json", name, name))
     else
         data = ""
     end
@@ -426,7 +426,7 @@ end
 
 @testset "bernoulli" begin
     # Bernoulli
-    # CMDSTAN=/path/to/cmdstan/ make stan/bernoulli/bernoulli_model.so
+    # CMDSTAN=/path/to/cmdstan/ make test_models/bernoulli/bernoulli_model.so
 
     model = load_test_model("bernoulli")
 
@@ -458,7 +458,7 @@ end
 
 @testset "threaded model: multi" begin
     # Multivariate Gaussian
-    # CMDSTAN=/path/to/cmdstan/ make stan/multi/multi_model.so
+    # CMDSTAN=/path/to/cmdstan/ make test_models/multi/multi_model.so
 
     function gaussian(x)
         return -0.5 * x' * x
@@ -492,7 +492,7 @@ end
 
 @testset "gaussian" begin
     # Guassian with positive constrained standard deviation
-    # CMDSTAN=/path/to/cmdstan/ make stan/gaussian/gaussian_model.so
+    # CMDSTAN=/path/to/cmdstan/ make test_models/gaussian/gaussian_model.so
 
     model = load_test_model("gaussian")
 
@@ -514,7 +514,7 @@ end
 
 @testset "fr_gaussian" begin
     # Full rank Gaussian
-    # CMDSTAN=/path/to/cmdstan/ make stan/fr_gaussian/fr_gaussian_model.so
+    # CMDSTAN=/path/to/cmdstan/ make test_models/fr_gaussian/fr_gaussian_model.so
 
     model = load_test_model("fr_gaussian")
 

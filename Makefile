@@ -74,8 +74,8 @@ $(BRIDGE_O) : $(BRIDGE)
 .PHONY: clean
 clean:
 	$(RM) src/*.o
-	$(RM) stan/**/*.so
-	$(RM) stan/**/*.hpp
+	$(RM) test_models/**/*.so
+	$(RM) test_models/**/*.hpp
 
 # print compilation command line config
 .PHONY: compile_info

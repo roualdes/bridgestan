@@ -1,22 +1,11 @@
-# BUILD MODEL SHARED OBJECT
-
-# To run this example with the included regression model:
-#
-# (1) change to the bridgestan directory,
-# (2) compile the regression model, and
-# (3) execute this script
-#
-# > cd bridgestan
-# > make CMDSTAN=<path-to-cmdstan>/ stan/regression/regression_model.so
-# > python3 python/example.py
 
 # REQUIRED IMPORTS
 import bridgestan as bs
 import numpy as np
 
-# CONSTRUCT MODEL
-stan = "../stan/regression/regression.stan"
-data = "../stan/regression/regression.data.json"
+# COMPILE AND CONSTRUCT MODEL
+stan = "../test_models/regression/regression.stan"
+data = "../test_models/regression/regression.data.json"
 model = bs.StanModel.from_stan_file(stan, data)
 
 print("MODEL NAME: name")

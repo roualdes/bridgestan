@@ -3,7 +3,7 @@ from pathlib import Path
 
 import bridgestan as bs
 
-STAN_FOLDER = Path(__file__).parent.parent.parent / "stan"
+STAN_FOLDER = Path(__file__).parent.parent.parent / "test_models"
 
 
 def test_constructor():
