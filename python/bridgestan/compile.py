@@ -3,6 +3,23 @@ import os
 import subprocess
 from pathlib import Path
 import platform
+import warnings
+
+def verify_bridgestan_path(path: str) -> None:
+    folder = Path(path).resolve()
+    if not folder.exists():
+        raise ValueError(
+            f"BridgeStan folder '{folder}' does not exist!\n"
+            "If you need to set a different location, call 'set_bridgestan_path()'"
+        )
+    makefile = folder / "Makefile"
+    if not makefile.exists():
+        raise ValueError(
+            f"BridgeStan folder '{folder}' does not "
+            "contain file 'Makefile', please ensure it is built properly!\n"
+            "If you need to set a different location, call 'set_bridgestan_path()'"
+        )
+
 
 PYTHON_FOLDER = Path(__file__).parent.parent
 
@@ -25,6 +42,24 @@ if not CMDSTAN_PATH:
             )[0]
         except:
             pass
+
+if not CMDSTAN_PATH:
+    warnings.warn(
+        RuntimeWarning(
+            "Unable to locate CmdStan, you will need to call "
+            "'set_cmdstan_path()' before using compilation features"
+        )
+    )
+
+try:
+    verify_bridgestan_path(BRIDGESTAN_PATH)
+except ValueError:
+    warnings.warn(
+        RuntimeWarning(
+            "Unable to locate BridgeStan, you will need to call "
+            "'set_bridgestan_path()' before using compilation features"
+        ),
+    )
 
 
 def set_cmdstan_path(path: str) -> None:
@@ -51,22 +86,6 @@ def set_bridgestan_path(path: str) -> None:
     global BRIDGESTAN_PATH
     verify_bridgestan_path(path)
     BRIDGESTAN_PATH = path
-
-
-def verify_bridgestan_path(path: str) -> None:
-    folder = Path(path).resolve()
-    if not folder.exists():
-        raise ValueError(
-            f"BridgeStan folder '{folder}' does not exist!\n"
-            "If you need to set a different location, call 'set_bridgestan_path()'"
-        )
-    makefile = folder / "Makefile"
-    if not makefile.exists():
-        raise ValueError(
-            f"BridgeStan folder '{folder}' does not "
-            "contain file 'Makefile', please ensure it is built properly!\n"
-            "If you need to set a different location, call 'set_bridgestan_path()'"
-        )
 
 
 def generate_so_name(model: Path[str]):
