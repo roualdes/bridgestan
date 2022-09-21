@@ -75,7 +75,9 @@ intersphinx_mapping = {
 
 
 breathe_projects = {"bridgestan": "./_build/cppxml/"}
-breathe_projects_source = {"bridgestan": ("../../src/", ["bridgestan.h", "bridgestanR.h"])}
+breathe_projects_source = {
+    "bridgestan": ("../../src/", ["bridgestan.h", "bridgestanR.h"])
+}
 breathe_default_project = "bridgestan"
 breathe_doxygen_config_options = {"EXCLUDE_SYMBOLS": "to_csv"}
 

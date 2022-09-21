@@ -3,10 +3,10 @@ using BridgeStan
 const BS = BridgeStan
 
 # Bernoulli
-# CMDSTAN=/path/to/cmdstan/ make stan/bernoulli/bernoulli
+# CMDSTAN=/path/to/cmdstan/ make test_models/bernoulli/bernoulli
 
-bernoulli_lib = joinpath(@__DIR__, "../stan/bernoulli/bernoulli_model.so")
-bernoulli_data = joinpath(@__DIR__, "../stan/bernoulli/bernoulli.data.json")
+bernoulli_lib = joinpath(@__DIR__, "../test_models/bernoulli/bernoulli_model.so")
+bernoulli_data = joinpath(@__DIR__, "../test_models/bernoulli/bernoulli.data.json")
 
 smb = BS.StanModel(bernoulli_lib, bernoulli_data);
 x = rand(BS.param_unc_num(smb));
@@ -22,10 +22,10 @@ println()
 
 
 # Multivariate Gaussian
-# CMDSTAN=/path/to/cmdstan/ make stan/multi/multi
+# CMDSTAN=/path/to/cmdstan/ make test_models/multi/multi
 
-multi_lib = joinpath(@__DIR__, "../stan/multi/multi_model.so")
-multi_data = joinpath(@__DIR__, "../stan/multi/multi.data.json")
+multi_lib = joinpath(@__DIR__, "../test_models/multi/multi_model.so")
+multi_data = joinpath(@__DIR__, "../test_models/multi/multi.data.json")
 
 smm = BS.StanModel(multi_lib, multi_data)
 x = randn(BS.param_unc_num(smm));

@@ -48,7 +48,7 @@ This can use the same source file as dynamic linking, it is just the build which
 
 ```shell
 make example_static
-rm ../stan/full/full_model.a # statically linked executable doesn't need library around
+rm ../test_models/full/full_model.a # statically linked executable doesn't need library around
 ./example_static
 ```
 

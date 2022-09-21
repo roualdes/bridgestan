@@ -1,9 +1,10 @@
-import numpy as np
 from pathlib import Path
+
+import numpy as np
 
 import bridgestan as bs
 
-STAN_FOLDER = Path(__file__).parent.parent.parent / "stan"
+STAN_FOLDER = Path(__file__).parent.parent.parent / "test_models"
 
 
 def test_constructor():
@@ -312,7 +313,7 @@ def test_log_density():
 def test_log_density_gradient():
     def _logp(y_unc):
         y = np.exp(y_unc)
-        return -0.5 * y ** 2
+        return -0.5 * y**2
 
     def _propto_false(y_unc):
         return -0.5 * np.log(2 * np.pi)
@@ -322,7 +323,7 @@ def test_log_density_gradient():
 
     def _grad_logp(y_unc):
         y = np.exp(y_unc)
-        return -(y ** 2)
+        return -(y**2)
 
     def _grad_propto_false(y_unc):
         return 0
@@ -381,7 +382,7 @@ def test_log_density_gradient():
 def test_log_density_hessian():
     def _logp(y_unc):
         y = np.exp(y_unc)
-        return -0.5 * y ** 2
+        return -0.5 * y**2
 
     def _propto_false(y_unc):
         return -0.5 * np.log(2 * np.pi)
@@ -391,7 +392,7 @@ def test_log_density_hessian():
 
     def _grad_logp(y_unc):
         y = np.exp(y_unc)
-        return -(y ** 2)
+        return -(y**2)
 
     def _grad_propto_false(y_unc):
         return 0
@@ -401,7 +402,7 @@ def test_log_density_hessian():
 
     def _hess_logp(y_unc):
         y = np.exp(y_unc)
-        return -2.0 * y ** 2
+        return -2.0 * y**2
 
     def _hess_propto_false(y_unc):
         return 0

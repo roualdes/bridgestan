@@ -1,7 +1,7 @@
 base = "../../.."
 
 
-simple <- StanModel$new(file.path(base, "/stan/simple/simple_model.so"), file.path(base, "/stan/simple/simple.data.json"), 1234, 0)
+simple <- StanModel$new(file.path(base, "/test_models/simple/simple_model.so"), file.path(base, "/test_models/simple/simple.data.json"), 1234, 0)
 test_that("simple_model name is correct", {
     expect_identical(simple$name(), "simple_model")
 })
@@ -26,7 +26,7 @@ test_that("simple_model Hessian is -I",{
 })
 
 
-bernoulli <- StanModel$new(file.path(base, "/stan/bernoulli/bernoulli_model.so"), file.path(base, "/stan/bernoulli/bernoulli.data.json"), 1234, 0)
+bernoulli <- StanModel$new(file.path(base, "/test_models/bernoulli/bernoulli_model.so"), file.path(base, "/test_models/bernoulli/bernoulli.data.json"), 1234, 0)
 
 test_that("loading another library didn't break prior ones", {
     if (.Platform$OS.type == "windows"){
