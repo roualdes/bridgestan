@@ -2,12 +2,18 @@
 mutable struct StanModelStruct end
 
 """
-    StanModel(stanlib_, datafile_="", seed_=204, chain_id_=0)
+    StanModel(lib, datafile="", seed=204, chain_id=0)
 
 A StanModel instance encapsulates a Stan model instantiated with data.
 
 The constructor a Stan model from the supplied library file path and data file path.
 If seed or chain_id are supplied, these are used to initialize the RNG used by the model.
+
+    StanModel(;stan_file, data="", seed=204, chain_id=0)
+
+Construct a StanModel instance from a `.stan` file, compiling if necessary.
+
+This is equivalent to calling `compile_model` and then the original constructor of StanModel.
 """
 mutable struct StanModel
     lib::Ptr{Nothing}
@@ -16,25 +22,25 @@ mutable struct StanModel
     const seed::UInt32
     const chain_id::UInt32
 
-    function StanModel(stanlib_::String, datafile_::String = "", seed_ = 204, chain_id_ = 0)
-        seed = convert(UInt32, seed_)
-        chain_id = convert(UInt32, chain_id_)
+    function StanModel(lib::String, data::String = "", seed = 204, chain_id = 0)
+        seed = convert(UInt32, seed)
+        chain_id = convert(UInt32, chain_id)
 
-        if !isfile(stanlib_)
+        if !isfile(lib)
             throw(SystemError("Dynamic library file not found"))
         end
 
-        if datafile_ != "" && !isfile(datafile_)
+        if data != "" && !isfile(data)
             throw(SystemError("Data file not found"))
         end
 
-        lib = Libc.Libdl.dlopen(stanlib_)
+        lib = Libc.Libdl.dlopen(lib)
 
         stanmodel = ccall(
             Libc.Libdl.dlsym(lib, "construct"),
             Ptr{StanModelStruct},
             (Cstring, UInt32, UInt32),
-            datafile_,
+            data,
             seed,
             chain_id,
         )
@@ -42,7 +48,7 @@ mutable struct StanModel
             error("could not construct model RNG")
         end
 
-        sm = new(lib, stanmodel, datafile_, seed, chain_id)
+        sm = new(lib, stanmodel, data, seed, chain_id)
 
         function f(sm)
             ccall(

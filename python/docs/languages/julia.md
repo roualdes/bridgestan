@@ -27,31 +27,23 @@
 
 
 ```julia
-StanModel(stanlib_, datafile_="", seed_=204, chain_id_=0)
+StanModel(lib, datafile="", seed=204, chain_id=0)
 ```
 
 A StanModel instance encapsulates a Stan model instantiated with data.
 
 The constructor a Stan model from the supplied library file path and data file path. If seed or chain_id are supplied, these are used to initialize the RNG used by the model.
 
-
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L4-L11' class='documenter-source'>source</a><br>
-
-<a id='BridgeStan.StanModel_from_stan_file' href='#BridgeStan.StanModel_from_stan_file'>#</a>
-**`BridgeStan.StanModel_from_stan_file`** &mdash; *Function*.
-
-
-
-```julia
-StanModel_from_stan_file(stan_file, datafile_="", seed_=204, chain_id_=0)
+```
+StanModel(;stan_file, data="", seed=204, chain_id=0)
 ```
 
 Construct a StanModel instance from a `.stan` file, compiling if necessary.
 
-This is equivalent to calling `compile_model` and then the constructor of StanModel.
+This is equivalent to calling `compile_model` and then the original constructor of StanModel.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/BridgeStan.jl#L33-L39' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L4-L17' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.log_density' href='#BridgeStan.log_density'>#</a>
 **`BridgeStan.log_density`** &mdash; *Function*.
@@ -67,7 +59,7 @@ Return the log density of the specified unconstrained parameters.
 This calculation drops constant terms that do not depend on the parameters if `propto` is `true` and includes change of variables terms for constrained parameters if `jacobian` is `true`.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L327-L334' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L333-L340' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.log_density_gradient' href='#BridgeStan.log_density_gradient'>#</a>
 **`BridgeStan.log_density_gradient`** &mdash; *Function*.
@@ -85,7 +77,7 @@ This calculation drops constant terms that do not depend on the parameters if `p
 This allocates new memory for the gradient output each call. See `log_density_gradient!` for a version which allows re-using existing memory.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L399-L411' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L405-L417' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.log_density_hessian' href='#BridgeStan.log_density_hessian'>#</a>
 **`BridgeStan.log_density_hessian`** &mdash; *Function*.
@@ -103,7 +95,7 @@ This calculation drops constant terms that do not depend on the parameters if `p
 This allocates new memory for the gradient and Hessian output each call. See `log_density_gradient!` for a version which allows re-using existing memory.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L485-L496' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L491-L502' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.param_constrain' href='#BridgeStan.param_constrain'>#</a>
 **`BridgeStan.param_constrain`** &mdash; *Function*.
@@ -121,7 +113,7 @@ This allocates new memory for the output each call. See `param_constrain!` for a
 This is the inverse of `param_unconstrain`.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L198-L210' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L204-L216' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.param_unconstrain' href='#BridgeStan.param_unconstrain'>#</a>
 **`BridgeStan.param_unconstrain`** &mdash; *Function*.
@@ -141,7 +133,7 @@ This allocates new memory for the output each call. See `param_unconstrain!` for
 This is the inverse of `param_constrain`.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L258-L271' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L264-L277' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.param_unconstrain_json' href='#BridgeStan.param_unconstrain_json'>#</a>
 **`BridgeStan.param_unconstrain_json`** &mdash; *Function*.
@@ -159,7 +151,7 @@ The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/
 This allocates new memory for the output each call. See `param_unconstrain_json!` for a version which allows re-using existing memory.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L311-L321' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L317-L327' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.name' href='#BridgeStan.name'>#</a>
 **`BridgeStan.name`** &mdash; *Function*.
@@ -173,7 +165,7 @@ name(sm)
 Return the name of the model `sm`
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L60-L64' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L66-L70' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.param_num' href='#BridgeStan.param_num'>#</a>
 **`BridgeStan.param_num`** &mdash; *Function*.
@@ -189,7 +181,7 @@ Return the number of (constrained) parameters in the model.
 This is the total of all the sizes of items declared in the `parameters` block of the model. If `include_tp` or `include_gq` are true, items declared in the `transformed parameters` and `generate quantities` blocks are included, respectively.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L75-L84' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L81-L90' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.param_unc_num' href='#BridgeStan.param_unc_num'>#</a>
 **`BridgeStan.param_unc_num`** &mdash; *Function*.
@@ -205,7 +197,7 @@ Return the number of unconstrained parameters in the model.
 This function is mainly different from `param_num` when variables are declared with constraints. For example, `simplex[5]` has a constrained size of 5, but an unconstrained size of 4.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L97-L105' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L103-L111' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.param_names' href='#BridgeStan.param_names'>#</a>
 **`BridgeStan.param_names`** &mdash; *Function*.
@@ -223,7 +215,7 @@ For containers, indexes are separated by periods (.).
 For example, the scalar `a` has indexed name `"a"`, the vector entry `a[1]` has indexed name `"a.1"` and the matrix entry `a[2, 3]` has indexed names `"a.2.3"`. Parameter order of the output is column major and more generally last-index major for containers.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L115-L126' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L121-L132' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.param_unc_names' href='#BridgeStan.param_unc_names'>#</a>
 **`BridgeStan.param_unc_names`** &mdash; *Function*.
@@ -239,7 +231,7 @@ Return the indexed names of the unconstrained parameters.
 For example, a scalar unconstrained parameter `b` has indexed name `b` and a vector entry `b[3]` has indexed name `b.3`.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L139-L146' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L145-L152' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.log_density_gradient!' href='#BridgeStan.log_density_gradient!'>#</a>
 **`BridgeStan.log_density_gradient!`** &mdash; *Function*.
@@ -257,7 +249,7 @@ This calculation drops constant terms that do not depend on the parameters if `p
 The gradient is stored in the vector `out`, and a reference is returned. See `log_density_gradient` for a version which allocates fresh memory.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L354-L364' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L360-L370' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.log_density_hessian!' href='#BridgeStan.log_density_hessian!'>#</a>
 **`BridgeStan.log_density_hessian!`** &mdash; *Function*.
@@ -275,7 +267,7 @@ This calculation drops constant terms that do not depend on the parameters if `p
 The gradient is stored in the vector `out_grad` and the Hessian is stored in `out_hess` and references are returned. See `log_density_hessian` for a version which allocates fresh memory.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L422-L433' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L428-L439' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.param_constrain!' href='#BridgeStan.param_constrain!'>#</a>
 **`BridgeStan.param_constrain!`** &mdash; *Function*.
@@ -293,7 +285,7 @@ The result is stored in the vector `out`, and a reference is returned. See `para
 This is the inverse of `param_unconstrain!`.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L157-L168' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L163-L174' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.param_unconstrain!' href='#BridgeStan.param_unconstrain!'>#</a>
 **`BridgeStan.param_unconstrain!`** &mdash; *Function*.
@@ -313,7 +305,7 @@ The result is stored in the vector `out`, and a reference is returned. See `para
 This is the inverse of `param_constrain!`.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L221-L233' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L227-L239' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.param_unconstrain_json!' href='#BridgeStan.param_unconstrain_json!'>#</a>
 **`BridgeStan.param_unconstrain_json!`** &mdash; *Function*.
@@ -331,7 +323,7 @@ The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/
 The result is stored in the vector `out`, and a reference is returned. See `param_unconstrain_json` for a version which allocates fresh memory.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L277-L286' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L283-L292' class='documenter-source'>source</a><br>
 
 
 <a id='Compilation-utilities'></a>
@@ -354,7 +346,7 @@ Run BridgeStan’s Makefile on a `.stan` file, creating the `.so` used by StanMo
 This function assumes that the paths to BridgeStan and CmdStan are both valid. These can be set with `set_bridgestan_path()` and `set_cmdstan_path()` if their default  values do not match your system configuration.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L59-L69' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L61-L71' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.set_bridgestan_path' href='#BridgeStan.set_bridgestan_path'>#</a>
 **`BridgeStan.set_bridgestan_path`** &mdash; *Function*.
@@ -370,7 +362,7 @@ Set the path BridgeStan.
 By default this is set to the value of the environment variable `BRIDGESTAN`.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L45-L52' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L47-L54' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.set_cmdstan_path' href='#BridgeStan.set_cmdstan_path'>#</a>
 **`BridgeStan.set_cmdstan_path`** &mdash; *Function*.
@@ -386,5 +378,5 @@ Set the path to CmdStan used by BridgeStan.
 By default this is set to the value of the environment variable `CMDSTAN`, or to the newest installation available in `~/.cmdstan/`.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L29-L36' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L31-L38' class='documenter-source'>source</a><br>
 

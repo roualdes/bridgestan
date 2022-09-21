@@ -13,7 +13,6 @@
 
 ```@docs
 StanModel
-StanModel_from_stan_file
 log_density
 log_density_gradient
 log_density_hessian
