@@ -1,20 +1,22 @@
 module Compile
 
-MAKE::String = get(ENV, "MAKE", Sys.iswindows() ? "mingw32-make.exe" : "make")
-BRIDGESTAN_PATH::String = get(ENV, "BRIDGESTAN", "")
-CMDSTAN_PATH::String = get(ENV, "CMDSTAN", "")
-
-if BRIDGESTAN_PATH == ""
-    @warn "BridgeStan path was not set, compilation will not work until you call `set_bridgestan_path()`"
+function get_make()
+    get(ENV, "MAKE", Sys.iswindows() ? "mingw32-make.exe" : "make")
 end
-if CMDSTAN_PATH == ""
-    for el in readdir(joinpath(Base.Filesystem.homedir(), ".cmdstan/"), join=true, sort=true)
-        CMDSTAN_PATH = el
-        break
+
+function get_bridgestan()
+    get(ENV, "BRIDGESTAN", "")
+end
+
+function get_cmdstan()
+    cmdstan = get(ENV, "CMDSTAN", "")
+    if cmdstan == ""
+        try
+            cmdstan = readdir(joinpath(Base.Filesystem.homedir(), ".cmdstan/"), join=true, sort=true)[1]
+        catch
+        end
     end
-    if CMDSTAN_PATH == ""
-        @warn "CmdStan path was not set, compilation will not work until you call `set_cmdstan_path()`"
-    end
+    return cmdstan
 end
 
 function validate_stan_dir(path::AbstractString)
@@ -38,7 +40,7 @@ function set_cmdstan_path(path::AbstractString)
     if !isdir(path)
         error("Path does not exist!\n$path")
     end
-    global CMDSTAN_PATH = path
+    ENV["CMDSTAN"] = path
 end
 
 
@@ -52,7 +54,7 @@ By default this is set to the value of the environment variable
 """
 function set_bridgestan_path(path::AbstractString)
     validate_stan_dir(path)
-    global BRIDGESTAN_PATH = path
+    ENV["BRIDGESTAN"] = path
 end
 
 
@@ -68,7 +70,8 @@ These can be set with `set_bridgestan_path()` and `set_cmdstan_path()` if their 
  values do not match your system configuration.
 """
 function compile_model(stan_file::AbstractString, args::AbstractVector{String}=String[])
-    validate_stan_dir(BRIDGESTAN_PATH)
+    bridgestan = get_bridgestan()
+    validate_stan_dir(bridgestan)
 
     if !isfile(stan_file)
         throw(SystemError("Stan file not found: $stan_file"))
@@ -79,9 +82,9 @@ function compile_model(stan_file::AbstractString, args::AbstractVector{String}=S
 
     absolute_path = abspath(stan_file)
     output_file = splitext(absolute_path)[1] * "_model.so"
-    cmdstan = replace(abspath(CMDSTAN_PATH), "\\" => "/") * "/"
+    cmdstan = replace(abspath(get_cmdstan()), "\\" => "/") * "/"
 
-    cmd = Cmd(`$MAKE CMDSTAN=$cmdstan $args $output_file`, dir=abspath(BRIDGESTAN_PATH))
+    cmd = Cmd(`$(get_make()) CMDSTAN=$cmdstan $args $output_file`, dir=abspath(bridgestan))
     out = IOBuffer()
     err = IOBuffer()
     is_ok = success(pipeline(cmd; stdout=out, stderr=err))
