@@ -36,10 +36,10 @@ StanModel(; stan_file::String, data::String = "", seed = 204, chain_id = 0) =
 
 function __init__()
     if get_bridgestan() == ""
-        @warn "BridgeStan path was not set, compilation will not work until you call `set_bridgestan_path()`"
+        @warn "BridgeStan path was not set, compilation will not work until you call `set_bridgestan_path!()`"
     end
     if get_cmdstan() == ""
-        @warn "CmdStan path was not set, compilation will not work until you call `set_cmdstan_path()`"
+        @warn "CmdStan path was not set, compilation will not work until you call `set_cmdstan_path!()`"
     end
 end
 

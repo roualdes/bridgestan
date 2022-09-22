@@ -341,9 +341,9 @@ The result is stored in the vector `out`, and a reference is returned. See `para
 compile_model(stan_file, args=[])
 ```
 
-Run BridgeStan’s Makefile on a `.stan` file, creating the `.so` used by StanModel and return a path to the compiled library.  Additional arguments to `make` can be passed as a vector, for example `["STAN_THREADS=true"]` enables the model's threading capabilities.
+Run BridgeStan’s Makefile on a `.stan` file, creating the `.so` used by StanModel and return a path to the compiled library. Additional arguments to `make` can be passed as a vector, for example `["STAN_THREADS=true"]` enables the model's threading capabilities.
 
-This function assumes that the paths to BridgeStan and CmdStan are both valid. These can be set with `set_bridgestan_path()` and `set_cmdstan_path()` if their default values do not match your system configuration.
+This function assumes that the paths to BridgeStan and CmdStan are both valid. These can be set with `set_bridgestan_path!()` and `set_cmdstan_path!()` if their default values do not match your system configuration.
 
 
 <a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L66-L77' class='documenter-source'>source</a><br>
@@ -354,7 +354,7 @@ This function assumes that the paths to BridgeStan and CmdStan are both valid. T
 
 
 ```julia
-set_bridgestan_path(path)
+set_bridgestan_path!(path)
 ```
 
 Set the path BridgeStan.
@@ -370,7 +370,7 @@ By default this is set to the value of the environment variable `BRIDGESTAN`.
 
 
 ```julia
-set_cmdstan_path(path)
+set_cmdstan_path!(path)
 ```
 
 Set the path to CmdStan used by BridgeStan.

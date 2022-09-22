@@ -34,7 +34,7 @@ function validate_stan_dir(path::AbstractString)
 end
 
 """
-    set_cmdstan_path(path)
+    set_cmdstan_path!(path)
 
 Set the path to CmdStan used by BridgeStan.
 
@@ -50,7 +50,7 @@ end
 
 
 """
-    set_bridgestan_path(path)
+    set_bridgestan_path!(path)
 
 Set the path BridgeStan.
 
@@ -67,12 +67,12 @@ end
     compile_model(stan_file, args=[])
 
 Run BridgeStan’s Makefile on a `.stan` file, creating the `.so` used by StanModel and
-return a path to the compiled library. 
+return a path to the compiled library.
 Additional arguments to `make` can be passed as a vector, for example `["STAN_THREADS=true"]`
 enables the model's threading capabilities.
 
 This function assumes that the paths to BridgeStan and CmdStan are both valid.
-These can be set with `set_bridgestan_path()` and `set_cmdstan_path()` if their default
+These can be set with `set_bridgestan_path!()` and `set_cmdstan_path!()` if their default
 values do not match your system configuration.
 """
 function compile_model(stan_file::AbstractString, args::AbstractVector{String} = String[])
