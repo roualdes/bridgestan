@@ -157,6 +157,7 @@ jobs:
 
       - name: Run tests
         run: |
+          export BRIDGESTAN=$(pwd)
           julia --project=./julia -t 2 -e "using Pkg; Pkg.test()"
 
   test_R_client:
@@ -243,6 +244,7 @@ jobs:
 
       - name: Run Julia tests
         run: |
+          $env:BRIDGESTAN = $(pwd)
           julia --project=./julia -t 2 -e "using Pkg; Pkg.test()"
 
       - name: Run R tests
