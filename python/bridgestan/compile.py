@@ -40,9 +40,9 @@ if not CMDSTAN_PATH:
         CMDSTAN_PATH = cmdstanpy.cmdstan_path()
     except:
         try:
-            CMDSTAN_PATH = sorted(
-                (filter(Path.is_dir, (Path.home() / ".cmdstan").iterdir()))
-            )[0]
+            CMDSTAN_PATH = str(
+                sorted((filter(Path.is_dir, (Path.home() / ".cmdstan").iterdir())))[0]
+            )
         except:
             pass
 
@@ -91,12 +91,12 @@ def set_bridgestan_path(path: str) -> None:
     BRIDGESTAN_PATH = path
 
 
-def generate_so_name(model: Path[str]):
+def generate_so_name(model: Path):
     name = model.stem
     return model.with_stem(f"{name}_model").with_suffix(".so")
 
 
-def compile_model(stan_file: str, args: List[str] = []) -> Path[str]:
+def compile_model(stan_file: str, args: List[str] = []) -> Path:
     """
     Run BridgeStan's Makefile on a ``.stan`` file, creating the ``.so``
     used by the StanModel class.

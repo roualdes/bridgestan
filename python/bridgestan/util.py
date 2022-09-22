@@ -1,7 +1,7 @@
 import os
 
 
-def validate_readable(f: str) -> bool:
+def validate_readable(f: str) -> None:
     """
     Raise an error if the specified file is not readable.
 
