@@ -34,6 +34,6 @@ param_unconstrain_json!
 ## Compilation utilities
 ```@docs
 compile_model
-set_bridgestan_path
-set_cmdstan_path
+set_bridgestan_path!
+set_cmdstan_path!
 ```

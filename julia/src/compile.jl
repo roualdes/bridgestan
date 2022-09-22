@@ -1,4 +1,3 @@
-module Compile
 
 function get_make()
     get(ENV, "MAKE", Sys.iswindows() ? "mingw32-make.exe" : "make")
@@ -61,13 +60,14 @@ end
 """
     compile_model(stan_file, args=[])
 
-Run BridgeStan’s Makefile on a `.stan` file, creating the `.so` used by StanModel.
+Run BridgeStan’s Makefile on a `.stan` file, creating the `.so` used by StanModel and
+return a path to the compiled library. 
 Additional arguments to `make` can be passed as a vector, for example `["STAN_THREADS=true"]`
 enables the model's threading capabilities.
 
 This function assumes that the paths to BridgeStan and CmdStan are both valid.
 These can be set with `set_bridgestan_path()` and `set_cmdstan_path()` if their default
- values do not match your system configuration.
+values do not match your system configuration.
 """
 function compile_model(stan_file::AbstractString, args::AbstractVector{String}=String[])
     bridgestan = get_bridgestan()
@@ -94,4 +94,3 @@ function compile_model(stan_file::AbstractString, args::AbstractVector{String}=S
     return output_file
 end
 
-end
