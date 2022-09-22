@@ -11,7 +11,11 @@ function get_cmdstan()
     cmdstan = get(ENV, "CMDSTAN", "")
     if cmdstan == ""
         try
-            cmdstan = readdir(joinpath(Base.Filesystem.homedir(), ".cmdstan/"), join=true, sort=true)[1]
+            cmdstan = readdir(
+                joinpath(Base.Filesystem.homedir(), ".cmdstan/"),
+                join = true,
+                sort = true,
+            )[1]
         catch
         end
     end
@@ -23,7 +27,9 @@ function validate_stan_dir(path::AbstractString)
         error("Path does not exist!\n$path")
     end
     if !isfile(joinpath(path, "Makefile"))
-        error("Makefile does not exist at path! Make sure it was installed correctly.\n$path")
+        error(
+            "Makefile does not exist at path! Make sure it was installed correctly.\n$path",
+        )
     end
 end
 
@@ -69,7 +75,7 @@ This function assumes that the paths to BridgeStan and CmdStan are both valid.
 These can be set with `set_bridgestan_path()` and `set_cmdstan_path()` if their default
 values do not match your system configuration.
 """
-function compile_model(stan_file::AbstractString, args::AbstractVector{String}=String[])
+function compile_model(stan_file::AbstractString, args::AbstractVector{String} = String[])
     bridgestan = get_bridgestan()
     validate_stan_dir(bridgestan)
 
@@ -84,13 +90,15 @@ function compile_model(stan_file::AbstractString, args::AbstractVector{String}=S
     output_file = splitext(absolute_path)[1] * "_model.so"
     cmdstan = replace(abspath(get_cmdstan()), "\\" => "/") * "/"
 
-    cmd = Cmd(`$(get_make()) CMDSTAN=$cmdstan $args $output_file`, dir=abspath(bridgestan))
+    cmd =
+        Cmd(`$(get_make()) CMDSTAN=$cmdstan $args $output_file`, dir = abspath(bridgestan))
     out = IOBuffer()
     err = IOBuffer()
-    is_ok = success(pipeline(cmd; stdout=out, stderr=err))
+    is_ok = success(pipeline(cmd; stdout = out, stderr = err))
     if !is_ok
-        error("Compilation failed!\nCommand: $cmd\nstdout: $(String(take!(out)))\nstderr: $(String(take!(err)))")
+        error(
+            "Compilation failed!\nCommand: $cmd\nstdout: $(String(take!(out)))\nstderr: $(String(take!(err)))",
+        )
     end
     return output_file
 end
-

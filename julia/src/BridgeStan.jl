@@ -24,7 +24,8 @@ export StanModel,
 include("model.jl")
 include("compile.jl")
 
-StanModel(; stan_file::String, data::String="", seed=204, chain_id=0) = StanModel(compile_model(stan_file), data, seed, chain_id)
+StanModel(; stan_file::String, data::String = "", seed = 204, chain_id = 0) =
+    StanModel(compile_model(stan_file), data, seed, chain_id)
 
 function __init__()
     if get_bridgestan() == ""

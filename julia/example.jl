@@ -5,11 +5,11 @@ const BS = BridgeStan
 bernoulli_stan = joinpath(@__DIR__, "../test_models/bernoulli/bernoulli.stan")
 bernoulli_data = joinpath(@__DIR__, "../test_models/bernoulli/bernoulli.data.json")
 
-smb = BS.StanModel(stan_file=bernoulli_stan, data=bernoulli_data);
+smb = BS.StanModel(stan_file = bernoulli_stan, data = bernoulli_data);
 x = rand(BS.param_unc_num(smb));
 q = @. log(x / (1 - x));        # unconstrained scale
 
-lp, grad = BS.log_density_gradient(smb, q, jacobian=0)
+lp, grad = BS.log_density_gradient(smb, q, jacobian = 0)
 
 println()
 println("log_density and gradient of Bernoulli model:")
@@ -20,7 +20,7 @@ println()
 multi_stan = joinpath(@__DIR__, "../test_models/multi/multi.stan")
 multi_data = joinpath(@__DIR__, "../test_models/multi/multi.data.json")
 
-smm = BS.StanModel(stan_file=multi_stan, data=multi_data);
+smm = BS.StanModel(stan_file = multi_stan, data = multi_data);
 x = randn(BS.param_unc_num(smm));
 
 lp, grad = BS.log_density_gradient(smm, x)
@@ -34,7 +34,7 @@ println()
 include("./MCMC.jl")
 using Statistics
 
-model = BS.StanModel(stan_file=multi_stan, data=multi_data);
+model = BS.StanModel(stan_file = multi_stan, data = multi_data);
 
 stepsize = 0.25
 steps = 10
