@@ -17,15 +17,15 @@ export StanModel,
     log_density,
     log_density_gradient,
     log_density_hessian,
-    set_cmdstan_path,
-    set_bridgestan_path,
+    set_cmdstan_path!,
+    set_bridgestan_path!,
     compile_model
 
 include("model.jl")
 include("compile.jl")
 
-set_cmdstan_path = Compile.set_cmdstan_path
-set_bridgestan_path = Compile.set_bridgestan_path
+set_cmdstan_path! = Compile.set_cmdstan_path!
+set_bridgestan_path! = Compile.set_bridgestan_path!
 compile_model = Compile.compile_model
 
 StanModel(; stan_file::String, data::String="", seed=204, chain_id=0) = StanModel(compile_model(stan_file), data, seed, chain_id)

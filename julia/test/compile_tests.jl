@@ -5,7 +5,7 @@ models = joinpath(@__DIR__, "../../test_models/")
 
 
 @testset "compile good" begin
-    BridgeStan.set_bridgestan_path("../..")
+    BridgeStan.set_bridgestan_path!("../..")
 
     stanfile = joinpath(models, "multi", "multi.stan")
     lib = splitext(stanfile)[1] * "_model.so"

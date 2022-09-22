@@ -36,7 +36,7 @@ Set the path to CmdStan used by BridgeStan.
 By default this is set to the value of the environment variable
 `CMDSTAN`, or to the newest installation available in `~/.cmdstan/`.
 """
-function set_cmdstan_path(path::AbstractString)
+function set_cmdstan_path!(path::AbstractString)
     if !isdir(path)
         error("Path does not exist!\n$path")
     end
@@ -52,7 +52,7 @@ Set the path BridgeStan.
 By default this is set to the value of the environment variable
 `BRIDGESTAN`.
 """
-function set_bridgestan_path(path::AbstractString)
+function set_bridgestan_path!(path::AbstractString)
     validate_stan_dir(path)
     ENV["BRIDGESTAN"] = path
 end
