@@ -17,7 +17,7 @@ example$(EXE): example.c ../test_models/full/libfull_model.so
 	@echo '--- Compiling C++ code ---'
 	$(COMPILE.cpp) $(CXXFLAGS_PROGRAM) -fPIC $(CXXFLAGS_THREADS) -x c++ -o $(subst  \,/,$*).o $(subst \,/,$<)
 	@echo '--- Creating static library ---'
-	$(AR) -cvq $(patsubst %.hpp, %_model.a, $(subst \,/,$<)) $(subst \,/,$*.o) $(BRIDGE_O)
+	$(AR) -rcs $(patsubst %.hpp, %_model.a, $(subst \,/,$<)) $(subst \,/,$*.o) $(BRIDGE_O)
 	$(RM) $(subst  \,/,$*).o
 
 
