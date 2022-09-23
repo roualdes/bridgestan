@@ -9,7 +9,7 @@ on:
 
 env:
   CMDSTAN_VERSION: "2.30.1"
-  CACHE_VERSION: 3
+  CACHE_VERSION: 4
 
 jobs:
   build_test_models:
@@ -75,18 +75,16 @@ jobs:
         if: matrix.os != 'windows-latest' && steps.test-models.outputs.cache-hit != 'true'
         run: |
           export CMDSTAN=$(python -c "import cmdstanpy; print(cmdstanpy.cmdstan_path())")/
-          export BRIDGESTAN=$(pwd)
-          bash test_models/build_all.sh
+          make STAN_THREADS=true O=0 test_models -j2
         shell: bash
 
       - name: Build test models (Windows)
         if: matrix.os == 'windows-latest' && steps.test-models.outputs.cache-hit != 'true'
         run: |
-          $env:BRIDGESTAN = $(pwd)
-          $env:CMDSTAN = $(python -c "import cmdstanpy; print(cmdstanpy.cmdstan_path())")
-          ./test_models/build_all.ps1
+          $raw_cmdstan = $(python -c "import cmdstanpy; print(cmdstanpy.cmdstan_path())")
+          $env:CMDSTAN = "$($raw_cmdstan.replace('\', '/'))/"
+          mingw32-make.exe STAN_THREADS=true O=0 test_models -j2
         shell: pwsh
-
 
   test_python_client:
     needs: [build_test_models]
