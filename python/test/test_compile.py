@@ -21,13 +21,13 @@ def test_compile_good():
 def test_compile_bad_ext():
     not_stanfile = STAN_FOLDER / "multi" / "multi.data.json"
     with pytest.raises(ValueError, match=r".stan"):
-        res = bs.compile_model(not_stanfile)
+        bs.compile_model(not_stanfile)
 
 
 def test_compile_nonexistant():
     not_stanfile = STAN_FOLDER / "multi" / "multi-nothere.data.json"
     with pytest.raises(FileNotFoundError):
-        res = bs.compile_model(not_stanfile)
+        bs.compile_model(not_stanfile)
 
 
 def test_compile_syntax_error():

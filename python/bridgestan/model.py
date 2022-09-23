@@ -1,5 +1,4 @@
 import ctypes
-import os
 from typing import List, Optional, Tuple
 
 import numpy as np

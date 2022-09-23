@@ -24,11 +24,11 @@ def test_constructor():
 
     # test missing so file
     with np.testing.assert_raises(FileNotFoundError):
-        b3 = bs.StanModel("nope, not going to find it")
+        bs.StanModel("nope, not going to find it")
 
     # test missing data file
     with np.testing.assert_raises(FileNotFoundError):
-        b3 = bs.StanModel(bernoulli_so, "nope, not going to find it")
+        bs.StanModel(bernoulli_so, "nope, not going to find it")
 
     # test data load exception
     throw_data_so = str(STAN_FOLDER / "throw_data" / "throw_data_model.so")
@@ -175,7 +175,6 @@ def test_param_constrain():
     bridge = bs.StanModel(fr_gaussian_so, fr_gaussian_data)
 
     D = 4
-    size = 16
     unc_size = 10
     a = np.random.normal(size=unc_size)
     B_expected = cov_constrain(a, D)
@@ -199,7 +198,6 @@ def test_param_constrain():
     full_so = str(STAN_FOLDER / "full" / "full_model.so")
     bridge2 = bs.StanModel(full_so)
 
-    b2 = bridge.param_constrain(a)
     np.testing.assert_equal(1, bridge2.param_constrain(a).size)
     np.testing.assert_equal(2, bridge2.param_constrain(a, include_tp=True).size)
     np.testing.assert_equal(3, bridge2.param_constrain(a, include_gq=True).size)
@@ -270,7 +268,7 @@ def test_param_unconstrain_json():
 
     scratch_bad = np.zeros(10)
     with np.testing.assert_raises(ValueError):
-        theta_unc_j_test3 = bridge.param_unconstrain_json(theta_json, out=scratch_bad)
+        bridge.param_unconstrain_json(theta_json, out=scratch_bad)
 
 
 def _log_jacobian(p):
@@ -590,13 +588,6 @@ def test_gaussian():
 
 
 def test_fr_gaussian():
-    def cov_constrain(v, D):
-        L = np.zeros([D, D])
-        idxL = np.tril_indices(D)
-        L[idxL] = v
-        idxD = np.diag_indices(D)
-        L[idxD] = np.exp(L[idxD])
-        return np.matmul(L, L.T)
 
     lib = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian_model.so")
     data = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian.data.json")
