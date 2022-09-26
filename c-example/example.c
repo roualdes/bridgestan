@@ -1,8 +1,14 @@
 #include "bridgestan.h"
 #include <stdio.h>
 
-int main() {
-  model_rng* model = construct("", 123, 0);
+int main(int argc, char** argv) {
+  char* data;
+  if (argc > 1) {
+    data = argv[1];
+  } else {
+    data = "";
+  }
+  model_rng* model = construct(data, 123, 0);
   if (!model){
     return 1;
   }

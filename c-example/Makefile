@@ -2,12 +2,14 @@
 BRIDGE=../src/bridgestan.cpp
 include ../Makefile
 
-../test_models/full/libfull_model.so: ../test_models/full/full_model.so
-	cp ../test_models/full/full_model.so ../test_models/full/libfull_model.so
+MODEL?=full
 
-example$(EXE): example.c ../test_models/full/libfull_model.so
+../test_models/$(MODEL)/lib$(MODEL)_model.so: ../test_models/$(MODEL)/$(MODEL)_model.so
+	cp ../test_models/$(MODEL)/$(MODEL)_model.so ../test_models/$(MODEL)/lib$(MODEL)_model.so
+
+example$(EXE): example.c ../test_models/$(MODEL)/lib$(MODEL)_model.so
 	gcc -c -I ../src example.c -o example.o
-	$(LINK.c) -o example$(EXE) example.o -Wl,-rpath ../test_models/full -L ../test_models/full -lfull_model
+	$(LINK.c) -o example$(EXE) example.o -Wl,-rpath ../test_models/$(MODEL) -L ../test_models/$(MODEL) -l$(MODEL)_model
 	$(RM) example.o
 
 # static linking version
@@ -21,7 +23,7 @@ example$(EXE): example.c ../test_models/full/libfull_model.so
 	$(RM) $(subst  \,/,$*).o
 
 
-example_static$(EXE):  example.c ../test_models/full/full_model.a
+example_static$(EXE):  example.c ../test_models/$(MODEL)/$(MODEL)_model.a
 	gcc -c -I ../src example.c -o example.o
-	$(LINK.cpp) -o example_static$(EXE) example.o ../test_models/full/full_model.a $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
+	$(LINK.cpp) -o example_static$(EXE) example.o ../test_models/$(MODEL)/$(MODEL)_model.a $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	$(RM) example.o

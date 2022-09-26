@@ -11,7 +11,7 @@ It is possible to link against the same `name_model.so` object used by the other
 BridgeStan interfaces. This creates a dynamic link.
 
 ```shell
-make example
+make example # by default links against full_model
 ./example
 ```
 
@@ -20,6 +20,18 @@ This should output:
 ```
 This model's name is full_model.
 It has 1 parameters.
+```
+
+You can change the test model by specifying `MODEL` on the command line.
+Models which require data can have a path passed in as the first argument.
+```shell
+make MODEL=multi example
+./example ../test_models/multi/multi.data.json
+```
+This will output
+```
+This model's name is multi_model.
+It has 10 parameters.
 ```
 
 ### Notes
@@ -34,10 +46,10 @@ The basic steps for using with a generic BridgeStan model are
    The Makefile in this folder does that by making a copy.
 
 This dynamic linking will work on Windows, but Windows does not record the paths
-of shared libraries in executables. As such, `full_model.so` will need to be
+of shared libraries in executables. As such, `libNAME_model.so` will need to be
 in the same folder as the executable, or on your `PATH`.
 
-On all platforms, dynamic linking requires that the original `name_model.so` object
+On all platforms, dynamic linking requires that the original `NAME_model.so` object
 still exist when the executable is run.
 
 ## Usage with static linking
@@ -54,3 +66,5 @@ rm ../test_models/full/full_model.a # statically linked executable doesn't need 
 
 Will output the same as the above. Note that some Stan libraries such as TBB
 are still dynamically linked.
+
+`MODEL` can also be used to specify which model to statically link.
