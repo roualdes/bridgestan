@@ -9,7 +9,7 @@ int main(int argc, char** argv) {
     data = "";
   }
   model_rng* model = construct(data, 123, 0);
-  if (!model){
+  if (!model) {
     return 1;
   }
   printf("This model's name is %s.\n", name(model));

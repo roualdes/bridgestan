@@ -1,7 +1,6 @@
 #ifndef BRIDGESTAN_H
 #define BRIDGESTAN_H
 
-
 #ifdef __cplusplus
 #include "model_rng.hpp"
 extern "C" {
@@ -21,8 +20,7 @@ typedef int bool;
  * @return pointer to constructed model or `nullptr` if construction
  * fails
  */
-model_rng* construct(char* data_file, unsigned int seed,
-          unsigned int chain_id);
+model_rng* construct(char* data_file, unsigned int seed, unsigned int chain_id);
 
 /**
  * Destroy the model and return 0 for success and -1 if there is an
@@ -108,7 +106,6 @@ int param_num(model_rng* mr, bool include_tp, bool include_gq);
  */
 int param_unc_num(model_rng* mr);
 
-
 /**
  * Set the sequence of constrained parameters based on the specified
  * unconstrained parameters, including transformed parameters and/or
@@ -128,7 +125,6 @@ int param_unc_num(model_rng* mr);
 int param_constrain(model_rng* mr, bool include_tp, bool include_gq,
                     const double* theta_unc, double* theta);
 
-
 /**
  * Set the sequence of unconstrained parameters based on the
  * specified constrained parameters, and return a return code of 0
@@ -142,8 +138,7 @@ int param_constrain(model_rng* mr, bool include_tp, bool include_gq,
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int param_unconstrain(model_rng* mr, const double* theta,
-                      double* theta_unc);
+int param_unconstrain(model_rng* mr, const double* theta, double* theta_unc);
 
 /**
  * Set the sequence of unconstrained parameters based on the JSON
@@ -159,9 +154,7 @@ int param_unconstrain(model_rng* mr, const double* theta,
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int param_unconstrain_json(model_rng* mr, const char* json,
-          double* theta_unc);
-
+int param_unconstrain_json(model_rng* mr, const char* json, double* theta_unc);
 
 /**
  * Set the log density of the specified parameters, dropping
@@ -178,8 +171,8 @@ int param_unconstrain_json(model_rng* mr, const char* json,
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int log_density(model_rng* mr, bool propto, bool jacobian,
-    const double* theta, double* lp);
+int log_density(model_rng* mr, bool propto, bool jacobian, const double* theta,
+                double* lp);
 
 /**
  * Set the log density and gradient of the specified parameters,
@@ -201,7 +194,7 @@ int log_density(model_rng* mr, bool propto, bool jacobian,
  * in the underlying Stan code
  */
 int log_density_gradient(model_rng* mr, bool propto, bool jacobian,
-                          const double* theta, double* val, double* grad);
+                         const double* theta, double* val, double* grad);
 
 /**
  * Set the log density, gradient, and Hessian of the specified parameters,
@@ -225,8 +218,8 @@ int log_density_gradient(model_rng* mr, bool propto, bool jacobian,
  * in the underlying Stan code
  */
 int log_density_hessian(model_rng* mr, bool propto, bool jacobian,
-      const double* theta, double* val, double* grad,
-      double* hessian);
+                        const double* theta, double* val, double* grad,
+                        double* hessian);
 
 #ifdef __cplusplus
 }
