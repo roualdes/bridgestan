@@ -39,7 +39,7 @@ class model_functor {
    * @param[in] out output stream for messages from model
    */
   model_functor(const M& m, bool propto, bool jacobian, std::ostream& out)
-    : model_(m), propto_(propto), jacobian_(jacobian), out_(out) { }
+      : model_(m), propto_(propto), jacobian_(jacobian), out_(out) {}
 
   /**
    * Return the log density for the specified unconstrained
@@ -54,13 +54,14 @@ class model_functor {
   T operator()(const Eigen::Matrix<T, Eigen::Dynamic, 1>& theta) const {
     // const cast is safe---theta not modified
     auto params_r = const_cast<Eigen::Matrix<T, Eigen::Dynamic, 1>&>(theta);
-    return propto_
-      ? (jacobian_
-         ? model_->template log_prob<true, true, T>(params_r, &out_)
-         : model_->template log_prob<true, false, T>(params_r, &out_))
-      : (jacobian_
-         ? model_->template log_prob<false, true, T>(params_r, &out_)
-         : model_->template log_prob<false, false, T>(params_r, &out_));
+    return propto_ ? (
+               jacobian_
+                   ? model_->template log_prob<true, true, T>(params_r, &out_)
+                   : model_->template log_prob<true, false, T>(params_r, &out_))
+                   : (jacobian_ ? model_->template log_prob<false, true, T>(
+                          params_r, &out_)
+                                : model_->template log_prob<false, false, T>(
+                                    params_r, &out_));
   }
 };
 

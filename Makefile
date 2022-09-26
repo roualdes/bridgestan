@@ -5,7 +5,6 @@ CMDSTANSRC ?= $(CMDSTAN)src/
 STANC ?= $(CMDSTAN)bin/stanc$(EXE)
 STAN ?= $(CMDSTAN)stan/
 MATH ?= $(STAN)lib/stan_math/
-# TBB_TARGETS = $(MATH)lib/tbb/libtbb.dylib
 RAPIDJSON ?= $(CMDSTAN)lib/rapidjson_1.1.0/
 
 ## required C++ includes
@@ -37,16 +36,14 @@ endif
 STAN_FLAGS=$(STAN_FLAG_THREADS)$(STAN_FLAG_OPENCL)
 
 BRIDGE ?= src/bridgestan.cpp
-BRIDGE_SO = $(patsubst %.cpp,%$(STAN_FLAGS).so,$(BRIDGE))
+BRIDGE_O = $(patsubst %.cpp,%$(STAN_FLAGS).o,$(BRIDGE))
 
 $(STANC):
 	@echo 'stanc could not be found. Make sure CmdStan is installed and built, and that the path specificied is correct:'
 	@echo '$(CMDSTAN)'
 	exit 1
 
-## COMPILE (e.g., COMPILE.cpp == clang++ ...) was set by (MATH)make/compiler_flags
-## UNKNOWNS:  OUTPUT_OPTION???  LDLIBS???
-$(BRIDGE_SO) : $(BRIDGE)
+$(BRIDGE_O) : $(BRIDGE)
 	@echo ''
 	@echo '--- Compiling Stan bridge C++ code ---'
 	@mkdir -p $(dir $@)
@@ -65,52 +62,31 @@ $(BRIDGE_SO) : $(BRIDGE)
 .PRECIOUS: %.hpp
 
 ## builds executable (suffix depends on platform)
-%_model.so : %.hpp $(BRIDGE_SO) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
+%_model.so : %.hpp $(BRIDGE_O) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	@echo ''
 	@echo '--- Compiling C++ code ---'
 	$(COMPILE.cpp) $(CXXFLAGS_PROGRAM) -fPIC $(CXXFLAGS_THREADS) -x c++ -o $(subst  \,/,$*).o $(subst \,/,$<)
 	@echo '--- Linking C++ code ---'
-	$(LINK.cpp) -shared -lm -fPIC -o $(patsubst %.hpp, %_model.so, $(subst \,/,$<)) $(subst \,/,$*.o) $(BRIDGE_SO) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
+	$(LINK.cpp) -shared -lm -fPIC -o $(patsubst %.hpp, %_model.so, $(subst \,/,$<)) $(subst \,/,$*.o) $(BRIDGE_O) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	$(RM) $(subst  \,/,$*).o
 
-## calculate dependencies for %$(EXE) target
-ifneq (,$(STAN_TARGETS))
-$(patsubst %,%.d,$(STAN_TARGETS)) : DEPTARGETS += -MT $(patsubst %.d,%$(EXE),$@) -include $< -include $(BRIDGE)
--include $(patsubst %,%.d,$(STAN_TARGETS))
--include $(patsubst %.cpp,%.d,$(BRIDGE))
-endif
 
-## compiles and instantiates TBB library (only if not done automatically on platform)
-.PHONY: install-tbb
-install-tbb: $(TBB_TARGETS)
+.PHONY: clean
+clean:
+	$(RM) src/*.o
+	$(RM) test_models/**/*.so
+	$(RM) test_models/**/*.hpp
 
-## clean targets (complex because they don't depend on unix find);
-## findfiles defined ??? (MATH makefiles???)
-.PHONY: clean clean-deps clean-all clean-program
-clean-deps:
-	@echo '  removing dependency files'
-	$(RM) $(call findfiles,src,*.d) $(call findfiles,src/stan,*.d) $(call findfiles,$(MATH)/stan,*.d) $(call findfiles,$(STAN)/src/stan/,*.d)
-	$(RM) $(call findfiles,src,*.d.*) $(call findfiles,src/stan,*.d.*) $(call findfiles,$(MATH)/stan,*.d.*)
-	$(RM) $(call findfiles,src,*.dSYM) $(call findfiles,src/stan,*.dSYM) $(call findfiles,$(MATH)/stan,*.dSYM)
+# build all test models at once
+TEST_MODEL_LIBS = test_models/throw_tp/throw_tp_model.so test_models/throw_gq/throw_gq_model.so test_models/throw_lp/throw_lp_model.so test_models/throw_data/throw_data_model.so test_models/jacobian/jacobian_model.so test_models/matrix/matrix_model.so test_models/simplex/simplex_model.so test_models/full/full_model.so test_models/stdnormal/stdnormal_model.so test_models/bernoulli/bernoulli_model.so test_models/gaussian/gaussian_model.so test_models/fr_gaussian/fr_gaussian_model.so test_models/simple/simple_model.so test_models/multi/multi_model.so
 
-clean-all: clean clean-deps
-	$(RM) $(BRIDGE_SO)
-	$(RM) -r $(wildcard $(BOOST)/stage/lib $(BOOST)/bin.v2 $(BOOST)/tools/build/src/engine/bootstrap/ $(BOOST)/tools/build/src/engine/bin.* $(BOOST)/project-config.jam* $(BOOST)/b2 $(BOOST)/bjam $(BOOST)/bootstrap.log)
-
-clean-program:
-ifndef STANPROG
-	$(error STANPROG not set)
-endif
-	$(RM) "$(wildcard $(patsubst %.stan,%.d,$(basename ${STANPROG}).stan))"
-	$(RM) "$(wildcard $(patsubst %.stan,%.hpp,$(basename ${STANPROG}).stan))"
-	$(RM) "$(wildcard $(patsubst %.stan,%.o,$(basename ${STANPROG}).stan))"
-	$(RM) "$(wildcard $(patsubst %.stan,%$(EXE),$(basename ${STANPROG}).stan))"
-	$(RM) "$(wildcard $(patsubst %.stan,%_model.so,$(basename ${STANPROG}).stan))"
+.PHONY: test_models
+test_models: $(TEST_MODEL_LIBS)
 
 # print compilation command line config
 .PHONY: compile_info
 compile_info:
-	@echo '$(LINK.cpp) $(CXXFLAGS_PROGRAM) $(BRIDGE_SO) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)'
+	@echo '$(LINK.cpp) $(CXXFLAGS_PROGRAM) $(BRIDGE_O) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)'
 
 ## print value of makefile variable (e.g., make print-TBB_TARGETS)
 .PHONY: print-%

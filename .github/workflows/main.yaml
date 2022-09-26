@@ -9,7 +9,7 @@ on:
 
 env:
   CMDSTAN_VERSION: "2.30.1"
-  CACHE_VERSION: 2
+  CACHE_VERSION: 4
 
 jobs:
   build_test_models:
@@ -49,28 +49,41 @@ jobs:
         run: |
           python -m cmdstanpy.install_cmdstan --version "${{ env.CMDSTAN_VERSION }}" --cores 2 --verbose --compiler
 
+      - name: Build C example (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          export CMDSTAN=$(python -c "import cmdstanpy; print(cmdstanpy.cmdstan_path())")/
+          cd c-example/
+          make example
+          make example_static
+          rm ../src/bridgestan.o
+          rm ../test_models/full/full_model.a
+
+          ./example
+          ./example_static
+        shell: bash
+
       # we use the cache here to build the Stan models once for multiple interfaces
       - name: Set up test model cache
         uses: actions/cache@v2
         id: test-models
         with:
-          path: ./stan/
+          path: ./test_models/
           key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Build test models (Unix)
         if: matrix.os != 'windows-latest' && steps.test-models.outputs.cache-hit != 'true'
         run: |
           export CMDSTAN=$(python -c "import cmdstanpy; print(cmdstanpy.cmdstan_path())")/
-          export BRIDGESTAN=$(pwd)
-          bash stan/build_all.sh
+          make STAN_THREADS=true O=0 test_models -j2
         shell: bash
 
       - name: Build test models (Windows)
         if: matrix.os == 'windows-latest' && steps.test-models.outputs.cache-hit != 'true'
         run: |
-          $env:BRIDGESTAN = $(pwd)
-          $env:CMDSTAN = $(python -c "import cmdstanpy; print(cmdstanpy.cmdstan_path())")
-          ./stan/build_all.ps1
+          $raw_cmdstan = $(python -c "import cmdstanpy; print(cmdstanpy.cmdstan_path())")
+          $env:CMDSTAN = "$($raw_cmdstan.replace('\', '/'))/"
+          mingw32-make.exe STAN_THREADS=true O=0 test_models -j2
         shell: pwsh
 
   test_python_client:
@@ -99,7 +112,7 @@ jobs:
         uses: actions/cache@v2
         id: test-models
         with:
-          path: ./stan/
+          path: ./test_models/
           key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Install package
@@ -110,6 +123,7 @@ jobs:
 
       - name: Run tests
         run: |
+          export BRIDGESTAN=$(pwd)
           cd python/
           pytest -v
 
@@ -136,11 +150,12 @@ jobs:
         uses: actions/cache@v2
         id: test-models
         with:
-          path: ./stan/
+          path: ./test_models/
           key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Run tests
         run: |
+          export BRIDGESTAN=$(pwd)
           julia --project=./julia -t 2 -e "using Pkg; Pkg.test()"
 
   test_R_client:
@@ -175,7 +190,7 @@ jobs:
         uses: actions/cache@v2
         id: test-models
         with:
-          path: ./stan/
+          path: ./test_models/
           key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Run tests
@@ -183,7 +198,7 @@ jobs:
           cd R/tests/testthat
           gcc -fpic -shared -o test_collisions.so test_collisions.c
           cd ../..
-          Rscript -e "devtools::test()"
+          Rscript -e "devtools::test(reporter = c(\"summary\", \"fail\"))"
 
   # Seperate for now, weird dynamic linking issues need resolving in GHA runner
   test_clients_windows:
@@ -208,7 +223,7 @@ jobs:
         uses: actions/cache@v2
         id: test-models
         with:
-          path: ./stan/
+          path: ./test_models/
           key: ${{ hashFiles('**/*.stan', 'src/*') }}-windows-latest-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Install R
@@ -227,6 +242,7 @@ jobs:
 
       - name: Run Julia tests
         run: |
+          $env:BRIDGESTAN = $(pwd)
           julia --project=./julia -t 2 -e "using Pkg; Pkg.test()"
 
       - name: Run R tests
@@ -234,4 +250,4 @@ jobs:
           cd R/tests/testthat
           gcc -fpic -shared -o test_collisions.dll test_collisions.c
           cd ../..
-          Rscript -e "devtools::test()"
+          Rscript -e 'devtools::test(reporter = c(\"summary\", \"fail\"))'

@@ -4,6 +4,10 @@
 *.so
 *.hpp
 *.dll
+*.a
+c-example/example
+c-example/example_static
+*.exe
 
 notes.org
 
@@ -14,6 +18,7 @@ __pycache__/
 *.egg-info/
 *.pyc
 _build/
+*.whl
 
 # R
 .Rhistory

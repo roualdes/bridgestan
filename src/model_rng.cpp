@@ -26,8 +26,8 @@
  * @param[in] seed random seed for transformed data block
  * @param[in] msg_stream stream to which to send messages printed by the model
  */
-stan::model::model_base& new_model(stan::io::var_context &data_context,
-                                   unsigned int seed, std::ostream *msg_stream);
+stan::model::model_base& new_model(stan::io::var_context& data_context,
+                                   unsigned int seed, std::ostream* msg_stream);
 
 /**
  * Convert the specified sequence of names to comma-separated value
@@ -41,7 +41,8 @@ stan::model::model_base& new_model(stan::io::var_context &data_context,
 char* to_csv(const std::vector<std::string>& names) {
   std::stringstream ss;
   for (size_t i = 0; i < names.size(); ++i) {
-    if (i > 0) ss << ',';
+    if (i > 0)
+      ss << ',';
     ss << names[i];
   }
   std::string s = ss.str();
@@ -50,7 +51,7 @@ char* to_csv(const std::vector<std::string>& names) {
 }
 
 model_rng::model_rng(const char* data_file, unsigned int seed,
-                      unsigned int chain_id) {
+                     unsigned int chain_id) {
   std::string data(data_file);
   if (data.empty()) {
     auto data_context = stan::io::empty_var_context();
@@ -98,39 +99,38 @@ model_rng::model_rng(const char* data_file, unsigned int seed,
 }
 
 model_rng::~model_rng() {
-    delete(model_);
-    free(name_);
-    free(param_unc_names_);
-    free(param_names_);
-    free(param_tp_names_);
-    free(param_gq_names_);
-    free(param_tp_gq_names_);
-  }
-
-const char* model_rng::name() {
-    return name_;
+  delete (model_);
+  free(name_);
+  free(param_unc_names_);
+  free(param_names_);
+  free(param_tp_names_);
+  free(param_gq_names_);
+  free(param_tp_gq_names_);
 }
 
+const char* model_rng::name() { return name_; }
+
 const char* model_rng::param_names(bool include_tp, bool include_gq) {
-  if (include_tp && include_gq) return param_tp_gq_names_;
-  if (include_tp) return param_tp_names_;
-  if (include_gq) return param_gq_names_;
+  if (include_tp && include_gq)
+    return param_tp_gq_names_;
+  if (include_tp)
+    return param_tp_names_;
+  if (include_gq)
+    return param_gq_names_;
   return param_names_;
 }
 
-const char* model_rng::param_unc_names() {
-  return param_unc_names_;
-}
+const char* model_rng::param_unc_names() { return param_unc_names_; }
 
-int model_rng::param_unc_num() {
-  return param_unc_num_;
-}
-
+int model_rng::param_unc_num() { return param_unc_num_; }
 
 int model_rng::param_num(bool include_tp, bool include_gq) {
-  if (include_tp && include_gq) return param_tp_gq_num_;
-  if (include_tp) return param_tp_num_;
-  if (include_gq) return param_gq_num_;
+  if (include_tp && include_gq)
+    return param_tp_gq_num_;
+  if (include_tp)
+    return param_tp_num_;
+  if (include_gq)
+    return param_gq_num_;
   return param_num_;
 }
 
@@ -145,7 +145,7 @@ void model_rng::param_unconstrain(const double* theta, double* theta_unc) {
   vector<string> indexed_names;
   model_->constrained_param_names(indexed_names, false, false);
   set<string> names_used;
-  for (const auto& name: indexed_names) {
+  for (const auto& name : indexed_names) {
     size_t index = name.find('.');
     if (index != std::string::npos)
       names_used.emplace(name.substr(0, index));
@@ -180,39 +180,35 @@ void model_rng::param_constrain(bool include_tp, bool include_gq,
   using Eigen::VectorXd;
   VectorXd params_unc = VectorXd::Map(theta_unc, param_unc_num_);
   Eigen::VectorXd params;
-  model_->write_array(rng_, params_unc, params,
-                      include_tp, include_gq, &std::cerr);
+  model_->write_array(rng_, params_unc, params, include_tp, include_gq,
+                      &std::cerr);
   Eigen::VectorXd::Map(theta, params.size()) = params;
 }
 
-void model_rng::log_density(bool propto, bool jacobian,
-                            const double* theta_unc, double* val) {
+void model_rng::log_density(bool propto, bool jacobian, const double* theta_unc,
+                            double* val) {
   auto logp = create_model_functor(model_, propto, jacobian, std::cerr);
   int N = param_unc_num_;
   Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
   if (propto) {
     static thread_local stan::math::ChainableStack thread_instance;
-    double lp;
-    Eigen::VectorXd grad_vec(N);
-    stan::math::gradient(logp, params_unc, lp, grad_vec);
-    *val = lp;
+    Eigen::VectorXd grad(N);
+    stan::math::gradient(logp, params_unc, *val, grad);
   } else {
     *val = logp(params_unc.eval());
   }
 }
 
 void model_rng::log_density_gradient(bool propto, bool jacobian,
-                                      const double* theta_unc, double* val,
-                                      double* grad) {
+                                     const double* theta_unc, double* val,
+                                     double* grad) {
   static thread_local stan::math::ChainableStack thread_instance;
   auto logp = create_model_functor(model_, propto, jacobian, std::cerr);
   int N = param_unc_num_;
   Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, N);
-  double lp;
   Eigen::VectorXd grad_vec(N);
-  stan::math::gradient(logp, params_unc, lp, grad_vec);
+  stan::math::gradient(logp, params_unc, *val, grad_vec);
   Eigen::VectorXd::Map(grad, N) = grad_vec;
-  *val = lp;
 }
 
 void model_rng::log_density_hessian(bool propto, bool jacobian,
@@ -222,15 +218,10 @@ void model_rng::log_density_hessian(bool propto, bool jacobian,
   auto logp = create_model_functor(model_, propto, jacobian, std::cerr);
   int N = param_unc_num_;
   Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
-  double lp;
   Eigen::VectorXd grad_vec;
   Eigen::MatrixXd hess_mat;
-  stan::math::internal::finite_diff_hessian_auto(logp, params_unc, lp,
-                                                  grad_vec, hess_mat);
+  stan::math::internal::finite_diff_hessian_auto(logp, params_unc, *val,
+                                                 grad_vec, hess_mat);
   Eigen::VectorXd::Map(grad, N) = grad_vec;
   Eigen::MatrixXd::Map(hessian, N, N) = hess_mat;
-  *val = lp;
 }
-
-
-
