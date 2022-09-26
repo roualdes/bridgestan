@@ -13,7 +13,7 @@
  * `construct()` and destroyed with the C function `destruct()`.
  */
 class model_rng {
-  public:
+ public:
   /**
    * Construct a model and random number generator with cached
    * parameter numbers and names.
@@ -76,7 +76,6 @@ class model_rng {
    */
   int param_num(bool include_tp, bool include_gq);
 
-
   /**
    * Unconstrain the specified parameters and write into the
    * specified unconstrained parameter array.
@@ -107,7 +106,7 @@ class model_rng {
    * @param[in,out] theta constrained parameters generated
    */
   void param_constrain(bool include_tp, bool include_gq,
-                        const double* theta_unc, double* theta);
+                       const double* theta_unc, double* theta);
 
   /**
    * Calculate the log density for the specified unconstrain
@@ -121,8 +120,8 @@ class model_rng {
    * @param[in] theta_unc unconstrained parameters
    * @param[in,out] val log density produced
    */
-  void log_density(bool propto, bool jacobian,
-                    const double* theta_unc, double* val);
+  void log_density(bool propto, bool jacobian, const double* theta_unc,
+                   double* val);
 
   /**
    * Calculate the log density and gradient for the specified
@@ -138,9 +137,8 @@ class model_rng {
    * @param[in,out] val log density produced
    * @param[in,out] grad gradient produced
    */
-  void log_density_gradient(bool propto, bool jacobian,
-                            const double* theta_unc, double* val,
-                            double* grad);
+  void log_density_gradient(bool propto, bool jacobian, const double* theta_unc,
+                            double* val, double* grad);
 
   /**
    * Calculate the log density, gradient, and Hessian for the
@@ -158,10 +156,10 @@ class model_rng {
    * @param[in,out] grad gradient produced
    * @param[in,out] hess Hessian produced
    */
-  void log_density_hessian(bool propto, bool jacobian,
-                            const double* theta_unc, double* val,
-                            double* grad, double* hessian);
-  private:
+  void log_density_hessian(bool propto, bool jacobian, const double* theta_unc,
+                           double* val, double* grad, double* hessian);
+
+ private:
   /** Stan model */
   stan::model::model_base* model_;
 
@@ -203,7 +201,6 @@ class model_rng {
 
   /** number of unconstrained parameters */
   int param_unc_num_ = -1;
-
 };
 
 #endif
