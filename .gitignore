@@ -9,6 +9,9 @@ c-example/example
 c-example/example_static
 *.exe
 
+# Rust
+rust-example/target/
+
 notes.org
 
 # Python
