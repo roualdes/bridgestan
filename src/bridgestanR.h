@@ -5,7 +5,7 @@
 #include "model_rng.hpp"
 extern "C" {
 #else
-typedef struct model_rng{} model_rng;
+typedef struct model_rng model_rng;
 typedef int bool;
 #endif
 
