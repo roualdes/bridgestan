@@ -1,11 +1,10 @@
 ## include paths
 GITHUB ?= $(HOME)/github/
 CMDSTAN ?= $(GITHUB)stan-dev/cmdstan/
-CMDSTANSRC ?= $(CMDSTAN)src/
 STANC ?= $(CMDSTAN)bin/stanc$(EXE)
 STAN ?= $(CMDSTAN)stan/
 MATH ?= $(STAN)lib/stan_math/
-RAPIDJSON ?= $(CMDSTAN)lib/rapidjson_1.1.0/
+RAPIDJSON ?= $(STAN)lib/rapidjson_1.1.0/
 
 ## required C++ includes
 INC_FIRST ?= -I $(STAN)src -I $(RAPIDJSON)
@@ -35,19 +34,20 @@ else
 endif
 STAN_FLAGS=$(STAN_FLAG_THREADS)$(STAN_FLAG_OPENCL)
 
-BRIDGE ?= src/bridgestan.cpp
-BRIDGE_O = $(patsubst %.cpp,%$(STAN_FLAGS).o,$(BRIDGE))
+SRC ?= src/
+BRIDGE_DEPS = $(SRC)bridgestan.cpp $(SRC)bridgestan.h $(SRC)model_rng.cpp $(SRC)model_rng.hpp $(SRC)bridgestanR.cpp $(SRC)bridgestanR.h
+BRIDGE_O = $(patsubst %.cpp,%$(STAN_FLAGS).o,$(SRC)bridgestan.cpp)
 
 $(STANC):
 	@echo 'stanc could not be found. Make sure CmdStan is installed and built, and that the path specificied is correct:'
 	@echo '$(CMDSTAN)'
 	exit 1
 
-$(BRIDGE_O) : $(BRIDGE)
+$(BRIDGE_O) : $(BRIDGE_DEPS)
 	@echo ''
 	@echo '--- Compiling Stan bridge C++ code ---'
 	@mkdir -p $(dir $@)
-	$(COMPILE.cpp) -fPIC $(CXXFLAGS_THREADS) -I $(CMDSTANSRC) $(OUTPUT_OPTION) $(LDLIBS) $<
+	$(COMPILE.cpp) -fPIC $(CXXFLAGS_THREADS) $(OUTPUT_OPTION) $(LDLIBS) $<
 
 ## generate .hpp file from .stan file using stanc
 %.hpp : %.stan $(STANC)
@@ -76,7 +76,7 @@ docs:
 
 .PHONY: clean
 clean:
-	$(RM) src/*.o
+	$(RM) $(SRC)/*.o
 	$(RM) test_models/**/*.so
 	$(RM) test_models/**/*.hpp
 

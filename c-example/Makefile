@@ -1,5 +1,5 @@
 # Tell the top-level makefile which relative path to use
-BRIDGE=../src/bridgestan.cpp
+SRC=../src/
 include ../Makefile
 
 MODEL?=full
