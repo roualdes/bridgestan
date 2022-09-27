@@ -56,7 +56,8 @@ Or, since you have already downloaded the repository, you can run
 
 from the BridgeStan folder.
 
-Note that the Python package depends on NumPy and will install it if it is not already installed.
+Note that the Python package depends on Python 3.9+ and NumPy, and will install
+NumPy if it is not already installed.
 
 
 Interface: Julia
@@ -77,6 +78,8 @@ Or, since you have already downloaded the repository, you can run
 
 from the BridgeStan folder.
 
+Note that the Julia package depends on Julia 1.8+.
+
 
 Interface: R
 ----------------
@@ -96,4 +99,5 @@ Or, since you have already downloaded the repository, you can run
 
 from the BridgeStan folder.
 
-Note that the R package depends on R6 and will install it if it is not already installed.
+Note that the R package depends on R 3+ and R6, and will install R6 if it is not
+already installed.
