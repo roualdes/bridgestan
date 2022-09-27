@@ -9,7 +9,7 @@ on:
 
 env:
   CMDSTAN_VERSION: "2.30.1"
-  CACHE_VERSION: 4
+  CACHE_VERSION: 0
 
 jobs:
   build_test_models:
@@ -17,24 +17,15 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
-        python-version: [3.9]
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Check out github
         uses: actions/checkout@v2
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install cmdstanpy for cmdstan install
-        run: |
-          pip install cmdstanpy
-
       - name: CmdStan installation cacheing
         uses: actions/cache@v2
+        id: cmdstan-cache
         with:
           path: ~/.cmdstan
           key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
@@ -42,17 +33,17 @@ jobs:
       - name: Install CmdStan (Unix)
         if: matrix.os != 'windows-latest'
         run: |
-          python -m cmdstanpy.install_cmdstan --version "${{ env.CMDSTAN_VERSION }}" --cores 2 --verbose
+          pipx run --spec cmdstanpy install_cmdstan --version "${{ env.CMDSTAN_VERSION }}" --cores 2 --verbose
 
       - name: Install CmdStan (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          python -m cmdstanpy.install_cmdstan --version "${{ env.CMDSTAN_VERSION }}" --cores 2 --verbose --compiler
+          pipx run --spec cmdstanpy install_cmdstan --version "${{ env.CMDSTAN_VERSION }}" --cores 2 --verbose --compiler
 
       - name: Build C example (Unix)
         if: matrix.os != 'windows-latest'
         run: |
-          export CMDSTAN=$(python -c "import cmdstanpy; print(cmdstanpy.cmdstan_path())")/
+          export CMDSTAN=~/.cmdstan/cmdstan-${{ env.CMDSTAN_VERSION }}/
           cd c-example/
           make example
           make example_static
@@ -74,15 +65,15 @@ jobs:
       - name: Build test models (Unix)
         if: matrix.os != 'windows-latest' && steps.test-models.outputs.cache-hit != 'true'
         run: |
-          export CMDSTAN=$(python -c "import cmdstanpy; print(cmdstanpy.cmdstan_path())")/
+          export CMDSTAN=~/.cmdstan/cmdstan-${{ env.CMDSTAN_VERSION }}/
           make STAN_THREADS=true O=0 test_models -j2
         shell: bash
 
       - name: Build test models (Windows)
         if: matrix.os == 'windows-latest' && steps.test-models.outputs.cache-hit != 'true'
         run: |
-          $raw_cmdstan = $(python -c "import cmdstanpy; print(cmdstanpy.cmdstan_path())")
-          $env:CMDSTAN = "$($raw_cmdstan.replace('\', '/'))/"
+          $raw_cmdstan = "$($HOME)/.cmdstan/cmdstan-${{ env.CMDSTAN_VERSION }}/"
+          $env:CMDSTAN = $raw_cmdstan.replace('\', '/')
           mingw32-make.exe STAN_THREADS=true O=0 test_models -j2
         shell: pwsh
 
