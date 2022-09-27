@@ -156,7 +156,7 @@ parameters respectively.
 
 ### Prereq: Julia, Python, *or* R
 
-To use BridgeStan from Julia, Python 3, or R, you will need to have those
+To use BridgeStan from Julia 1.8+, Python 3.9+, or R 3+, you will need to have those
 languages installed.
 
 The interfaces may depend on different packages in their respective languages.
