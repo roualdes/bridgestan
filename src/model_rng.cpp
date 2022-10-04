@@ -271,7 +271,7 @@ void model_rng::log_density_gradient(bool propto, bool jacobian,
   auto logp = make_model_lambda(propto, jacobian);
   int N = param_unc_num_;
   Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, N);
-  stan::math::gradient(logp, params_unc, *val, grad, grad + param_unc_num_);
+  stan::math::gradient(logp, params_unc, *val, grad, grad + N);
 }
 
 void model_rng::log_density_hessian(bool propto, bool jacobian,
