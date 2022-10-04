@@ -159,6 +159,16 @@ class model_rng {
   void log_density_hessian(bool propto, bool jacobian, const double* theta_unc,
                            double* val, double* grad, double* hessian);
 
+  /**
+   * Returns a lambda which calls the correct version of log_prob
+   * depending on the values of propto and jacobian.
+   *
+   * @param[in] propto `true` to drop constant terms
+   * @param[in] jacobian `true` to include Jacobian adjustment for
+   * constrained parameter transforms
+   */
+  auto make_model_lambda(bool propto, bool jacobian);
+
  private:
   /** Stan model */
   stan::model::model_base* model_;
