@@ -185,17 +185,40 @@ void model_rng::param_constrain(bool include_tp, bool include_gq,
   Eigen::VectorXd::Map(theta, params.size()) = params;
 }
 
+auto model_rng::make_model_lambda(bool propto, bool jacobian) {
+  return [model = this->model_, propto, jacobian](auto& x) {
+    if (propto) {
+      if (jacobian) {
+        return model->log_prob_propto_jacobian(x, &std::cerr);
+      } else {
+        return model->log_prob_propto(x, &std::cerr);
+      }
+    } else {
+      if (jacobian) {
+        return model->log_prob_jacobian(x, &std::cerr);
+      } else {
+        return model->log_prob(x, &std::cerr);
+      }
+    }
+  };
+}
+
 void model_rng::log_density(bool propto, bool jacobian, const double* theta_unc,
                             double* val) {
-  auto logp = create_model_functor(model_, propto, jacobian, std::cerr);
   int N = param_unc_num_;
-  Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
   if (propto) {
+    Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
+    auto logp = make_model_lambda(propto, jacobian);
     static thread_local stan::math::ChainableStack thread_instance;
     Eigen::VectorXd grad(N);
     stan::math::gradient(logp, params_unc, *val, grad);
   } else {
-    *val = logp(params_unc.eval());
+    Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, N);
+    if (jacobian) {
+      *val = model_->log_prob_jacobian(params_unc, &std::cerr);
+    } else {
+      *val = model_->log_prob(params_unc, &std::cerr);
+    }
   }
 }
 
@@ -203,7 +226,7 @@ void model_rng::log_density_gradient(bool propto, bool jacobian,
                                      const double* theta_unc, double* val,
                                      double* grad) {
   static thread_local stan::math::ChainableStack thread_instance;
-  auto logp = create_model_functor(model_, propto, jacobian, std::cerr);
+  auto logp = make_model_lambda(propto, jacobian);
   int N = param_unc_num_;
   Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, N);
   Eigen::VectorXd grad_vec(N);
@@ -215,11 +238,11 @@ void model_rng::log_density_hessian(bool propto, bool jacobian,
                                     const double* theta_unc, double* val,
                                     double* grad, double* hessian) {
   static thread_local stan::math::ChainableStack thread_instance;
-  auto logp = create_model_functor(model_, propto, jacobian, std::cerr);
+  auto logp = make_model_lambda(propto, jacobian);
   int N = param_unc_num_;
   Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
-  Eigen::VectorXd grad_vec;
-  Eigen::MatrixXd hess_mat;
+  Eigen::VectorXd grad_vec(N);
+  Eigen::MatrixXd hess_mat(N, N);
   stan::math::internal::finite_diff_hessian_auto(logp, params_unc, *val,
                                                  grad_vec, hess_mat);
   Eigen::VectorXd::Map(grad, N) = grad_vec;
