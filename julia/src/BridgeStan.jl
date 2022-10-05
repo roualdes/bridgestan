@@ -2,6 +2,7 @@ module BridgeStan
 
 export StanModel,
     name,
+    model_info,
     param_num,
     param_unc_num,
     param_names,

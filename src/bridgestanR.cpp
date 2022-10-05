@@ -9,6 +9,9 @@ void destruct_R(model_rng** model, int* return_code) {
 void name_R(model_rng** model, char const** name_out) {
   *name_out = name(*model);
 }
+void model_info_R(model_rng** model, char const** info_out){
+  *info_out = model_info(*model);
+}
 void param_names_R(model_rng** model, int* include_tp, int* include_gq,
                    char const** names_out) {
   *names_out = param_names(*model, *include_tp, *include_gq);

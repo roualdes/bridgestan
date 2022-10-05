@@ -5,6 +5,7 @@
 #include <stan/io/var_context.hpp>
 #include <stan/model/model_base.hpp>
 #include <stan/math.hpp>
+#include <stan/version.hpp>
 #include <algorithm>
 #include <cmath>
 #include <exception>
@@ -72,6 +73,44 @@ model_rng::model_rng(const char* data_file, unsigned int seed,
   const char* model_name_c = model_name.c_str();
   name_ = strdup(model_name_c);
 
+  std::stringstream info;
+  info << "Stan version: " << stan::MAJOR_VERSION << '.' << stan::MINOR_VERSION
+       << '.' << stan::PATCH_VERSION << std::endl;
+
+  info << "Stan C++ Defines:" << std::endl;
+#ifdef STAN_THREADS
+  info << "\tSTAN_THREADS=true" << std::endl;
+#else
+  info << "\tSTAN_THREADS=false" << std::endl;
+#endif
+#ifdef STAN_MPI
+  info << "\tSTAN_MPI=true" << std::endl;
+#else
+  info << "\tSTAN_MPI=false" << std::endl;
+#endif
+#ifdef STAN_OPENCL
+  info << "\tSTAN_OPENCL=true" << std::endl;
+#else
+  info << "\tSTAN_OPENCL=false" << std::endl;
+#endif
+#ifdef STAN_NO_RANGE_CHECKS
+  info << "\tSTAN_NO_RANGE_CHECKS=true" << std::endl;
+#else
+  info << "\tSTAN_NO_RANGE_CHECKS=false" << std::endl;
+#endif
+#ifdef STAN_CPP_OPTIMS
+  info << "\tSTAN_CPP_OPTIMS=true" << std::endl;
+#else
+  info << "\tSTAN_CPP_OPTIMS=false" << std::endl;
+#endif
+
+  info << "Stan Compiler Details:" << std::endl;
+  for (auto s : model_->model_compile_info()) {
+    info << '\t' << s << std::endl;
+  }
+
+  model_info_ = strdup(info.str().c_str());
+
   std::vector<std::string> names;
   model_->unconstrained_param_names(names, false, false);
   param_unc_names_ = to_csv(names);
@@ -101,6 +140,7 @@ model_rng::model_rng(const char* data_file, unsigned int seed,
 model_rng::~model_rng() {
   delete (model_);
   free(name_);
+  free(model_info_);
   free(param_unc_names_);
   free(param_names_);
   free(param_tp_names_);
@@ -109,6 +149,8 @@ model_rng::~model_rng() {
 }
 
 const char* model_rng::name() { return name_; }
+
+const char* model_rng::model_info() { return model_info_; }
 
 const char* model_rng::param_names(bool include_tp, bool include_gq) {
   if (include_tp && include_gq)

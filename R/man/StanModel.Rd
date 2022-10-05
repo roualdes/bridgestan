@@ -19,6 +19,7 @@ as well as constraining and unconstraining transforms.
 \itemize{
 \item \href{#method-StanModel-new}{\code{StanModel$new()}}
 \item \href{#method-StanModel-name}{\code{StanModel$name()}}
+\item \href{#method-StanModel-model_info}{\code{StanModel$model_info()}}
 \item \href{#method-StanModel-param_names}{\code{StanModel$param_names()}}
 \item \href{#method-StanModel-param_unc_names}{\code{StanModel$param_unc_names()}}
 \item \href{#method-StanModel-param_num}{\code{StanModel$param_num()}}
@@ -68,6 +69,19 @@ Get the name of this StanModel
 
 \subsection{Returns}{
 A character vector of the name.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-StanModel-model_info"></a>}}
+\if{latex}{\out{\hypertarget{method-StanModel-model_info}{}}}
+\subsection{Method \code{model_info()}}{
+Get compile information about this Stan model.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$model_info()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A character vector of the Stan version and important flags.
 }
 }
 \if{html}{\out{<hr>}}

@@ -30,6 +30,8 @@ int destruct(model_rng* mr) {
 
 const char* name(model_rng* mr) { return mr->name(); }
 
+const char* model_info(model_rng* mr) { return mr->model_info(); }
+
 const char* param_names(model_rng* mr, bool include_tp, bool include_gq) {
   return mr->param_names(include_tp, include_gq);
 }

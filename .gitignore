@@ -15,6 +15,7 @@ notes.org
 __pycache__/
 .ipynb_checkpoints/
 .pytest_cache/
+.mypy_cache/
 *.egg-info/
 *.pyc
 _build/

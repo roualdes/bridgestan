@@ -6,6 +6,10 @@ test_that("simple_model name is correct", {
     expect_identical(simple$name(), "simple_model")
 })
 
+test_that("simple_model info exists", {
+    expect_true(grepl("STAN_OPENCL", simple$model_info(), fixed = TRUE))
+})
+
 test_that("simple_model param_names are correct", {
     expect_equal(simple$param_names(), c("y.1", "y.2", "y.3", "y.4", "y.5"))
 })

@@ -17,6 +17,8 @@ void destruct_R(model_rng** model, int* return_code);
 
 void name_R(model_rng** model, char const** name_out);
 
+void model_info_R(model_rng** model, char const** info_out);
+
 void param_names_R(model_rng** model, int* include_tp, int* include_gq,
                    char const** name_out);
 

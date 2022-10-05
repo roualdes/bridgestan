@@ -44,6 +44,18 @@ int destruct(model_rng* mr);
 const char* name(model_rng* mr);
 
 /**
+ * Return information about the compiled model as a C-style string.
+ *
+ * The returned string should not be modified; it is freed when the
+ * model and RNG wrapper is destroyed.
+ *
+ * @param[in] mr pointer to model and RNG structure
+ * @return Information about the model including Stan version, Stan defines, and
+ * compiler flags.
+ */
+const char* model_info(model_rng* mr);
+
+/**
  * Return a comma-separated sequence of indexed parameter names,
  * including the transformed parameters and/or generated quantities
  * as specified.
