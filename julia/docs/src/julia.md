@@ -20,6 +20,7 @@ param_constrain
 param_unconstrain
 param_unconstrain_json
 name
+model_info
 param_num
 param_unc_num
 param_names

@@ -45,6 +45,12 @@ def test_name():
     np.testing.assert_equal("stdnormal_model", b.name())
 
 
+def test_model_info():
+    std_so = str(STAN_FOLDER / "stdnormal" / "stdnormal_model.so")
+    b = bs.StanModel(std_so)
+    assert "STAN_OPENCL" in b.model_info()
+    
+
 def test_param_num():
     full_so = str(STAN_FOLDER / "full" / "full_model.so")
     b = bs.StanModel(full_so)

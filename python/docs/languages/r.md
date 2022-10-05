@@ -64,6 +64,21 @@ _Returns_
   A character vector of the name.
 
 
+**Method** `model_info()`:
+
+Get compile information about this Stan model.
+
+_Usage_
+
+```R
+StanModel$model_info()
+```
+
+
+_Returns_
+
+  A character vector of the Stan version and important flags.
+
 **Method** `param_names()`:
 
 Return the indexed names of the (constrained) parameters. For

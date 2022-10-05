@@ -28,6 +28,11 @@ end
     @test BridgeStan.name(b) == "stdnormal_model"
 end
 
+@testset "model info" begin
+    b = load_test_model("stdnormal", false)
+    @test occursin("STAN_THREADS=true", BridgeStan.model_info(b))
+end
+
 @testset "param_num" begin
     b = load_test_model("full", false)
     @test BridgeStan.param_num(b) == 1

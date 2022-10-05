@@ -39,6 +39,14 @@ class model_rng {
   const char* name();
 
   /**
+   *  Return information about the compiled model. This class manages the
+   * memory, so the returned string should not be freed.
+   *
+   * @return name of model
+   */
+  const char* model_info();
+
+  /**
    * Return the parameter names as a comma-separated list.  Indexes
    * are separted with periods. This class manages the memory, so
    * the returned string should not be freed.
@@ -178,6 +186,9 @@ class model_rng {
 
   /** name of the Stan model */
   char* name_ = nullptr;
+
+  /** Model compile info */
+  char* model_info_ = nullptr;
 
   /** CSV list of parameter names */
   char* param_names_ = nullptr;

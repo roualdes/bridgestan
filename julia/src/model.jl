@@ -79,6 +79,24 @@ function name(sm::StanModel)
 end
 
 """
+    model_info(sm)
+
+Return information about the model `sm`.
+
+This includes the Stan version and important
+compiler flags.
+"""
+function model_info(sm::StanModel)
+    cstr = ccall(
+        Libc.Libdl.dlsym(sm.lib, "model_info"),
+        Cstring,
+        (Ptr{StanModelStruct},),
+        sm.stanmodel,
+    )
+    unsafe_string(cstr)
+end
+
+"""
     param_num(sm; include_tp=false, include_gq=false)
 
 Return the number of (constrained) parameters in the model.

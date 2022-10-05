@@ -45,6 +45,15 @@ StanModel <- R6::R6Class("StanModel",
       )$name_out
     },
     #' @description
+    #' Get compile information about this Stan model.
+    #' @return A character vector of the Stan version and important flags.
+    model_info = function() {
+      .C("model_info_R", as.raw(private$model),
+        info_out = as.character(""),
+        PACKAGE = private$lib_name
+      )$info_out
+    },
+    #' @description
     #' Return the indexed names of the (constrained) parameters.
     #' For containers, indexes are separated by periods (.).
     #'

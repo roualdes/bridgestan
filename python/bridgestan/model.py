@@ -77,6 +77,10 @@ class StanModel:
         self._name.restype = ctypes.c_char_p
         self._name.argtypes = [ctypes.c_void_p]
 
+        self._model_info = self.stanlib.model_info
+        self._model_info.restype = ctypes.c_char_p
+        self._model_info.argtypes = [ctypes.c_void_p]
+
         self._param_num = self.stanlib.param_num
         self._param_num.restype = ctypes.c_int
         self._param_num.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_int]
@@ -202,6 +206,16 @@ class StanModel:
         :return: The name of Stan model.
         """
         return self._name(self.model_rng).decode("utf-8")
+
+    def model_info(self) -> str:
+        """
+        Return compilation information about the model. For example,
+        this includes the current Stan version and important
+        compiler settings.
+
+        :return: Information about the compiled Stan model.
+        """
+        return self._model_info(self.model_rng).decode("utf-8")
 
     def param_num(self, *, include_tp: bool = False, include_gq: bool = False) -> int:
         """
