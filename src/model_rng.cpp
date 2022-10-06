@@ -6,6 +6,7 @@
 #include <stan/model/model_base.hpp>
 #include <stan/math.hpp>
 #include <stan/version.hpp>
+#include <stan/model/hessian.hpp>
 #include <algorithm>
 #include <cmath>
 #include <exception>
@@ -102,6 +103,11 @@ model_rng::model_rng(const char* data_file, unsigned int seed,
   info << "\tSTAN_CPP_OPTIMS=true" << std::endl;
 #else
   info << "\tSTAN_CPP_OPTIMS=false" << std::endl;
+#endif
+#ifdef STAN_MODEL_AD_HESSIAN
+  info << "\tSTAN_MODEL_AD_HESSIAN=true" << std::endl;
+#else
+  info << "\tSTAN_MODEL_AD_HESSIAN=false" << std::endl;
 #endif
 
   info << "Stan Compiler Details:" << std::endl;
@@ -283,8 +289,15 @@ void model_rng::log_density_hessian(bool propto, bool jacobian,
   Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
   Eigen::VectorXd grad_vec(N);
   Eigen::MatrixXd hess_mat(N, N);
+
+#ifdef STAN_MODEL_AD_HESSIAN
+  stan::model::hessian(*model_, params_unc, *val, grad_vec, hess_mat,
+                       &std::cerr);
+#else
   stan::math::internal::finite_diff_hessian_auto(logp, params_unc, *val,
                                                  grad_vec, hess_mat);
+#endif
+
   Eigen::VectorXd::Map(grad, N) = grad_vec;
   Eigen::MatrixXd::Map(hessian, N, N) = hess_mat;
 }
