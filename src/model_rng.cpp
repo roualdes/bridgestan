@@ -290,7 +290,7 @@ void model_rng::log_density_hessian(bool propto, bool jacobian,
   Eigen::VectorXd grad_vec(N);
   Eigen::MatrixXd hess_mat(N, N);
 
-#ifdef STAN_MODEL_AD_HESSIAN
+#ifdef BRIDGESTAN_AD_HESSIAN
   stan::model::hessian(*model_, params_unc, *val, grad_vec, hess_mat,
                        &std::cerr);
 #else
