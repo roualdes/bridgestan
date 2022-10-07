@@ -26,7 +26,7 @@ extensions = [
 ]
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "README.md"]
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -76,10 +76,9 @@ intersphinx_mapping = {
 
 breathe_projects = {"bridgestan": "./_build/cppxml/"}
 breathe_projects_source = {
-    "bridgestan": ("../../src/", ["bridgestan.h", "bridgestanR.h"])
+    "bridgestan": ("../src/", ["bridgestan.h", "bridgestanR.h"])
 }
 breathe_default_project = "bridgestan"
-breathe_doxygen_config_options = {"EXCLUDE_SYMBOLS": "to_csv"}
 
 
 # Julia and C++ doc build
@@ -93,7 +92,7 @@ try:
     print("Building Julia doc")
     subprocess.run(
         ["julia", "--project=.", "./make.jl"],
-        cwd=pathlib.Path(__file__).parent.parent.parent / "julia" / "docs",
+        cwd=pathlib.Path(__file__).parent.parent / "julia" / "docs",
         check=True,
     )
 except Exception as e:
@@ -113,6 +112,6 @@ except Exception as e:
         raise e
     else:
         print("Breathe/doxygen not installed, skipping C++ Doc")
-        exclude_patterns = ["languages/cpp-api.rst"]
+        exclude_patterns += ["languages/cpp-api.rst"]
 else:
     extensions.append("breathe")

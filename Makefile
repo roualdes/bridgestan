@@ -70,6 +70,9 @@ $(BRIDGE_O) : $(BRIDGE)
 	$(LINK.cpp) -shared -lm -fPIC -o $(patsubst %.hpp, %_model.so, $(subst \,/,$<)) $(subst \,/,$*.o) $(BRIDGE_O) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	$(RM) $(subst  \,/,$*).o
 
+.PHONY: docs
+docs:
+	$(MAKE) -C docs/ html
 
 .PHONY: clean
 clean:
