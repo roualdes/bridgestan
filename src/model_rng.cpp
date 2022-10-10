@@ -107,10 +107,10 @@ model_rng::model_rng(const char* data_file, unsigned int seed,
 #else
   info << "\tSTAN_CPP_OPTIMS=false" << std::endl;
 #endif
-#ifdef STAN_MODEL_AD_HESSIAN
-  info << "\tSTAN_MODEL_AD_HESSIAN=true" << std::endl;
+#ifdef BRIDGESTAN_AD_HESSIAN
+  info << "\tBRIDGESTAN_AD_HESSIAN=true" << std::endl;
 #else
-  info << "\tSTAN_MODEL_AD_HESSIAN=false" << std::endl;
+  info << "\tBRIDGESTAN_AD_HESSIAN=false" << std::endl;
 #endif
 
   info << "Stan Compiler Details:" << std::endl;
