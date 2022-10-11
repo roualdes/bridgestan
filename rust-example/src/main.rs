@@ -16,12 +16,17 @@ pub struct StanModel {
 }
 
 impl StanModel {
-    pub fn new(path: &String, seed: u32, chain_id: u32) -> Result<Self, String> {
-        let data = match CString::new(path.as_bytes()) {
-            Ok(string) => string,
+    pub fn new(path: &str, seed: u32, chain_id: u32) -> Result<Self, String> {
+        let data = match CString::new(path) {
+            Ok(string) => string.into_raw(),
             Err(_) => return Err("Failed to convert data path to String".to_string()),
         };
-        let model = unsafe { bs::construct(data.into_raw(), seed, chain_id) };
+
+        let model = unsafe { bs::construct(data, seed, chain_id) };
+
+        // retake pointer to free memory
+        let _ = unsafe { CString::from_raw(data) };
+
         if model.is_null() {
             return Err("Failed to allocate model_rng".to_string());
         }
