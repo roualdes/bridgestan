@@ -4,6 +4,7 @@ use std::ffi::CString;
 use std::ffi::NulError;
 use std::str::Utf8Error;
 
+// This is more or less equivalent to manually defining Display and From<other error types>
 use thiserror::Error;
 
 #[derive(Error, Debug)]
