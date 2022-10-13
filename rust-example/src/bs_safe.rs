@@ -25,6 +25,10 @@ pub struct StanModel {
     model: *mut bs_unsafe::model_rng,
 }
 
+// TODO understand this more https://doc.rust-lang.org/nomicon/send-and-sync.html
+// unsafe impl Send for StanModel {}
+// unsafe impl Sync for StanModel {}
+
 impl StanModel {
     pub fn new(path: &str, seed: u32, chain_id: u32) -> Result<Self, BridgeStanError> {
         let data = CString::new(path)?.into_raw();
@@ -58,17 +62,25 @@ impl StanModel {
             .unwrap()
     }
 
-    pub fn log_density_gradient(
+    pub fn log_density_gradient<'a>(
         &self,
-        theta: &Vec<f64>,
+        theta: &[f64],
         propto: bool,
         jacobian: bool,
-    ) -> Result<(f64, Vec<f64>), BridgeStanError> {
+        out: &'a mut [f64],
+    ) -> Result<(f64, &'a mut [f64]), BridgeStanError> {
         let n = self.param_unc_num();
-        if theta.len() < n {
-            panic!("Size of theta is not large enough")
-        }
-        let mut grad = vec![0.0; n];
+        assert_eq!(
+            theta.len(),
+            n,
+            "Argument 'theta' must be the same size as the number of parameters!"
+        );
+        assert_eq!(
+            out.len(),
+            n,
+            "Argument 'out' must be the same size as the number of parameters!"
+        );
+
         let mut val = 0.0;
         let rc = unsafe {
             bs_unsafe::log_density_gradient(
@@ -77,12 +89,12 @@ impl StanModel {
                 jacobian as i32,
                 theta.as_ptr(),
                 &mut val,
-                grad.as_mut_ptr(),
+                out.as_mut_ptr(),
             )
         };
 
         if rc == 0 {
-            Ok((val, grad))
+            Ok((val, out))
         } else {
             Err(BridgeStanError::EvaluationFailed)
         }
