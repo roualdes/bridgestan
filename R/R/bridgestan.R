@@ -21,10 +21,17 @@ StanModel <- R6::R6Class("StanModel",
         file.copy(from=lib_old, to=lib)
       }
 
-      private$lib <- lib
+      private$lib <- tools::file_path_as_absolute(lib)
       private$lib_name <- tools::file_path_sans_ext(basename(lib))
+      if (is.loaded("construct_R", PACKAGE = private$lib_name)) {
+        warning(
+          paste0("Loading a shared object '", lib, "' which is already loaded.\n",
+                  "If the file has changed since the last time it was loaded, this load may not update the library!"
+          )
+        )
+      }
 
-      dyn.load(lib, PACKAGE = private$lib_name)
+      dyn.load(private$lib, PACKAGE = private$lib_name)
       .C("construct_R",
         as.character(data), as.integer(rng_seed), as.integer(chain_id),
         ptr_out = raw(8),

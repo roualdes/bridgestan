@@ -30,6 +30,11 @@ mutable struct StanModel
             throw(SystemError("Dynamic library file not found"))
         end
 
+        if in(abspath(lib), Libc.Libdl.dllist())
+            @warn "Loading a shared object '" * lib * "' which is already loaded.\n" *
+                  "If the file has changed since the last time it was loaded, this load may not update the library!"
+        end
+
         if data != "" && !isfile(data)
             throw(SystemError("Data file not found"))
         end
