@@ -39,6 +39,9 @@ def test_compile_syntax_error():
 def test_compile_bad_cmdstan():
     stanfile = STAN_FOLDER / "multi" / "multi.stan"
     old_path = bs.compile.CMDSTAN_PATH
+    bs.compile.set_cmdstan_path("")
+    with pytest.raises(RuntimeError, match=r"set_cmdstan_path"):
+        bs.compile_model(stanfile)
     bs.compile.set_cmdstan_path("dummy")
     with pytest.raises(RuntimeError, match=r"Make sure CmdStan is installed"):
         bs.compile_model(stanfile)

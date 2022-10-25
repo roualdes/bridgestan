@@ -4,7 +4,11 @@ function get_make()
 end
 
 function get_bridgestan()
-    get(ENV, "BRIDGESTAN", "")
+    path = get(ENV, "BRIDGESTAN", "")
+    if path == ""
+        error("BridgeStan path was not set, compilation will not work until you call `set_bridgestan_path!()`")
+    end
+    return path
 end
 
 function get_cmdstan()
@@ -18,6 +22,9 @@ function get_cmdstan()
             )[1]
         catch
         end
+    end
+    if cmdstan == ""
+         error("CmdStan path was not set, compilation will not work until you call `set_cmdstan_path!()`")
     end
     return cmdstan
 end
