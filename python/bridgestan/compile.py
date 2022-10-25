@@ -1,7 +1,6 @@
 import os
 import platform
 import subprocess
-import warnings
 from pathlib import Path
 from typing import List
 
@@ -45,24 +44,6 @@ if not CMDSTAN_PATH:
             )
         except:
             pass
-
-if not CMDSTAN_PATH:
-    warnings.warn(
-        RuntimeWarning(
-            "Unable to locate CmdStan, you will need to call "
-            "'set_cmdstan_path()' before using compilation features"
-        )
-    )
-
-try:
-    verify_bridgestan_path(BRIDGESTAN_PATH)
-except ValueError:
-    warnings.warn(
-        RuntimeWarning(
-            "Unable to locate BridgeStan, you will need to call "
-            "'set_bridgestan_path()' before using compilation features"
-        ),
-    )
 
 
 def set_cmdstan_path(path: str) -> None:
@@ -116,6 +97,12 @@ def compile_model(stan_file: str, args: List[str] = []) -> Path:
     :raises RuntimeError: If compilation fails.
     """
     verify_bridgestan_path(BRIDGESTAN_PATH)
+
+    if not CMDSTAN_PATH:
+        raise RuntimeError(
+            "Unable to locate CmdStan, you will need to call "
+            "'set_cmdstan_path()' before using compilation features"
+        )
 
     file_path = Path(stan_file).resolve()
     validate_readable(str(file_path))
