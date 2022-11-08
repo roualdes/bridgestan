@@ -89,7 +89,7 @@ jobs:
       - name: Check out github
         uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -100,7 +100,7 @@ jobs:
           key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
 
       - name: Restore built models
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: test-models
         with:
           path: ./test_models/
