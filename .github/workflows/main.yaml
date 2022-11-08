@@ -21,10 +21,10 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Check out github
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: CmdStan installation cacheing
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cmdstan-cache
         with:
           path: ~/.cmdstan
@@ -56,7 +56,7 @@ jobs:
 
       # we use the cache here to build the Stan models once for multiple interfaces
       - name: Set up test model cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: test-models
         with:
           path: ./test_models/
@@ -87,20 +87,20 @@ jobs:
       fail-fast: false
     steps:
       - name: Check out github
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Restore CmdStan
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cmdstan
           key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
 
       - name: Restore built models
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: test-models
         with:
           path: ./test_models/
@@ -127,18 +127,18 @@ jobs:
       fail-fast: false
     steps:
       - name: Check out github
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Julia
         uses: julia-actions/setup-julia@v1
 
       - name: Restore CmdStan
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cmdstan
           key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
 
       - name: Restore built models
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: test-models
         with:
           path: ./test_models/
@@ -158,13 +158,13 @@ jobs:
       fail-fast: false
     steps:
       - name: Check out github
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install R
-        uses: r-lib/actions/setup-r@v2
+        uses: r-lib/actions/setup-r@v2.3.1
 
       - name: Install R dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
+        uses: r-lib/actions/setup-r-dependencies@v2.3.1
         with:
           packages: |
             any::R6
@@ -172,13 +172,13 @@ jobs:
             any::devtools
 
       - name: Restore CmdStan
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cmdstan
           key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
 
       - name: Restore built models
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: test-models
         with:
           path: ./test_models/
@@ -197,10 +197,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Check out github
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Restore CmdStan
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cmdstan
           key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
@@ -211,17 +211,17 @@ jobs:
           Add-Content $env:GITHUB_PATH "$(pwd)/stan/lib/stan_math/lib/tbb"
 
       - name: Restore built models
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: test-models
         with:
           path: ./test_models/
           key: ${{ hashFiles('**/*.stan', 'src/*') }}-windows-latest-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
 
       - name: Install R
-        uses: r-lib/actions/setup-r@v2
+        uses: r-lib/actions/setup-r@v2.3.1
 
       - name: Install R dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
+        uses: r-lib/actions/setup-r-dependencies@v2.3.1
         with:
           packages: |
             any::R6
