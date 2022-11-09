@@ -38,7 +38,7 @@ To download BridgeStan into directory `<parent-dir>`, use the following.
 
 ```shell
 $ cd <parent-dir>
-$ git clone https://gitlab.com/roualdes/bridgestan.git
+$ git clone https://github.com/roualdes/bridgestan.git
 ```
 
 There is no need to build anything up front.
