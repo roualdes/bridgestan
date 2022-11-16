@@ -1,7 +1,4 @@
-pub mod bs_safe;
-pub mod bs_unsafe;
-
-use bs_safe::StanModel;
+use bridgestan::bs_safe::StanModel;
 use std::env;
 use std::error::Error;
 use std::thread;
