@@ -7,7 +7,7 @@ use std::str::Utf8Error;
 // This is more or less equivalent to manually defining Display and From<other error types>
 use thiserror::Error;
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, PartialEq)]
 pub enum BridgeStanError {
     #[error("failed to encode string to null-terminated C string")]
     StringEncodeError(#[from] NulError),
@@ -25,9 +25,9 @@ pub struct StanModel {
     model: *mut bs_unsafe::model_rng,
 }
 
-// TODO understand this more https://doc.rust-lang.org/nomicon/send-and-sync.html
-// unsafe impl Send for StanModel {}
-// unsafe impl Sync for StanModel {}
+// BridgeStan model is thread safe
+unsafe impl Send for StanModel {}
+unsafe impl Sync for StanModel {}
 
 impl StanModel {
     pub fn new(path: &str, seed: u32, chain_id: u32) -> Result<Self, BridgeStanError> {
