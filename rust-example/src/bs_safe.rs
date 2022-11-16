@@ -110,3 +110,30 @@ impl Drop for StanModel {
         }
     }
 }
+
+
+#[cfg(feature="nuts")]
+use nuts_rs::{CpuLogpFunc, LogpError};
+
+#[cfg(feature="nuts")]
+impl LogpError for BridgeStanError {
+    fn is_recoverable(&self) -> bool {
+        return *self == BridgeStanError::EvaluationFailed;
+    }
+}
+
+#[cfg(feature="nuts")]
+impl CpuLogpFunc for StanModel {
+    type Err = BridgeStanError;
+
+    // We define a 10 dimensional normal distribution
+    fn dim(&self) -> usize {
+        self.param_unc_num()
+    }
+
+    fn logp(&mut self, position: &[f64], grad: &mut [f64]) -> Result<f64, Self::Err> {
+        let (logp, _grad) = self.log_density_gradient(position, false, true, grad)?;
+
+        Ok(logp)
+    }
+}
