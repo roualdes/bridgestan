@@ -1,4 +1,4 @@
-use bridgestan::bs_safe::StanModel;
+use bridgestan::StanModel;
 use std::env;
 use std::error::Error;
 use std::thread;

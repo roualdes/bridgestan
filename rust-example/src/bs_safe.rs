@@ -30,6 +30,9 @@ unsafe impl Send for StanModel {}
 unsafe impl Sync for StanModel {}
 
 impl StanModel {
+    /// Create a new instance of the compiled Stan model.
+    /// Data is specified as a JSON file at the given path, or empty for no data
+    /// Seed and chain ID are used for reproducibility.
     pub fn new(path: &str, seed: u32, chain_id: u32) -> Result<Self, BridgeStanError> {
         let data = CString::new(path)?.into_raw();
 
@@ -44,18 +47,23 @@ impl StanModel {
         Ok(StanModel { model })
     }
 
+    /// Return the name of the model or error if UTF decode fails
     pub fn name(&self) -> Result<&str, BridgeStanError> {
         let cstr = unsafe { CStr::from_ptr(bs_unsafe::name(self.model)) };
         let res = cstr.to_str()?;
         Ok(res)
     }
 
+    /// Number of parameters in the model on the constrained scale.
+    /// Will also count transformed parameters and generated quantities if requested
     pub fn param_num(&self, include_tp: bool, include_gq: bool) -> usize {
         unsafe { bs_unsafe::param_num(self.model, include_tp as i32, include_gq as i32) }
             .try_into()
             .unwrap()
     }
 
+    /// Return the number of parameters on the unconstrained scale.
+    /// In particular, this is the size of the slice required by the log_density functions.
     pub fn param_unc_num(&self) -> usize {
         unsafe { bs_unsafe::param_unc_num(self.model) }
             .try_into()
@@ -104,6 +112,7 @@ impl StanModel {
 }
 
 impl Drop for StanModel {
+    /// Free the memory allocated in C++. Panics if deallocation fails
     fn drop(&mut self) {
         if unsafe { bs_unsafe::destruct(self.model) } != 0 {
             panic!("Deallocating model_rng failed")
@@ -111,22 +120,20 @@ impl Drop for StanModel {
     }
 }
 
-
-#[cfg(feature="nuts")]
+#[cfg(feature = "nuts")]
 use nuts_rs::{CpuLogpFunc, LogpError};
 
-#[cfg(feature="nuts")]
+#[cfg(feature = "nuts")]
 impl LogpError for BridgeStanError {
     fn is_recoverable(&self) -> bool {
         return *self == BridgeStanError::EvaluationFailed;
     }
 }
 
-#[cfg(feature="nuts")]
+#[cfg(feature = "nuts")]
 impl CpuLogpFunc for StanModel {
     type Err = BridgeStanError;
 
-    // We define a 10 dimensional normal distribution
     fn dim(&self) -> usize {
         self.param_unc_num()
     }
