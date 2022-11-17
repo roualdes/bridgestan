@@ -1,2 +1,4 @@
 pub mod bs_safe;
-pub mod bs_unsafe;
+pub(crate) mod bs_unsafe;
+
+pub use bs_safe::{StanModel, BridgeStanError};
