@@ -33,3 +33,5 @@ bridgestan.Rcheck/
 build/
 
 .DS_Store
+
+bin/*
