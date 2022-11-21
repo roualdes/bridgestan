@@ -431,7 +431,7 @@ end
 
 @testset "bernoulli" begin
     # Bernoulli
-    # CMDSTAN=/path/to/cmdstan/ make test_models/bernoulli/bernoulli_model.so
+    # make test_models/bernoulli/bernoulli_model.so
 
     model = load_test_model("bernoulli")
 
@@ -463,7 +463,7 @@ end
 
 @testset "threaded model: multi" begin
     # Multivariate Gaussian
-    # CMDSTAN=/path/to/cmdstan/ make test_models/multi/multi_model.so
+    # make test_models/multi/multi_model.so
 
     function gaussian(x)
         return -0.5 * x' * x
@@ -497,7 +497,7 @@ end
 
 @testset "gaussian" begin
     # Guassian with positive constrained standard deviation
-    # CMDSTAN=/path/to/cmdstan/ make test_models/gaussian/gaussian_model.so
+    # make test_models/gaussian/gaussian_model.so
 
     model = load_test_model("gaussian")
 
@@ -519,7 +519,7 @@ end
 
 @testset "fr_gaussian" begin
     # Full rank Gaussian
-    # CMDSTAN=/path/to/cmdstan/ make test_models/fr_gaussian/fr_gaussian_model.so
+    # make test_models/fr_gaussian/fr_gaussian_model.so
 
     model = load_test_model("fr_gaussian")
 

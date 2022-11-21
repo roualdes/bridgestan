@@ -1,5 +1,5 @@
 # Tell the top-level makefile which relative path to use
-SRC=../src/
+BS_ROOT=..
 include ../Makefile
 
 MODEL?=full

@@ -6,9 +6,6 @@ on:
       - 'main'
   workflow_dispatch: {}
 
-env:
-  CMDSTAN_VERSION: "2.31.0"
-
 jobs:
   build-docs:
     name: Publish documentation to gh-pages
@@ -23,6 +20,8 @@ jobs:
     steps:
       - name: Check out github
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
@@ -42,18 +41,12 @@ jobs:
       - name: Set up Julia
         uses: julia-actions/setup-julia@v1
 
-      - name: CmdStan installation cacheing
-        id: cmdstan-cache
+      - name: Stan submodule cacheing
         uses: actions/cache@v3
+        id: stan-cache
         with:
-          path: ~/.cmdstan
-          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
-
-      - name: Install CmdStan
-        if: steps.cmdstan-cache.outputs.cache-hit != 'true'
-        run: |
-          python -m pip install cmdstanpy
-          python -m cmdstanpy.install_cmdstan --version "${{ env.CMDSTAN_VERSION }}" --cores 2
+          path: ./stan/
+          key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
       - name: Install package
         run: |
