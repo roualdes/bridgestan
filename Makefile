@@ -10,6 +10,7 @@ RAPIDJSON ?= $(STAN)lib/rapidjson_1.1.0/
 INC_FIRST ?= -I $(STAN)src -I $(RAPIDJSON)
 
 ## makefiles needed for math library
+-include $(BS_ROOT)/make/local
 -include $(MATH)make/compiler_flags
 -include $(MATH)make/dependencies
 -include $(MATH)make/libraries
