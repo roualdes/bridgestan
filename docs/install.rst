@@ -36,6 +36,25 @@ a terminal in your BridgeStan folder and running
 This will compile the file ``test_models/multi/multi.stan`` into a shared library object for use with BridgeStan.
 This requires internet access the first time it is run.
 
+
+Using custom Stan versions
+--------------------------
+
+If you wish to use BridgeStan for an older released version, all you need to do is
+
+1. Set ``STANC3_VERSION`` in ``make/local`` to your desired version, e.g. ``v2.26.0``
+2. Go into the ``stan`` submodule and run ``git checkout release/VERSION``, e.g. ``release/v2.26.0``
+3. Also in the ``stan`` submodule, run `make math-update`
+
+To return to the version of Stan currently used by BridgeStan, you can run ``make stan-update`` from the top level directory
+and remove ``STANC3_VERSION`` from your ``make/local`` file.
+
+
+If you wish to use BridgeStan with a custom fork or branch, the best thing to do is to check out that branch in the ``stan`` submodule,
+or, if the fork is of stan-math, in ``stan/libs/stan_math``. The easiest way to use a custom stanc3 is to place the built executable at
+`bin/stanc[.exe]`.
+
+
 Interface: Python
 -----------------
 
