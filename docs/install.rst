@@ -2,14 +2,17 @@
 Installation
 ============
 
-Requirement: C++ toolchain and CmdStan
---------------------------------------
-BridgeStan relies on `CmdStan <https://github.com/stan-dev/cmdstan>`__ and
-the following assume you have a working installation for your system.
-Please make sure you are able to compile and run the CmdStan example program **before continuing**.
+Requirement: C++ toolchain
+--------------------------
 
-For more information,
-see the `CmdStan installation instructions <https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html>`__.
+Stan requires a C++ tool chain consisting of
+
+* A C++14 compiler. On Windows, MSCV is *not* supported, so something like MinGW GCC is required.
+* The Gnu ``make`` utility for \*nix *or* ``mingw32-make`` for Windows
+
+Here are complete instructions by platform for installing both, from the CmdStan installation instructions.
+
+* `C++ tool chain installation<https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html#cpp-toolchain>`__
 
 Download
 --------
@@ -18,11 +21,7 @@ Installing BridgeStan is as simple as ensuring that the above pre-requisites are
 the source repository.
 
 If you have ``git`` installed, you may do this by navigating to the folder you'd like
-BridgeStan to be in and running ``git clone git@github.com:roualdes/bridgestan.git``.
-
-If you do not have ``git`` installed, you can download a `.zip` file containing the repository
-`here <https://github.com/roualdes/bridgestan/archive/refs/heads/main.zip>`__. Unzip this
-file into the folder you would like BridgeStan to be in.
+BridgeStan to be in and running ``$ git clone --recurse-submodules https://github.com/roualdes/bridgestan.git``.
 
 After this, BridgeStan is installed. You can test a basic compilation by opening
 a terminal in your BridgeStan folder and running
@@ -30,13 +29,12 @@ a terminal in your BridgeStan folder and running
 .. code-block:: shell
 
     # MacOS and Linux
-    make CMDSTAN=/path/to/cmdstan/here/ test_models/multi/multi_model.so
+    make test_models/multi/multi_model.so
     # Windows
-    mingw32-make.exe CMDSTAN=C:/path/to/cmdstan/with/forward/slashes/ test_models/multi/multi_model.so
+    mingw32-make.exe test_models/multi/multi_model.so
 
 This will compile the file ``test_models/multi/multi.stan`` into a shared library object for use with BridgeStan.
-
-
+This requires internet access the first time it is run.
 
 Interface: Python
 -----------------

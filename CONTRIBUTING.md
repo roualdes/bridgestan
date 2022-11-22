@@ -48,7 +48,7 @@ If you wish to build the C++ portions of the documentation, you should also have
 
 ## Builds
 
-We use [Gnu make](https://www.gnu.org/software/make/) for builds.  If you have installed [CmdStan](https://mc-stan.org/users/interfaces/cmdstan) as required for the source to work, then you will already have Gnu make and a sufficient C++ compiler.
+We use [Gnu make](https://www.gnu.org/software/make/) for builds.  If you have installed [CmdStan](https://mc-stan.org/users/interfaces/cmdstan), then you will already have Gnu make and a sufficient C++ compiler.
 
 
 ## Language specific practices

@@ -10,6 +10,7 @@ Stan is a probabilistic programming language for coding statistical
 models.  For an introduction to what can be coded in Stan, see the
 [*Stan User's Guide*](https://mc-stan.org/docs/stan-users-guide/index.html).
 
+BridgeStan is currently shipping with Stan version 2.31.0
 
 More documentation is available at https://roualdes.github.io/bridgestan/
 
@@ -26,11 +27,10 @@ compiler combinations.
 
 ## Installing BridgeStan
 
-### Step 1: Install C++, make, and CmdStan
+### Step 1: Install a C++14 compiler and make
 
 See the section [Prerequisites](#prerequisites) for instructions on
-installing a C++ toolchain and CmdStan.  Please verify CmdStan is
-working before proceeding.
+installing a C++ toolchain.
 
 ### Step 2: Download BridgeStan
 
@@ -38,11 +38,13 @@ To download BridgeStan into directory `<parent-dir>`, use the following.
 
 ```shell
 $ cd <parent-dir>
-$ git clone https://github.com/roualdes/bridgestan.git
+$ git clone --recurse-submodules https://github.com/roualdes/bridgestan.git
 ```
 
-There is no need to build anything up front.
+If you clone without the `--recurse-submodules` argument, you can download the required
+submodules with `make stan-update`.
 
+There is no need to build anything up front.
 
 ## Using BridgeStan
 
@@ -56,10 +58,8 @@ shared object (`.so` file), use the following.
 
 ```
 $ cd bridgestan
-$ CMDSTAN=/path/to/cmdstan/ make test_models/multi/multi_model.so
+$ make test_models/multi/multi_model.so
 ```
-
-The forward slash (`/`) at the end of `cmdstan/` is necessary.
 
 ### Using BridgeStan with Python or Julia
 
@@ -80,12 +80,7 @@ By default, BridgeStan uses the default compiler flags set from
 CmdStan's `makefile`.  To override the defaults or add new flags, create
 or edit the file
 
-* local make commands: `<cmdstan-dir>/make/local`.
-
-To help get started, CmdStan includes an example
-`<cmdstan-dir>/make/local.example` that can be copied to
-`<cmdstan-dir>/make/local`.
-
+* local make commands: `<bridgestan dir>/make/local`.
 
 For example, setting the contents of `make/local` to the following
 includes compiler flags for optimization level and architecture.
@@ -127,15 +122,6 @@ will most likely lead to segmentation faults or other crashes.
 
 ## Tips
 
-### Windows paths
-
-On Windows, BridgeStan requires *forward slashes* in the path to
-CmdStan, as in the following example.
-
-```shell
-mingw32-make.exe CMDSTAN="C:/path/to/cmdstan/" ./test_models/multi/multi_model.so
-```
-
 ### Sizes and `param_constrain()` and `param_unconstrain()`
 
 For a given vector `q` of unconstrained parameters, the function
@@ -166,48 +152,29 @@ The interfaces may depend on different packages in their respective languages.
 Stan requires a C++ tool chain consisting of
 
 * A C++11 compiler
-* The Gnu `make` utility for \*nix *or* mingw for Windows
+* The Gnu `make` utility for \*nix *or* `mingw32-make` for Windows
 
-Here are complete instructions by platform for installing both.
+Here are complete instructions by platform for installing both, from the CmdStan installation instructions.
 
 * [C++ tool chain installation](https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html#cpp-toolchain)
-
-### Prereq: CmdStan
-
-To install CmdStan, follow the instructions in the guide,
-
-* [Getting Started with CmdStan](https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html)
 
 
 ### Ensuring tools are built/imported
 
 At this point, everything should be in place to build and execute a
-Stan program.  We will assume
-
-* CmdStan is installed in `<cmdstan-dir>`, and
-* BridgeStan is checked out in `<bridgestan-dir>`.
+Stan program.  We will assume BridgeStan is checked out in `<bridgestan-dir>`.
 
 To verify the compiler chain is installed correctly, the following
 should run without errors.
 
 ```shell
-cd <cmdstan-dir>
-make <bridgestan-dir>/test_models/multi/multi
+cd <bridgestan-dir>
+make test_models/multi/multi
 ```
-
-The second command brings in the latest version of Stan.
 
 This will require internet access the first time you run it in order
 to download the appropriate Stan compiler for your platform into
-`<cmdstan-dir>/bin/stanc[.exe]`
-
-You can verify CmdStan works end-to-end by using the resulting
-executable to fit some data.
-
-```shell
-./<bridgestan-dir>/test_models/multi/multi sample data file=<bridgestan-dir>/test_models/multi/multi.data.json
-```
-
+`<bridgestan-dir>/bin/stanc[.exe]`
 
 ## Acknowledgements
 
