@@ -1,5 +1,5 @@
 #include "model_rng.hpp"
-#include <cmdstan/io/json/json_data.hpp>
+#include <stan/io/json/json_data.hpp>
 #include <stan/io/array_var_context.hpp>
 #include <stan/io/empty_var_context.hpp>
 #include <stan/io/var_context.hpp>
@@ -61,7 +61,7 @@ model_rng::model_rng(const char* data_file, unsigned int seed,
     std::ifstream in(data);
     if (!in.good())
       throw std::runtime_error("Cannot read input file: " + data);
-    auto data_context = cmdstan::json::json_data(in);
+    auto data_context = stan::json::json_data(in);
     in.close();
     model_ = &new_model(data_context, seed, &std::cerr);
   }
@@ -211,7 +211,7 @@ void model_rng::param_unconstrain(const double* theta, double* theta_unc) {
 
 void model_rng::param_unconstrain_json(const char* json, double* theta_unc) {
   std::stringstream in(json);
-  cmdstan::json::json_data inits_context(in);
+  stan::json::json_data inits_context(in);
   Eigen::VectorXd params_unc;
   model_->transform_inits(inits_context, params_unc, &std::cerr);
   Eigen::VectorXd::Map(theta_unc, params_unc.size()) = params_unc;
@@ -271,9 +271,7 @@ void model_rng::log_density_gradient(bool propto, bool jacobian,
   auto logp = make_model_lambda(propto, jacobian);
   int N = param_unc_num_;
   Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, N);
-  Eigen::VectorXd grad_vec(N);
-  stan::math::gradient(logp, params_unc, *val, grad_vec);
-  Eigen::VectorXd::Map(grad, N) = grad_vec;
+  stan::math::gradient(logp, params_unc, *val, grad, grad + N);
 }
 
 void model_rng::log_density_hessian(bool propto, bool jacobian,
