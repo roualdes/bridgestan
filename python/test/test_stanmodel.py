@@ -384,7 +384,6 @@ def test_log_density_gradient():
         bridge.log_density_gradient(y_unc, out=scratch_bad)
 
 
-@pytest.mark.forked
 def test_log_density_hessian():
     def _logp(y_unc):
         y = np.exp(y_unc)
