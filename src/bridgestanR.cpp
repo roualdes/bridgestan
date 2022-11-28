@@ -23,7 +23,7 @@ void bs_param_num_R(bs_model_rng** model, int* include_tp, int* include_gq,
                     int* num_out) {
   *num_out = bs_param_num(*model, *include_tp, *include_gq);
 }
-void param_unc_num_R(bs_model_rng** model, int* num_out) {
+void bs_param_unc_num_R(bs_model_rng** model, int* num_out) {
   *num_out = bs_param_unc_num(*model);
 }
 void bs_param_constrain_R(bs_model_rng** model, int* include_tp,
