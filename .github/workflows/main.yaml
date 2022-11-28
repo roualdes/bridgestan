@@ -117,6 +117,7 @@ jobs:
           export BRIDGESTAN=$(pwd)
           cd python/
           pytest -v
+          pytest -v --run-type=ad_hessian
 
   test_julia_client:
     needs: [build_test_models]

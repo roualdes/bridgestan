@@ -32,7 +32,13 @@ ifdef STAN_THREADS
 else
 	STAN_FLAG_THREADS=
 endif
-STAN_FLAGS=$(STAN_FLAG_THREADS)$(STAN_FLAG_OPENCL)
+ifdef BRIDGESTAN_AD_HESSIAN
+	CXXFLAGS+=-DSTAN_MODEL_FVAR_VAR -DBRIDGESTAN_AD_HESSIAN
+	STAN_FLAG_HESS=_adhessian
+else
+	STAN_FLAG_HESS=
+endif
+STAN_FLAGS=$(STAN_FLAG_THREADS)$(STAN_FLAG_OPENCL)$(STAN_FLAG_HESS)
 
 SRC ?= src/
 BRIDGE_DEPS = $(SRC)bridgestan.cpp $(SRC)bridgestan.h $(SRC)model_rng.cpp $(SRC)model_rng.hpp $(SRC)bridgestanR.cpp $(SRC)bridgestanR.h

@@ -5,7 +5,11 @@
 #include <stan/io/var_context.hpp>
 #include <stan/model/model_base.hpp>
 #include <stan/math.hpp>
+#include <stan/math/prim/meta.hpp>
 #include <stan/version.hpp>
+#ifdef BRIDGESTAN_AD_HESSIAN
+#include <stan/math/mix.hpp>
+#endif
 #include <algorithm>
 #include <cmath>
 #include <exception>
@@ -102,6 +106,11 @@ model_rng::model_rng(const char* data_file, unsigned int seed,
   info << "\tSTAN_CPP_OPTIMS=true" << std::endl;
 #else
   info << "\tSTAN_CPP_OPTIMS=false" << std::endl;
+#endif
+#ifdef BRIDGESTAN_AD_HESSIAN
+  info << "\tBRIDGESTAN_AD_HESSIAN=true" << std::endl;
+#else
+  info << "\tBRIDGESTAN_AD_HESSIAN=false" << std::endl;
 #endif
 
   info << "Stan Compiler Details:" << std::endl;
@@ -229,17 +238,21 @@ void model_rng::param_constrain(bool include_tp, bool include_gq,
 
 auto model_rng::make_model_lambda(bool propto, bool jacobian) {
   return [model = this->model_, propto, jacobian](auto& x) {
+    // log_prob() requires non-const but doesn't modify its argument
+    auto& params
+        = const_cast<Eigen::Matrix<stan::scalar_type_t<decltype(x)>, -1, 1>&>(
+            x);
     if (propto) {
       if (jacobian) {
-        return model->log_prob_propto_jacobian(x, &std::cerr);
+        return model->log_prob_propto_jacobian(params, &std::cerr);
       } else {
-        return model->log_prob_propto(x, &std::cerr);
+        return model->log_prob_propto(params, &std::cerr);
       }
     } else {
       if (jacobian) {
-        return model->log_prob_jacobian(x, &std::cerr);
+        return model->log_prob_jacobian(params, &std::cerr);
       } else {
-        return model->log_prob(x, &std::cerr);
+        return model->log_prob(params, &std::cerr);
       }
     }
   };
@@ -283,8 +296,14 @@ void model_rng::log_density_hessian(bool propto, bool jacobian,
   Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
   Eigen::VectorXd grad_vec(N);
   Eigen::MatrixXd hess_mat(N, N);
+
+#ifdef BRIDGESTAN_AD_HESSIAN
+  stan::math::hessian(logp, params_unc, *val, grad_vec, hess_mat);
+#else
   stan::math::internal::finite_diff_hessian_auto(logp, params_unc, *val,
                                                  grad_vec, hess_mat);
+#endif
+
   Eigen::VectorXd::Map(grad, N) = grad_vec;
   Eigen::MatrixXd::Map(hessian, N, N) = hess_mat;
 }
