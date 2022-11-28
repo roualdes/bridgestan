@@ -34,5 +34,5 @@ This is equivalent to calling `compile_model` and then the original constructor 
 """
 StanModel(; stan_file::String, data::String = "", seed = 204, chain_id = 0) =
     StanModel(compile_model(stan_file), data, seed, chain_id)
-    
+
 end

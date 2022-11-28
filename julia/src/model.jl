@@ -31,7 +31,9 @@ mutable struct StanModel
         end
 
         if in(abspath(lib), Libc.Libdl.dllist())
-            @warn "Loading a shared object '" * lib * "' which is already loaded.\n" *
+            @warn "Loading a shared object '" *
+                  lib *
+                  "' which is already loaded.\n" *
                   "If the file has changed since the last time it was loaded, this load may not update the library!"
         end
 
