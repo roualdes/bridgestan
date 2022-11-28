@@ -12,7 +12,7 @@
  * CSV format.  Instances can be constructed with the C function
  * `construct()` and destroyed with the C function `destruct()`.
  */
-class model_rng {
+class bs_model_rng {
  public:
   /**
    * Construct a model and random number generator with cached
@@ -23,12 +23,12 @@ class model_rng {
    * @param[in] chain_id number of gaps to skip in the pseudorandom
    * number generator for concurrent computations
    */
-  model_rng(const char* data_file, unsigned int seed, unsigned int chain_id);
+  bs_model_rng(const char* data_file, unsigned int seed, unsigned int chain_id);
 
   /**
    * Destroy this object and free all of the memory allocated for it.
    */
-  ~model_rng();
+  ~bs_model_rng();
 
   /**
    * Return the name of the model.  This class manages the memory,
