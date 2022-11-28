@@ -44,7 +44,7 @@ mutable struct StanModel
         lib = Libc.Libdl.dlopen(lib)
 
         stanmodel = ccall(
-            Libc.Libdl.dlsym(lib, "construct"),
+            Libc.Libdl.dlsym(lib, "bs_construct"),
             Ptr{StanModelStruct},
             (Cstring, UInt32, UInt32),
             data,
