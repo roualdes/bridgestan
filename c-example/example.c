@@ -8,11 +8,11 @@ int main(int argc, char** argv) {
   } else {
     data = "";
   }
-  model_rng* model = construct(data, 123, 0);
+  bs_model_rng* model = bs_construct(data, 123, 0);
   if (!model) {
     return 1;
   }
-  printf("This model's name is %s.\n", name(model));
-  printf("It has %d parameters.\n", param_num(model, 0, 0));
-  return destruct(model);
+  printf("This model's name is %s.\n", bs_name(model));
+  printf("It has %d parameters.\n", bs_param_num(model, 0, 0));
+  return bs_destruct(model);
 }

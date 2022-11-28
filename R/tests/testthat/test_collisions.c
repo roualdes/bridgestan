@@ -14,7 +14,7 @@ by BridgeStan.
 
 const char *out = "test me";
 
-void name_R(void **unused, char const **name_out)
+void bs_name_R(void **unused, char const **name_out)
 {
   *name_out = out;
 }

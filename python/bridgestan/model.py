@@ -62,7 +62,7 @@ class StanModel:
         self.seed = seed
         self.chain_id = chain_id
 
-        self._construct = self.stanlib.construct
+        self._construct = self.stanlib.bs_construct
         self._construct.restype = ctypes.c_void_p
         self._construct.argtypes = [ctypes.c_char_p, ctypes.c_uint, ctypes.c_uint]
 
@@ -73,23 +73,23 @@ class StanModel:
         if not self.model_rng:
             raise RuntimeError("could not construct model RNG")
 
-        self._name = self.stanlib.name
+        self._name = self.stanlib.bs_name
         self._name.restype = ctypes.c_char_p
         self._name.argtypes = [ctypes.c_void_p]
 
-        self._model_info = self.stanlib.model_info
+        self._model_info = self.stanlib.bs_model_info
         self._model_info.restype = ctypes.c_char_p
         self._model_info.argtypes = [ctypes.c_void_p]
 
-        self._param_num = self.stanlib.param_num
+        self._param_num = self.stanlib.bs_param_num
         self._param_num.restype = ctypes.c_int
         self._param_num.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_int]
 
-        self._param_unc_num = self.stanlib.param_unc_num
+        self._param_unc_num = self.stanlib.bs_param_unc_num
         self._param_unc_num.restype = ctypes.c_int
         self._param_unc_num.argtypes = [ctypes.c_void_p]
 
-        self._param_names = self.stanlib.param_names
+        self._param_names = self.stanlib.bs_param_names
         self._param_names.restype = ctypes.c_char_p
         self._param_names.argtypes = [
             ctypes.c_void_p,
@@ -97,11 +97,11 @@ class StanModel:
             ctypes.c_int,
         ]
 
-        self._param_unc_names = self.stanlib.param_unc_names
+        self._param_unc_names = self.stanlib.bs_param_unc_names
         self._param_unc_names.restype = ctypes.c_char_p
         self._param_unc_names.argtypes = [ctypes.c_void_p]
 
-        self._param_constrain = self.stanlib.param_constrain
+        self._param_constrain = self.stanlib.bs_param_constrain
         self._param_constrain.restype = ctypes.c_int
         self._param_constrain.argtypes = [
             ctypes.c_void_p,
@@ -111,11 +111,11 @@ class StanModel:
             double_array,
         ]
 
-        self._param_unconstrain = self.stanlib.param_unconstrain
+        self._param_unconstrain = self.stanlib.bs_param_unconstrain
         self._param_unconstrain.restype = ctypes.c_int
         self._param_unconstrain.argtypes = [ctypes.c_void_p, double_array, double_array]
 
-        self._param_unconstrain_json = self.stanlib.param_unconstrain_json
+        self._param_unconstrain_json = self.stanlib.bs_param_unconstrain_json
         self._param_unconstrain_json.restype = ctypes.c_int
         self._param_unconstrain_json.argtypes = [
             ctypes.c_void_p,
@@ -123,7 +123,7 @@ class StanModel:
             double_array,
         ]
 
-        self._log_density = self.stanlib.log_density
+        self._log_density = self.stanlib.bs_log_density
         self._log_density.restype = ctypes.c_int
         self._log_density.argtypes = [
             ctypes.c_void_p,
@@ -133,7 +133,7 @@ class StanModel:
             ctypes.POINTER(ctypes.c_double),
         ]
 
-        self._log_density_gradient = self.stanlib.log_density_gradient
+        self._log_density_gradient = self.stanlib.bs_log_density_gradient
         self._log_density_gradient.restype = ctypes.c_int
         self._log_density_gradient.argtypes = [
             ctypes.c_void_p,
@@ -144,7 +144,7 @@ class StanModel:
             double_array,
         ]
 
-        self._log_density_hessian = self.stanlib.log_density_hessian
+        self._log_density_hessian = self.stanlib.bs_log_density_hessian
         self._log_density_hessian.restype = ctypes.c_int
         self._log_density_hessian.argtypes = [
             ctypes.c_void_p,
@@ -156,7 +156,7 @@ class StanModel:
             double_array,
         ]
 
-        self._destruct = self.stanlib.destruct
+        self._destruct = self.stanlib.bs_destruct
         self._destruct.restype = ctypes.c_int
         self._destruct.argtypes = [ctypes.c_void_p]
 

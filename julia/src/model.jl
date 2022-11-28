@@ -31,7 +31,9 @@ mutable struct StanModel
         end
 
         if in(abspath(lib), Libc.Libdl.dllist())
-            @warn "Loading a shared object '" * lib * "' which is already loaded.\n" *
+            @warn "Loading a shared object '" *
+                  lib *
+                  "' which is already loaded.\n" *
                   "If the file has changed since the last time it was loaded, this load may not update the library!"
         end
 
@@ -42,7 +44,7 @@ mutable struct StanModel
         lib = Libc.Libdl.dlopen(lib)
 
         stanmodel = ccall(
-            Libc.Libdl.dlsym(lib, "construct"),
+            Libc.Libdl.dlsym(lib, "bs_construct"),
             Ptr{StanModelStruct},
             (Cstring, UInt32, UInt32),
             data,
@@ -57,7 +59,7 @@ mutable struct StanModel
 
         function f(sm)
             ccall(
-                Libc.Libdl.dlsym(sm.lib, "destruct"),
+                Libc.Libdl.dlsym(sm.lib, "bs_destruct"),
                 UInt32,
                 (Ptr{StanModelStruct},),
                 sm.stanmodel,
@@ -75,7 +77,7 @@ Return the name of the model `sm`
 """
 function name(sm::StanModel)
     cstr = ccall(
-        Libc.Libdl.dlsym(sm.lib, "name"),
+        Libc.Libdl.dlsym(sm.lib, "bs_name"),
         Cstring,
         (Ptr{StanModelStruct},),
         sm.stanmodel,
@@ -93,7 +95,7 @@ compiler flags.
 """
 function model_info(sm::StanModel)
     cstr = ccall(
-        Libc.Libdl.dlsym(sm.lib, "model_info"),
+        Libc.Libdl.dlsym(sm.lib, "bs_model_info"),
         Cstring,
         (Ptr{StanModelStruct},),
         sm.stanmodel,
@@ -113,7 +115,7 @@ respectively.
 """
 function param_num(sm::StanModel; include_tp = false, include_gq = false)
     ccall(
-        Libc.Libdl.dlsym(sm.lib, "param_num"),
+        Libc.Libdl.dlsym(sm.lib, "bs_param_num"),
         Cint,
         (Ptr{StanModelStruct}, Cint, Cint),
         sm.stanmodel,
@@ -134,7 +136,7 @@ when variables are declared with constraints. For example,
 """
 function param_unc_num(sm::StanModel)
     ccall(
-        Libc.Libdl.dlsym(sm.lib, "param_unc_num"),
+        Libc.Libdl.dlsym(sm.lib, "bs_param_unc_num"),
         Cint,
         (Ptr{StanModelStruct},),
         sm.stanmodel,
@@ -155,7 +157,7 @@ Parameter order of the output is column major and more generally last-index majo
 """
 function param_names(sm::StanModel; include_tp = false, include_gq = false)
     cstr = ccall(
-        Libc.Libdl.dlsym(sm.lib, "param_names"),
+        Libc.Libdl.dlsym(sm.lib, "bs_param_names"),
         Cstring,
         (Ptr{StanModelStruct}, Cint, Cint),
         sm.stanmodel,
@@ -175,7 +177,7 @@ and a vector entry `b[3]` has indexed name `b.3`.
 """
 function param_unc_names(sm::StanModel)
     cstr = ccall(
-        Libc.Libdl.dlsym(sm.lib, "param_unc_names"),
+        Libc.Libdl.dlsym(sm.lib, "bs_param_unc_names"),
         Cstring,
         (Ptr{StanModelStruct},),
         sm.stanmodel,
@@ -209,7 +211,7 @@ function param_constrain!(
         )
     end
     rc = ccall(
-        Libc.Libdl.dlsym(sm.lib, "param_constrain"),
+        Libc.Libdl.dlsym(sm.lib, "bs_param_constrain"),
         Cint,
         (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}),
         sm.stanmodel,
@@ -271,7 +273,7 @@ function param_unconstrain!(sm::StanModel, theta::Vector{Float64}, out::Vector{F
     end
 
     rc = ccall(
-        Libc.Libdl.dlsym(sm.lib, "param_unconstrain"),
+        Libc.Libdl.dlsym(sm.lib, "bs_param_unconstrain"),
         Cint,
         (Ptr{StanModelStruct}, Ref{Cdouble}, Ref{Cdouble}),
         sm.stanmodel,
@@ -324,7 +326,7 @@ function param_unconstrain_json!(sm::StanModel, theta::String, out::Vector{Float
     end
 
     rc = ccall(
-        Libc.Libdl.dlsym(sm.lib, "param_unconstrain_json"),
+        Libc.Libdl.dlsym(sm.lib, "bs_param_unconstrain_json"),
         Cint,
         (Ptr{StanModelStruct}, Cstring, Ref{Cdouble}),
         sm.stanmodel,
@@ -364,7 +366,7 @@ and includes change of variables terms for constrained parameters if `jacobian` 
 function log_density(sm::StanModel, q::Vector{Float64}; propto = true, jacobian = true)
     lp = Ref(0.0)
     rc = ccall(
-        Libc.Libdl.dlsym(sm.lib, "log_density"),
+        Libc.Libdl.dlsym(sm.lib, "bs_log_density"),
         Cint,
         (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}),
         sm.stanmodel,
@@ -409,7 +411,7 @@ function log_density_gradient!(
     end
 
     rc = ccall(
-        Libc.Libdl.dlsym(sm.lib, "log_density_gradient"),
+        Libc.Libdl.dlsym(sm.lib, "bs_log_density_gradient"),
         Cint,
         (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}, Ref{Cdouble}),
         sm.stanmodel,
@@ -485,7 +487,7 @@ function log_density_hessian!(
     end
 
     rc = ccall(
-        Libc.Libdl.dlsym(sm.lib, "log_density_hessian"),
+        Libc.Libdl.dlsym(sm.lib, "bs_log_density_hessian"),
         Cint,
         (
             Ptr{StanModelStruct},
