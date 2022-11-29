@@ -1,4 +1,3 @@
-
 # REQUIRED IMPORTS
 import bridgestan as bs
 import numpy as np

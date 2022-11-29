@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 import bridgestan as bs
 
@@ -49,7 +50,7 @@ def test_model_info():
     std_so = str(STAN_FOLDER / "stdnormal" / "stdnormal_model.so")
     b = bs.StanModel(std_so)
     assert "STAN_OPENCL" in b.model_info()
-    
+
 
 def test_param_num():
     full_so = str(STAN_FOLDER / "full" / "full_model.so")
@@ -627,6 +628,33 @@ def test_fr_gaussian():
     for n in range(1, 11):
         np.testing.assert_string_equal(names_unc[pos], f"Omega.{n}")
         pos += 1
+
+
+@pytest.fixture
+def recompile_simple():
+    """Recompile simple_model with autodiff hessian enable, then clean-up/restore it after test"""
+
+    stanfile = STAN_FOLDER / "simple" / "simple.stan"
+    lib = bs.compile.generate_so_name(stanfile)
+    lib.unlink(missing_ok=True)
+    res = bs.compile_model(stanfile, ["BRIDGESTAN_AD_HESSIAN=true"])
+
+    yield res
+
+    lib.unlink(missing_ok=True)
+    bs.compile_model(stanfile, ["STAN_THREADS=true"])
+
+
+@pytest.mark.ad_hessian
+def test_hessian_autodiff(recompile_simple):
+    simple_data = str(STAN_FOLDER / "simple" / "simple.data.json")
+    model = bs.StanModel(recompile_simple, simple_data)
+    assert "BRIDGESTAN_AD_HESSIAN=true" in model.model_info()
+    D = 5
+    y = np.random.uniform(size=D)
+    lp, grad, hess = model.log_density_hessian(y)
+    np.testing.assert_allclose(-y, grad)
+    np.testing.assert_allclose(-np.identity(D), hess)
 
 
 if __name__ == "__main__":

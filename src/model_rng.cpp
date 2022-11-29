@@ -5,7 +5,11 @@
 #include <stan/io/var_context.hpp>
 #include <stan/model/model_base.hpp>
 #include <stan/math.hpp>
+#include <stan/math/prim/meta.hpp>
 #include <stan/version.hpp>
+#ifdef BRIDGESTAN_AD_HESSIAN
+#include <stan/math/mix.hpp>
+#endif
 #include <algorithm>
 #include <cmath>
 #include <exception>
@@ -51,8 +55,8 @@ char* to_csv(const std::vector<std::string>& names) {
   return strdup(s_c);
 }
 
-model_rng::model_rng(const char* data_file, unsigned int seed,
-                     unsigned int chain_id) {
+bs_model_rng::bs_model_rng(const char* data_file, unsigned int seed,
+                           unsigned int chain_id) {
   std::string data(data_file);
   if (data.empty()) {
     auto data_context = stan::io::empty_var_context();
@@ -103,6 +107,11 @@ model_rng::model_rng(const char* data_file, unsigned int seed,
 #else
   info << "\tSTAN_CPP_OPTIMS=false" << std::endl;
 #endif
+#ifdef BRIDGESTAN_AD_HESSIAN
+  info << "\tBRIDGESTAN_AD_HESSIAN=true" << std::endl;
+#else
+  info << "\tBRIDGESTAN_AD_HESSIAN=false" << std::endl;
+#endif
 
   info << "Stan Compiler Details:" << std::endl;
   for (auto s : model_->model_compile_info()) {
@@ -137,7 +146,7 @@ model_rng::model_rng(const char* data_file, unsigned int seed,
   param_tp_gq_num_ = names.size();
 }
 
-model_rng::~model_rng() {
+bs_model_rng::~bs_model_rng() {
   delete (model_);
   free(name_);
   free(model_info_);
@@ -148,11 +157,11 @@ model_rng::~model_rng() {
   free(param_tp_gq_names_);
 }
 
-const char* model_rng::name() { return name_; }
+const char* bs_model_rng::name() { return name_; }
 
-const char* model_rng::model_info() { return model_info_; }
+const char* bs_model_rng::model_info() { return model_info_; }
 
-const char* model_rng::param_names(bool include_tp, bool include_gq) {
+const char* bs_model_rng::param_names(bool include_tp, bool include_gq) {
   if (include_tp && include_gq)
     return param_tp_gq_names_;
   if (include_tp)
@@ -162,11 +171,11 @@ const char* model_rng::param_names(bool include_tp, bool include_gq) {
   return param_names_;
 }
 
-const char* model_rng::param_unc_names() { return param_unc_names_; }
+const char* bs_model_rng::param_unc_names() { return param_unc_names_; }
 
-int model_rng::param_unc_num() { return param_unc_num_; }
+int bs_model_rng::param_unc_num() { return param_unc_num_; }
 
-int model_rng::param_num(bool include_tp, bool include_gq) {
+int bs_model_rng::param_num(bool include_tp, bool include_gq) {
   if (include_tp && include_gq)
     return param_tp_gq_num_;
   if (include_tp)
@@ -176,7 +185,7 @@ int model_rng::param_num(bool include_tp, bool include_gq) {
   return param_num_;
 }
 
-void model_rng::param_unconstrain(const double* theta, double* theta_unc) {
+void bs_model_rng::param_unconstrain(const double* theta, double* theta_unc) {
   using std::set;
   using std::string;
   using std::vector;
@@ -209,7 +218,7 @@ void model_rng::param_unconstrain(const double* theta, double* theta_unc) {
   Eigen::VectorXd::Map(theta_unc, unc_params.size()) = unc_params;
 }
 
-void model_rng::param_unconstrain_json(const char* json, double* theta_unc) {
+void bs_model_rng::param_unconstrain_json(const char* json, double* theta_unc) {
   std::stringstream in(json);
   stan::json::json_data inits_context(in);
   Eigen::VectorXd params_unc;
@@ -217,8 +226,8 @@ void model_rng::param_unconstrain_json(const char* json, double* theta_unc) {
   Eigen::VectorXd::Map(theta_unc, params_unc.size()) = params_unc;
 }
 
-void model_rng::param_constrain(bool include_tp, bool include_gq,
-                                const double* theta_unc, double* theta) {
+void bs_model_rng::param_constrain(bool include_tp, bool include_gq,
+                                   const double* theta_unc, double* theta) {
   using Eigen::VectorXd;
   VectorXd params_unc = VectorXd::Map(theta_unc, param_unc_num_);
   Eigen::VectorXd params;
@@ -227,26 +236,30 @@ void model_rng::param_constrain(bool include_tp, bool include_gq,
   Eigen::VectorXd::Map(theta, params.size()) = params;
 }
 
-auto model_rng::make_model_lambda(bool propto, bool jacobian) {
+auto bs_model_rng::make_model_lambda(bool propto, bool jacobian) {
   return [model = this->model_, propto, jacobian](auto& x) {
+    // log_prob() requires non-const but doesn't modify its argument
+    auto& params
+        = const_cast<Eigen::Matrix<stan::scalar_type_t<decltype(x)>, -1, 1>&>(
+            x);
     if (propto) {
       if (jacobian) {
-        return model->log_prob_propto_jacobian(x, &std::cerr);
+        return model->log_prob_propto_jacobian(params, &std::cerr);
       } else {
-        return model->log_prob_propto(x, &std::cerr);
+        return model->log_prob_propto(params, &std::cerr);
       }
     } else {
       if (jacobian) {
-        return model->log_prob_jacobian(x, &std::cerr);
+        return model->log_prob_jacobian(params, &std::cerr);
       } else {
-        return model->log_prob(x, &std::cerr);
+        return model->log_prob(params, &std::cerr);
       }
     }
   };
 }
 
-void model_rng::log_density(bool propto, bool jacobian, const double* theta_unc,
-                            double* val) {
+void bs_model_rng::log_density(bool propto, bool jacobian,
+                               const double* theta_unc, double* val) {
   int N = param_unc_num_;
   if (propto) {
     Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
@@ -264,9 +277,9 @@ void model_rng::log_density(bool propto, bool jacobian, const double* theta_unc,
   }
 }
 
-void model_rng::log_density_gradient(bool propto, bool jacobian,
-                                     const double* theta_unc, double* val,
-                                     double* grad) {
+void bs_model_rng::log_density_gradient(bool propto, bool jacobian,
+                                        const double* theta_unc, double* val,
+                                        double* grad) {
   static thread_local stan::math::ChainableStack thread_instance;
   auto logp = make_model_lambda(propto, jacobian);
   int N = param_unc_num_;
@@ -274,17 +287,23 @@ void model_rng::log_density_gradient(bool propto, bool jacobian,
   stan::math::gradient(logp, params_unc, *val, grad, grad + N);
 }
 
-void model_rng::log_density_hessian(bool propto, bool jacobian,
-                                    const double* theta_unc, double* val,
-                                    double* grad, double* hessian) {
+void bs_model_rng::log_density_hessian(bool propto, bool jacobian,
+                                       const double* theta_unc, double* val,
+                                       double* grad, double* hessian) {
   static thread_local stan::math::ChainableStack thread_instance;
   auto logp = make_model_lambda(propto, jacobian);
   int N = param_unc_num_;
   Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
   Eigen::VectorXd grad_vec(N);
   Eigen::MatrixXd hess_mat(N, N);
+
+#ifdef BRIDGESTAN_AD_HESSIAN
+  stan::math::hessian(logp, params_unc, *val, grad_vec, hess_mat);
+#else
   stan::math::internal::finite_diff_hessian_auto(logp, params_unc, *val,
                                                  grad_vec, hess_mat);
+#endif
+
   Eigen::VectorXd::Map(grad, N) = grad_vec;
   Eigen::MatrixXd::Map(hessian, N, N) = hess_mat;
 }

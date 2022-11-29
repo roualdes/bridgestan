@@ -53,7 +53,7 @@ and remove ``STANC3_VERSION`` from your ``make/local`` file, before running ``ma
 
 If you wish to use BridgeStan with a custom fork or branch, the best thing to do is to check out that branch in the ``stan`` submodule,
 or, if the fork is of stan-math, in ``stan/libs/stan_math``. The easiest way to use a custom stanc3 is to place the built executable at
-`bin/stanc[.exe]`.
+``bin/stanc[.exe]``.
 
 
 Interface: Python

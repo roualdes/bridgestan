@@ -138,6 +138,20 @@ the underlying Stan program. The `param_names()` and `param_unc_names()`
 functions give the canonical orderings for constrained and unconstrained
 parameters respectively.
 
+### Hessian calculations
+
+By default, Hessians in BridgeStan are calculated using central finite differences.
+This is because not all Stan models support the nested autodiff required for Hessians
+to be computed directly, particularly models which use implicit functions like the `algebra_solver`
+or ODE integrators.
+
+If your Stan model does not use these features, you can enable autodiff Hessians by
+setting the compile-time flag `BRIDGESTAN_AD_HESSIAN=true` in the invocation to `make`.
+This can be set in `make/local` if you wish to use it by default.
+
+This value is reported by the `model_info` function if you would like to check at run time
+whether Hessians are computed with nested autodiff or with finite differences.
+
 ## Prerequisites
 
 ### Prereq: Julia, Python, *or* R
