@@ -1,4 +1,4 @@
-use crate::bs_unsafe;
+use crate::ffi;
 use std::ffi::CStr;
 use std::ffi::CString;
 use std::ffi::NulError;
@@ -22,7 +22,7 @@ pub enum BridgeStanError {
 /// Safe wrapper for BridgeStan C functions
 #[non_exhaustive]
 pub struct StanModel {
-    model: *mut bs_unsafe::model_rng,
+    model: *mut ffi::bs_model_rng,
 }
 
 // BridgeStan model is thread safe
@@ -36,7 +36,7 @@ impl StanModel {
     pub fn new(path: &str, seed: u32, chain_id: u32) -> Result<Self, BridgeStanError> {
         let data = CString::new(path)?.into_raw();
 
-        let model = unsafe { bs_unsafe::construct(data, seed, chain_id) };
+        let model = unsafe { ffi::bs_construct(data, seed, chain_id) };
 
         // retake pointer to free memory
         let _ = unsafe { CString::from_raw(data) };
@@ -49,7 +49,7 @@ impl StanModel {
 
     /// Return the name of the model or error if UTF decode fails
     pub fn name(&self) -> Result<&str, BridgeStanError> {
-        let cstr = unsafe { CStr::from_ptr(bs_unsafe::name(self.model)) };
+        let cstr = unsafe { CStr::from_ptr(ffi::bs_name(self.model)) };
         let res = cstr.to_str()?;
         Ok(res)
     }
@@ -57,7 +57,7 @@ impl StanModel {
     /// Number of parameters in the model on the constrained scale.
     /// Will also count transformed parameters and generated quantities if requested
     pub fn param_num(&self, include_tp: bool, include_gq: bool) -> usize {
-        unsafe { bs_unsafe::param_num(self.model, include_tp as i32, include_gq as i32) }
+        unsafe { ffi::bs_param_num(self.model, include_tp as i32, include_gq as i32) }
             .try_into()
             .unwrap()
     }
@@ -65,7 +65,7 @@ impl StanModel {
     /// Return the number of parameters on the unconstrained scale.
     /// In particular, this is the size of the slice required by the log_density functions.
     pub fn param_unc_num(&self) -> usize {
-        unsafe { bs_unsafe::param_unc_num(self.model) }
+        unsafe { ffi::bs_param_unc_num(self.model) }
             .try_into()
             .unwrap()
     }
@@ -91,7 +91,7 @@ impl StanModel {
 
         let mut val = 0.0;
         let rc = unsafe {
-            bs_unsafe::log_density_gradient(
+            ffi::bs_log_density_gradient(
                 self.model,
                 propto as i32,
                 jacobian as i32,
@@ -114,7 +114,7 @@ impl StanModel {
 impl Drop for StanModel {
     /// Free the memory allocated in C++. Panics if deallocation fails
     fn drop(&mut self) {
-        if unsafe { bs_unsafe::destruct(self.model) } != 0 {
+        if unsafe { ffi::bs_destruct(self.model) } != 0 {
             panic!("Deallocating model_rng failed")
         }
     }
