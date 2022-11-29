@@ -169,7 +169,7 @@ should run without errors.
 
 ```shell
 cd <bridgestan-dir>
-make test_models/multi/multi
+make test_models/multi/multi_model.so
 ```
 
 This will require internet access the first time you run it in order

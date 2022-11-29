@@ -45,7 +45,7 @@ return a path to the compiled library.
 Additional arguments to `make` can be passed as a vector, for example `["STAN_THREADS=true"]`
 enables the model's threading capabilities.
 
-This function assumes that the paths to BridgeStan is valid.
+This function assumes that the path to BridgeStan is valid.
 This can be set with `set_bridgestan_path!()`.
 """
 function compile_model(stan_file::AbstractString, args::AbstractVector{String}=String[])

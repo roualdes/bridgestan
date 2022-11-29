@@ -57,7 +57,7 @@ def compile_model(stan_file: str, args: List[str] = []) -> Path:
     Run BridgeStan's Makefile on a ``.stan`` file, creating the ``.so``
     used by the StanModel class.
 
-    This function assumes that the paths to BridgeStan is valid.
+    This function assumes that the path to BridgeStan is valid.
     This can be set with :func:`set_bridgestan_path`.
 
     :param stan_file: A path to a Stan model file.
