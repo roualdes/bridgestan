@@ -89,7 +89,6 @@ stan-update:
 
 stan-update-remote:
 	git submodule update --remote --init --recursive
-	git submodule update --init --recursive
 
 # print compilation command line config
 .PHONY: compile_info
