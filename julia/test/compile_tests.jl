@@ -33,7 +33,6 @@ end
 
 
 @testset "bad paths" begin
-    @test_throws ErrorException BridgeStan.set_cmdstan_path!("dummy")
     @test_throws ErrorException BridgeStan.set_bridgestan_path!("dummy")
     @test_throws ErrorException BridgeStan.set_bridgestan_path!(models)
 end

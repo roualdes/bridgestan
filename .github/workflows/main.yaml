@@ -8,8 +8,7 @@ on:
   workflow_dispatch: {}
 
 env:
-  CMDSTAN_VERSION: "2.31.0"
-  CACHE_VERSION: 0
+  CACHE_VERSION: 1
 
 jobs:
   build_test_models:
@@ -22,28 +21,19 @@ jobs:
     steps:
       - name: Check out github
         uses: actions/checkout@v3
-
-      - name: CmdStan installation cacheing
-        uses: actions/cache@v3
-        id: cmdstan-cache
         with:
-          path: ~/.cmdstan
-          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+          submodules: recursive
 
-      - name: Install CmdStan (Unix)
-        if: matrix.os != 'windows-latest'
-        run: |
-          pipx run --spec cmdstanpy install_cmdstan --version "${{ env.CMDSTAN_VERSION }}" --cores 2 --verbose
-
-      - name: Install CmdStan (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          pipx run --spec cmdstanpy install_cmdstan --version "${{ env.CMDSTAN_VERSION }}" --cores 2 --verbose --compiler
+      - name: Stan build caching
+        uses: actions/cache@v3
+        id: stan-cache
+        with:
+          path: ./stan/
+          key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
       - name: Build C example (Unix)
         if: matrix.os != 'windows-latest'
         run: |
-          export CMDSTAN=~/.cmdstan/cmdstan-${{ env.CMDSTAN_VERSION }}/
           cd c-example/
           make example
           make example_static
@@ -60,20 +50,17 @@ jobs:
         id: test-models
         with:
           path: ./test_models/
-          key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
+          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
 
       - name: Build test models (Unix)
         if: matrix.os != 'windows-latest' && steps.test-models.outputs.cache-hit != 'true'
         run: |
-          export CMDSTAN=~/.cmdstan/cmdstan-${{ env.CMDSTAN_VERSION }}/
           make STAN_THREADS=true O=0 test_models -j2
         shell: bash
 
       - name: Build test models (Windows)
         if: matrix.os == 'windows-latest' && steps.test-models.outputs.cache-hit != 'true'
         run: |
-          $raw_cmdstan = "$($HOME)/.cmdstan/cmdstan-${{ env.CMDSTAN_VERSION }}/"
-          $env:CMDSTAN = $raw_cmdstan.replace('\', '/')
           mingw32-make.exe STAN_THREADS=true O=0 test_models -j2
         shell: pwsh
 
@@ -88,23 +75,27 @@ jobs:
     steps:
       - name: Check out github
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Restore CmdStan
+      - name: Restore Stan
         uses: actions/cache@v3
+        id: stan-cache
         with:
-          path: ~/.cmdstan
-          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+          path: ./stan/
+          key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
       - name: Restore built models
         uses: actions/cache@v3
         id: test-models
         with:
           path: ./test_models/
-          key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
+          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
 
       - name: Install package
         run: |
@@ -129,21 +120,25 @@ jobs:
     steps:
       - name: Check out github
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
       - name: Set up Julia
         uses: julia-actions/setup-julia@v1
 
-      - name: Restore CmdStan
+      - name: Restore Stan
         uses: actions/cache@v3
+        id: stan-cache
         with:
-          path: ~/.cmdstan
-          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+          path: ./stan/
+          key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
       - name: Restore built models
         uses: actions/cache@v3
         id: test-models
         with:
           path: ./test_models/
-          key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
+          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
 
       - name: Run tests
         run: |
@@ -160,6 +155,8 @@ jobs:
     steps:
       - name: Check out github
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
       - name: Install R
         uses: r-lib/actions/setup-r@v2.3.1
@@ -172,18 +169,18 @@ jobs:
             any::testthat
             any::devtools
 
-      - name: Restore CmdStan
+      - name: Restore Stan
         uses: actions/cache@v3
         with:
-          path: ~/.cmdstan
-          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+          path: ./stan/
+          key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
       - name: Restore built models
         uses: actions/cache@v3
         id: test-models
         with:
           path: ./test_models/
-          key: ${{ hashFiles('**/*.stan', 'src/*') }}-${{ matrix.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
+          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
 
       - name: Run tests
         run: |
@@ -199,16 +196,18 @@ jobs:
     steps:
       - name: Check out github
         uses: actions/checkout@v3
-
-      - name: Restore CmdStan
-        uses: actions/cache@v3
         with:
-          path: ~/.cmdstan
-          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
+          submodules: recursive
+
+      - name: Restore Stan
+        uses: actions/cache@v3
+        id: stan-cache
+        with:
+          path: ./stan/
+          key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
       - name: Setup TBB
         run: |
-          cd ~/.cmdstan/cmdstan-${{ env.CMDSTAN_VERSION }}
           Add-Content $env:GITHUB_PATH "$(pwd)/stan/lib/stan_math/lib/tbb"
 
       - name: Restore built models
@@ -216,7 +215,7 @@ jobs:
         id: test-models
         with:
           path: ./test_models/
-          key: ${{ hashFiles('**/*.stan', 'src/*') }}-windows-latest-cmdstan-${{ env.CMDSTAN_VERSION }}-v${{ env.CACHE_VERSION }}
+          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp') }}-windows-latest-v${{ env.CACHE_VERSION }}
 
       - name: Install R
         uses: r-lib/actions/setup-r@v2.3.1

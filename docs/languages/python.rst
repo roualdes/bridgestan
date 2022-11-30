@@ -17,4 +17,3 @@ Compilation utilities
 
 .. autofunction:: bridgestan.compile_model
 .. autofunction:: bridgestan.set_bridgestan_path
-.. autofunction:: bridgestan.set_cmdstan_path

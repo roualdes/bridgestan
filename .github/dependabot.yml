@@ -8,3 +8,9 @@ updates:
     schedule:
       # Check for updates to GitHub Actions every month
       interval: "monthly"
+
+  # checks if stan-dev/stan@master has changed
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "daily"

@@ -359,10 +359,10 @@ compile_model(stan_file, args=[])
 
 Run BridgeStan’s Makefile on a `.stan` file, creating the `.so` used by StanModel and return a path to the compiled library. Additional arguments to `make` can be passed as a vector, for example `["STAN_THREADS=true"]` enables the model's threading capabilities.
 
-This function assumes that the paths to BridgeStan and CmdStan are both valid. These can be set with `set_bridgestan_path!()` and `set_cmdstan_path!()` if their default values do not match your system configuration.
+This function assumes that the path to BridgeStan is valid. This can be set with `set_bridgestan_path!()`.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L77-L88' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L42-L52' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.set_bridgestan_path!' href='#BridgeStan.set_bridgestan_path!'>#</a>
 **`BridgeStan.set_bridgestan_path!`** &mdash; *Function*.
@@ -378,21 +378,5 @@ Set the path BridgeStan.
 By default this is set to the value of the environment variable `BRIDGESTAN`.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L63-L70' class='documenter-source'>source</a><br>
-
-<a id='BridgeStan.set_cmdstan_path!' href='#BridgeStan.set_cmdstan_path!'>#</a>
-**`BridgeStan.set_cmdstan_path!`** &mdash; *Function*.
-
-
-
-```julia
-set_cmdstan_path!(path)
-```
-
-Set the path to CmdStan used by BridgeStan.
-
-By default this is set to the value of the environment variable `CMDSTAN`, or to the newest installation available in `~/.cmdstan/`.
-
-
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L47-L54' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L28-L35' class='documenter-source'>source</a><br>
 
