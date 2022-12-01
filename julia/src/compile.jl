@@ -71,7 +71,7 @@ function compile_model(
     output_file = splitext(absolute_path)[1] * "_model.so"
 
     cmd = Cmd(
-        `$(get_make()) $make_args STANCFLAGS="$stanc_args --include-paths=." $output_file`,
+        `$(get_make()) $make_args "STANCFLAGS=$stanc_args --include-paths=." $output_file`,
         dir = abspath(bridgestan),
     )
     out = IOBuffer()

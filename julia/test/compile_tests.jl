@@ -10,7 +10,7 @@ models = joinpath(@__DIR__, "../../test_models/")
     stanfile = joinpath(models, "multi", "multi.stan")
     lib = splitext(stanfile)[1] * "_model.so"
     rm(lib, force = true)
-    res = BridgeStan.compile_model(stanfile)
+    res = BridgeStan.compile_model(stanfile; stanc_args = ["--O1"])
     @test Base.samefile(lib, res)
 
     rm(lib)

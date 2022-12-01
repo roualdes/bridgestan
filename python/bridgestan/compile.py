@@ -86,7 +86,7 @@ def compile_model(
     cmd = (
         [MAKE]
         + make_args
-        + ['STANCFLAGS="' + " ".join(stanc_args + ["--include-paths=."]) + '"']
+        + ["STANCFLAGS=" + " ".join(stanc_args + ["--include-paths=."])]
         + [str(output)]
     )
     proc = subprocess.run(
