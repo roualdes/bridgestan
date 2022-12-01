@@ -46,7 +46,7 @@ The NumPy module :py:mod:`numpy.ctypeslib` is also used for compatibility.
 Julia
 _____
 
-Julia's FFI is documented in the `Julia manual <https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/>`__
+Julia's FFI is documented in the `Julia manual <https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/>`__.
 
 R
 _
@@ -72,7 +72,7 @@ must also be freed on that side. This means special consideration is
 needed to pass strings back and forth between the languages,
 and inspired some of the design decisions behind ideas like returning
 the parameter names as a comma separated list, rather than the more "natural"
-array of strings
+array of strings.
 
 Output Streams
 ______________

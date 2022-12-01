@@ -47,6 +47,28 @@ from the BridgeStan folder.
 Note that the Julia package depends on Julia 1.8+.
 
 
+<a id='Example-Program'></a>
+
+<a id='Example-Program-1'></a>
+
+## Example Program
+
+
+An example program is provided alongside the Julia interface code in `example.jl`:
+
+
+<details>
+<summary><a>example.jl</a></summary>
+
+
+```{literalinclude} ../../julia/example.jl
+:language: julia
+```
+
+
+</details>
+
+
 <a id='API-Reference'></a>
 
 <a id='API-Reference-1'></a>

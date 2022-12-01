@@ -54,12 +54,7 @@ We use [Gnu make](https://www.gnu.org/software/make/) for builds.  If you have p
 ### Python development
 
 * Python development relies on the external dependencies:
-    * [pytest](https://docs.pytest.org/en/7.1.x/)
     * [NumPy](https://numpy.org/)
-
-* We integrate a C wrapper of Stan's model class using the [ctypes](https://docs.python.org/3/library/ctypes.html) foreign function interface.
-
-* We use the [numpy.testing](https://numpy.org/doc/stable/reference/routines.testing.html) unit testing framework and run the tests by calling [pytest](https://docs.pytest.org/en/7.1.x/) from the top-level Python directory `bridgestan/python`.
 
 * We autoformat code with [black](https://black.readthedocs.io/en/stable/).
 
@@ -69,9 +64,6 @@ We use [Gnu make](https://www.gnu.org/software/make/) for builds.  If you have p
 
 * R dependencies beyond those included in this repo:
     * [R6 package](https://cran.r-project.org/web/packages/R6/index.html) for reference classes
-    * [testthat](https://testthat.r-lib.org) for unit testing
-
-* We use the most basic [.C interface](https://www.biostat.jhsph.edu/~rpeng/docs/interface.pdf) for calling C from R.
 
 ### Julia development
 
@@ -79,7 +71,7 @@ We use [Gnu make](https://www.gnu.org/software/make/) for builds.  If you have p
     * [Test](https://docs.julialang.org/en/v1/stdlib/Test/)
     * [LinearAlgebra](https://docs.julialang.org/en/v1/stdlib/LinearAlgebra/)
 
-* We use Julia's C foreign function interface, which is documented for [base C](https://docs.julialang.org/en/v1/base/c/) and the [C standard library](https://docs.julialang.org/en/v1/stdlib/Libdl/).
+* Julia code is formatted using [JuliaFormatter](https://github.com/domluna/JuliaFormatter.jl).
 
 
 ## Proposing a new interface language

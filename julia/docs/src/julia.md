@@ -30,6 +30,24 @@ from the BridgeStan folder.
 
 Note that the Julia package depends on Julia 1.8+.
 
+## Example Program
+
+An example program is provided alongside the Julia interface code in `example.jl`:
+
+
+```@raw html
+<details>
+<summary><a>example.jl</a></summary>
+```
+
+```{literalinclude} ../../julia/example.jl
+:language: julia
+```
+
+```@raw html
+</details>
+```
+
 ## API Reference
 
 ### StanModel interface

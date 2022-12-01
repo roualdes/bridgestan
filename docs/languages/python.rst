@@ -28,6 +28,24 @@ from the BridgeStan folder.
 Note that the Python package depends on Python 3.9+ and NumPy, and will install
 NumPy if it is not already installed.
 
+Example Program
+---------------
+
+An example program is provided alongside the Python interface code in `example.py`:
+
+.. raw:: html
+
+   <details>
+   <summary><a>example.py</a></summary>
+
+
+.. literalinclude:: ../../python/example.py
+   :language: python
+
+.. raw:: html
+
+   </details>
+
 API Reference
 -------------
 
