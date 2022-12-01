@@ -642,7 +642,7 @@ def recompile_simple():
     yield res
 
     lib.unlink(missing_ok=True)
-    bs.compile_model(stanfile, ["STAN_THREADS=true"])
+    bs.compile_model(stanfile, make_args=["STAN_THREADS=true"])
 
 
 @pytest.mark.ad_hessian
