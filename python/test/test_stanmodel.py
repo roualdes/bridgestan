@@ -637,7 +637,7 @@ def recompile_simple():
     stanfile = STAN_FOLDER / "simple" / "simple.stan"
     lib = bs.compile.generate_so_name(stanfile)
     lib.unlink(missing_ok=True)
-    res = bs.compile_model(stanfile, ["BRIDGESTAN_AD_HESSIAN=true"])
+    res = bs.compile_model(stanfile, make_args=["BRIDGESTAN_AD_HESSIAN=true"])
 
     yield res
 
