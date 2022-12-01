@@ -166,6 +166,8 @@ class StanModel:
         stan_file: str,
         model_data: Optional[str] = None,
         *,
+        stanc_args: List[str] = [],
+        make_args: List[str] = [],
         seed: int = 1234,
         chain_id: int = 0,
     ):
@@ -177,6 +179,11 @@ class StanModel:
 
         :param stan_file: A path to a Stan model file.
         :param model_data: A path to data in JSON format.
+        :param stanc_args: A list of arguments to pass to stanc3.
+            For example, ``["--O1"]`` will enable compiler optimization level 1.
+        :param make_args: A list of additional arguments to pass to Make.
+            For example, ``["STAN_THREADS=True"]`` will enable
+            threading for the compiled model.
         :param seed: A pseudo random number generator seed.
         :param chain_id: A unique identifier for concurrent chains of
             pseudorandom numbers.
@@ -185,7 +192,7 @@ class StanModel:
         :raises ValueError: If BridgeStan cannot be located.
         :raises RuntimeError: If compilation fails.
         """
-        result = compile_model(stan_file)
+        result = compile_model(stan_file, stanc_args=stanc_args, make_args=make_args)
         return cls(str(result), model_data, seed=seed, chain_id=chain_id)
 
     def __del__(self) -> None:

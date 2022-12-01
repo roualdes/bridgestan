@@ -14,7 +14,7 @@ models = joinpath(@__DIR__, "../../test_models/")
     @test Base.samefile(lib, res)
 
     rm(lib)
-    res = BridgeStan.compile_model(stanfile, ["STAN_THREADS=true"])
+    res = BridgeStan.compile_model(stanfile; make_args = ["STAN_THREADS=true"])
     @test Base.samefile(lib, res)
 end
 
