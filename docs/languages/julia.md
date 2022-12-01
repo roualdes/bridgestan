@@ -1,9 +1,9 @@
 
-<a id='Julia-Interface:-BridgeStan.jl'></a>
+<a id='Julia-Interface'></a>
 
-<a id='Julia-Interface:-BridgeStan.jl-1'></a>
+<a id='Julia-Interface-1'></a>
 
-# Julia Interface: BridgeStan.jl
+# Julia Interface
 
 
 % NB: If you are reading this file in python/docs/languages, you are reading a generated output!
@@ -15,11 +15,50 @@
 ---
 
 
+<a id='Installation'></a>
+
+<a id='Installation-1'></a>
+
+## Installation
+
+
+This assumes you have followed the [Getting Started guide](../getting-started.rst) to install BridgeStan's pre-requisites and downloaded a copy of the BridgeStan source code.
+
+
+To install the Julia interface, you can either install it directly from Github with
+
+
+```julia
+] add https://github.com/roualdes/bridgestan.git:julia
+```
+
+
+Or, since you have already downloaded the repository, you can run
+
+
+```julia
+] dev julia/
+```
+
+
+from the BridgeStan folder.
+
+
+Note that the Julia package depends on Julia 1.8+.
+
+
+<a id='API-Reference'></a>
+
+<a id='API-Reference-1'></a>
+
+## API Reference
+
+
 <a id='StanModel-interface'></a>
 
 <a id='StanModel-interface-1'></a>
 
-## StanModel interface
+### StanModel interface
 
 <a id='BridgeStan.StanModel' href='#BridgeStan.StanModel'>#</a>
 **`BridgeStan.StanModel`** &mdash; *Type*.
@@ -346,7 +385,7 @@ The result is stored in the vector `out`, and a reference is returned. See `para
 
 <a id='Compilation-utilities-1'></a>
 
-## Compilation utilities
+### Compilation utilities
 
 <a id='BridgeStan.compile_model' href='#BridgeStan.compile_model'>#</a>
 **`BridgeStan.compile_model`** &mdash; *Function*.

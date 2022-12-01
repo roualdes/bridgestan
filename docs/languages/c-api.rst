@@ -1,5 +1,5 @@
 C API
-=======
+=====
 
 ----
 
@@ -11,7 +11,7 @@ These are wrapped in the various high-level interfaces. An example calling
 these functions from pure-C can be found in the ``c-example/`` subdirectory
 of the repository.
 
-These functions are actually implemented in C++, see :doc:`../how-it-works` for more details.
+These functions are actually implemented in C++, see :doc:`../internals` for more details.
 
 .. autodoxygenfile:: bridgestan.h
     :project: bridgestan

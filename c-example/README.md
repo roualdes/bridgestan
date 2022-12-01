@@ -1,5 +1,7 @@
 # BridgeStan from C
 
+[View the C API documentation online](https://roualdes.github.io/bridgestan/languages/c-api.html).
+
 This shows how one could write a C program which calls BridgeStan.
 
 Any compiled language with a C foreign function interface and

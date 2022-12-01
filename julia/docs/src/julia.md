@@ -1,4 +1,4 @@
-# Julia Interface: BridgeStan.jl
+# Julia Interface
 
 ```@raw html
 % NB: If you are reading this file in python/docs/languages, you are reading a generated output!
@@ -9,7 +9,30 @@
 
 ---
 
-## StanModel interface
+## Installation
+
+This assumes you have followed the [Getting Started guide](../getting-started.rst)
+to install BridgeStan's pre-requisites and downloaded a copy of the BridgeStan source code.
+
+To install the Julia interface, you can either install it directly from Github with
+
+```julia
+] add https://github.com/roualdes/bridgestan.git:julia
+```
+
+Or, since you have already downloaded the repository, you can run
+
+```julia
+] dev julia/
+```
+
+from the BridgeStan folder.
+
+Note that the Julia package depends on Julia 1.8+.
+
+## API Reference
+
+### StanModel interface
 
 ```@docs
 StanModel
@@ -32,7 +55,7 @@ param_unconstrain!
 param_unconstrain_json!
 ```
 
-## Compilation utilities
+### Compilation utilities
 ```@docs
 compile_model
 set_bridgestan_path!

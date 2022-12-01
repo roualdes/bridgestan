@@ -2,7 +2,7 @@
 
 We welcome contributions to the project in any form, including bug reports, bug fixes, new features, improved documentation, or improved test coverage.
 
-Our next goal is a stable 1.0 release, which is mostly a matter of more thorough testing and documentation.
+Developer-specific documentation is available at https://roualdes.github.io/bridgestan/internals.html
 
 ## Licensing
 
@@ -27,23 +27,6 @@ We follow standard open source and GitHub practices:
 * We keep the main branch in a release-ready state at all times.
 
 * We propose updates through [GitHub Pull Requests](https://github.com/roualdes/bridgestan/pulls) so that we can do code review.  We do not push directly to the main branch.
-
-
-## Documentation
-
-We use [Sphinx](https://www.sphinx-doc.org/en/master/) to generate documentation, with the goal of publishing on [Read the Docs](https://readthedocs.org) for the first release.  The docs are currently hosted on the [GitHub pages](https://roualdes.github.io/bridgestan/) for this repository.
-
-We use the following developer-specific tools for documentation.
-
-* [Sphinx 5.0 or above](https://www.sphinx-doc.org/en/master/)
-* [nbsphinx](https://nbsphinx.readthedocs.io/en/0.8.9/)
-* [pydata-sphinx-theme](https://pydata-sphinx-theme.readthedocs.io/en/stable/)
-* [MySt-Parser](https://myst-parser.readthedocs.io/en/latest/)
-
-If you wish to build the C++ portions of the documentation, you should also have:
-
-* [Doxygen](https://doxygen.nl/)
-* [Breathe](https://breathe.readthedocs.io/en/stable/index.html)
 
 
 ## Builds
