@@ -11,7 +11,7 @@ which exposes the desired functionality. BridgeStan does this by
 using the ``extern "C"`` `linkage <https://en.cppreference.com/w/cpp/language/language_linkage>`__
 available in C++ to expose functions which are callable from C and C-compatible sources.
 
-BridgeStan clients are then built around their languages'
+BridgeStan clients are then built around their language's
 `Foreign Function Interface <https://en.wikipedia.org/wiki/Foreign_function_interface>`__ (FFI).
 
 This is a fairly portable solution, since the subset of the C language
@@ -79,6 +79,6 @@ ______________
 
 Output from the C++ code cannot easily be captured in the higher-level language.
 This is particularly relevant for error messaging, which is printed to the standard
-error output ``stderr`` from C++. This does _not_ , for example, correspond to the
-`sys.stderr` stream available from Python.
+error output ``stderr`` from C++. This does *not* , for example, correspond to the
+``sys.stderr`` stream available from Python.
 

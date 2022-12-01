@@ -26,4 +26,7 @@ If you wish to build the C++ portions of the documentation, you should also have
 * `Doxygen <https://doxygen.nl/>`__
 * `Breathe <https://breathe.readthedocs.io/en/stable/index.html>`__
 
-Similarly, the Julia documentation will only update if Julia is installed.
+Similarly, the Julia documentation will only update if Julia is installed. Julia
+documentation is written in ``julia/docs/src/julia.md``. We then build
+this with `DocumenterMarkdown.jl <https://github.com/JuliaDocs/DocumenterMarkdown.jl>`__,
+and the output is placed in ``docs/languages/julia.md``.
