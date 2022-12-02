@@ -54,8 +54,11 @@ _
 R features several built-in forms of foreign function interface. We use the most basic one, called ``.C``,
 as this is the least dependent on R's internals.
 
-Documentation on the ``.C`` interface can be found by calling ``help(.C)`` in an R session.
-A walk-through is available `online <https://www.biostat.jhsph.edu/~rpeng/docs/interface.pdf>`__.
+Documentation on the ``.C`` interface can be found by calling ``help(.C)`` in an R session. Equivalent
+documentation is available
+`online <https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Interface-functions-_002eC-and-_002eFortran>`__,
+as well as an extended
+`walk-through <https://www.biostat.jhsph.edu/~rpeng/docs/interface.pdf>`__.
 
 Note: One quirk of the ``.C`` interface is the requirement that all inputs and
 return values are passed by pointers. This is the reason for the ``bridgestan_R`` files in the source.
@@ -77,7 +80,7 @@ array of strings.
 Output Streams
 ______________
 
-Output from the C++ code cannot easily be captured in the higher-level language.
+Printed output from the C++ code cannot easily be captured in the higher-level language.
 This is particularly relevant for error messaging, which is printed to the standard
 error output ``stderr`` from C++. This does *not* , for example, correspond to the
 ``sys.stderr`` stream available from Python.
