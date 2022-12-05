@@ -47,7 +47,8 @@ return a path to the compiled library.
 Arguments to `stanc3` can be passed as a vector, for example `["--O1"]` enables level 1 compiler
 optimizations.
 Additional arguments to `make` can be passed as a vector, for example `["STAN_THREADS=true"]`
-enables the model's threading capabilities.
+enables the model's threading capabilities. If the same flags are defined in `make/local`,
+the versions passed here will take precedent.
 
 This function assumes that the path to BridgeStan is valid.
 This can be set with `set_bridgestan_path!()`.
@@ -71,7 +72,7 @@ function compile_model(
     output_file = splitext(absolute_path)[1] * "_model.so"
 
     cmd = Cmd(
-        `$(get_make()) $make_args "STANCFLAGS=$stanc_args --include-paths=." $output_file`,
+        `$(get_make()) $make_args "STANCFLAGS=--include-paths=. $stanc_args" $output_file`,
         dir = abspath(bridgestan),
     )
     out = IOBuffer()

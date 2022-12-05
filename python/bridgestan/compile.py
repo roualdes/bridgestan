@@ -68,7 +68,8 @@ def compile_model(
         For example, ``["--O1"]`` will enable compiler optimization level 1.
     :param make_args: A list of additional arguments to pass to Make.
         For example, ``["STAN_THREADS=True"]`` will enable
-        threading for the compiled model.
+        threading for the compiled model. If the same flags are defined
+        in ``make/local``, the versions passed here will take precedent.
     :raises FileNotFoundError or PermissionError: If `stan_file` does not exist
         or is not readable.
     :raises ValueError: If BridgeStan cannot be located.
@@ -86,7 +87,7 @@ def compile_model(
     cmd = (
         [MAKE]
         + make_args
-        + ["STANCFLAGS=" + " ".join(stanc_args + ["--include-paths=."])]
+        + ["STANCFLAGS=" + " ".join(["--include-paths=."] + stanc_args)]
         + [str(output)]
     )
     proc = subprocess.run(
