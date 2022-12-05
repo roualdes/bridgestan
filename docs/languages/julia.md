@@ -354,15 +354,15 @@ The result is stored in the vector `out`, and a reference is returned. See `para
 
 
 ```julia
-compile_model(stan_file, args=[])
+compile_model(stan_file; stanc_args=[], make_args=[])
 ```
 
-Run BridgeStan’s Makefile on a `.stan` file, creating the `.so` used by StanModel and return a path to the compiled library. Additional arguments to `make` can be passed as a vector, for example `["STAN_THREADS=true"]` enables the model's threading capabilities.
+Run BridgeStan’s Makefile on a `.stan` file, creating the `.so` used by StanModel and return a path to the compiled library. Arguments to `stanc3` can be passed as a vector, for example `["--O1"]` enables level 1 compiler optimizations. Additional arguments to `make` can be passed as a vector, for example `["STAN_THREADS=true"]` enables the model's threading capabilities.
 
 This function assumes that the path to BridgeStan is valid. This can be set with `set_bridgestan_path!()`.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L42-L52' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L42-L54' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.set_bridgestan_path!' href='#BridgeStan.set_bridgestan_path!'>#</a>
 **`BridgeStan.set_bridgestan_path!`** &mdash; *Function*.

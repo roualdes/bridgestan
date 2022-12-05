@@ -32,6 +32,7 @@ MAKE = os.getenv(
 
 BRIDGESTAN_PATH = os.getenv("BRIDGESTAN", str(PYTHON_FOLDER.parent))
 
+
 def set_bridgestan_path(path: str) -> None:
     """Set the path to BridgeStan.
 
@@ -52,7 +53,9 @@ def generate_so_name(model: Path):
     return model.with_stem(f"{name}_model").with_suffix(".so")
 
 
-def compile_model(stan_file: str, args: List[str] = []) -> Path:
+def compile_model(
+    stan_file: str, *, stanc_args: List[str] = [], make_args: List[str] = []
+) -> Path:
     """
     Run BridgeStan's Makefile on a ``.stan`` file, creating the ``.so``
     used by the StanModel class.
@@ -61,9 +64,12 @@ def compile_model(stan_file: str, args: List[str] = []) -> Path:
     This can be set with :func:`set_bridgestan_path`.
 
     :param stan_file: A path to a Stan model file.
-    :param args: A list of additional arguments to pass to Make.
+    :param stanc_args: A list of arguments to pass to stanc3.
+        For example, ``["--O1"]`` will enable compiler optimization level 1.
+    :param make_args: A list of additional arguments to pass to Make.
         For example, ``["STAN_THREADS=True"]`` will enable
-        threading for the compiled model.
+        threading for the compiled model. If the same flags are defined
+        in ``make/local``, the versions passed here will take precedent.
     :raises FileNotFoundError or PermissionError: If `stan_file` does not exist
         or is not readable.
     :raises ValueError: If BridgeStan cannot be located.
@@ -76,8 +82,14 @@ def compile_model(stan_file: str, args: List[str] = []) -> Path:
     if file_path.suffix != ".stan":
         raise ValueError(f"File '{stan_file}' does not end in .stan")
 
+    stanc_args
     output = generate_so_name(file_path)
-    cmd = [MAKE] + args + [str(output)]
+    cmd = (
+        [MAKE]
+        + make_args
+        + ["STANCFLAGS=" + " ".join(["--include-paths=."] + stanc_args)]
+        + [str(output)]
+    )
     proc = subprocess.run(
         cmd, cwd=BRIDGESTAN_PATH, capture_output=True, text=True, check=False
     )

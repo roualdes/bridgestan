@@ -11,10 +11,10 @@ def test_compile_good():
     stanfile = STAN_FOLDER / "multi" / "multi.stan"
     lib = bs.compile.generate_so_name(stanfile)
     lib.unlink(missing_ok=True)
-    res = bs.compile_model(stanfile)
+    res = bs.compile_model(stanfile, stanc_args=["--O1"])
     assert lib.samefile(res)
     lib.unlink()
-    res = bs.compile_model(stanfile, args=["STAN_THREADS=true"])
+    res = bs.compile_model(stanfile, make_args=["STAN_THREADS=true"])
     assert lib.samefile(res)
 
 

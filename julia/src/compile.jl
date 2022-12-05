@@ -40,17 +40,24 @@ end
 
 
 """
-    compile_model(stan_file, args=[])
+    compile_model(stan_file; stanc_args=[], make_args=[])
 
 Run BridgeStan’s Makefile on a `.stan` file, creating the `.so` used by StanModel and
 return a path to the compiled library.
+Arguments to `stanc3` can be passed as a vector, for example `["--O1"]` enables level 1 compiler
+optimizations.
 Additional arguments to `make` can be passed as a vector, for example `["STAN_THREADS=true"]`
-enables the model's threading capabilities.
+enables the model's threading capabilities. If the same flags are defined in `make/local`,
+the versions passed here will take precedent.
 
 This function assumes that the path to BridgeStan is valid.
 This can be set with `set_bridgestan_path!()`.
 """
-function compile_model(stan_file::AbstractString, args::AbstractVector{String}=String[])
+function compile_model(
+    stan_file::AbstractString;
+    stanc_args::AbstractVector{String} = String[],
+    make_args::AbstractVector{String} = String[],
+)
     bridgestan = get_bridgestan()
     validate_stan_dir(bridgestan)
 
@@ -64,11 +71,13 @@ function compile_model(stan_file::AbstractString, args::AbstractVector{String}=S
     absolute_path = abspath(stan_file)
     output_file = splitext(absolute_path)[1] * "_model.so"
 
-    cmd =
-        Cmd(`$(get_make()) $args $output_file`, dir=abspath(bridgestan))
+    cmd = Cmd(
+        `$(get_make()) $make_args "STANCFLAGS=--include-paths=. $stanc_args" $output_file`,
+        dir = abspath(bridgestan),
+    )
     out = IOBuffer()
     err = IOBuffer()
-    is_ok = success(pipeline(cmd; stdout=out, stderr=err))
+    is_ok = success(pipeline(cmd; stdout = out, stderr = err))
     if !is_ok
         error(
             "Compilation failed!\nCommand: $cmd\nstdout: $(String(take!(out)))\nstderr: $(String(take!(err)))",
