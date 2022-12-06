@@ -20,8 +20,18 @@ Downloading BridgeStan
 Installing BridgeStan is as simple as ensuring that the above requirements are installed and then downloading
 the source repository.
 
-Installing with ``git``
-_______________________
+Downloading a released archive
+______________________________
+
+Downloads of a complete copy of the source code and interfaces are available
+on `our GitHub releases page <https://github.com/roualdes/bridgestan/releases>`__.
+
+To use these, simply download the file associated with the version you wish to use,
+and unzip its contents into the folder you would like BridgeStan to be in.
+
+
+Installing the latest version with ``git``
+__________________________________________
 
 If you have ``git`` installed, you may download BridgeStan by navigating to the folder you'd like
 BridgeStan to be in and running
