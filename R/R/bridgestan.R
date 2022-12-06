@@ -118,7 +118,7 @@ StanModel <- R6::R6Class("StanModel",
       )$num
     },
     #' @description
-    #' This turns a vector of unconstrained params into constrained parameters
+    #' Returns a vector of constrained params give the unconstrained parameters.
     #' See also `StanModel$param_unconstrain()`, the inverse of this function.
     #' @param theta_unc The vector of unconstrained parameters
     #' @param include_tp Whether to also output the transformed parameters of the model.
@@ -137,7 +137,7 @@ StanModel <- R6::R6Class("StanModel",
       vars$theta
     },
     #' @description
-    #' This turns a vector of constrained params into unconstrained parameters.
+    #' Returns a vector of unconstrained params give the constrained parameters.
     #'
     #' It is assumed that these will be in the same order as internally represented by
     #' the model (e.g., in the same order as `StanModel$param_names()`).

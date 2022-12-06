@@ -213,7 +213,7 @@ _Returns_
 
 **Method** `param_constrain()`:
 
-This turns a vector of unconstrained params into constrained
+Returns a vector of constrained params give the unconstrained parameters.
 parameters See also `StanModel$param_unconstrain()`, the inverse
 of this function.
 
@@ -242,8 +242,7 @@ _Returns_
 
 **Method** `param_unconstrain()`:
 
-This turns a vector of constrained params into unconstrained
-parameters.
+Returns a vector of unconstrained params give the constrained parameters.
 
 It is assumed that these will be in the same order as internally
 represented by the model (e.g., in the same order as

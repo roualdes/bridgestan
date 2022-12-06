@@ -171,7 +171,7 @@ The number of parameters in the model.
 \if{html}{\out{<a id="method-StanModel-param_constrain"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-param_constrain}{}}}
 \subsection{Method \code{param_constrain()}}{
-This turns a vector of unconstrained params into constrained parameters
+Returns a vector of constrained params give the unconstrained parameters.
 See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$param_constrain(theta_unc, include_tp = FALSE, include_gq = FALSE)}\if{html}{\out{</div>}}
@@ -196,7 +196,7 @@ The constrained parameters of the model.
 \if{html}{\out{<a id="method-StanModel-param_unconstrain"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-param_unconstrain}{}}}
 \subsection{Method \code{param_unconstrain()}}{
-This turns a vector of constrained params into unconstrained parameters.
+Returns a vector of unconstrained params give the constrained parameters.
 
 It is assumed that these will be in the same order as internally represented by
 the model (e.g., in the same order as \code{StanModel$param_names()}).

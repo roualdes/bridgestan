@@ -167,7 +167,7 @@ This allocates new memory for the gradient and Hessian output each call. See `lo
 param_constrain(sm, theta_unc, out; include_tp=false, include_gq=false)
 ```
 
-This turns a vector of unconstrained params into constrained parameters and (if `include_tp` and `include_gq` are set, respectively) transformed parameters and generated quantities.
+Returns a vector constrained parameters given unconstrained parameters. Additionally (if `include_tp` and `include_gq` are set, respectively) returns transformed parameters and generated quantities.
 
 This allocates new memory for the output each call. See `param_constrain!` for a version which allows re-using existing memory.
 
@@ -185,7 +185,7 @@ This is the inverse of `param_unconstrain`.
 param_unconstrain(sm, theta)
 ```
 
-This turns a vector of constrained params into unconstrained parameters.
+Returns a vector of unconstrained params give the constrained parameters.
 
 It is assumed that these will be in the same order as internally represented by the model (e.g., in the same order as `param_unc_names(sm)`). If structured input is needed, use `param_unconstrain_json`
 
@@ -355,7 +355,7 @@ The gradient is stored in the vector `out_grad` and the Hessian is stored in `ou
 param_constrain!(sm, theta_unc, out; include_tp=false, include_gq=false)
 ```
 
-This turns a vector of unconstrained params into constrained parameters and (if `include_tp` and `include_gq` are set, respectively) transformed parameters and generated quantities.
+Returns a vector constrained parameters given unconstrained parameters. Additionally (if `include_tp` and `include_gq` are set, respectively) returns transformed parameters and generated quantities.
 
 The result is stored in the vector `out`, and a reference is returned. See `param_constrain` for a version which allocates fresh memory.
 
@@ -373,7 +373,7 @@ This is the inverse of `param_unconstrain!`.
 param_unconstrain!(sm, theta, out)
 ```
 
-This turns a vector of constrained params into unconstrained parameters.
+Returns a vector of unconstrained params give the constrained parameters.
 
 It is assumed that these will be in the same order as internally represented by the model (e.g., in the same order as `param_names(sm)`). If structured input is needed, use `param_unconstrain_json!`
 
@@ -418,12 +418,12 @@ The result is stored in the vector `out`, and a reference is returned. See `para
 compile_model(stan_file; stanc_args=[], make_args=[])
 ```
 
-Run BridgeStan’s Makefile on a `.stan` file, creating the `.so` used by StanModel and return a path to the compiled library. Arguments to `stanc3` can be passed as a vector, for example `["--O1"]` enables level 1 compiler optimizations. Additional arguments to `make` can be passed as a vector, for example `["STAN_THREADS=true"]` enables the model's threading capabilities.
+Run BridgeStan’s Makefile on a `.stan` file, creating the `.so` used by StanModel and return a path to the compiled library. Arguments to `stanc3` can be passed as a vector, for example `["--O1"]` enables level 1 compiler optimizations. Additional arguments to `make` can be passed as a vector, for example `["STAN_THREADS=true"]` enables the model's threading capabilities. If the same flags are defined in `make/local`, the versions passed here will take precedent.
 
 This function assumes that the path to BridgeStan is valid. This can be set with `set_bridgestan_path!()`.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L42-L54' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L42-L55' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.set_bridgestan_path!' href='#BridgeStan.set_bridgestan_path!'>#</a>
 **`BridgeStan.set_bridgestan_path!`** &mdash; *Function*.

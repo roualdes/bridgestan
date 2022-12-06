@@ -188,9 +188,9 @@ end
 """
     param_constrain!(sm, theta_unc, out; include_tp=false, include_gq=false)
 
-This turns a vector of unconstrained params into constrained parameters
-and (if `include_tp` and `include_gq` are set, respectively) transformed parameters
-and generated quantities.
+Returns a vector constrained parameters given unconstrained parameters.
+Additionally (if `include_tp` and `include_gq` are set, respectively)
+returns transformed parameters and generated quantities.
 
 The result is stored in the vector `out`, and a reference is returned. See
 `param_constrain` for a version which allocates fresh memory.
@@ -229,9 +229,9 @@ end
 """
     param_constrain(sm, theta_unc, out; include_tp=false, include_gq=false)
 
-This turns a vector of unconstrained params into constrained parameters
-and (if `include_tp` and `include_gq` are set, respectively)
-transformed parameters and generated quantities.
+Returns a vector constrained parameters given unconstrained parameters.
+Additionally (if `include_tp` and `include_gq` are set, respectively)
+returns transformed parameters and generated quantities.
 
 This allocates new memory for the output each call.
 See `param_constrain!` for a version which allows
@@ -252,7 +252,7 @@ end
 """
     param_unconstrain!(sm, theta, out)
 
-This turns a vector of constrained params into unconstrained parameters.
+Returns a vector of unconstrained params give the constrained parameters.
 
 It is assumed that these will be in the same order as internally represented by the model (e.g.,
 in the same order as `param_names(sm)`). If structured input is needed, use `param_unconstrain_json!`
@@ -289,7 +289,7 @@ end
 """
     param_unconstrain(sm, theta)
 
-This turns a vector of constrained params into unconstrained parameters.
+Returns a vector of unconstrained params give the constrained parameters.
 
 It is assumed that these will be in the same order as internally represented by the model (e.g.,
 in the same order as `param_unc_names(sm)`). If structured input is needed, use `param_unconstrain_json`
