@@ -9,7 +9,7 @@ bernoulli_data = joinpath(@__DIR__, "../test_models/bernoulli/bernoulli.data.jso
 
 smb = BS.StanModel(stan_file = bernoulli_stan, data = bernoulli_data);
 
-println("This models name is $(BS.name(smb)).")
+println("This model's name is $(BS.name(smb)).")
 println("It has $(BS.param_num(smb)) parameters.")
 
 x = rand(BS.param_unc_num(smb));

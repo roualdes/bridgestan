@@ -31,6 +31,19 @@ from the BridgeStan folder.
 Note that the R package depends on R 3+ and R6, and will install R6 if it is not
 already installed.
 
+## Example Program
+
+An example program is provided alongside the R interface code in `example.R`:
+
+<details>
+<summary><a>Show example.R</a></summary>
+
+```{literalinclude} ../../R/example.R
+:language: R
+```
+
+</details>
+
 ## API Reference
 
 ### *R6::R6Class* `StanModel`
