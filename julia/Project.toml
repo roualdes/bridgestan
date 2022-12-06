@@ -1,4 +1,4 @@
 name = "BridgeStan"
 uuid = "c88b6f0a-829e-4b0b-94b7-f06ab5908f5a"
 authors = ["Brian Ward <bward@flatironinstitute.org>", "Bob Carpenter <bcarpenter@flatironinstitute.org", "Edward Roualdes <eroualdes@csuchico.edu>"]
-version = "0.0.1"
+version = "1.0.0"
