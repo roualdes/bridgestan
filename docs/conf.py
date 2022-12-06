@@ -20,6 +20,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.autodoc",
     "sphinx.ext.githubpages",
+    "sphinx_copybutton",
     "nbsphinx",
     "sphinx.ext.mathjax",
     "myst_parser",
@@ -75,9 +76,7 @@ intersphinx_mapping = {
 
 
 breathe_projects = {"bridgestan": "./_build/cppxml/"}
-breathe_projects_source = {
-    "bridgestan": ("../src/", ["bridgestan.h", "bridgestanR.h"])
-}
+breathe_projects_source = {"bridgestan": ("../src/", ["bridgestan.h", "bridgestanR.h"])}
 breathe_default_project = "bridgestan"
 
 

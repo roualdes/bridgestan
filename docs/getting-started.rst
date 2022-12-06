@@ -12,15 +12,18 @@ Stan requires a C++ tool chain consisting of
 
 Here are complete instructions by platform for installing both, from the CmdStan installation instructions.
 
-* `C++ tool chain installation <https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html#cpp-toolchain>`__
+* `C++ tool chain installation - CmdStan User's Guide <https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html#cpp-toolchain>`__
 
 Downloading BridgeStan
 ----------------------
 
-Installing BridgeStan is as simple as ensuring that the above pre-requisites are installed and then downloading
+Installing BridgeStan is as simple as ensuring that the above requirements are installed and then downloading
 the source repository.
 
-If you have ``git`` installed, you may do this by navigating to the folder you'd like
+Installing with ``git``
+_______________________
+
+If you have ``git`` installed, you may download BridgeStan by navigating to the folder you'd like
 BridgeStan to be in and running
 
 .. code-block:: shell
@@ -29,6 +32,10 @@ BridgeStan to be in and running
 
 If you clone without the ``--recurse-submodules`` argument, you can download the required
 submodules with ``make stan-update``.
+
+
+Testing the Installation
+________________________
 
 After this, BridgeStan is installed. You can test a basic compilation by opening
 a terminal in your BridgeStan folder and running
@@ -51,8 +58,8 @@ Installing an Interface
 To see instructions for installing the BridgeStan client package in your language of
 choice, see the :doc:`Language Interfaces page <languages>`.
 
-Customizing Build Flags
------------------------
+Optional: Customizing BridgeStan
+--------------------------------
 
 BridgeStan has many compiler flags and options set by default. Many of these defaults
 are the same as those used by the CmdStan interface to Stan.
@@ -91,9 +98,12 @@ or on the command line.
     STAN_THREADS=true
 
 Note that this flag changes a lot of the internals of the Stan library
-and as such, **all models used in the same process** should have the same
-setting. Mixing models which had ``STAN_THREADS`` enabled with those that didn't
+and as such, **all models used in the same process should have the same
+setting**. Mixing models which have ``STAN_THREADS`` enabled with those that do not
 will most likely lead to segmentation faults or other crashes.
+
+Additional flags, such as those for MPI and OpenCL, are covered in the
+`CmdStan User's Guide page on Parallelization <https://mc-stan.org/docs/cmdstan-guide/parallelization.html>`__.
 
 Faster Hessian calculations
 ___________________________
@@ -112,30 +122,8 @@ whether Hessians are computed with nested autodiff or with finite differences. S
 ``STAN_THREADS``, it is not advised to mix models which use autodiff Hessians with those that
 do not in the same program.
 
-Additional Tips
----------------
-
-Sizes and ``param_constrain()`` and ``param_unconstrain()``
-___________________________________________________________
-
-For a given vector ``q`` of unconstrained parameters, the function
-``param_constrain()`` can return an array with length longer than the
-length of ``q``.  This happens, for instance, with a ``cov_matrix[K]``
-parameter.  A covariance matrix has :math:`K \times K`` elements,
-but there are only :math:`K + \binom{K}{2}` parameters in the unconstrained
-parameterization (i.e., a Cholesky factor).
-
-Parameter ordering
-__________________
-
-Parameters are ordered for I/O in the same order they are declared in
-the underlying Stan program. The ``param_names()`` and ``param_unc_names()``
-functions give the canonical orderings for constrained and unconstrained
-parameters respectively.
-
-
 Using Custom Stan Versions
---------------------------
+__________________________
 
 If you wish to use BridgeStan for an older released version, all you need to do is
 
@@ -151,4 +139,3 @@ and remove ``STANC3_VERSION`` from your ``make/local`` file, before running ``ma
 If you wish to use BridgeStan with a custom fork or branch, the best thing to do is to check out that branch in the ``stan`` submodule,
 or, if the fork is of stan-math, in ``stan/libs/stan_math``. The easiest way to use a custom stanc3 is to place the built executable at
 ``bin/stanc[.exe]``.
-

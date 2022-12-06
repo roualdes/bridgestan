@@ -5,13 +5,13 @@ Testing for BridgeStan is primarily done through the higher-level :doc:`interfac
 
 All tests are based around the same set of test models (in the ``test_models/`` folder).
 
-You can build all of these at once with
+You can build all of the test models at once with
 
 .. code-block:: shell
 
     make STAN_THREADS=true test_models -j<jobs>
 
-Note: Technically, the additional functionality provided by
+Note: The additional functionality provided by
 ``STAN_THREADS`` is only tested by the Julia tests,
 but in order to facilitate the same built models being used in
 all tests we use it regardless of interface.

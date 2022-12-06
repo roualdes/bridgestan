@@ -16,6 +16,7 @@ This places the files in ``docs/_build/html``. At a minimum, the following must 
 * The Python interface to BridgeStan
 * `Sphinx 5.0 or above <https://www.sphinx-doc.org/en/master/>`__
 * `nbsphinx <https://nbsphinx.readthedocs.io/en/0.8.9/>`__
+* `sphinx-copybutton <https://sphinx-copybutton.readthedocs.io/en/latest/>`__
 * `pydata-sphinx-theme <https://pydata-sphinx-theme.readthedocs.io/en/stable/>`__
 * `MySt-Parser <https://myst-parser.readthedocs.io/en/latest/>`__
 
