@@ -65,8 +65,10 @@ includes compiler flags for optimization level and architecture.
 
 .. code-block:: Makefile
 
+    # By default we use -O3, this sets a less aggressive optimization level
+    O=2
     # Adding other arbitrary C++ compiler flags
-    CXXFLAGS+= -O3 -march=native
+    CXXFLAGS+= -march=native
 
 Flags for ``stanc3`` can also be set here
 
