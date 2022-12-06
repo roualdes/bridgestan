@@ -229,6 +229,7 @@ int bs_log_density_gradient(bs_model_rng* mr, bool propto, bool jacobian,
  * @param[in] theta unconstrained parameters
  * @param[out] val log density to be set
  * @param[out] grad gradient to set
+ * @param[out] hessian hessian to set
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */

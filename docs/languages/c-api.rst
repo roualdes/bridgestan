@@ -1,17 +1,42 @@
 C API
-=======
+=====
 
 ----
 
-Core API
---------
+Installation
+------------
+
+Please follow the :doc:`Getting Started guide <../getting-started>` to install
+BridgeStan's pre-requisites and downloaded a copy of the BridgeStan source code.
+
+
+Example Program
+---------------
+
+An example program is provided alongside the BridgeStan source in ``c-example/``.
+Details for building the example can be found in ``c-example/Makefile``.
+
+.. raw:: html
+
+   <details>
+   <summary><a>Show example.c</a></summary>
+
+
+.. literalinclude:: ../../c-example/example.c
+   :language: c
+
+.. raw:: html
+
+   </details>
+
+
+API Reference
+-------------
 
 The following are the C functions exposed by the BridgeStan library in ``bridgestan.h``.
-These are wrapped in the various high-level interfaces. An example calling
-these functions from pure-C can be found in the ``c-example/`` subdirectory
-of the repository.
+These are wrapped in the various high-level interfaces.
 
-These functions are actually implemented in C++, see :doc:`../how-it-works` for more details.
+These functions are implemented in C++, see :doc:`../internals` for more details.
 
 .. autodoxygenfile:: bridgestan.h
     :project: bridgestan

@@ -20,6 +20,6 @@ higher-level languages for arbitrary Stan models, such as those in
    :maxdepth: 2
    :caption: Contents:
 
-   install
+   getting-started
    languages
-   how-it-works
+   internals

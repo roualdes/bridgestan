@@ -1,4 +1,4 @@
-# R Interface: bridgestan.R
+# R Interface
 
 % The skeleton of this page was made using Roxygen2 and tools::Rd2txt, but it is not automated.
 % Maybe it will be one day
@@ -9,6 +9,40 @@
 
 
 ---
+
+## Installation
+
+This assumes you have followed the [Getting Started guide](../getting-started.rst)
+to install BridgeStan's pre-requisites and downloaded a copy of the BridgeStan source code.
+
+
+
+```R
+devtools::install_github("https://github.com/roualdes/bridgestan", subdir="R")
+```
+
+Or, since you have already downloaded the repository, you can run
+
+```R
+install.packages(file.path(getwd(),"R"), repos=NULL, type="source")
+```
+from the BridgeStan folder.
+
+Note that the R package depends on R 3+ and R6, and will install R6 if it is not
+already installed.
+
+## Example Program
+
+An example program is provided alongside the R interface code in `example.R`:
+
+<details>
+<summary><a>Show example.R</a></summary>
+
+```{literalinclude} ../../R/example.R
+:language: R
+```
+
+</details>
 
 ## API Reference
 
