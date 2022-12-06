@@ -54,8 +54,9 @@ choice, see the :doc:`Language Interfaces page <languages>`.
 Customizing Build Flags
 -----------------------
 
-By default, BridgeStan uses the default compiler flags set from
-CmdStan's ``makefile``. You can override the defaults or add new flags
+BridgeStan has many compiler flags and options set by default. Many of these defaults
+are the same as those used by the CmdStan interface to Stan.
+You can override the defaults or add new flags
 on the command line when invoking ``make``, or make them persistent by
 creating or editing the file ``<bridgestan dir>/make/local``.
 

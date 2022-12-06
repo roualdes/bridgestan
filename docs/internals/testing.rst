@@ -11,7 +11,10 @@ You can build all of these at once with
 
     make STAN_THREADS=true test_models -j<jobs>
 
-Note: ``STAN_THREADS`` is only required to run the Julia tests.
+Note: Technically, the additional functionality provided by
+``STAN_THREADS`` is only tested by the Julia tests,
+but in order to facilitate the same built models being used in
+all tests we use it regardless of interface.
 
 Tooling
 -------
