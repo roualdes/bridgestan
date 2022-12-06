@@ -58,7 +58,7 @@ An example program is provided alongside the Julia interface code in `example.jl
 
 
 <details>
-<summary><a>example.jl</a></summary>
+<summary><a>Show example.jl</a></summary>
 
 
 ```{literalinclude} ../../julia/example.jl

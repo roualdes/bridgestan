@@ -31,12 +31,12 @@ NumPy if it is not already installed.
 Example Program
 ---------------
 
-An example program is provided alongside the Python interface code in `example.py`:
+An example program is provided alongside the Python interface code in ``example.py``:
 
 .. raw:: html
 
    <details>
-   <summary><a>example.py</a></summary>
+   <summary><a>Show example.py</a></summary>
 
 
 .. literalinclude:: ../../python/example.py

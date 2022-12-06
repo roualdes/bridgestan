@@ -14,7 +14,8 @@
 This assumes you have followed the [Getting Started guide](../getting-started.rst)
 to install BridgeStan's pre-requisites and downloaded a copy of the BridgeStan source code.
 
-To install the Julia interface, you can either install it directly from Github with
+To install the Julia interface, you can either install it directly from Github by running
+the following inside a Julia REPL
 
 ```julia
 ] add https://github.com/roualdes/bridgestan.git:julia
@@ -37,7 +38,7 @@ An example program is provided alongside the Julia interface code in `example.jl
 
 ```@raw html
 <details>
-<summary><a>example.jl</a></summary>
+<summary><a>Show example.jl</a></summary>
 ```
 
 ```{literalinclude} ../../julia/example.jl
