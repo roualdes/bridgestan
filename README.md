@@ -55,16 +55,20 @@ This will require internet access the first time you run it in order
 to download the appropriate Stan compiler for your platform into
 `<bridgestan-dir>/bin/stanc[.exe]`
 
-### Using BridgeStan with Python or Julia
+### Example programs
 
 This repository includes examples of calling Stan through BridgeStan
-in Python or Julia.
+in Python, Julia, R, and C.
 
 * From Python: [`example.py`](julia/example.py)
 
 * From Julia: [`example.jl`](python/example.jl)
 
-Additional examples can be found in the `test` folder for each interface.
+* From R: [`example.r`](R/example.R)
+
+* From C: [`example.c`](c-example/example.c)
+
+Examples of other functionality can be found in the `test` folder for each interface.
 
 ## Acknowledgements
 
