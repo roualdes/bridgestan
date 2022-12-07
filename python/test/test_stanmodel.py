@@ -56,6 +56,8 @@ def test_model_info():
     std_so = str(STAN_FOLDER / "stdnormal" / "stdnormal_model.so")
     b = bs.StanModel(std_so)
     assert "STAN_OPENCL" in b.model_info()
+    assert "BridgeStan version: 1." in b.model_info()
+
 
 
 def test_param_num():

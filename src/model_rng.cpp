@@ -1,4 +1,5 @@
 #include "model_rng.hpp"
+#include "version.hpp"
 #include <stan/io/ends_with.hpp>
 #include <stan/io/json/json_data.hpp>
 #include <stan/io/array_var_context.hpp>
@@ -85,6 +86,9 @@ bs_model_rng::bs_model_rng(const char* data_file, unsigned int seed,
   name_ = strdup(model_name_c);
 
   std::stringstream info;
+  info << "BridgeStan version: " << bridgestan::MAJOR_VERSION << '.'
+       << bridgestan::MINOR_VERSION << '.' << bridgestan::PATCH_VERSION
+       << std::endl;
   info << "Stan version: " << stan::MAJOR_VERSION << '.' << stan::MINOR_VERSION
        << '.' << stan::PATCH_VERSION << std::endl;
 
