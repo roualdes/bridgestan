@@ -13,7 +13,9 @@ typedef int bool;
  * generator (PRNG) wrapper.  Data must be encoded in JSON as
  * indicated in the *CmdStan Reference Manual*.
  *
- * @param[in] data_file C-style path to JSON-encoded data file
+ * @param[in] data_file C-style string. This is either a
+ * path to JSON-encoded data file (must end with ".json"), or
+ * a string representation of a JSON object.
  * @param[in] seed seed for PRNG
  * @param[in] chain_id identifier for concurrent sequence of PRNG
  * draws
@@ -159,11 +161,11 @@ int bs_param_unconstrain(bs_model_rng* mr, const double* theta,
  * specification of the constrained parameters, and return a return
  * code of 0 for success and -1 for failure.  Parameter order is as
  * declared in the Stan program, with multivariate parameters given
- * in last-index-major order.  The JSON schema assumed is fully
+ * in last-index-major order. The JSON schema assumed is fully
  * defined in the *CmdStan Reference Manual*.
  *
  * @param[in] mr pointer to model and RNG structure
- * @param[in] json json-encoded constrained parameters
+ * @param[in] json JSON-encoded constrained parameters
  * @param[out] theta_unc sequence of unconstrained parameters
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
