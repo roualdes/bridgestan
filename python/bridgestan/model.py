@@ -22,7 +22,8 @@ class StanModel:
     return values.  The constructor arguments are
 
     :param model_lib: A path to a compiled shared object.
-    :param model_data: A path to data in JSON format.
+    :param model_data: Either a string representation of a JSON object or a
+         path to a data file in JSON format ending in ``.json``.
     :param seed: A pseudo random number generator seed.
     :param chain_id: A unique identifier for concurrent chains of
         pseudorandom numbers.
@@ -44,7 +45,8 @@ class StanModel:
         constructor arguments.
 
         :param model_lib: A system path to compiled shared object.
-        :param model_data: A system path to a JSON data file.
+        :param model_data: Either a string representation of a JSON object or a
+            system path to a data file in JSON format ending in ``.json``.
         :param seed: A pseudo random number generator seed.
         :param chain_id: A unique identifier for concurrent chains of
             pseudorandom numbers.
@@ -54,7 +56,7 @@ class StanModel:
             model from C++.
         """
         validate_readable(model_lib)
-        if not model_data is None:
+        if not model_data is None and model_data.endswith('.json'):
             validate_readable(model_data)
         self.lib_path = model_lib
         self.stanlib = ctypes.CDLL(self.lib_path)

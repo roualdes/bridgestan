@@ -1,4 +1,5 @@
 #include "model_rng.hpp"
+#include <stan/io/ends_with.hpp>
 #include <stan/io/json/json_data.hpp>
 #include <stan/io/array_var_context.hpp>
 #include <stan/io/empty_var_context.hpp>
@@ -62,12 +63,18 @@ bs_model_rng::bs_model_rng(const char* data_file, unsigned int seed,
     auto data_context = stan::io::empty_var_context();
     model_ = &new_model(data_context, seed, &std::cerr);
   } else {
-    std::ifstream in(data);
-    if (!in.good())
-      throw std::runtime_error("Cannot read input file: " + data);
-    auto data_context = stan::json::json_data(in);
-    in.close();
-    model_ = &new_model(data_context, seed, &std::cerr);
+    if (stan::io::ends_with(".json", data)) {
+      std::ifstream in(data);
+      if (!in.good())
+        throw std::runtime_error("Cannot read input file: " + data);
+      auto data_context = stan::json::json_data(in);
+      in.close();
+      model_ = &new_model(data_context, seed, &std::cerr);
+    } else {
+      std::istringstream json(data);
+      auto data_context = stan::json::json_data(json);
+      model_ = &new_model(data_context, seed, &std::cerr);
+    }
   }
   boost::ecuyer1988 rng(seed);
   rng.discard(chain_id * 1000000000000L);

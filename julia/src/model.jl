@@ -6,7 +6,8 @@ mutable struct StanModelStruct end
 
 A StanModel instance encapsulates a Stan model instantiated with data.
 
-The constructor a Stan model from the supplied library file path and data file path.
+The constructor a Stan model from the supplied library file path and data. Data
+should either be a string containing a JSON object or a path to a data file ending in `.json`.
 If seed or chain_id are supplied, these are used to initialize the RNG used by the model.
 
     StanModel(;stan_file, data="", seed=204, chain_id=0)
@@ -37,7 +38,7 @@ mutable struct StanModel
                   "If the file has changed since the last time it was loaded, this load may not update the library!"
         end
 
-        if data != "" && !isfile(data)
+        if data != "" && endswith(data, ".json") && !isfile(data)
             throw(SystemError("Data file not found"))
         end
 

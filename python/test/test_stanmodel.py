@@ -23,13 +23,19 @@ def test_constructor():
     b2 = bs.StanModel(bernoulli_so, bernoulli_data)
     np.testing.assert_allclose(bool(b2), True)
 
+    bernoulli_data_string = (
+        STAN_FOLDER / "bernoulli" / "bernoulli.data.json"
+    ).read_text()
+    b3 = bs.StanModel(bernoulli_so, bernoulli_data_string)
+    np.testing.assert_allclose(bool(b3), True)
+
     # test missing so file
     with np.testing.assert_raises(FileNotFoundError):
         bs.StanModel("nope, not going to find it")
 
     # test missing data file
     with np.testing.assert_raises(FileNotFoundError):
-        bs.StanModel(bernoulli_so, "nope, not going to find it")
+        bs.StanModel(bernoulli_so, "nope, not going to find it.json")
 
     # test data load exception
     throw_data_so = str(STAN_FOLDER / "throw_data" / "throw_data_model.so")

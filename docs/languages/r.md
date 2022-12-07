@@ -70,7 +70,7 @@ _Arguments_
 
   - `lib` A path to a compiled BridgeStan Shared Object file.
 
-  - `data` A path to a JSON data file for the model.
+  - `data` Either a string representation of a JSON object or a path to a data file in JSON format ending in ".json".
 
   - `rng_seed` Seed for the RNG in the model object.
 
