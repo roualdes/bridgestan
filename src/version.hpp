@@ -17,13 +17,13 @@
 
 namespace bridgestan {
 
-/** Major version number for Stan package. */
+/** Major version number for BridgeStan. */
 const std::string MAJOR_VERSION = BRIDGESTAN_STRING(BRIDGESTAN_MAJOR);
 
-/** Minor version number for Stan package. */
+/** Minor version number for BridgeStan. */
 const std::string MINOR_VERSION = BRIDGESTAN_STRING(BRIDGESTAN_MINOR);
 
-/** Patch version for Stan package. */
+/** Patch version for BridgeStan. */
 const std::string PATCH_VERSION = BRIDGESTAN_STRING(BRIDGESTAN_PATCH);
 
 }  // namespace bridgestan
