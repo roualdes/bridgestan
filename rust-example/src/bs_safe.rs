@@ -7,7 +7,7 @@ use std::str::Utf8Error;
 // This is more or less equivalent to manually defining Display and From<other error types>
 use thiserror::Error;
 
-#[derive(Error, Debug, PartialEq)]
+#[derive(Error, Debug, PartialEq, Eq)]
 pub enum BridgeStanError {
     #[error("failed to encode string to null-terminated C string")]
     StringEncodeError(#[from] NulError),

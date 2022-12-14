@@ -6,7 +6,7 @@ use std::path::PathBuf;
 fn main() {
     println!("cargo:rerun-if-env-changed=MODEL");
 
-    let model = env::var("MODEL").unwrap_or("full".to_string());
+    let model = env::var("MODEL").unwrap_or_else(|_| "full".to_string());
 
     // Tell cargo to look for shared libraries in the specified directory
     println!("cargo:rustc-link-search=../test_models/{}/", model);

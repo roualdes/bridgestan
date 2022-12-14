@@ -4,7 +4,7 @@ use std::error::Error;
 use std::thread;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let data_path = env::args().nth(1).unwrap_or("".to_string());
+    let data_path = env::args().nth(1).unwrap_or_default();
 
     let model = StanModel::new(&data_path, 123, 0)?;
 
