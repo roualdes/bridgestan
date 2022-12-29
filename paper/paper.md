@@ -18,6 +18,7 @@ authors:
     equal-contrib: true
     affiliation: 2
   - name: Bob Carpenter
+    equal-contrib: true
     affiliation: 2
 affiliations:
  - name: California State University, Chico
@@ -68,6 +69,7 @@ higher-level language.
 
 TODO create a list of key references to other software addressing related
 needs:
+
 * [TMB](https://cran.r-project.org/web/packages/TMB/index.html)
 * [CppAD](https://coin-or.github.io/CppAD/html/CppAD.html)
 * [JAX](https://github.com/google/jax)
