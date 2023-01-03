@@ -15,6 +15,7 @@ authors:
     corresponding: true
     affiliation: 1
   - name: Brian Ward
+    orcid: 0000-0002-9841-3342
     equal-contrib: true
     affiliation: 2
   - name: Bob Carpenter
@@ -45,7 +46,8 @@ differentiation of the user supplied Stan program [@Carpenter:2015].  Until
 density function or its gradient.  `BridgeStan` provides efficient in-memory
 access through Python, Julia, and R to the methods of a Stan model, including
 log densities, gradients, Hessians, and constraining and unconstraining
-transforms
+transforms.  Furthermore, these features are exposed through a language-agnostic C
+API, allowing for interfaces in other languages with minimal additional development.
 
 # Statement of need
 
@@ -108,7 +110,9 @@ efficient, in-memory computations between Stan and the host language.
 The Stan community by and large uses CPU hardware and since Stan primarily
 targets CPUs, `BridgeStan` is incredibly efficient for developing inference
 algorithms on CPUs.  The Stan math library and its automatic differentiation
-tools were evaluated for efficiency on CPUs in @Carpenter:2015.
+tools were evaluated for efficiency on CPUs in @Carpenter:2015.  `BridgeStan` also
+allows for the use of the same model/data in a multi-threaded environment for
+parallel evaluations of the log density function.
 
 `BridgeStan` enables memory allocated in the host language, for now Julia,
 Python, and R, to be reused within Stan; though any language with a C foreign
