@@ -32,18 +32,18 @@ bibliography: paper.bib
 
 # Summary
 
-Stan is a platorm for statistical modeling and computation used across many
+Stan is a platform for statistical modeling and computation used across many
 disciplines, including but not limited to social, biological, and physical
 sciences, engineering, and business [@Carpenter:2017; @Stan:2022].  Users
 specify a statistical model in Stan's probabilistic programming language, which
-encodes a log joint density function of their model.  With a Stan program, users
+encodes a log joint density function of their model.  Using existing Stan tools, users
 can obtain full Bayesian statistical inference via Markov chain Monte Carlo,
 approximate Bayesian inference via variational methods, or penalized maximum
 likelihood via optimization.  All of these methods require the gradient of the
 log joint density function.  Stan's math library provides automatic
 differentiation of the user supplied Stan program [@Carpenter:2015].  Until
 `BridgeStan`, there was limited access to the evaluations of the log joint
-density function or its gradient.  `BridgeStan` provides efficient in-memory
+density function itself, or its gradient.  `BridgeStan` provides efficient in-memory
 access through Python, Julia, and R to the methods of a Stan model, including
 log densities, gradients, Hessians, and constraining and unconstraining
 transforms.  Furthermore, these features are exposed through a language-agnostic C
@@ -52,9 +52,9 @@ API, allowing for interfaces in other languages with minimal additional developm
 # Statement of need
 
 Stan was written for applied statisticians and now has interfaces in many
-different programming languages, R, Python, Julia, Matlab, and Stata, to name
-the more popular ones.  Stan is both a probabilistic programming language and an
-inference enginge that fits the models written in the Stan language.  From this
+different programming languages, including R, Python, Julia, Matlab, and Stata.
+Stan is both a probabilistic programming language and an inference engine that
+fits the models written in the Stan language.  From this
 alone, Stan has become very successful for applied statisticians.
 
 In the statistical software environment R, Stan is heavily relied upon for
@@ -72,11 +72,11 @@ algorithms in higher-level languages for arbitrary Stan models, such as those in
 [posteriordb](https://github.com/stan-dev/posteriordb).  `BridgeStan` then helps
 algorithm developers create new inference algorithms, which in turn will
 facilitate applied statisticians.  `BridgeStan` offers to developers of
-statistical inference algorithms both a probabilistic programming language,
-access to Stan's math library, and the accompanying automatic differentiation
-toolset.
+statistical inference algorithms a probabilistic programming language with a large
+body of example models, access to Stan's math library, and the accompanying
+automatic differentiation toolset.
 
-There exist other libraries that offer automatic differentation of arbitrary
+There exist other libraries that offer automatic differentiation of arbitrary
 computer programs.  One of the more popular is Google's library
 [JAX](https://github.com/google/jax) [@Bradbury:2018].  JAX is built off of
 Google's Accelerated Linear Algebra (XLA) library, a domain-specific,
@@ -101,11 +101,14 @@ for automatic differentiation of arbitrary computer programs.
 
 `BridgeStan` though offers a unique combination of numerical efficiency, coupled
 with direct access to the probabilistic programming language Stan.  `BridgeStan`
-is an interface, written in C, between a Stan program, expressed as a log joint density
-function using highly templated C++ from the Stan math library, and any higher
+is an interface, written in C-compatible C++, between a Stan program and any higher
 level language which exposes a C foreign function interface.  Since Julia,
 Python, and R all have C foreign function interfaces, `BridgeStan` offers
-efficient, in-memory computations between Stan and the host language.
+efficient, in-memory computations of the log joint density function of a Stan model,
+itself implemented using highly templated C++ from the Stan math library,
+from within the host language.  Using a C-compatible interface makes this possible
+even if the host language was compiled with a different compiler, something no prior
+interface which exposed Stan's log density calculations could allow.
 
 The Stan community by and large uses CPU hardware and since Stan primarily
 targets CPUs, `BridgeStan` is incredibly efficient for developing inference
@@ -143,7 +146,7 @@ data {
   int D;
   real df;
 }
-transformed parameters {
+transformed data {
   vector[D] mu = rep_vector(0.0, D);
   matrix[D, D] Sigma = identity_matrix(D);
   real<lower=0.0> nu = 0.5 * df;
@@ -174,15 +177,15 @@ model = bs.StanModel.from_stan_file(stan_model, stan_data)
 
 x = np.random.random(model.param_unc_num()) # unconstrained inputs
 ld, grad = model.log_density_gradient(x)    # log density and gradient
-model.param_constrain(x, include_tp = True) # constrained (and transformed) parameters
+y = model.param_constrain(x, include_tp = True) # constrained (and transformed) parameters
 ```
 
 # Conclusion
 
 On the [Stan Discourse forums](https://discourse.mc-stan.org/), some statistical
 algorithm developers have long asked for access to the gradients and Hessians
-that underly the statistical model of a Stan program.  `BridgeStan` enables
-access to these methods, with an efficient and in-memory solution.  Further,
+that underlie the statistical model of a Stan program.  `BridgeStan` enables
+access to these methods, with an efficient, portable, and in-memory solution.  Further,
 because statistical models are so easy to write in Stan, algorithm developers
 can write their model in common statistical notation using the Stan programming
 language and then rely on the Stan math library and its automatic
