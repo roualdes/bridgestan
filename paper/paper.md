@@ -101,7 +101,7 @@ for automatic differentiation of arbitrary computer programs.
 
 `BridgeStan` though offers a unique combination of numerical efficiency, coupled
 with direct access to the probabilistic programming language Stan.  `BridgeStan`
-is a shim, written in C, between a Stan program, expressed as a log joint density
+is an interface, written in C, between a Stan program, expressed as a log joint density
 function using highly templated C++ from the Stan math library, and any higher
 level language which exposes a C foreign function interface.  Since Julia,
 Python, and R all have C foreign function interfaces, `BridgeStan` offers
@@ -116,7 +116,7 @@ parallel evaluations of the log density function.
 
 `BridgeStan` enables memory allocated in the host language, for now Julia,
 Python, and R, to be reused within Stan; though any language with a C foreign
-function interface could be similarly shimmed to access Stan methods.  By avoiding
+function interface could be similarly interfaced to access Stan methods.  By avoiding
 unnecessary copies of vectors created in the host language, `BridgeStan` is a
 zero-cost abstraction built upon Stan's numerically efficient math library.
 
