@@ -42,7 +42,7 @@ Implementation is provided through automatic differentiation in the
 Stan math library [@Carpenter:2015].  BridgeStan provides efficient
 in-memory access to the methods of Stan models through Python, Julia,
 R.  This allows algorithm development in these languages with
-the efficiency and expressiveness of Stan models.  
+the efficiency and expressiveness of Stan models.
 Furthermore, these features are exposed through a language-agnostic C
 API, allowing foreign function interfaces in other languages with
 minimal additional development.
@@ -56,28 +56,23 @@ practitioners across the social, biological, and physical sciences,
 engineering, education, sports, and finance.  Stan provides several
 state-of-the-art, gradient-based algorithms: full Bayesian inference
 with Hamiltonian Monte Carlo, Laplace approximation based on L-BFGS
-optimization, and autodiff variational inference (ADVI).  The R
-interface to Stan, RStan, is the most widely used Bayesian inference
-tool in R, and cmdstanpy is the most widely downloaded tool in Python.
+optimization, and autodiff variational inference (ADVI).
 
 In the statistical software environment R, Stan is heavily relied upon
 for development of applied statistics packages.  Using Google's
 [PageRank](https://en.wikipedia.org/wiki/PageRank) algorithm on the
 dependency graph [@pagerank:2014] amongst the 19,159 R packages listed
 on the Comprehensive R Archive Network (CRAN) as of 2022-12-31, we
-find that RStan ranks at number 70, rstantools 179, and RStanArm 502
-(our primary current R interface is cmdstanr, which is not on CRAN).
-The Stan interface cmdstanpy is the most downloaded Bayesian tool on
-the Python Package Index (PyPI).
+find that RStan ranks at number 70, rstantools 179, and RStanArm 502. Two
+interfaces to Stan, pystan and cmdstanpy, both rank in the top 600 packages by
+downloads on the Python Package Index (PyPI).
 
-C++ is relatively unknown and also very heavy for algorithm
+C++ is relatively unknown and can be cumbersome for algorithm
 prototyping, so developers have been requesting ways to access Stan
-models for algorithm development in the open-source analytics
-languages Python, R, and Julia.  For example, BridgeStan makes it easy
-for algorithm developers to access the dozens of diverse models with
-reference posteriors in
-[posteriordb](https://github.com/stan-dev/posteriordb) to use to
-evaluate a new algorithm.
+models for algorithm development in Python, R, and Julia. BridgeStan answers
+this call, making it easy for algorithm developers to leverage existing
+Stan models in their evaluation, e.g., the dozens of diverse models with
+reference posteriors in [posteriordb](https://github.com/stan-dev/posteriordb).
 
 There are language-specific alternatives to BridgeStan.  In Python,
 [JAX](https://github.com/google/jax) [@Bradbury:2018] provides
@@ -112,9 +107,9 @@ over [JAX](https://github.com/google/jax) and
 [TensorFlow Probability](https://www.tensorflow.org/probability),
 which is developed on top of TensorFlow and JAX.  And in Julia, there
 are several probabilistic programming languages, the most popular of
-which is [Turing.jl], which can be coupled with one of the many Julia
-autodiff systems such as [JuliaDiff](https://juliadiff.org/) or
-[Zygote](https://fluxml.ai/Zygote.jl/stable/).
+which is [Turing.jl](https://turing.ml/stable/), which can be coupled
+with one of the many Julia autodiff systems such as [JuliaDiff](https://juliadiff.org/)
+or [Zygote](https://fluxml.ai/Zygote.jl/stable/).
 
 BridgeStan though offers a unique combination of numerical efficiency,
 coupled with direct access to the probabilistic programming language
@@ -132,7 +127,7 @@ Stan's log density calculations could allow.
 The Stan community by and large uses CPU hardware and since Stan has
 been tuned for CPU performance, BridgeStan is more efficient than its
 competitors in implementing differentiable log densities on CPU
-[@Carpenter:2015; @radul202oautomatically, @tarek2020dynamicppl].
+[@Carpenter:2015; @radul202oautomatically; @tarek2020dynamicppl].
 Like the immutable Stan models they interface, BridgeStan functions
 are thread safe for parallel applications.  They also admit all of the
 internal parallelization of Stan models, such as internal parallel map
@@ -201,7 +196,7 @@ model = bs.StanModel.from_stan_file(stan_model, stan_data)
 
 x = np.random.random(model.param_unc_num())  # unconstrained inputs
 ld, grad = model.log_density_gradient(x)  # log density and gradient
-y = model.param_constrain(x, include_tp = True)  # constrained (and transformed) parameters
+y = model.param_constrain(x, include_tp = True)  # constrained (and transformed) params
 ```
 
 # Conclusion
