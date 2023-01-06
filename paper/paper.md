@@ -125,7 +125,7 @@ Stan, users of `BridgeStan` can trust that their bespoke parameterizations of
 numerically challenging distributions will be differentiated with
 thoroughly tested tools from Stan.
 
-```{stan}
+```stan
 /**
  * Multivariate Student-t distribution.
  */
@@ -154,7 +154,7 @@ model {
 `BridgeStan` users can access the gradient and transformed parameters of this
 model with Python code like below.
 
-```{python}
+```python
 import bridgestan as bs
 import numpy as np
 
