@@ -72,7 +72,7 @@ prototyping, so developers have been requesting ways to access Stan
 models for algorithm development in Python, R, and Julia. BridgeStan answers
 this call, making it easy for algorithm developers to leverage existing
 Stan models in their evaluation, e.g., the dozens of diverse models with
-reference posteriors in [posteriordb](https://github.com/stan-dev/posteriordb).
+reference posteriors in posteriordb [@Magnusson_posteriordb_a_set_2022].
 
 There are language-specific alternatives to BridgeStan.  In Python,
 [JAX](https://github.com/google/jax) [@Bradbury:2018] provides
