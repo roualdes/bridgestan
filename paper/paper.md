@@ -72,7 +72,8 @@ prototyping, so developers have been requesting ways to access Stan
 models for algorithm development in Python, R, and Julia. BridgeStan answers
 this call, making it easy for algorithm developers to leverage existing
 Stan models in their evaluation, e.g., the dozens of diverse models with
-reference posteriors in posteriordb [@Magnusson_posteriordb_a_set_2022].
+reference posteriors in [posteriordb](https://github.com/stan-dev/posteriordb)
+[@Magnusson_posteriordb_a_set_2022].
 
 There are language-specific alternatives to BridgeStan.  In Python,
 [JAX](https://github.com/google/jax) [@Bradbury:2018] provides
@@ -89,7 +90,7 @@ in-place mutations.  And while JAX will work on CPUs, Stan's automatic
 differentiation library directly targets the CPU and is thus faster on
 this hardware[^1].
 
-In Julia, [Turing.jl](https://turing.ml/stable/) provides an embedded
+In Julia, [Turing.jl](https://turing.ml/stable/) [@ge2018t] provides an embedded
 probabilistic program for which derivatives are available, based on
 any one of a number of Julia automatic differentiation systems.
 Nevertheless, Stan is faster than both JAX and Julia autodiff on a
