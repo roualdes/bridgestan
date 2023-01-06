@@ -127,7 +127,7 @@ Stan's log density calculations could allow.
 The Stan community by and large uses CPU hardware and since Stan has
 been tuned for CPU performance, BridgeStan is more efficient than its
 competitors in implementing differentiable log densities on CPU
-[@Carpenter:2015; @radul202oautomatically; @tarek2020dynamicppl].
+[@Carpenter:2015; @radul2020automatically; @tarek2020dynamicppl].
 Like the immutable Stan models they interface, BridgeStan functions
 are thread safe for parallel applications.  They also admit all of the
 internal parallelization of Stan models, such as internal parallel map
