@@ -151,8 +151,10 @@ model {
 }
 ```
 
-`BridgeStan` users can access the gradient and transformed parameters of this
-model with Python code like below.
+`BridgeStan` users can access the gradient of this model easily,
+allowing for simple implementations of sampling algorithms.  In the
+below example, we show an implementation of the Metropolis-adjusted
+Langevin algorithm (MALA) [@besag1994comments] built on `BridgeStan`.
 
 ```python
 import bridgestan as bs
@@ -161,10 +163,37 @@ import numpy as np
 stan_model = "path/to/student-t.stan"
 stan_data = "path/to/student-t.json"
 model = bs.StanModel.from_stan_file(stan_model, stan_data)
+D = model.param_unc_num()
+M = 10000
 
-x = np.random.random(model.param_unc_num())  # unconstrained inputs
-ld, grad = model.log_density_gradient(x)  # log density and gradient
-y = model.param_constrain(x, include_tp = True)  # constrained (and transformed) params
+def MALA(model, theta, epsilon=0.45):
+    def correction(theta_prime, theta, grad_theta):
+        x = theta_prime - theta - epsilon * grad_theta
+        return (-0.25 / epsilon) * x.dot(x)
+
+    lp, grad = model.log_density_gradient(theta)
+    theta_prop = (
+        theta
+        + epsilon * grad
+        + np.sqrt(2 * epsilon) * np.random.normal(size=model.param_unc_num())
+    )
+
+    lp_prop, grad_prop = model.log_density_gradient(theta_prop)
+    if np.log(np.random.random()) < lp_prop + correction(
+        theta, theta_prop, grad_prop
+    ) - lp - correction(theta_prop, theta, grad):
+        return theta_prop
+    return theta
+
+unc_draws = np.empty(shape=(M, D))
+unc_draws[0] = MALA(model, np.random.normal(size=D))
+for m in range(1, M):
+    unc_draws[m] = MALA(model, unc_draws[m - 1])
+
+# post processing: recover constrained/transformed parameters
+draws = np.empty(shape=(M, model.param_num(include_tp=True, include_gq=True)))
+for (i, draw) in enumerate(unc_draws):
+    draws[i] = model.param_constrain(draw, include_tp=True, include_gq=True)
 ```
 
 # Conclusion
