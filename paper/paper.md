@@ -124,11 +124,8 @@ is cumbersome and time consuming to encode in software.  Since `BridgeStan` uses
 Stan, users of `BridgeStan` can trust that their bespoke parameterizations of
 numerically challenging distributions will be differentiated with
 thoroughly tested tools from Stan.
-
+\footnotesize
 ```stan
-/**
- * Multivariate Student-t distribution.
- */
 data {
   int D;
   real df;
@@ -150,12 +147,12 @@ model {
   ig ~ inv_gamma(nu, nu);
 }
 ```
-
+\normalsize
 `BridgeStan` users can access the gradient of this model easily,
 allowing for simple implementations of sampling algorithms.  In the
 below example, we show an implementation of the Metropolis-adjusted
 Langevin algorithm (MALA) [@besag1994comments] built on `BridgeStan`.
-
+\footnotesize
 ```python
 import bridgestan as bs
 import numpy as np
@@ -195,6 +192,7 @@ draws = np.empty(shape=(M, model.param_num(include_tp=True, include_gq=True)))
 for (i, draw) in enumerate(unc_draws):
     draws[i] = model.param_constrain(draw, include_tp=True, include_gq=True)
 ```
+\normalsize
 
 # Conclusion
 
