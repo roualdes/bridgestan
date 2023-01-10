@@ -19,7 +19,7 @@ authors:
     equal-contrib: true
     affiliation: 2
   - name: Bob Carpenter
-	orcid: 0000-0002-2433-9688
+    orcid: 0000-0002-2433-9688
     equal-contrib: true
     affiliation: 2
 affiliations:
@@ -67,12 +67,12 @@ find that `rstan` ranks at number 70, `rstantools` 179, and `rstanarm` 502. Two
 interfaces to Stan, `pystan` and `cmdstanpy`, both rank in the top 600 packages by
 downloads on the Python Package Index (PyPI).
 
-C++ is relatively unknown and can be cumbersome for algorithm
-prototyping, so developers have been requesting ways to access Stan
-models for algorithm development in Python, R, and Julia. `BridgeStan` answers
-this call, making it easy for algorithm developers to leverage existing
-Stan models in their evaluation, e.g., the dozens of diverse models with
-reference posteriors in [`posteriordb`](https://github.com/stan-dev/posteriordb)
+C++ can be cumbersome for algorithm prototyping, so developers have
+been requesting ways to access Stan models for algorithm development
+in Python, R, and Julia. `BridgeStan` answers this call, making it
+easy for algorithm developers to leverage existing Stan models in
+their evaluation, e.g., the dozens of diverse models with reference
+posteriors in [`posteriordb`](https://github.com/stan-dev/posteriordb)
 [@Magnusson:2022].
 
 `BridgeStan` offers a unique combination of numerical efficiency, coupled with
