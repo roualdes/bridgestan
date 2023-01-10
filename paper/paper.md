@@ -41,7 +41,7 @@ and Hessians as well as constraining/unconstraining transforms.
 Implementation is provided through automatic differentiation in the
 Stan math library [@Carpenter:2015]. `BridgeStan` provides efficient
 in-memory access to the methods of Stan models through Python, Julia,
-R. This allows algorithm development in these languages with
+and R. This allows algorithm development in these languages with
 the efficiency and expressiveness of Stan models.
 Furthermore, these features are exposed through a language-agnostic C
 API, allowing foreign function interfaces in other languages with
@@ -61,7 +61,7 @@ optimization, and autodiff variational inference (ADVI).
 In the statistical software environment R, Stan is heavily relied upon
 for development of applied statistics packages. Using Google's
 [PageRank](https://en.wikipedia.org/wiki/PageRank) algorithm on the
-dependency graph [@pagerank:2014] amongst the 19,159 R packages listed
+dependency graph [@de-Vries:2014] amongst the 19,159 R packages listed
 on the Comprehensive R Archive Network (CRAN) as of 2022-12-31, we
 find that `rstan` ranks at number 70, `rstantools` 179, and `rstanarm` 502. Two
 interfaces to Stan, `pystan` and `cmdstanpy`, both rank in the top 600 packages by
@@ -73,33 +73,31 @@ models for algorithm development in Python, R, and Julia. `BridgeStan` answers
 this call, making it easy for algorithm developers to leverage existing
 Stan models in their evaluation, e.g., the dozens of diverse models with
 reference posteriors in [`posteriordb`](https://github.com/stan-dev/posteriordb)
-[@Magnusson_posteriordb_a_set_2022].
+[@Magnusson:2022].
 
-`BridgeStan` though offers a unique combination of numerical efficiency,
-coupled with direct access to the probabilistic programming language
-Stan. `BridgeStan` is an interface, written in C-compatible C++,
-between a Stan program and any higher level language which exposes a C
-foreign function interface. Since Julia, Python, and R all have C
-foreign function interfaces, `BridgeStan` offers efficient, in-memory
+`BridgeStan` offers a unique combination of numerical efficiency, coupled with
+direct access to the probabilistic programming language Stan. `BridgeStan` is an
+interface, written in C-compatible C++, between a Stan program and any higher
+level language which exposes a C foreign function interface. Since Julia,
+Python, and R all have C foreign function interfaces, `BridgeStan` offers
+efficient, in-memory, from memory allocated within the host language,
 computations of the log joint density function of a Stan model, itself
-implemented using highly templated C++ from the Stan math library,
-from within the host language. Using a memory-compatible C interface
-makes this possible even if the host language (e.g., R) was compiled
-with a different compiler, something no prior interface which exposed
-Stan's log density calculations could allow.
+implemented using highly templated C++ from the Stan math library. Using a
+memory-compatible C interface makes this possible even if the host language
+(e.g., R) was compiled with a different compiler, something no prior interface
+which exposed Stan's log density calculations could allow.
 
-Existing tools with similar functionalities include `JAX`
-[@Bradbury:2018] and the `Turing.jl`/`JuliaAD` ecosystem [@ge2018t].
-`BridgeStan` differs from these tools by providing access to the existing,
-well-known DSL for modeling and highly efficient CPU computation of the Stan ecosystem.
-The Stan community by and large uses CPU hardware and since Stan has
-been tuned for CPU performance, `BridgeStan` is more efficient than its
-competitors in implementing differentiable log densities on CPU
-[@Carpenter:2015; @radul2020automatically; @tarek2020dynamicppl].
-Like the immutable Stan models they interface, `BridgeStan` functions
-are thread safe for parallel applications. They also admit all of the
-internal parallelization of Stan models, such as internal parallel map
-functions and GPU-enabled matrix operations.
+Existing tools with similar functionalities include `JAX` [@Bradbury:2018] and
+`Turing.jl` via the `JuliaAD` ecosystem [@Ge:2018].  `BridgeStan` differs from
+these tools by providing access to the existing, well-known DSL for modeling
+and highly efficient CPU computation of the Stan ecosystem.  The Stan community
+by and large uses CPU hardware, and since Stan has been tuned for CPU
+performance, `BridgeStan` is more efficient than its competitors in implementing
+differentiable log densities on CPUs [@Carpenter:2015; @Radul:2020;
+@Tarek:2020].  Like the immutable Stan models they interface,
+`BridgeStan` functions are thread safe for parallel applications. They also
+admit all of the internal parallelization of Stan models, such as internal
+parallel map functions and GPU-enabled matrix operations.
 
 `BridgeStan` enables memory allocated in the host language (Julia,
 Python, or R), to be reused within Stan; though any language with a C
@@ -151,7 +149,7 @@ model {
 `BridgeStan` users can access the gradient of this model easily,
 allowing for simple implementations of sampling algorithms. In the
 below example, we show an implementation of the Metropolis-adjusted
-Langevin algorithm (MALA) [@besag1994comments] built on `BridgeStan`.
+Langevin algorithm (MALA) [@Besag:1994] built on `BridgeStan`.
 \footnotesize
 ```python
 import bridgestan as bs
