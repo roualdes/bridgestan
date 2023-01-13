@@ -6,7 +6,7 @@ mutable struct StanModelStruct end
 
 A StanModel instance encapsulates a Stan model instantiated with data.
 
-The constructor a Stan model from the supplied library file path and data. Data
+Construct a Stan model from the supplied library file path and data. Data
 should either be a string containing a JSON object or a path to a data file ending in `.json`.
 If seed or chain_id are supplied, these are used to initialize the RNG used by the model.
 
@@ -14,7 +14,11 @@ If seed or chain_id are supplied, these are used to initialize the RNG used by t
 
 Construct a StanModel instance from a `.stan` file, compiling if necessary.
 
-This is equivalent to calling `compile_model` and then the original constructor of StanModel.
+    StanModel(;stan_file, stanc_args=[], make_args=[], data="", seed=204, chain_id=0)
+
+Construct a StanModel instance from a `.stan` file, compiling if
+necessary.  This is equivalent to calling `compile_model` and then the
+original constructor of StanModel.
 """
 mutable struct StanModel
     lib::Ptr{Nothing}
