@@ -22,7 +22,7 @@ class StanModel:
     return values.  The constructor arguments are
 
     :param model_lib: A path to a compiled shared object.
-    :param model_data: Either a string representation of a JSON object or a
+    :param model_data: Either a JSON string literal or a
          path to a data file in JSON format ending in ``.json``.
     :param seed: A pseudo random number generator seed.
     :param chain_id: A unique identifier for concurrent chains of
@@ -45,7 +45,7 @@ class StanModel:
         constructor arguments.
 
         :param model_lib: A system path to compiled shared object.
-        :param model_data: Either a string representation of a JSON object or a
+        :param model_data: Either a JSON string literal or a
             system path to a data file in JSON format ending in ``.json``.
         :param seed: A pseudo random number generator seed.
         :param chain_id: A unique identifier for concurrent chains of

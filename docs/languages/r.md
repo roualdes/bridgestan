@@ -70,7 +70,7 @@ _Arguments_
 
   - `lib` A path to a compiled BridgeStan Shared Object file.
 
-  - `data` Either a string representation of a JSON object or a path to a data file in JSON format ending in ".json".
+  - `data` Either a JSON string literal or a path to a data file in JSON format ending in ".json".
 
   - `rng_seed` Seed for the RNG in the model object.
 
@@ -380,5 +380,3 @@ _Returns_
 
   List containing entries `val` (the log density), `gradient`
   (the gradient), and `hessian` (the Hessian).
-
-

@@ -15,7 +15,7 @@ typedef int bool;
  *
  * @param[in] data_file C-style string. This is either a
  * path to JSON-encoded data file (must end with ".json"), or
- * a string representation of a JSON object.
+ * a JSON string literal.
  * @param[in] seed seed for PRNG
  * @param[in] chain_id identifier for concurrent sequence of PRNG
  * draws
