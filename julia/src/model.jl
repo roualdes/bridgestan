@@ -12,7 +12,7 @@ If seed or chain_id are supplied, these are used to initialize the RNG used by t
 
     StanModel(;stan_file, data="", seed=204, chain_id=0)
 
-Construct a StanModel instance from a `.stan` file, compiling if necessary.
+Construct a `StanModel` instance from a `.stan` file, compiling if necessary.
 
     StanModel(;stan_file, stanc_args=[], make_args=[], data="", seed=204, chain_id=0)
 
@@ -20,7 +20,7 @@ Construct a `StanModel` instance from a `.stan` file.  Compilation
 occurs if no shared object file exists for the supplied Stan file or
 if a shared object file exists and the Stan file has changed since
 last compilation.  This is equivalent to calling `compile_model` and
-then the original constructor of StanModel.
+then the original constructor of `StanModel`.
 """
 mutable struct StanModel
     lib::Ptr{Nothing}
