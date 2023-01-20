@@ -1,5 +1,7 @@
 module BridgeStan
 
+using Artifacts
+
 export StanModel,
     name,
     model_info,

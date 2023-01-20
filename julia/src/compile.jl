@@ -6,9 +6,8 @@ end
 function get_bridgestan()
     path = get(ENV, "BRIDGESTAN", "")
     if path == ""
-        error(
-            "BridgeStan path was not set, compilation will not work until you call `set_bridgestan_path!()`",
-        )
+        artifact_path = artifact"bridgestan"
+        path = joinpath(artifact_path, only(readdir(artifact_path)))
     end
     return path
 end
