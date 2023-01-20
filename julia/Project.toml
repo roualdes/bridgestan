@@ -2,3 +2,6 @@ name = "BridgeStan"
 uuid = "c88b6f0a-829e-4b0b-94b7-f06ab5908f5a"
 authors = ["Brian Ward <bward@flatironinstitute.org>", "Bob Carpenter <bcarpenter@flatironinstitute.org", "Edward Roualdes <eroualdes@csuchico.edu>"]
 version = "1.0.0"
+
+[deps]
+Artifacts = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
