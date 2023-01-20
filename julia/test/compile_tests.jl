@@ -1,12 +1,12 @@
 using BridgeStan
 using Test
 
-models = joinpath(@__DIR__, "../../test_models/")
+
+
+models = joinpath(BridgeStan.get_bridgestan(), "test_models/")
 
 
 @testset "compile good" begin
-    BridgeStan.set_bridgestan_path!("../..")
-
     stanfile = joinpath(models, "multi", "multi.stan")
     lib = splitext(stanfile)[1] * "_model.so"
     rm(lib, force = true)
