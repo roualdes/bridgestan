@@ -1,6 +1,6 @@
 module BridgeStan
 
-using Artifacts
+using LazyArtifacts
 
 export StanModel,
     name,

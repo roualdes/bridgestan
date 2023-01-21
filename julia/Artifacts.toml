@@ -1,5 +1,6 @@
 [bridgestan]
 git-tree-sha1 = "730b3ee2b8c9fd643dcb2bee6c0ea5995db142d7"
+lazy = true
 
     [[bridgestan.download]]
     sha256 = "b66a01322b650022bbc7944fa5229cbc90bab63fab28b063c0eae714cd927872"
