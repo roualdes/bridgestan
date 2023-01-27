@@ -3,12 +3,20 @@ function get_make()
     get(ENV, "MAKE", Sys.iswindows() ? "mingw32-make.exe" : "make")
 end
 
-function get_bridgestan()
+"""
+    get_bridgestan_path() -> String
+
+Return the path the the BridgeStan directory.
+
+If the environment variable `BRIDGESTAN` is set, this will be returned. Otherwise, this
+function downloads an artifact containing the BridgeStan repository and returns the path to
+the extracted directory.
+"""
+function get_bridgestan_path()
     path = get(ENV, "BRIDGESTAN", "")
     if path == ""
-        error(
-            "BridgeStan path was not set, compilation will not work until you call `set_bridgestan_path!()`",
-        )
+        artifact_path = artifact"bridgestan"
+        path = joinpath(artifact_path, only(readdir(artifact_path)))
     end
     return path
 end
@@ -58,7 +66,7 @@ function compile_model(
     stanc_args::AbstractVector{String} = String[],
     make_args::AbstractVector{String} = String[],
 )
-    bridgestan = get_bridgestan()
+    bridgestan = get_bridgestan_path()
     validate_stan_dir(bridgestan)
 
     if !isfile(stan_file)

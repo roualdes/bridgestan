@@ -23,6 +23,7 @@
 
 
 This assumes you have followed the [Getting Started guide](../getting-started.rst) to install BridgeStan's pre-requisites and downloaded a copy of the BridgeStan source code.
+Note that the Julia interface has the ability to install the BridgeStan source if the ``BRIDGESTAN`` environment variable is not set.
 
 
 To install the Julia interface, you can either install it directly from Github by running the following inside a Julia REPL

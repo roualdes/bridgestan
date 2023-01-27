@@ -1,5 +1,7 @@
 module BridgeStan
 
+using LazyArtifacts
+
 export StanModel,
     name,
     model_info,
@@ -18,6 +20,7 @@ export StanModel,
     log_density,
     log_density_gradient,
     log_density_hessian,
+    get_bridgestan_path,
     set_bridgestan_path!,
     compile_model
 
