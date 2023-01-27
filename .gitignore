@@ -31,6 +31,7 @@ bridgestan.Rcheck/
 # Julia
 .juliahistory
 build/
+Manifest.toml
 
 .DS_Store
 
