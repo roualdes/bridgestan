@@ -1,12 +1,12 @@
 using BridgeStan
 using Test
 
-models = joinpath(@__DIR__, "../../test_models/")
+
+
+models = joinpath(BridgeStan.get_bridgestan_path(), "test_models/")
 
 
 @testset "compile good" begin
-    BridgeStan.set_bridgestan_path!("../..")
-
     stanfile = joinpath(models, "multi", "multi.stan")
     lib = splitext(stanfile)[1] * "_model.so"
     rm(lib, force = true)
@@ -35,4 +35,10 @@ end
 @testset "bad paths" begin
     @test_throws ErrorException BridgeStan.set_bridgestan_path!("dummy")
     @test_throws ErrorException BridgeStan.set_bridgestan_path!(models)
+end
+
+@testset "download artifact" begin
+    withenv("BRIDGESTAN" => nothing) do
+        BridgeStan.validate_stan_dir(BridgeStan.get_bridgestan_path())
+    end
 end

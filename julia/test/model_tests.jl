@@ -3,9 +3,10 @@ using Test
 using Printf
 
 function load_test_model(name::String, with_data = true)
-    lib = joinpath(@__DIR__, @sprintf("../../test_models/%s/%s_model.so", name, name))
+    bridgestan = BridgeStan.get_bridgestan_path()
+    lib = joinpath(bridgestan, @sprintf("test_models/%s/%s_model.so", name, name))
     if with_data
-        data = joinpath(@__DIR__, @sprintf("../../test_models/%s/%s.data.json", name, name))
+        data = joinpath(bridgestan, @sprintf("test_models/%s/%s.data.json", name, name))
     else
         data = ""
     end
