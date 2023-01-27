@@ -5,3 +5,4 @@ version = "1.0.0"
 
 [deps]
 LazyArtifacts = "4af54fe1-eca0-43a8-85a7-787d91b784e3"
+julia = "1.8"
