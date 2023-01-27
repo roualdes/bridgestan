@@ -3,7 +3,7 @@ using Test
 using Printf
 
 function load_test_model(name::String, with_data = true)
-    bridgestan = BridgeStan.get_bridgestan()
+    bridgestan = BridgeStan.get_bridgestan_path()
     lib = joinpath(bridgestan, @sprintf("test_models/%s/%s_model.so", name, name))
     if with_data
         data = joinpath(bridgestan, @sprintf("test_models/%s/%s.data.json", name, name))

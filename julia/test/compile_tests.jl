@@ -3,7 +3,7 @@ using Test
 
 
 
-models = joinpath(BridgeStan.get_bridgestan(), "test_models/")
+models = joinpath(BridgeStan.get_bridgestan_path(), "test_models/")
 
 
 @testset "compile good" begin
