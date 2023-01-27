@@ -3,6 +3,15 @@ function get_make()
     get(ENV, "MAKE", Sys.iswindows() ? "mingw32-make.exe" : "make")
 end
 
+"""
+    get_bridgestan() -> String
+
+Return the path the the BridgeStan directory.
+
+If the environment variable `BRIDGESTAN` is set, this will be returned. Otherwise, this
+function downloads an artifact containing the BridgeStan repository and returns the path to
+the extracted directory.
+"""
 function get_bridgestan()
     path = get(ENV, "BRIDGESTAN", "")
     if path == ""
