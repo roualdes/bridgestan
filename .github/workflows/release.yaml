@@ -1,0 +1,101 @@
+name: Release BridgeStan
+
+on:
+  workflow_dispatch:
+    inputs:
+      new_version:
+        description: 'New version, for example: 1.1.0'
+        required: true
+      is_rerun:
+        type: boolean
+        description: Set to true if this version has already been 'released', e.g. to only re-run PyPI and Julia release steps
+
+jobs:
+  release:
+    name: Release BridgeStan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out github
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Set up Julia
+        uses: julia-actions/setup-julia@v1
+
+      - name: Update version numbers
+        if: ${{ !inputs.is_rerun }}
+        run: |
+          sed -i 's/Version:.*/Version: ${{ github.event.inputs.new_version }}/' R/DESCRIPTION
+          sed -i 's/version = .*/version = "${{ github.event.inputs.new_version }}"/' julia/Project.toml
+          sed -i 's/version = .*/version = ${{ github.event.inputs.new_version }}/' python/setup.cfg
+
+          sed -i 's/#define BRIDGESTAN_MAJOR .*/#define BRIDGESTAN_MAJOR '"$(echo ${{ github.event.inputs.new_version }} | cut -d. -f1)"'/' src/version.hpp
+          sed -i 's/#define BRIDGESTAN_MINOR .*/#define BRIDGESTAN_MINOR '"$(echo ${{ github.event.inputs.new_version }} | cut -d. -f2)"'/' src/version.hpp
+          sed -i 's/#define BRIDGESTAN_PATCH .*/#define BRIDGESTAN_PATCH '"$(echo ${{ github.event.inputs.new_version }} | cut -d. -f3)"'/' src/version.hpp
+
+
+      - name: Create tarball
+        run: |
+          tar --exclude-vcs -czvf bridgestan-${{ github.event.inputs.new_version }}.tar.gz --transform 's,^,bridgestan-${{ github.event.inputs.new_version }}/,' *
+
+        # Note: because of the order of operations here, the Julia package inside the tarball can never point to itself.
+      - name: Update Julia artifact
+        if: ${{ !inputs.is_rerun }}
+        run: |
+          julia ./julia/updateArtifacts.jl bridgestan-${{ github.event.inputs.new_version }}.tar.gz "v${{ github.event.inputs.new_version }}"
+
+      - name: Setup git identity
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Create commit
+        id: commit
+        run: |
+          git commit -am "Release ${{ github.event.inputs.new_version }}: updating version numbers" || true
+          git push origin main
+          echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Build Python package wheels
+        run: |
+          pip install wheel build
+          cd python/
+          python -m build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-artifacts
+          path: |
+            python/dist/
+            bridgestan-*.tar.gz
+
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "bridgestan-*.tar.gz,python/dist/*"
+          tag: "v${{ github.event.inputs.new_version }}"
+          commit: main
+          omitBody: true
+          skipIfReleaseExists: true
+
+      - name: Upload PyPI wheels
+        uses: pypa/gh-action-pypi-publish@v1.6.4
+        with:
+          password: ${{ secrets.PYPI_TOKEN }}
+          packages_dir: python/dist/
+          skip_existing: true
+
+      - name: Create JuliaRegistration comment
+        uses: peter-evans/commit-comment@v2
+        with:
+          sha: ${{ steps.commit.outputs.sha }}
+          body: |
+            @JuliaRegistrator register

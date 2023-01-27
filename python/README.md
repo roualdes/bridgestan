@@ -4,13 +4,14 @@
 
 ## Installation
 
-**From Github**:
+**From PyPI (Requires separate download of C++ source code)**:
 ```shell
-pip install "git+https://github.com/roualdes/bridgestan.git#egg=bridgestan&subdirectory=python"
+pip install bridgestan
 ```
 
 **From the downloaded repository**:
+Assuming you have already cloned https://github.com/roualdes/bridgestan
 ```shell
 cd python/ # this directory
-pip install .
+pip install -e .
 ```

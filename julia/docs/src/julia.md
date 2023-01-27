@@ -11,7 +11,24 @@
 
 ## Installation
 
-This assumes you have followed the [Getting Started guide](../getting-started.rst)
+### From JuliaRegistries
+
+BridgeStan is registered on JuliaRegistries each release.
+
+
+```julia
+] add BridgeStan
+```
+
+The first time you need it, the BridgeStan source code will be downloaded
+as an [Artifact](https://pkgdocs.julialang.org/v1/artifacts/). If you
+prefer to use a source distribution of BridgeStan, consult the following section.
+
+Note that the system pre-requisites from the [Getting Started Guide](../getting-started.rst)
+are still required and will not be automatically installed by this method.
+
+### From Source
+This section assumes you have followed the [Getting Started guide](../getting-started.rst)
 to install BridgeStan's pre-requisites and downloaded a copy of the BridgeStan source code.
 
 To install the Julia interface, you can either install it directly from Github by running
