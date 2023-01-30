@@ -116,6 +116,10 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
+        julia-version: ["1"]
+        include:
+          - julia-version: "1.6"
+            os: ubuntu-latest
       fail-fast: false
     steps:
       - name: Check out github
@@ -125,7 +129,8 @@ jobs:
 
       - name: Set up Julia
         uses: julia-actions/setup-julia@v1
-
+        with:
+          version: ${{ matrix.julia-version }}
       - name: Restore Stan
         uses: actions/cache@v3
         id: stan-cache

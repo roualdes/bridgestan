@@ -1,6 +1,15 @@
 
 mutable struct StanModelStruct end
 
+# utility macro to annotate a field as const only if supported
+@eval macro $(Symbol("const"))(x)
+    if VERSION >= v"1.8"
+        Expr(:const, esc(x))
+    else
+        esc(x)
+    end
+end
+
 """
     StanModel(lib, datafile="", seed=204, chain_id=0)
 
@@ -25,9 +34,9 @@ then the original constructor of `StanModel`.
 mutable struct StanModel
     lib::Ptr{Nothing}
     stanmodel::Ptr{StanModelStruct}
-    const data::String
-    const seed::UInt32
-    const chain_id::UInt32
+    @const data::String
+    @const seed::UInt32
+    @const chain_id::UInt32
 
     function StanModel(lib::String, data::String = "", seed = 204, chain_id = 0)
         seed = convert(UInt32, seed)
