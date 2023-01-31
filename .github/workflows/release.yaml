@@ -98,4 +98,4 @@ jobs:
         with:
           sha: ${{ steps.commit.outputs.sha }}
           body: |
-            @JuliaRegistrator register
+            @JuliaRegistrator register subdir=julia
