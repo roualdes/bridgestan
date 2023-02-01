@@ -1,5 +1,4 @@
 using BridgeStan
-using BridgeStan: @const
 using Test
 using Printf
 
@@ -12,28 +11,6 @@ function load_test_model(name::String, with_data = true)
         data = ""
     end
     return BridgeStan.StanModel(lib, data)
-end
-
-mutable struct Foo
-    x
-    @const y
-end
-
-@testset "@const utility" begin
-    a = Foo(1, 2)
-    @test a.x == 1
-    @test a.y == 2
-    a.x = 3
-    @test a.x == 3
-    @test a.y == 2
-    if VERSION ≥ v"1.8"
-        # y is const
-        @test_throws ErrorException a.y = 4
-    else
-        # y is mutable
-        a.y = 4
-        @test a.y == 4
-    end
 end
 
 @testset "constructor" begin

@@ -83,7 +83,10 @@ jobs:
           artifacts: "bridgestan-*.tar.gz,python/dist/*"
           tag: "v${{ github.event.inputs.new_version }}"
           commit: main
-          omitBody: true
+          draft: true
+          generateReleaseNotes: true
+          allowUpdates: true
+          replacesArtifacts: true
           skipIfReleaseExists: true
 
       - name: Upload PyPI wheels

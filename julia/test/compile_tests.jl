@@ -36,9 +36,3 @@ end
     @test_throws ErrorException BridgeStan.set_bridgestan_path!("dummy")
     @test_throws ErrorException BridgeStan.set_bridgestan_path!(models)
 end
-
-@testset "download artifact" begin
-    withenv("BRIDGESTAN" => nothing) do
-        BridgeStan.validate_stan_dir(BridgeStan.get_bridgestan_path())
-    end
-end
