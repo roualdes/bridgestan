@@ -9,15 +9,17 @@ data = Dict(
     "bridgestan" => Dict(
         "git-tree-sha1" => Tar.tree_hash(IOBuffer(inflate_gzip(filename))),
         "lazy" => true,
-        "download" => Dict(
-            "sha256" => bytes2hex(open(sha256, filename)),
-            "url" => string(
-                "https://github.com/roualdes/bridgestan/releases/download/",
-                version,
-                "/",
-                filename,
+        "download" => [
+            Dict(
+                "sha256" => bytes2hex(open(sha256, filename)),
+                "url" => string(
+                    "https://github.com/roualdes/bridgestan/releases/download/",
+                    version,
+                    "/",
+                    filename,
+                ),
             ),
-        ),
+        ],
     ),
 )
 
