@@ -8,6 +8,22 @@ Python Interface
 Installation
 ------------
 
+From PyPI
+_________
+
+For convience, BridgeStan is uploaded to the Python Package Index each release.
+
+.. code-block:: shell
+
+    pip install bridgestan
+
+Currently, this package does **not** come with a copy of the BridgeStan C++
+source code, so you will need to follow the instructions from the
+:doc:`Getting Started guide <../getting-started>` to download this, and use
+:func:`set_bridgestan_path` or the ``$BRIDGESTAN`` environment variable.
+
+From Source
+___________
 This assumes you have followed the :doc:`Getting Started guide <../getting-started>` to install
 BridgeStan's pre-requisites and downloaded a copy of the BridgeStan source code.
 
@@ -21,7 +37,7 @@ Or, since you have already downloaded the repository, you can run
 
 .. code-block:: shell
 
-    pip install python/
+    pip install -e python/
 
 from the BridgeStan folder.
 
