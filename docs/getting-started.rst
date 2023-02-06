@@ -20,6 +20,9 @@ Downloading BridgeStan
 Installing BridgeStan is as simple as ensuring that the above requirements are installed and then downloading
 the source repository.
 
+As of version 1.0.1, the :doc:`Julia interface <languages/julia>` will download
+the source for you as an Artifact, so this section is optional.
+
 Downloading a released archive
 ______________________________
 
