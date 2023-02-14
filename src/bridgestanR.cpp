@@ -1,4 +1,5 @@
 #include "bridgestanR.h"
+#include "bridgestan.h"
 
 void bs_construct_R(char** data, int* rng, int* chain, bs_model_rng** ptr_out) {
   *ptr_out = bs_construct(*data, *rng, *chain);
