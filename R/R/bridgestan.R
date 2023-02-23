@@ -8,7 +8,7 @@
 StanModel <- R6::R6Class("StanModel",
   public = list(
     #' @description
-    #' Create a Stan Model instace.
+    #' Create a Stan Model instance.
     #' @param lib A path to a compiled BridgeStan Shared Object file.
     #' @param data Either a JSON string literal or a path to a data file in JSON format ending in ".json".
     #' @param rng_seed Seed for the RNG in the model object.
@@ -38,12 +38,12 @@ StanModel <- R6::R6Class("StanModel",
         PACKAGE = private$lib_name
       )$ptr_out -> ptr_out
       if (all(ptr_out == 0)) {
-        stop("could not construct model RNG")
+        stop("Could not construct model RNG.")
       }
       private$model <- ptr_out
     },
     #' @description
-    #' Get the name of this StanModel
+    #' Get the name of this StanModel.
     #' @return A character vector of the name.
     name = function() {
       .C("bs_name_R", as.raw(private$model),
@@ -118,9 +118,9 @@ StanModel <- R6::R6Class("StanModel",
       )$num
     },
     #' @description
-    #' Returns a vector of constrained params give the unconstrained parameters.
+    #' Returns a vector of constrained parameters given the unconstrained parameters.
     #' See also `StanModel$param_unconstrain()`, the inverse of this function.
-    #' @param theta_unc The vector of unconstrained parameters
+    #' @param theta_unc The vector of unconstrained parameters.
     #' @param include_tp Whether to also output the transformed parameters of the model.
     #' @param include_gq Whether to also output the generated quantities of the model.
     #' @return The constrained parameters of the model.
@@ -132,18 +132,18 @@ StanModel <- R6::R6Class("StanModel",
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop("C++ exception in param_constrain(); see stderr for messages")
+        stop("C++ exception in param_constrain(); see stderr for messages.")
       }
       vars$theta
     },
     #' @description
-    #' Returns a vector of unconstrained params give the constrained parameters.
+    #' Returns a vector of unconstrained parameters give the constrained parameters.
     #'
     #' It is assumed that these will be in the same order as internally represented by
     #' the model (e.g., in the same order as `StanModel$param_names()`).
     #' If structured input is needed, use `StanModel$param_unconstrain_json()`.
     #' See also `StanModel$param_constrain()`, the inverse of this function.
-    #' @param theta The vector of constrained parameters
+    #' @param theta The vector of constrained parameters.
     #' @return The unconstrained parameters of the model.
     param_unconstrain = function(theta) {
       vars <- .C("bs_param_unconstrain_R", as.raw(private$model),
@@ -153,7 +153,7 @@ StanModel <- R6::R6Class("StanModel",
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop("C++ exception in param_unconstrain(); see stderr for messages")
+        stop("C++ exception in param_unconstrain(); see stderr for messages.")
       }
       vars$theta_unc
     },
@@ -171,14 +171,14 @@ StanModel <- R6::R6Class("StanModel",
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop("C++ exception in param_unconstrain_json(); see stderr for messages")
+        stop("C++ exception in param_unconstrain_json(); see stderr for messages.")
       }
       vars$theta_unc
     },
     #' @description
     #' Return the log density of the specified unconstrained parameters.
     #' See also `StanModel$param_unconstrain()`, the inverse of this function.
-    #' @param theta The vector of unconstrained parameters
+    #' @param theta The vector of unconstrained parameters.
     #' @param propto If `TRUE`, drop terms which do not depend on the parameters.
     #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
     #' @return The log density.
@@ -190,14 +190,14 @@ StanModel <- R6::R6Class("StanModel",
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop("C++ exception in log_density(); see stderr for messages")
+        stop("C++ exception in log_density(); see stderr for messages.")
       }
       vars$val
     },
     #' @description
     #' Return the log density and gradient of the specified unconstrained parameters.
     #' See also `StanModel$param_unconstrain()`, the inverse of this function.
-    #' @param theta The vector of unconstrained parameters
+    #' @param theta The vector of unconstrained parameters.
     #' @param propto If `TRUE`, drop terms which do not depend on the parameters.
     #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
     #' @return List containing entries `val` (the log density) and `gradient` (the gradient).
@@ -217,7 +217,7 @@ StanModel <- R6::R6Class("StanModel",
     #' @description
     #' Return the log density, gradient, and Hessian of the specified unconstrained parameters.
     #' See also `StanModel$param_unconstrain()`, the inverse of this function.
-    #' @param theta The vector of unconstrained parameters
+    #' @param theta The vector of unconstrained parameters.
     #' @param propto If `TRUE`, drop terms which do not depend on the parameters.
     #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
     #' @return List containing entries `val` (the log density), `gradient` (the gradient), and `hessian` (the Hessian).
