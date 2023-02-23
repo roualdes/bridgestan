@@ -36,7 +36,7 @@ as well as constraining and unconstraining transforms.
 \if{html}{\out{<a id="method-StanModel-new"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-new}{}}}
 \subsection{Method \code{new()}}{
-Create a Stan Model instace.
+Create a Stan Model instance.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$new(lib, data, rng_seed, chain_id)}\if{html}{\out{</div>}}
 }
@@ -46,7 +46,7 @@ Create a Stan Model instace.
 \describe{
 \item{\code{lib}}{A path to a compiled BridgeStan Shared Object file.}
 
-\item{\code{data}}{Either a string representation of a JSON object or a path to a data file in JSON format ending in ".json".}
+\item{\code{data}}{Either a JSON string literal or a path to a data file in JSON format ending in ".json".}
 
 \item{\code{rng_seed}}{Seed for the RNG in the model object.}
 
@@ -62,7 +62,7 @@ A new StanModel.
 \if{html}{\out{<a id="method-StanModel-name"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-name}{}}}
 \subsection{Method \code{name()}}{
-Get the name of this StanModel
+Get the name of this StanModel.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$name()}\if{html}{\out{</div>}}
 }
@@ -171,7 +171,7 @@ The number of parameters in the model.
 \if{html}{\out{<a id="method-StanModel-param_constrain"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-param_constrain}{}}}
 \subsection{Method \code{param_constrain()}}{
-Returns a vector of constrained params give the unconstrained parameters.
+Returns a vector of constrained parameters given the unconstrained parameters.
 See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$param_constrain(theta_unc, include_tp = FALSE, include_gq = FALSE)}\if{html}{\out{</div>}}
@@ -180,7 +180,7 @@ See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{theta_unc}}{The vector of unconstrained parameters}
+\item{\code{theta_unc}}{The vector of unconstrained parameters.}
 
 \item{\code{include_tp}}{Whether to also output the transformed parameters of the model.}
 
@@ -196,7 +196,7 @@ The constrained parameters of the model.
 \if{html}{\out{<a id="method-StanModel-param_unconstrain"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-param_unconstrain}{}}}
 \subsection{Method \code{param_unconstrain()}}{
-Returns a vector of unconstrained params give the constrained parameters.
+Returns a vector of unconstrained parameters give the constrained parameters.
 
 It is assumed that these will be in the same order as internally represented by
 the model (e.g., in the same order as \code{StanModel$param_names()}).
@@ -209,7 +209,7 @@ See also \code{StanModel$param_constrain()}, the inverse of this function.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{theta}}{The vector of constrained parameters}
+\item{\code{theta}}{The vector of constrained parameters.}
 }
 \if{html}{\out{</div>}}
 }
@@ -252,7 +252,7 @@ See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{theta}}{The vector of unconstrained parameters}
+\item{\code{theta}}{The vector of unconstrained parameters.}
 
 \item{\code{propto}}{If \code{TRUE}, drop terms which do not depend on the parameters.}
 
@@ -277,7 +277,7 @@ See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{theta}}{The vector of unconstrained parameters}
+\item{\code{theta}}{The vector of unconstrained parameters.}
 
 \item{\code{propto}}{If \code{TRUE}, drop terms which do not depend on the parameters.}
 
@@ -302,7 +302,7 @@ See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{theta}}{The vector of unconstrained parameters}
+\item{\code{theta}}{The vector of unconstrained parameters.}
 
 \item{\code{propto}}{If \code{TRUE}, drop terms which do not depend on the parameters.}
 

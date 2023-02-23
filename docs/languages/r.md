@@ -57,7 +57,7 @@ as well as constraining and unconstraining transforms.
 
 **Method** `new()`:
 
-Create a Stan Model instace.
+Create a Stan Model instance.
 
 _Usage_
 
@@ -84,7 +84,7 @@ _Returns_
 
 **Method** `name()`:
 
-Get the name of this StanModel
+Get the name of this StanModel.
 
 _Usage_
 
@@ -213,7 +213,7 @@ _Returns_
 
 **Method** `param_constrain()`:
 
-Returns a vector of constrained params give the unconstrained parameters.
+Returns a vector of constrained parameters given the unconstrained parameters.
 parameters See also `StanModel$param_unconstrain()`, the inverse
 of this function.
 
@@ -226,7 +226,7 @@ StanModel$param_constrain(theta_unc, include_tp = FALSE, include_gq = FALSE)
 
 _Arguments_
 
-  - `theta_unc` The vector of unconstrained parameters
+  - `theta_unc` The vector of unconstrained parameters.
 
   - `include_tp` Whether to also output the transformed parameters
       of the model.
@@ -242,7 +242,7 @@ _Returns_
 
 **Method** `param_unconstrain()`:
 
-Returns a vector of unconstrained params give the constrained parameters.
+Returns a vector of unconstrained parameters given the constrained parameters.
 
 It is assumed that these will be in the same order as internally
 represented by the model (e.g., in the same order as
@@ -259,7 +259,7 @@ StanModel$param_unconstrain(theta)
 
 _Arguments_
 
-  - `theta` The vector of constrained parameters
+  - `theta` The vector of constrained parameters.
 
 
 _Returns_
@@ -308,7 +308,7 @@ StanModel$log_density(theta, propto = TRUE, jacobian = TRUE)
 
 _Arguments_
 
-  - `theta` The vector of unconstrained parameters
+  - `theta` The vector of unconstrained parameters.
 
   - `propto` If `TRUE`, drop terms which do not depend on the
       parameters.
@@ -337,7 +337,7 @@ StanModel$log_density_gradient(theta, propto = TRUE, jacobian = TRUE)
 
 _Arguments_
 
-  - `theta` The vector of unconstrained parameters
+  - `theta` The vector of unconstrained parameters.
 
   - `propto` If `TRUE`, drop terms which do not depend on the
       parameters.
@@ -367,7 +367,7 @@ StanModel$log_density_hessian(theta, propto = TRUE, jacobian = TRUE)
 
 _Arguments_
 
-  - `theta` The vector of unconstrained parameters
+  - `theta` The vector of unconstrained parameters.
 
   - `propto` If `TRUE`, drop terms which do not depend on the
       parameters.
