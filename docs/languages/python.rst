@@ -17,10 +17,11 @@ For convience, BridgeStan is uploaded to the Python Package Index each release.
 
     pip install bridgestan
 
-Currently, this package does **not** come with a copy of the BridgeStan C++
-source code, so you will need to follow the instructions from the
-:doc:`Getting Started guide <../getting-started>` to download this, and use
-:func:`set_bridgestan_path` or the ``$BRIDGESTAN`` environment variable.
+
+The first time you need it, the BridgeStan source code will be downloaded
+and placed in ``~/.bridgestan/``. If you prefer to use a source distribution of BridgeStan,
+consult the following section.
+
 
 From Source
 ___________
@@ -40,6 +41,11 @@ Or, since you have already downloaded the repository, you can run
     pip install -e python/
 
 from the BridgeStan folder.
+
+To use the BridgeStan source you've manually downloaded instead of
+one the package will download for you, you must use :func:`set_bridgestan_path`
+or the ``$BRIDGESTAN`` environment variable.
+
 
 Note that the Python package depends on Python 3.9+ and NumPy, and will install
 NumPy if it is not already installed.
