@@ -34,7 +34,7 @@ jobs:
         run: |
           sed -i 's/Version:.*/Version: ${{ github.event.inputs.new_version }}/' R/DESCRIPTION
           sed -i 's/version = .*/version = "${{ github.event.inputs.new_version }}"/' julia/Project.toml
-          sed -i 's/version = .*/version = ${{ github.event.inputs.new_version }}/' python/setup.cfg
+          sed -i 's/__version__ = .*/__version__ = "${{ github.event.inputs.new_version }}"/' python/bridgestan/__version.py
 
           sed -i 's/#define BRIDGESTAN_MAJOR .*/#define BRIDGESTAN_MAJOR '"$(echo ${{ github.event.inputs.new_version }} | cut -d. -f1)"'/' src/version.hpp
           sed -i 's/#define BRIDGESTAN_MINOR .*/#define BRIDGESTAN_MINOR '"$(echo ${{ github.event.inputs.new_version }} | cut -d. -f2)"'/' src/version.hpp
