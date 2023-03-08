@@ -37,9 +37,7 @@ def test_compile_syntax_error():
 
 
 def test_compile_bad_bridgestan():
-    old_path = bs.compile.BRIDGESTAN_PATH
     with pytest.raises(ValueError, match=r"does not exist"):
         bs.compile.set_bridgestan_path("dummy")
     with pytest.raises(ValueError, match=r"does not contain file 'Makefile'"):
         bs.compile.set_bridgestan_path(str(STAN_FOLDER))
-    bs.compile.set_bridgestan_path(old_path)
