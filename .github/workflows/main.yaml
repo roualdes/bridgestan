@@ -8,7 +8,7 @@ on:
   workflow_dispatch: {}
 
 env:
-  CACHE_VERSION: 2
+  CACHE_VERSION: 3
 
 jobs:
   build_test_models:
