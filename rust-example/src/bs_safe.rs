@@ -108,6 +108,43 @@ impl StanModel {
         }
     }
 
+    pub fn param_constrain<'a>(
+        &self,
+        theta_unc: &[f64],
+        include_tp: bool,
+        include_gq: bool,
+        out: &'a mut [f64],
+    ) -> Result<&'a mut [f64], BridgeStanError> {
+        let n = self.param_unc_num();
+        assert_eq!(
+            theta_unc.len(),
+            n,
+            "Argument 'theta_unc' must be the same size as the number of parameters!"
+        );
+        let out_n = self.param_num(include_tp, include_gq);
+        assert_eq!(
+            out.len(),
+            out_n,
+            "Argument 'out' must be the same size as the number of parameters!"
+        );
+
+        let rc = unsafe {
+            ffi::bs_param_constrain(
+                self.model,
+                include_tp as i32,
+                include_gq as i32,
+                theta_unc.as_ptr(),
+                out.as_mut_ptr(),
+            )
+        };
+
+        if rc == 0 {
+            Ok(out)
+        } else {
+            Err(BridgeStanError::EvaluationFailed)
+        }
+    }
+
     // etc, need more functions
 }
 
