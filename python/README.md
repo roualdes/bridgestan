@@ -4,7 +4,7 @@
 
 ## Installation
 
-**From PyPI (Requires separate download of C++ source code)**:
+**From PyPI**:
 ```shell
 pip install bridgestan
 ```

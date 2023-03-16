@@ -6,7 +6,7 @@
 # Julia Interface
 
 
-% NB: If you are reading this file in python/docs/languages, you are reading a generated output!
+% NB: If you are reading this file in docs/languages, you are reading a generated output!
 % This should be apparent due to the html tags everywhere.
 % If you are reading this in julia/docs/src, you are reading the true source!
 % Please only make edits in the later file, since the first is DELETED each re-build.
