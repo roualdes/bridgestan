@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Roualdes"
+  given-names: "Edward"
+- family-names: "Ward"
+  given-names: "Brian"
+- family-names: "Axen"
+  given-names: "Seth"
+- family-names: "Carpenter"
+  given-names: "Bob"
+  orcid: "https://orcid.org/0000-0002-2433-9688"
+title: "BridgeStan: Efficient in-memory access to Stan programs through Python, Julia, and R"
+version: 1.0.1
+date-released: 2023-02-01
+url: "https://github.com/roualdes/bridgestan"
