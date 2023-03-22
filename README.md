@@ -1,5 +1,7 @@
 # BridgeStan
 
+[![DOCS](https://img.shields.io/badge/docs-latest-blue)](https://roualdes.github.io/bridgestan/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7760173.svg)](https://doi.org/10.5281/zenodo.7760173) [![CI](https://github.com/roualdes/bridgestan/actions/workflows/main.yaml/badge.svg)](https://github.com/roualdes/bridgestan/actions/workflows/main.yaml)
+
 BridgeStan provides efficient in-memory access through Python, Julia,
 and R to the methods of a [Stan](https://mc-stan.org) model, including
 log densities, gradients, Hessians, and constraining and unconstraining
