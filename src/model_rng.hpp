@@ -36,7 +36,7 @@ class bs_model_rng {
    *
    * @return name of model
    */
-  const char* name();
+  const char* name() const;
 
   /**
    *  Return information about the compiled model. This class manages the
@@ -44,7 +44,7 @@ class bs_model_rng {
    *
    * @return name of model
    */
-  const char* model_info();
+  const char* model_info() const;
 
   /**
    * Return the parameter names as a comma-separated list.  Indexes
@@ -55,7 +55,7 @@ class bs_model_rng {
    * @param[in] include_gq `true` to include generated quantities
    * @return comma-separated parameter names with indexes
    */
-  const char* param_names(bool include_tp, bool include_gq);
+  const char* param_names(bool include_tp, bool include_gq) const;
 
   /**
    * Return the unconstrained parameter names as a comma-separated
@@ -65,14 +65,14 @@ class bs_model_rng {
    * @return comma-separated unconstrained parameter names with
    * indexes
    */
-  const char* param_unc_names();
+  const char* param_unc_names() const;
 
   /**
    * Return the number of unconstrianed parameters.
    *
    * @return number of unconstrained parameters
    */
-  int param_unc_num();
+  int param_unc_num() const;
 
   /**
    * Return the number of parameters, optionally including
@@ -82,7 +82,7 @@ class bs_model_rng {
    * @param[in] include_gq `true` to include generated quantities
    * @return number of parameters
    */
-  int param_num(bool include_tp, bool include_gq);
+  int param_num(bool include_tp, bool include_gq) const;
 
   /**
    * Unconstrain the specified parameters and write into the
@@ -91,7 +91,7 @@ class bs_model_rng {
    * @param[in] theta parameters to unconstrain
    * @param[in,out] theta_unc unconstrained parameters
    */
-  void param_unconstrain(const double* theta, double* theta_unc);
+  void param_unconstrain(const double* theta, double* theta_unc) const;
 
   /**
    * Unconstrain the parameters specified as a JSON string and write
@@ -101,7 +101,7 @@ class bs_model_rng {
    * @param[in] json JSON string representing parameters
    * @param[in,out] theta_unc unconstrained parameters generated
    */
-  void param_unconstrain_json(const char* json, double* theta_unc);
+  void param_unconstrain_json(const char* json, double* theta_unc) const;
 
   /**
    * Constrain the specified unconstrained parameters into the
@@ -129,7 +129,7 @@ class bs_model_rng {
    * @param[in,out] val log density produced
    */
   void log_density(bool propto, bool jacobian, const double* theta_unc,
-                   double* val);
+                   double* val) const;
 
   /**
    * Calculate the log density and gradient for the specified
@@ -146,7 +146,7 @@ class bs_model_rng {
    * @param[in,out] grad gradient produced
    */
   void log_density_gradient(bool propto, bool jacobian, const double* theta_unc,
-                            double* val, double* grad);
+                            double* val, double* grad) const;
 
   /**
    * Calculate the log density, gradient, and Hessian for the
@@ -165,7 +165,7 @@ class bs_model_rng {
    * @param[in,out] hess Hessian produced
    */
   void log_density_hessian(bool propto, bool jacobian, const double* theta_unc,
-                           double* val, double* grad, double* hessian);
+                           double* val, double* grad, double* hessian) const;
 
   /**
    * Returns a lambda which calls the correct version of log_prob
@@ -175,7 +175,7 @@ class bs_model_rng {
    * @param[in] jacobian `true` to include Jacobian adjustment for
    * constrained parameter transforms
    */
-  auto make_model_lambda(bool propto, bool jacobian);
+  auto make_model_lambda(bool propto, bool jacobian) const;
 
  private:
   /** Stan model */
