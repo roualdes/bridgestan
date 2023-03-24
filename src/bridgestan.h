@@ -22,7 +22,7 @@ typedef int bool;
  * @return pointer to constructed model or `nullptr` if construction
  * fails
  */
-bs_model_rng* bs_construct(char* data_file, unsigned int seed,
+bs_model_rng* bs_construct(const char* data_file, unsigned int seed,
                            unsigned int chain_id);
 
 /**
@@ -44,7 +44,7 @@ int bs_destruct(bs_model_rng* mr);
  * @param[in] mr pointer to model and RNG structure
  * @return name of model
  */
-const char* bs_name(bs_model_rng* mr);
+const char* bs_name(const bs_model_rng* mr);
 
 /**
  * Return information about the compiled model as a C-style string.
@@ -56,7 +56,7 @@ const char* bs_name(bs_model_rng* mr);
  * @return Information about the model including Stan version, Stan defines, and
  * compiler flags.
  */
-const char* bs_model_info(bs_model_rng* mr);
+const char* bs_model_info(const bs_model_rng* mr);
 
 /**
  * Return a comma-separated sequence of indexed parameter names,
@@ -77,7 +77,8 @@ const char* bs_model_info(bs_model_rng* mr);
  * @param[in] include_gq `true` to include generated quantities
  * @return CSV-separated, indexed, parameter names
  */
-const char* bs_param_names(bs_model_rng* mr, bool include_tp, bool include_gq);
+const char* bs_param_names(const bs_model_rng* mr, bool include_tp,
+                           bool include_gq);
 
 /**
  * Return a comma-separated sequence of unconstrained parameters.
@@ -96,7 +97,7 @@ const char* bs_param_names(bs_model_rng* mr, bool include_tp, bool include_gq);
  * @param[in] mr pointer to model and RNG structure
  * @return CSV-separated, indexed, unconstrained parameter names
  */
-const char* bs_param_unc_names(bs_model_rng* mr);
+const char* bs_param_unc_names(const bs_model_rng* mr);
 
 /**
  * Return the number of scalar parameters, optionally including the
@@ -108,7 +109,7 @@ const char* bs_param_unc_names(bs_model_rng* mr);
  * @param[in] include_gq `true` to include generated quantities
  * @return number of parameters
  */
-int bs_param_num(bs_model_rng* mr, bool include_tp, bool include_gq);
+int bs_param_num(const bs_model_rng* mr, bool include_tp, bool include_gq);
 
 /**
  * Return the number of unconstrained parameters.  The number of
@@ -119,7 +120,7 @@ int bs_param_num(bs_model_rng* mr, bool include_tp, bool include_gq);
  * @param[in] mr pointer to model and RNG structure
  * @return number of unconstrained parameters
  */
-int bs_param_unc_num(bs_model_rng* mr);
+int bs_param_unc_num(const bs_model_rng* mr);
 
 /**
  * Set the sequence of constrained parameters based on the specified
@@ -153,7 +154,7 @@ int bs_param_constrain(bs_model_rng* mr, bool include_tp, bool include_gq,
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int bs_param_unconstrain(bs_model_rng* mr, const double* theta,
+int bs_param_unconstrain(const bs_model_rng* mr, const double* theta,
                          double* theta_unc);
 
 /**
@@ -170,7 +171,7 @@ int bs_param_unconstrain(bs_model_rng* mr, const double* theta,
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int bs_param_unconstrain_json(bs_model_rng* mr, const char* json,
+int bs_param_unconstrain_json(const bs_model_rng* mr, const char* json,
                               double* theta_unc);
 
 /**
@@ -183,13 +184,13 @@ int bs_param_unconstrain_json(bs_model_rng* mr, const char* json,
  * @param[in] mr pointer to model and RNG structure
  * @param[in] propto `true` to discard constant terms
  * @param[in] jacobian `true` to include change-of-variables terms
- * @param[in] theta unconstrained parameters
+ * @param[in] theta_unc unconstrained parameters
  * @param[out] lp log density to be set
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int bs_log_density(bs_model_rng* mr, bool propto, bool jacobian,
-                   const double* theta, double* lp);
+int bs_log_density(const bs_model_rng* mr, bool propto, bool jacobian,
+                   const double* theta_unc, double* lp);
 
 /**
  * Set the log density and gradient of the specified parameters,
@@ -204,14 +205,14 @@ int bs_log_density(bs_model_rng* mr, bool propto, bool jacobian,
  * @param[in] mr pointer to model and RNG structure
  * @param[in] propto `true` to discard constant terms
  * @param[in] jacobian `true` to include change-of-variables terms
- * @param[in] theta unconstrained parameters
+ * @param[in] theta_unc unconstrained parameters
  * @param[out] val log density to be set
  * @param[out] grad gradient to set
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int bs_log_density_gradient(bs_model_rng* mr, bool propto, bool jacobian,
-                            const double* theta, double* val, double* grad);
+int bs_log_density_gradient(const bs_model_rng* mr, bool propto, bool jacobian,
+                            const double* theta_unc, double* val, double* grad);
 
 /**
  * Set the log density, gradient, and Hessian of the specified parameters,
@@ -228,15 +229,15 @@ int bs_log_density_gradient(bs_model_rng* mr, bool propto, bool jacobian,
  * @param[in] mr pointer to model and RNG structure
  * @param[in] propto `true` to discard constant terms
  * @param[in] jacobian `true` to include change-of-variables terms
- * @param[in] theta unconstrained parameters
+ * @param[in] theta_unc unconstrained parameters
  * @param[out] val log density to be set
  * @param[out] grad gradient to set
  * @param[out] hessian hessian to set
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int bs_log_density_hessian(bs_model_rng* mr, bool propto, bool jacobian,
-                           const double* theta, double* val, double* grad,
+int bs_log_density_hessian(const bs_model_rng* mr, bool propto, bool jacobian,
+                           const double* theta_unc, double* val, double* grad,
                            double* hessian);
 
 #ifdef __cplusplus

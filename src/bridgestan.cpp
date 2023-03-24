@@ -2,7 +2,7 @@
 #include "model_rng.cpp"
 #include "bridgestanR.cpp"
 
-bs_model_rng* bs_construct(char* data_file, unsigned int seed,
+bs_model_rng* bs_construct(const char* data_file, unsigned int seed,
                            unsigned int chain_id) {
   try {
     return new bs_model_rng(data_file, seed, chain_id);
@@ -28,23 +28,23 @@ int bs_destruct(bs_model_rng* mr) {
   return -1;
 }
 
-const char* bs_name(bs_model_rng* mr) { return mr->name(); }
+const char* bs_name(const bs_model_rng* mr) { return mr->name(); }
 
-const char* bs_model_info(bs_model_rng* mr) { return mr->model_info(); }
+const char* bs_model_info(const bs_model_rng* mr) { return mr->model_info(); }
 
-const char* bs_param_names(bs_model_rng* mr, bool include_tp, bool include_gq) {
+const char* bs_param_names(const bs_model_rng* mr, bool include_tp, bool include_gq) {
   return mr->param_names(include_tp, include_gq);
 }
 
-const char* bs_param_unc_names(bs_model_rng* mr) {
+const char* bs_param_unc_names(const bs_model_rng* mr) {
   return mr->param_unc_names();
 }
 
-int bs_param_num(bs_model_rng* mr, bool include_tp, bool include_gq) {
+int bs_param_num(const bs_model_rng* mr, bool include_tp, bool include_gq) {
   return mr->param_num(include_tp, include_gq);
 }
 
-int bs_param_unc_num(bs_model_rng* mr) { return mr->param_unc_num(); }
+int bs_param_unc_num(const bs_model_rng* mr) { return mr->param_unc_num(); }
 
 int bs_param_constrain(bs_model_rng* mr, bool include_tp, bool include_gq,
                        const double* theta_unc, double* theta) {
@@ -59,7 +59,7 @@ int bs_param_constrain(bs_model_rng* mr, bool include_tp, bool include_gq,
   return 1;
 }
 
-int bs_param_unconstrain(bs_model_rng* mr, const double* theta,
+int bs_param_unconstrain(const bs_model_rng* mr, const double* theta,
                          double* theta_unc) {
   try {
     mr->param_unconstrain(theta, theta_unc);
@@ -72,7 +72,7 @@ int bs_param_unconstrain(bs_model_rng* mr, const double* theta,
   return -1;
 }
 
-int bs_param_unconstrain_json(bs_model_rng* mr, const char* json,
+int bs_param_unconstrain_json(const bs_model_rng* mr, const char* json,
                               double* theta_unc) {
   try {
     mr->param_unconstrain_json(json, theta_unc);
@@ -85,7 +85,7 @@ int bs_param_unconstrain_json(bs_model_rng* mr, const char* json,
   return -1;
 }
 
-int bs_log_density(bs_model_rng* mr, bool propto, bool jacobian,
+int bs_log_density(const bs_model_rng* mr, bool propto, bool jacobian,
                    const double* theta_unc, double* val) {
   try {
     mr->log_density(propto, jacobian, theta_unc, val);
@@ -98,7 +98,7 @@ int bs_log_density(bs_model_rng* mr, bool propto, bool jacobian,
   return -1;
 }
 
-int bs_log_density_gradient(bs_model_rng* mr, bool propto, bool jacobian,
+int bs_log_density_gradient(const bs_model_rng* mr, bool propto, bool jacobian,
                             const double* theta_unc, double* val,
                             double* grad) {
   try {
@@ -113,7 +113,7 @@ int bs_log_density_gradient(bs_model_rng* mr, bool propto, bool jacobian,
   return -1;
 }
 
-int bs_log_density_hessian(bs_model_rng* mr, bool propto, bool jacobian,
+int bs_log_density_hessian(const bs_model_rng* mr, bool propto, bool jacobian,
                            const double* theta_unc, double* val, double* grad,
                            double* hessian) {
   try {
