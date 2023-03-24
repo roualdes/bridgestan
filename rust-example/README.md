@@ -1,21 +1,16 @@
 # BridgeStan from Rust
 
 This is a minimal Rust wrapper for BridgeStan.
- It relies on `bindgen`, and assumes you have already
-build the `example` program in `../c-example/`
-(required to build `NAME_model.so`).
+It relies on `bindgen` and `libloading`.
 
-A very simple safe wrapper is sketched, it does
+A very simple safe wrapper is sketched, however it does
 not currently expose all the behavior required to
-use bridgestan in full however.
+use bridgestan in full.
 
 ## Usage:
 
-Similar to the c-example, you can set a specific test model to link with `MODEL`
-
-
 ```shell
-MODEL=multi cargo r  ../test_models/multi/multi.data.json
+cargo r  ../test_models/multi/multi_model.so ../test_models/multi/multi.data.json
 ```
 
 Should output:
@@ -38,7 +33,7 @@ This implements the `CpuLogpFunc` and `LogpError` traits for the BridgeStan stru
 An example is provided to sample and print one of the final draws from the posterior:
 
 ```shell
-MODEL=multi cargo r -r --features=nuts --example nuts ../test_models/multi/multi.data.json
+cargo r -r --features=nuts --example nuts ../test_models/multi/multi_model.so  ../test_models/multi/multi.data.json
 ```
 
 Outputs
