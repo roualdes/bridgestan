@@ -41,6 +41,7 @@ name = "bridgestan"
 version = "1.0.0"
 dependencies = [
  "bindgen",
+ "libloading",
  "nuts-rs",
  "thiserror",
 ]

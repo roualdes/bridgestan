@@ -2,11 +2,17 @@ use bridgestan::StanModel;
 use nuts_rs::{new_sampler, Chain, SampleStats, SamplerArgs};
 use std::env;
 use std::error::Error;
+use std::path::Path;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let data_path = env::args().nth(1).unwrap_or("".to_string());
+    let lib_path = env::args()
+        .nth(1)
+        .expect("Required to pass a path to the library!");
+    let lib = bridgestan::open_library(Path::new(&lib_path))?;
 
-    let model = StanModel::new(&data_path, 123, 0)?;
+    let data_path = env::args().nth(2).unwrap_or_default();
+
+    let model = StanModel::new(&lib, &data_path, 123, 0)?;
 
     let n = model.param_unc_num();
 

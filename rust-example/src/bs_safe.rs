@@ -19,24 +19,33 @@ pub enum BridgeStanError {
     EvaluationFailed,
 }
 
+pub fn open_library(path: &std::path::Path) -> Result<ffi::Bridgestan, libloading::Error> {
+    unsafe { ffi::Bridgestan::new(path) }
+}
+
 /// Safe wrapper for BridgeStan C functions
 #[non_exhaustive]
-pub struct StanModel {
+pub struct StanModel<'lib> {
     model: *mut ffi::bs_model_rng,
+    lib: &'lib ffi::Bridgestan,
 }
 
 // BridgeStan model is thread safe
-unsafe impl Send for StanModel {}
-unsafe impl Sync for StanModel {}
+unsafe impl<'lib> Sync for StanModel<'lib> {}
 
-impl StanModel {
+impl<'lib> StanModel<'lib> {
     /// Create a new instance of the compiled Stan model.
     /// Data is specified as a JSON file at the given path, or empty for no data
     /// Seed and chain ID are used for reproducibility.
-    pub fn new(path: &str, seed: u32, chain_id: u32) -> Result<Self, BridgeStanError> {
+    pub fn new(
+        lib: &'lib ffi::Bridgestan,
+        path: &str,
+        seed: u32,
+        chain_id: u32,
+    ) -> Result<Self, BridgeStanError> {
         let data = CString::new(path)?.into_raw();
 
-        let model = unsafe { ffi::bs_construct(data, seed, chain_id) };
+        let model = unsafe { lib.bs_construct(data, seed, chain_id) };
 
         // retake pointer to free memory
         let _ = unsafe { CString::from_raw(data) };
@@ -44,12 +53,12 @@ impl StanModel {
         if model.is_null() {
             return Err(BridgeStanError::AllocateFailedError);
         }
-        Ok(StanModel { model })
+        Ok(StanModel { model, lib })
     }
 
     /// Return the name of the model or error if UTF decode fails
     pub fn name(&self) -> Result<&str, BridgeStanError> {
-        let cstr = unsafe { CStr::from_ptr(ffi::bs_name(self.model)) };
+        let cstr = unsafe { CStr::from_ptr(self.lib.bs_name(self.model)) };
         let res = cstr.to_str()?;
         Ok(res)
     }
@@ -57,15 +66,18 @@ impl StanModel {
     /// Number of parameters in the model on the constrained scale.
     /// Will also count transformed parameters and generated quantities if requested
     pub fn param_num(&self, include_tp: bool, include_gq: bool) -> usize {
-        unsafe { ffi::bs_param_num(self.model, include_tp as i32, include_gq as i32) }
-            .try_into()
-            .unwrap()
+        unsafe {
+            self.lib
+                .bs_param_num(self.model, include_tp as i32, include_gq as i32)
+        }
+        .try_into()
+        .unwrap()
     }
 
     /// Return the number of parameters on the unconstrained scale.
     /// In particular, this is the size of the slice required by the log_density functions.
     pub fn param_unc_num(&self) -> usize {
-        unsafe { ffi::bs_param_unc_num(self.model) }
+        unsafe { self.lib.bs_param_unc_num(self.model) }
             .try_into()
             .unwrap()
     }
@@ -91,7 +103,7 @@ impl StanModel {
 
         let mut val = 0.0;
         let rc = unsafe {
-            ffi::bs_log_density_gradient(
+            self.lib.bs_log_density_gradient(
                 self.model,
                 propto as i32,
                 jacobian as i32,
@@ -129,7 +141,7 @@ impl StanModel {
         );
 
         let rc = unsafe {
-            ffi::bs_param_constrain(
+            self.lib.bs_param_constrain(
                 self.model,
                 include_tp as i32,
                 include_gq as i32,
@@ -148,10 +160,10 @@ impl StanModel {
     // etc, need more functions
 }
 
-impl Drop for StanModel {
+impl<'lib> Drop for StanModel<'lib> {
     /// Free the memory allocated in C++. Panics if deallocation fails
     fn drop(&mut self) {
-        if unsafe { ffi::bs_destruct(self.model) } != 0 {
+        if unsafe { self.lib.bs_destruct(self.model) } != 0 {
             panic!("Deallocating model_rng failed")
         }
     }
@@ -168,7 +180,7 @@ impl LogpError for BridgeStanError {
 }
 
 #[cfg(feature = "nuts")]
-impl CpuLogpFunc for StanModel {
+impl<'lib> CpuLogpFunc for StanModel<'lib> {
     type Err = BridgeStanError;
 
     fn dim(&self) -> usize {
