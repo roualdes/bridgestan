@@ -1,12 +1,18 @@
 use bridgestan::StanModel;
 use std::env;
 use std::error::Error;
+use std::path::Path;
 use std::thread;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let data_path = env::args().nth(1).unwrap_or_default();
+    let lib_path = env::args()
+        .nth(1)
+        .expect("Required to pass a path to the library!");
+    let lib = bridgestan::open_library(Path::new(&lib_path))?;
 
-    let model = StanModel::new(&data_path, 123, 0)?;
+    let data_path = env::args().nth(2).unwrap_or_default();
+
+    let model = StanModel::new(&lib, &data_path, 123, 0)?;
 
     println!(
         "The model has {} parameters.",

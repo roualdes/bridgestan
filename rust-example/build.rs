@@ -4,18 +4,6 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    println!("cargo:rerun-if-env-changed=MODEL");
-
-    let model = env::var("MODEL").unwrap_or_else(|_| "full".to_string());
-
-    // Tell cargo to look for shared libraries in the specified directory
-    println!("cargo:rustc-link-search=../test_models/{}/", model);
-    println!("cargo:rustc-link-arg=-Wl,-rpath=../test_models/{}/", model);
-
-    // shared library.
-
-    println!("cargo:rustc-link-lib={}_model", model);
-
     println!("cargo:rerun-if-changed=../src/bridgestan.h");
 
     // The bindgen::Builder is the main entry point
@@ -25,6 +13,8 @@ fn main() {
         .header("../src/bridgestan.h")
         .opaque_type("model")
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
+        .dynamic_library_name("Bridgestan")
+        .dynamic_link_require_all(true)
         .generate()
         .expect("Unable to generate bindings");
 
