@@ -2,18 +2,25 @@
 #include "model_rng.cpp"
 #include "bridgestanR.cpp"
 
+#include <sstream>
+
 bs_model_rng* bs_construct(const char* data_file, unsigned int seed,
-                           unsigned int chain_id) {
+                           unsigned int chain_id, char** error_msg) {
   try {
     return new bs_model_rng(data_file, seed, chain_id);
   } catch (const std::exception& e) {
-    std::cerr << "construct(" << data_file << ", " << seed << ", " << chain_id
-              << ")"
-              << " failed with exception: " << e.what() << std::endl;
+    std::stringstream error;
+    error << "construct(" << data_file << ", " << seed << ", " << chain_id
+          << ")"
+          << " failed with exception: " << e.what() << std::endl;
+    *error_msg = strdup(error.str().c_str());
   } catch (...) {
-    std::cerr << "construct(" << data_file << ", " << seed << ", " << chain_id
-              << ")"
-              << " failed with unknown exception" << std::endl;
+    std::stringstream error;
+
+    error << "construct(" << data_file << ", " << seed << ", " << chain_id
+          << ")"
+          << " failed with unknown exception" << std::endl;
+    *error_msg = strdup(error.str().c_str());
   }
   return nullptr;
 }
@@ -28,11 +35,14 @@ int bs_destruct(bs_model_rng* mr) {
   return -1;
 }
 
+void bs_free_error_msg(char* error_msg) { free(error_msg); }
+
 const char* bs_name(const bs_model_rng* mr) { return mr->name(); }
 
 const char* bs_model_info(const bs_model_rng* mr) { return mr->model_info(); }
 
-const char* bs_param_names(const bs_model_rng* mr, bool include_tp, bool include_gq) {
+const char* bs_param_names(const bs_model_rng* mr, bool include_tp,
+                           bool include_gq) {
   return mr->param_names(include_tp, include_gq);
 }
 

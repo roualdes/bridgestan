@@ -2,7 +2,7 @@
 #include "bridgestan.h"
 
 void bs_construct_R(char** data, int* rng, int* chain, bs_model_rng** ptr_out) {
-  *ptr_out = bs_construct(*data, *rng, *chain);
+  *ptr_out = bs_construct(*data, *rng, *chain, nullptr);
 }
 void bs_destruct_R(bs_model_rng** model, int* return_code) {
   *return_code = bs_destruct(*model);

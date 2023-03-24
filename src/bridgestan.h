@@ -23,7 +23,7 @@ typedef int bool;
  * fails
  */
 bs_model_rng* bs_construct(const char* data_file, unsigned int seed,
-                           unsigned int chain_id);
+                           unsigned int chain_id, char** error_msg);
 
 /**
  * Destroy the model and return 0 for success and -1 if there is an
@@ -34,6 +34,13 @@ bs_model_rng* bs_construct(const char* data_file, unsigned int seed,
  * of the model components.
  */
 int bs_destruct(bs_model_rng* mr);
+
+/**
+ * Free the error messages created by other methods.
+ *
+ * @param[in] error_msg pointer to error message
+ */
+void bs_free_error_msg(char* error_msg);
 
 /**
  * Return the name of the specified model as a C-style string.

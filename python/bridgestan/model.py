@@ -10,6 +10,7 @@ from .util import validate_readable
 
 FloatArray = npt.NDArray[np.float64]
 double_array = ndpointer(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
+star_star_char = ctypes.POINTER(ctypes.c_char_p)
 
 
 class StanModel:
@@ -56,7 +57,7 @@ class StanModel:
             model from C++.
         """
         validate_readable(model_lib)
-        if not model_data is None and model_data.endswith('.json'):
+        if not model_data is None and model_data.endswith(".json"):
             validate_readable(model_data)
         self.lib_path = model_lib
         self.stanlib = ctypes.CDLL(self.lib_path)
@@ -66,14 +67,24 @@ class StanModel:
 
         self._construct = self.stanlib.bs_construct
         self._construct.restype = ctypes.c_void_p
-        self._construct.argtypes = [ctypes.c_char_p, ctypes.c_uint, ctypes.c_uint]
+        self._construct.argtypes = [
+            ctypes.c_char_p,
+            ctypes.c_uint,
+            ctypes.c_uint,
+            star_star_char,
+        ]
 
+        self._free_error = self.stanlib.bs_free_error_msg
+        self._free_error.restype = None
+        self._free_error.argtypes = [ctypes.c_char_p]
+
+        err = ctypes.pointer(ctypes.c_char_p())
         self.model_rng = self._construct(
-            str.encode(self.data_path), self.seed, self.chain_id
+            str.encode(self.data_path), self.seed, self.chain_id, err
         )
 
         if not self.model_rng:
-            raise RuntimeError("could not construct model RNG")
+            raise self._handle_error(err.contents, "bs_construct")
 
         self._name = self.stanlib.bs_name
         self._name.restype = ctypes.c_char_p
@@ -521,3 +532,17 @@ class StanModel:
             )
         out_hess = out_hess.reshape(dims, dims)
         return lp.contents.value, out_grad, out_hess
+
+    def _handle_error(self, err: ctypes.c_char_p, method: str) -> Exception:
+        """
+        Handle errors from C++.
+
+        :param err: A pointer to a C string.
+        :raises RuntimeError: If ``err`` is not null.
+        """
+        if err:
+            string = ctypes.string_at(err).decode("utf-8")
+            self._free_error(err)
+            return RuntimeError(string)
+        else:
+            return RuntimeError(f"Unknown error in {method}")
