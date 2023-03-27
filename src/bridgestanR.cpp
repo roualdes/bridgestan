@@ -1,8 +1,14 @@
 #include "bridgestanR.h"
 #include "bridgestan.h"
+#include <iostream>
 
-void bs_construct_R(char** data, int* rng, int* chain, bs_model_rng** ptr_out) {
-  *ptr_out = bs_construct(*data, *rng, *chain, nullptr);
+void bs_construct_R(char** data, int* rng, int* chain, bs_model_rng** ptr_out,
+                    char** err_msg, void** err_ptr) {
+  *ptr_out = bs_construct(*data, *rng, *chain, err_msg);
+  *err_ptr = static_cast<void*>(*err_msg);
+}
+void bs_free_error_msg_R(void** err_msg) {
+  bs_free_error_msg(static_cast<char*>(*err_msg));
 }
 void bs_destruct_R(bs_model_rng** model, int* return_code) {
   *return_code = bs_destruct(*model, nullptr);
@@ -29,32 +35,44 @@ void bs_param_unc_num_R(bs_model_rng** model, int* num_out) {
 }
 void bs_param_constrain_R(bs_model_rng** model, int* include_tp,
                           int* include_gq, const double* theta_unc,
-                          double* theta, int* return_code) {
+                          double* theta, int* return_code, char** err_msg,
+                          void** err_ptr) {
   *return_code = bs_param_constrain(*model, *include_tp, *include_gq, theta_unc,
-                                    theta, nullptr);
+                                    theta, err_msg);
+  *err_ptr = static_cast<void*>(*err_msg);
 }
 void bs_param_unconstrain_R(bs_model_rng** model, const double* theta,
-                            double* theta_unc, int* return_code) {
-  *return_code = bs_param_unconstrain(*model, theta, theta_unc, nullptr);
+                            double* theta_unc, int* return_code, char** err_msg,
+                            void** err_ptr) {
+  *return_code = bs_param_unconstrain(*model, theta, theta_unc, err_msg);
+  *err_ptr = static_cast<void*>(*err_msg);
 }
 void bs_param_unconstrain_json_R(bs_model_rng** model, char const** json,
-                                 double* theta_unc, int* return_code) {
-  *return_code = bs_param_unconstrain_json(*model, *json, theta_unc, nullptr);
+                                 double* theta_unc, int* return_code,
+                                 char** err_msg, void** err_ptr) {
+  *return_code = bs_param_unconstrain_json(*model, *json, theta_unc, err_msg);
+  *err_ptr = static_cast<void*>(*err_msg);
 }
 void bs_log_density_R(bs_model_rng** model, int* propto, int* jacobian,
-                      const double* theta, double* val, int* return_code) {
+                      const double* theta_unc, double* val, int* return_code,
+                      char** err_msg, void** err_ptr) {
   *return_code
-      = bs_log_density(*model, *propto, *jacobian, theta, val, nullptr);
+      = bs_log_density(*model, *propto, *jacobian, theta_unc, val, err_msg);
+  *err_ptr = static_cast<void*>(*err_msg);
 }
 void bs_log_density_gradient_R(bs_model_rng** model, int* propto, int* jacobian,
-                               const double* theta, double* val, double* grad,
-                               int* return_code) {
-  *return_code = bs_log_density_gradient(*model, *propto, *jacobian, theta, val,
-                                         grad, nullptr);
+                               const double* theta_unc, double* val,
+                               double* grad, int* return_code, char** err_msg,
+                               void** err_ptr) {
+  *return_code = bs_log_density_gradient(*model, *propto, *jacobian, theta_unc,
+                                         val, grad, err_msg);
+  *err_ptr = static_cast<void*>(*err_msg);
 }
 void bs_log_density_hessian_R(bs_model_rng** model, int* propto, int* jacobian,
-                              const double* theta, double* val, double* grad,
-                              double* hess, int* return_code) {
-  *return_code = bs_log_density_hessian(*model, *propto, *jacobian, theta, val,
-                                        grad, hess, nullptr);
+                              const double* theta_unc, double* val,
+                              double* grad, double* hess, int* return_code,
+                              char** err_msg, void** err_ptr) {
+  *return_code = bs_log_density_hessian(*model, *propto, *jacobian, theta_unc,
+                                        val, grad, hess, err_msg);
+  *err_ptr = static_cast<void*>(*err_msg);
 }

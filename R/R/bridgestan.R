@@ -1,3 +1,12 @@
+handle_error <- function(function_name, err_msg, err_ptr, lib_name) {
+  .C("bs_free_error_msg_R", as.raw(err_ptr), PACKAGE = lib_name)
+  if(err_msg == ""){
+    return(paste("Unknown error in", function_name))
+  } else {
+    return(err_msg)
+  }
+}
+
 #' StanModel
 #'
 #' R6 Class representing a compiled BridgeStan model.
@@ -32,15 +41,17 @@ StanModel <- R6::R6Class("StanModel",
       }
 
       dyn.load(private$lib, PACKAGE = private$lib_name)
-      .C("bs_construct_R",
+      ret <- .C("bs_construct_R",
         as.character(data), as.integer(rng_seed), as.integer(chain_id),
         ptr_out = raw(8),
+        err_msg = as.character(""),
+        err_ptr = raw(8),
         PACKAGE = private$lib_name
-      )$ptr_out -> ptr_out
-      if (all(ptr_out == 0)) {
-        stop("Could not construct model RNG.")
+      )
+      if (all(ret$ptr_out == 0)) {
+        stop(handle_error("construct", ret$err_msg, ret$err_ptr, private$lib_name))
       }
-      private$model <- ptr_out
+      private$model <- ret$ptr_out
     },
     #' @description
     #' Get the name of this StanModel.
@@ -126,13 +137,15 @@ StanModel <- R6::R6Class("StanModel",
     #' @return The constrained parameters of the model.
     param_constrain = function(theta_unc, include_tp = FALSE, include_gq = FALSE) {
       vars <- .C("bs_param_constrain_R", as.raw(private$model),
-        as.logical(include_tp), as.logical(include_gq), as.numeric(theta_unc),
+        as.logical(include_tp), as.logical(include_gq), as.double(theta_unc),
         theta = double(self$param_num(include_tp = include_tp, include_gq = include_gq)),
         return_code = as.integer(0),
+        err_msg = as.character(""),
+        err_ptr = raw(8),
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop("C++ exception in param_constrain(); see stderr for messages.")
+        stop(handle_error("param_constrain", vars$err_msg, vars$err_ptr, private$lib_name))
       }
       vars$theta
     },
@@ -147,13 +160,15 @@ StanModel <- R6::R6Class("StanModel",
     #' @return The unconstrained parameters of the model.
     param_unconstrain = function(theta) {
       vars <- .C("bs_param_unconstrain_R", as.raw(private$model),
-        as.numeric(theta),
+        as.double(theta),
         theta_unc = double(self$param_unc_num()),
         return_code = as.integer(0),
+        err_msg = as.character(""),
+        err_ptr = raw(8),
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop("C++ exception in param_unconstrain(); see stderr for messages.")
+        stop(handle_error("param_unconstrain", vars$err_msg, vars$err_ptr, private$lib_name))
       }
       vars$theta_unc
     },
@@ -168,10 +183,12 @@ StanModel <- R6::R6Class("StanModel",
         as.character(json),
         theta_unc = double(self$param_unc_num()),
         return_code = as.integer(0),
+        err_msg = as.character(""),
+        err_ptr = raw(8),
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop("C++ exception in param_unconstrain_json(); see stderr for messages.")
+        stop(handle_error("param_unconstrain_json", vars$err_msg, vars$err_ptr, private$lib_name))
       }
       vars$theta_unc
     },
@@ -184,13 +201,15 @@ StanModel <- R6::R6Class("StanModel",
     #' @return The log density.
     log_density = function(theta, propto = TRUE, jacobian = TRUE) {
       vars <- .C("bs_log_density_R", as.raw(private$model),
-        as.logical(propto), as.logical(jacobian), as.numeric(theta),
+        as.logical(propto), as.logical(jacobian), as.double(theta),
         val = double(1),
         return_code = as.integer(0),
+        err_msg = as.character(""),
+        err_ptr = raw(8),
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop("C++ exception in log_density(); see stderr for messages.")
+        stop(handle_error("log_density", vars$err_msg, vars$err_ptr, private$lib_name))
       }
       vars$val
     },
@@ -204,13 +223,15 @@ StanModel <- R6::R6Class("StanModel",
     log_density_gradient = function(theta, propto = TRUE, jacobian = TRUE) {
       dims <- self$param_unc_num()
       vars <- .C("bs_log_density_gradient_R", as.raw(private$model),
-        as.logical(propto), as.logical(jacobian), as.numeric(theta),
+        as.logical(propto), as.logical(jacobian), as.double(theta),
         val = double(1), gradient = double(dims),
         return_code = as.integer(0),
+        err_msg = as.character(""),
+        err_ptr = raw(8),
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop("C++ exception in log_density_gradient(); see stderr for messages")
+        stop(handle_error("log_density_gradient", vars$err_msg, vars$err_ptr, private$lib_name))
       }
       list(val = vars$val, gradient = vars$gradient)
     },
@@ -224,13 +245,15 @@ StanModel <- R6::R6Class("StanModel",
     log_density_hessian = function(theta, propto = TRUE, jacobian = TRUE) {
       dims <- self$param_unc_num()
       vars <- .C("bs_log_density_hessian_R", as.raw(private$model),
-        as.logical(propto), as.logical(jacobian), as.numeric(theta),
+        as.logical(propto), as.logical(jacobian), as.double(theta),
         val = double(1), gradient = double(dims), hess = double(dims * dims),
         return_code = as.integer(0),
+        err_msg = as.character(""),
+        err_ptr = raw(8),
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop("C++ exception in log_density_hessian(); see stderr for messages")
+        stop(handle_error("log_density_hessian", vars$err_msg, vars$err_ptr, private$lib_name))
       }
       list(val = vars$val, gradient = vars$gradient, hessian = matrix(vars$hess, nrow = dims, byrow = TRUE))
     }
