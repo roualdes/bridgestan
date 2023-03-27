@@ -30,20 +30,18 @@ def test_constructor():
     np.testing.assert_allclose(bool(b3), True)
 
     # test missing so file
-    with np.testing.assert_raises(FileNotFoundError):
+    with pytest.raises(FileNotFoundError):
         bs.StanModel("nope, not going to find it")
 
     # test missing data file
-    with np.testing.assert_raises(FileNotFoundError):
+    with pytest.raises(FileNotFoundError):
         bs.StanModel(bernoulli_so, "nope, not going to find it.json")
 
     # test data load exception
     throw_data_so = str(STAN_FOLDER / "throw_data" / "throw_data_model.so")
-    print("construct() EXCEPTION MSG ON NEXT LINE IS NOT AN ERROR")
-    with np.testing.assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError, match="find this text: datafails"):
         b4 = bs.StanModel(throw_data_so)
 
-    # TODO(carpenter): test get right error message on stderr
 
 
 def test_name():
@@ -226,7 +224,7 @@ def test_param_constrain():
     B = b.reshape(D, D)
     np.testing.assert_allclose(B_expected, B)
     scratch_wrong = np.zeros(10)
-    with np.testing.assert_raises(ValueError):
+    with pytest.raises(ValueError):
         bridge.param_constrain(a, out=scratch_wrong)
 
     # exception handling test in transformed parameters/model (compiled same way)
@@ -235,15 +233,13 @@ def test_param_constrain():
 
     y = np.array(np.random.uniform(1))
     bridge2.param_constrain(y, include_tp=False)
-    print("param_constrain() EXCEPTION MSG ON NEXT LINE IS NOT AN ERROR")
-    with np.testing.assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError, match="find this text: tpfails"):
         bridge2.param_constrain(y, include_tp=True)
 
     throw_gq_so = str(STAN_FOLDER / "throw_gq" / "throw_gq_model.so")
     bridge3 = bs.StanModel(throw_gq_so)
     bridge3.param_constrain(y, include_gq=False)
-    print("param_constrain() EXCEPTION MSG ON NEXT LINE IS NOT AN ERROR")
-    with np.testing.assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError, match="find this text: gqfails"):
         bridge3.param_constrain(y, include_gq=True)
 
 
@@ -262,7 +258,7 @@ def test_param_unconstrain():
     c2 = bridge.param_unconstrain(b, out=scratch)
     np.testing.assert_allclose(a, c2)
     scratch_wrong = np.zeros(16)
-    with np.testing.assert_raises(ValueError):
+    with pytest.raises(ValueError):
         bridge.param_unconstrain(b, out=scratch_wrong)
 
 
@@ -282,7 +278,7 @@ def test_param_unconstrain_json():
     np.testing.assert_allclose(theta_unc, theta_unc_j_test2)
 
     scratch_bad = np.zeros(10)
-    with np.testing.assert_raises(ValueError):
+    with pytest.raises(ValueError):
         bridge.param_unconstrain_json(theta_json, out=scratch_bad)
 
 
@@ -318,8 +314,8 @@ def test_log_density():
     throw_lp_so = str(STAN_FOLDER / "throw_lp" / "throw_lp_model.so")
     bridge2 = bs.StanModel(throw_lp_so)
     y2 = np.array(np.random.uniform(1))
-    print("log_density() EXCEPTION MSG ON NEXT LINE IS NOT AN ERROR")
-    with np.testing.assert_raises(RuntimeError):
+
+    with pytest.raises(RuntimeError, match="find this text: lpfails"):
         bridge2.log_density(y2)
 
 
@@ -388,7 +384,7 @@ def test_log_density_gradient():
     np.testing.assert_allclose(_grad_logp(y_unc) + _grad_jacobian_true(y_unc), grad[0])
     #
     scratch_bad = np.zeros(bridge.param_unc_num() + 10)
-    with np.testing.assert_raises(ValueError):
+    with pytest.raises(ValueError):
         bridge.log_density_gradient(y_unc, out=scratch_bad)
 
 
@@ -494,7 +490,7 @@ def test_log_density_hessian():
     np.testing.assert_allclose(_grad_logp(y_unc) + _grad_jacobian_true(y_unc), grad[0])
     #
     scratch_bad = np.zeros(bridge.param_unc_num() + 10)
-    with np.testing.assert_raises(ValueError):
+    with pytest.raises(ValueError):
         bridge.log_density_hessian(y_unc, out_grad=scratch_bad)
 
     # test with 5 x 5 Hessian

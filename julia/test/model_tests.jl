@@ -21,7 +21,7 @@ end
     # missing data
     @test_throws SystemError load_test_model("stdnormal")
     # exception in constructor
-    @test_throws ErrorException load_test_model("throw_data", false)
+    @test_throws "find this text: datafails" load_test_model("throw_data", false)
 end
 
 @testset "name" begin
@@ -177,11 +177,11 @@ end
     model3 = load_test_model("throw_tp", false)
     y = rand(1)
     BridgeStan.param_constrain(model3, y)
-    @test_throws ErrorException BridgeStan.param_constrain(model3, y; include_tp = true)
+    @test_throws "find this text: tpfails" BridgeStan.param_constrain(model3, y; include_tp = true)
 
     model4 = load_test_model("throw_gq", false)
     BridgeStan.param_constrain(model4, y)
-    @test_throws ErrorException BridgeStan.param_constrain(model4, y; include_gq = true)
+    @test_throws "find this text: gqfails" BridgeStan.param_constrain(model4, y; include_gq = true)
 end
 
 @testset "param_unconstrain" begin
@@ -250,7 +250,7 @@ end
 
     model2 = load_test_model("throw_lp", false)
     y2 = rand(1)
-    @test_throws ErrorException BridgeStan.log_density(model2, y2)
+    @test_throws "find this text: lpfails" BridgeStan.log_density(model2, y2)
 end
 
 

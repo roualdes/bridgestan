@@ -1,7 +1,12 @@
 base = "../../.."
 
-load_model <- function(name) {
-    model <- StanModel$new(file.path(base,paste0("/test_models/", name, "/",name,"_model.so")), file.path(base, paste0("/test_models/", name, "/",name,".data.json")), 1234, 0)
+load_model <- function(name, include_data=TRUE) {
+    if (include_data){
+        data = file.path(base, paste0("/test_models/", name, "/",name,".data.json"))
+    } else {
+        data = ""
+    }
+    model <- StanModel$new(file.path(base,paste0("/test_models/", name, "/",name,"_model.so")), data, 1234, 0)
     return(model)
 }
 
@@ -95,8 +100,30 @@ test_that("param_unconstrain works for a nontrivial case", {
 
     a <- rnorm(unc_size)
     B <- cov_constrain(a, D)
-    
+
     c <- fr_gaussian$param_unconstrain(B)
 
     expect_equal(c, a)
+})
+
+test_that("constructor propagates errors", {
+    expect_error(load_model("throw_data",include_data=FALSE), "find this text: datafails")
+})
+
+test_that("log_density propagates errors", {
+    m <- load_model("throw_lp",include_data=FALSE)
+    expect_error(m$log_density(c(1.2)), "find this text: lpfails")
+    expect_error(m$log_density_gradient(c(1.2)), "find this text: lpfails")
+    expect_error(m$log_density_hessian(c(1.2)), "find this text: lpfails")
+})
+
+test_that("param_constrain propagates errors", {
+    m1 <- load_model("throw_tp",include_data=FALSE)
+    m1$param_constrain(c(1.2)) # no error
+    expect_error(m1$param_constrain(c(1.2), include_tp=TRUE), "find this text: tpfails")
+
+
+    m2 <- load_model("throw_gq",include_data=FALSE)
+    m2$param_constrain(c(1.2)) # no error
+    expect_error(m2$param_constrain(c(1.2), include_gq=TRUE), "find this text: gqfails")
 })
