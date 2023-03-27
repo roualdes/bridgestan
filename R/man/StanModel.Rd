@@ -246,13 +246,13 @@ The unconstrained parameters of the model.
 Return the log density of the specified unconstrained parameters.
 See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density(theta, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density(theta_unc, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{theta}}{The vector of unconstrained parameters.}
+\item{\code{theta_unc}}{The vector of unconstrained parameters.}
 
 \item{\code{propto}}{If \code{TRUE}, drop terms which do not depend on the parameters.}
 
@@ -271,13 +271,13 @@ The log density.
 Return the log density and gradient of the specified unconstrained parameters.
 See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density_gradient(theta, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density_gradient(theta_unc, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{theta}}{The vector of unconstrained parameters.}
+\item{\code{theta_unc}}{The vector of unconstrained parameters.}
 
 \item{\code{propto}}{If \code{TRUE}, drop terms which do not depend on the parameters.}
 
@@ -296,13 +296,13 @@ List containing entries \code{val} (the log density) and \code{gradient} (the gr
 Return the log density, gradient, and Hessian of the specified unconstrained parameters.
 See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density_hessian(theta, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density_hessian(theta_unc, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{theta}}{The vector of unconstrained parameters.}
+\item{\code{theta_unc}}{The vector of unconstrained parameters.}
 
 \item{\code{propto}}{If \code{TRUE}, drop terms which do not depend on the parameters.}
 

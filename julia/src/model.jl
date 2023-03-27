@@ -68,7 +68,7 @@ mutable struct StanModel
             data,
             seed,
             chain_id,
-            err
+            err,
         )
         if stanmodel == C_NULL
             error(_get_err(lib, err, "bs_construct"))
@@ -239,7 +239,7 @@ function param_constrain!(
         include_gq,
         theta_unc,
         out,
-        err
+        err,
     )
     if rc != 0
         error(_get_err(sm.lib, err, "param_constrain"))
@@ -300,7 +300,7 @@ function param_unconstrain!(sm::StanModel, theta::Vector{Float64}, out::Vector{F
         sm.stanmodel,
         theta,
         out,
-        err
+        err,
     )
     if rc != 0
         error(_get_err(sm.lib, err, "param_unconstrain"))
@@ -439,7 +439,15 @@ function log_density_gradient!(
     rc = ccall(
         Libc.Libdl.dlsym(sm.lib, "bs_log_density_gradient"),
         Cint,
-        (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}, Ref{Cdouble}, Ref{Cstring}),
+        (
+            Ptr{StanModelStruct},
+            Cint,
+            Cint,
+            Ref{Cdouble},
+            Ref{Cdouble},
+            Ref{Cdouble},
+            Ref{Cstring},
+        ),
         sm.stanmodel,
         propto,
         jacobian,

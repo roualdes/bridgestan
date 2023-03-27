@@ -195,13 +195,13 @@ StanModel <- R6::R6Class("StanModel",
     #' @description
     #' Return the log density of the specified unconstrained parameters.
     #' See also `StanModel$param_unconstrain()`, the inverse of this function.
-    #' @param theta The vector of unconstrained parameters.
+    #' @param theta_unc The vector of unconstrained parameters.
     #' @param propto If `TRUE`, drop terms which do not depend on the parameters.
     #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
     #' @return The log density.
-    log_density = function(theta, propto = TRUE, jacobian = TRUE) {
+    log_density = function(theta_unc, propto = TRUE, jacobian = TRUE) {
       vars <- .C("bs_log_density_R", as.raw(private$model),
-        as.logical(propto), as.logical(jacobian), as.double(theta),
+        as.logical(propto), as.logical(jacobian), as.double(theta_unc),
         val = double(1),
         return_code = as.integer(0),
         err_msg = as.character(""),
@@ -216,14 +216,14 @@ StanModel <- R6::R6Class("StanModel",
     #' @description
     #' Return the log density and gradient of the specified unconstrained parameters.
     #' See also `StanModel$param_unconstrain()`, the inverse of this function.
-    #' @param theta The vector of unconstrained parameters.
+    #' @param theta_unc The vector of unconstrained parameters.
     #' @param propto If `TRUE`, drop terms which do not depend on the parameters.
     #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
     #' @return List containing entries `val` (the log density) and `gradient` (the gradient).
-    log_density_gradient = function(theta, propto = TRUE, jacobian = TRUE) {
+    log_density_gradient = function(theta_unc, propto = TRUE, jacobian = TRUE) {
       dims <- self$param_unc_num()
       vars <- .C("bs_log_density_gradient_R", as.raw(private$model),
-        as.logical(propto), as.logical(jacobian), as.double(theta),
+        as.logical(propto), as.logical(jacobian), as.double(theta_unc),
         val = double(1), gradient = double(dims),
         return_code = as.integer(0),
         err_msg = as.character(""),
@@ -238,14 +238,14 @@ StanModel <- R6::R6Class("StanModel",
     #' @description
     #' Return the log density, gradient, and Hessian of the specified unconstrained parameters.
     #' See also `StanModel$param_unconstrain()`, the inverse of this function.
-    #' @param theta The vector of unconstrained parameters.
+    #' @param theta_unc The vector of unconstrained parameters.
     #' @param propto If `TRUE`, drop terms which do not depend on the parameters.
     #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
     #' @return List containing entries `val` (the log density), `gradient` (the gradient), and `hessian` (the Hessian).
-    log_density_hessian = function(theta, propto = TRUE, jacobian = TRUE) {
+    log_density_hessian = function(theta_unc, propto = TRUE, jacobian = TRUE) {
       dims <- self$param_unc_num()
       vars <- .C("bs_log_density_hessian_R", as.raw(private$model),
-        as.logical(propto), as.logical(jacobian), as.double(theta),
+        as.logical(propto), as.logical(jacobian), as.double(theta_unc),
         val = double(1), gradient = double(dims), hess = double(dims * dims),
         return_code = as.integer(0),
         err_msg = as.character(""),

@@ -177,11 +177,19 @@ end
     model3 = load_test_model("throw_tp", false)
     y = rand(1)
     BridgeStan.param_constrain(model3, y)
-    @test_throws "find this text: tpfails" BridgeStan.param_constrain(model3, y; include_tp = true)
+    @test_throws "find this text: tpfails" BridgeStan.param_constrain(
+        model3,
+        y;
+        include_tp = true,
+    )
 
     model4 = load_test_model("throw_gq", false)
     BridgeStan.param_constrain(model4, y)
-    @test_throws "find this text: gqfails" BridgeStan.param_constrain(model4, y; include_gq = true)
+    @test_throws "find this text: gqfails" BridgeStan.param_constrain(
+        model4,
+        y;
+        include_gq = true,
+    )
 end
 
 @testset "param_unconstrain" begin

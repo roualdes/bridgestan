@@ -1,6 +1,5 @@
 #include "bridgestanR.h"
 #include "bridgestan.h"
-#include <iostream>
 
 void bs_construct_R(char** data, int* rng, int* chain, bs_model_rng** ptr_out,
                     char** err_msg, void** err_ptr) {
