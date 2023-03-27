@@ -9,28 +9,36 @@ bs_model_rng* bs_construct(const char* data_file, unsigned int seed,
   try {
     return new bs_model_rng(data_file, seed, chain_id);
   } catch (const std::exception& e) {
-    std::stringstream error;
-    error << "construct(" << data_file << ", " << seed << ", " << chain_id
-          << ")"
-          << " failed with exception: " << e.what() << std::endl;
-    *error_msg = strdup(error.str().c_str());
+    if (error_msg) {
+      std::stringstream error;
+      error << "construct(" << data_file << ", " << seed << ", " << chain_id
+            << ")"
+            << " failed with exception: " << e.what() << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   } catch (...) {
-    std::stringstream error;
+    if (error_msg) {
+      std::stringstream error;
 
-    error << "construct(" << data_file << ", " << seed << ", " << chain_id
-          << ")"
-          << " failed with unknown exception" << std::endl;
-    *error_msg = strdup(error.str().c_str());
+      error << "construct(" << data_file << ", " << seed << ", " << chain_id
+            << ")"
+            << " failed with unknown exception" << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   }
   return nullptr;
 }
 
-int bs_destruct(bs_model_rng* mr) {
+int bs_destruct(bs_model_rng* mr, char** error_msg) {
   try {
     delete (mr);
     return 0;
   } catch (...) {
-    std::cerr << "destruct() failed." << std::endl;
+    if (error_msg) {
+      std::stringstream error;
+      error << "destruct() failed." << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   }
   return -1;
 }
@@ -57,83 +65,138 @@ int bs_param_num(const bs_model_rng* mr, bool include_tp, bool include_gq) {
 int bs_param_unc_num(const bs_model_rng* mr) { return mr->param_unc_num(); }
 
 int bs_param_constrain(bs_model_rng* mr, bool include_tp, bool include_gq,
-                       const double* theta_unc, double* theta) {
+                       const double* theta_unc, double* theta,
+                       char** error_msg) {
   try {
     mr->param_constrain(include_tp, include_gq, theta_unc, theta);
     return 0;
   } catch (const std::exception& e) {
-    std::cerr << "param_constrain() exception: " << e.what() << std::endl;
+    if (error_msg) {
+      std::stringstream error;
+      error << "param_constrain() failed with exception: " << e.what()
+            << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   } catch (...) {
-    std::cerr << "param_constrain() unknown exception" << std::endl;
+    if (error_msg) {
+      std::stringstream error;
+      error << "param_constrain() failed with unknown exception" << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   }
   return 1;
 }
 
 int bs_param_unconstrain(const bs_model_rng* mr, const double* theta,
-                         double* theta_unc) {
+                         double* theta_unc, char** error_msg) {
   try {
     mr->param_unconstrain(theta, theta_unc);
     return 0;
   } catch (const std::exception& e) {
-    std::cerr << "param_unconstrain exception: " << e.what() << std::endl;
+    if (error_msg) {
+      std::stringstream error;
+      error << "param_unconstrain() failed with exception: " << e.what()
+            << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   } catch (...) {
-    std::cerr << "param_unconstrain unknown exception" << std::endl;
+    if (error_msg) {
+      std::stringstream error;
+      error << "param_unconstrain() failed with unknown exception" << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   }
   return -1;
 }
 
 int bs_param_unconstrain_json(const bs_model_rng* mr, const char* json,
-                              double* theta_unc) {
+                              double* theta_unc, char** error_msg) {
   try {
     mr->param_unconstrain_json(json, theta_unc);
     return 0;
   } catch (const std::exception& e) {
-    std::cerr << "param_unconstrain_json exception: " << e.what() << std::endl;
+    if (error_msg) {
+      std::stringstream error;
+      error << "param_unconstrain_json() failed with exception: " << e.what()
+            << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   } catch (...) {
-    std::cerr << "param_unconstrain_json unknown exception" << std::endl;
+    if (error_msg) {
+      std::stringstream error;
+      error << "param_unconstrain_json() failed with unknown exception"
+            << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   }
   return -1;
 }
 
 int bs_log_density(const bs_model_rng* mr, bool propto, bool jacobian,
-                   const double* theta_unc, double* val) {
+                   const double* theta_unc, double* val, char** error_msg) {
   try {
     mr->log_density(propto, jacobian, theta_unc, val);
     return 0;
   } catch (const std::exception& e) {
-    std::cerr << "log_density() exception: " << e.what() << std::endl;
+    if (error_msg) {
+      std::stringstream error;
+      error << "log_density() failed with exception: " << e.what() << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   } catch (...) {
-    std::cerr << "log_density() unknown exception" << std::endl;
+    if (error_msg) {
+      std::stringstream error;
+      error << "log_density() failed with unknown exception" << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   }
   return -1;
 }
 
 int bs_log_density_gradient(const bs_model_rng* mr, bool propto, bool jacobian,
-                            const double* theta_unc, double* val,
-                            double* grad) {
+                            const double* theta_unc, double* val, double* grad,
+                            char** error_msg) {
   try {
     mr->log_density_gradient(propto, jacobian, theta_unc, val, grad);
     return 0;
   } catch (const std::exception& e) {
-    std::cerr << "exception in C++ log_density_gradient(): " << e.what()
-              << std::endl;
+    if (error_msg) {
+      std::stringstream error;
+      error << "log_density_gradient() failed with exception: " << e.what()
+            << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   } catch (...) {
-    std::cerr << "unknown exception in C++ log_density_gradient()" << std::endl;
+    if (error_msg) {
+      std::stringstream error;
+      error << "log_density_gradient() failed with unknown exception"
+            << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   }
   return -1;
 }
 
 int bs_log_density_hessian(const bs_model_rng* mr, bool propto, bool jacobian,
                            const double* theta_unc, double* val, double* grad,
-                           double* hessian) {
+                           double* hessian, char** error_msg) {
   try {
     mr->log_density_hessian(propto, jacobian, theta_unc, val, grad, hessian);
     return 0;
   } catch (const std::exception& e) {
-    std::cerr << "exception in C++ log_density_hessian(): " << e.what()
-              << std::endl;
+    if (error_msg) {
+      std::stringstream error;
+      error << "log_density_hessian() failed with exception: " << e.what()
+            << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   } catch (...) {
-    std::cerr << "unknown exception in C++ log_density_hessian()" << std::endl;
+    if (error_msg) {
+      std::stringstream error;
+      error << "log_density_hessian() failed with unknown exception"
+            << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   }
   return -1;
 }
