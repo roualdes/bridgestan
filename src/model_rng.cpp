@@ -58,8 +58,7 @@ char* to_csv(const std::vector<std::string>& names) {
   return strdup(s_c);
 }
 
-bs_model_rng::bs_model_rng(const char* data_file, unsigned int seed,
-                           unsigned int chain_id) {
+bs_model::bs_model(const char* data_file, unsigned int seed) {
   std::string data(data_file);
   if (data.empty()) {
     auto data_context = stan::io::empty_var_context();
@@ -78,7 +77,6 @@ bs_model_rng::bs_model_rng(const char* data_file, unsigned int seed,
       model_ = &new_model(data_context, seed, &std::cout);
     }
   }
-  rng_ = stan::services::util::create_rng(seed, chain_id);
 
   std::string model_name = model_->model_name();
   const char* model_name_c = model_name.c_str();
@@ -156,7 +154,7 @@ bs_model_rng::bs_model_rng(const char* data_file, unsigned int seed,
   param_tp_gq_num_ = names.size();
 }
 
-bs_model_rng::~bs_model_rng() noexcept {
+bs_model::~bs_model() noexcept {
   delete (model_);
   free(name_);
   free(model_info_);
@@ -167,11 +165,11 @@ bs_model_rng::~bs_model_rng() noexcept {
   free(param_tp_gq_names_);
 }
 
-const char* bs_model_rng::name() const { return name_; }
+const char* bs_model::name() const { return name_; }
 
-const char* bs_model_rng::model_info() const { return model_info_; }
+const char* bs_model::model_info() const { return model_info_; }
 
-const char* bs_model_rng::param_names(bool include_tp, bool include_gq) const {
+const char* bs_model::param_names(bool include_tp, bool include_gq) const {
   if (include_tp && include_gq)
     return param_tp_gq_names_;
   if (include_tp)
@@ -181,11 +179,11 @@ const char* bs_model_rng::param_names(bool include_tp, bool include_gq) const {
   return param_names_;
 }
 
-const char* bs_model_rng::param_unc_names() const { return param_unc_names_; }
+const char* bs_model::param_unc_names() const { return param_unc_names_; }
 
-int bs_model_rng::param_unc_num() const { return param_unc_num_; }
+int bs_model::param_unc_num() const { return param_unc_num_; }
 
-int bs_model_rng::param_num(bool include_tp, bool include_gq) const {
+int bs_model::param_num(bool include_tp, bool include_gq) const {
   if (include_tp && include_gq)
     return param_tp_gq_num_;
   if (include_tp)
@@ -195,8 +193,7 @@ int bs_model_rng::param_num(bool include_tp, bool include_gq) const {
   return param_num_;
 }
 
-void bs_model_rng::param_unconstrain(const double* theta,
-                                     double* theta_unc) const {
+void bs_model::param_unconstrain(const double* theta, double* theta_unc) const {
   using std::set;
   using std::string;
   using std::vector;
@@ -229,8 +226,8 @@ void bs_model_rng::param_unconstrain(const double* theta,
   Eigen::VectorXd::Map(theta_unc, unc_params.size()) = unc_params;
 }
 
-void bs_model_rng::param_unconstrain_json(const char* json,
-                                          double* theta_unc) const {
+void bs_model::param_unconstrain_json(const char* json,
+                                      double* theta_unc) const {
   std::stringstream in(json);
   stan::json::json_data inits_context(in);
   Eigen::VectorXd params_unc;
@@ -238,17 +235,18 @@ void bs_model_rng::param_unconstrain_json(const char* json,
   Eigen::VectorXd::Map(theta_unc, params_unc.size()) = params_unc;
 }
 
-void bs_model_rng::param_constrain(bool include_tp, bool include_gq,
-                                   const double* theta_unc, double* theta) {
+void bs_model::param_constrain(bool include_tp, bool include_gq,
+                               const double* theta_unc, double* theta,
+                               boost::ecuyer1988& rng) {
   using Eigen::VectorXd;
   VectorXd params_unc = VectorXd::Map(theta_unc, param_unc_num_);
   Eigen::VectorXd params;
-  model_->write_array(rng_, params_unc, params, include_tp, include_gq,
+  model_->write_array(rng, params_unc, params, include_tp, include_gq,
                       &std::cout);
   Eigen::VectorXd::Map(theta, params.size()) = params;
 }
 
-auto bs_model_rng::make_model_lambda(bool propto, bool jacobian) const {
+auto bs_model::make_model_lambda(bool propto, bool jacobian) const {
   return [model = this->model_, propto, jacobian](auto& x) {
     // log_prob() requires non-const but doesn't modify its argument
     auto& params
@@ -270,8 +268,8 @@ auto bs_model_rng::make_model_lambda(bool propto, bool jacobian) const {
   };
 }
 
-void bs_model_rng::log_density(bool propto, bool jacobian,
-                               const double* theta_unc, double* val) const {
+void bs_model::log_density(bool propto, bool jacobian, const double* theta_unc,
+                           double* val) const {
   int N = param_unc_num_;
   if (propto) {
     Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
@@ -291,9 +289,9 @@ void bs_model_rng::log_density(bool propto, bool jacobian,
   }
 }
 
-void bs_model_rng::log_density_gradient(bool propto, bool jacobian,
-                                        const double* theta_unc, double* val,
-                                        double* grad) const {
+void bs_model::log_density_gradient(bool propto, bool jacobian,
+                                    const double* theta_unc, double* val,
+                                    double* grad) const {
 #ifdef STAN_THREADS
   static thread_local stan::math::ChainableStack thread_instance;
 #endif
@@ -303,9 +301,9 @@ void bs_model_rng::log_density_gradient(bool propto, bool jacobian,
   stan::math::gradient(logp, params_unc, *val, grad, grad + N);
 }
 
-void bs_model_rng::log_density_hessian(bool propto, bool jacobian,
-                                       const double* theta_unc, double* val,
-                                       double* grad, double* hessian) const {
+void bs_model::log_density_hessian(bool propto, bool jacobian,
+                                   const double* theta_unc, double* val,
+                                   double* grad, double* hessian) const {
 #ifdef STAN_THREADS
   static thread_local stan::math::ChainableStack thread_instance;
 #endif

@@ -9,10 +9,10 @@ int bs_patch_version = BRIDGESTAN_PATCH;
 
 #include <sstream>
 
-bs_model_rng* bs_construct(const char* data_file, unsigned int seed,
-                           unsigned int chain_id, char** error_msg) {
+bs_model* bs_construct(const char* data_file, unsigned int seed,
+                       unsigned int chain_id, char** error_msg) {
   try {
-    return new bs_model_rng(data_file, seed, chain_id);
+    return new bs_model(data_file, seed);
   } catch (const std::exception& e) {
     if (error_msg) {
       std::stringstream error;
@@ -34,34 +34,34 @@ bs_model_rng* bs_construct(const char* data_file, unsigned int seed,
   return nullptr;
 }
 
-void bs_destruct(bs_model_rng* mr) { delete (mr); }
+void bs_destruct(bs_model* m) { delete (m); }
 
 void bs_free_error_msg(char* error_msg) { free(error_msg); }
 
-const char* bs_name(const bs_model_rng* mr) { return mr->name(); }
+const char* bs_name(const bs_model* m) { return m->name(); }
 
-const char* bs_model_info(const bs_model_rng* mr) { return mr->model_info(); }
+const char* bs_model_info(const bs_model* m) { return m->model_info(); }
 
-const char* bs_param_names(const bs_model_rng* mr, bool include_tp,
+const char* bs_param_names(const bs_model* m, bool include_tp,
                            bool include_gq) {
-  return mr->param_names(include_tp, include_gq);
+  return m->param_names(include_tp, include_gq);
 }
 
-const char* bs_param_unc_names(const bs_model_rng* mr) {
-  return mr->param_unc_names();
+const char* bs_param_unc_names(const bs_model* m) {
+  return m->param_unc_names();
 }
 
-int bs_param_num(const bs_model_rng* mr, bool include_tp, bool include_gq) {
-  return mr->param_num(include_tp, include_gq);
+int bs_param_num(const bs_model* m, bool include_tp, bool include_gq) {
+  return m->param_num(include_tp, include_gq);
 }
 
-int bs_param_unc_num(const bs_model_rng* mr) { return mr->param_unc_num(); }
+int bs_param_unc_num(const bs_model* m) { return m->param_unc_num(); }
 
-int bs_param_constrain(bs_model_rng* mr, bool include_tp, bool include_gq,
-                       const double* theta_unc, double* theta,
+int bs_param_constrain(bs_model* m, bool include_tp, bool include_gq,
+                       const double* theta_unc, double* theta, boost::ecuyer1988& rng,
                        char** error_msg) {
   try {
-    mr->param_constrain(include_tp, include_gq, theta_unc, theta);
+    m->param_constrain(include_tp, include_gq, theta_unc, theta, rng);
     return 0;
   } catch (const std::exception& e) {
     if (error_msg) {
@@ -80,10 +80,10 @@ int bs_param_constrain(bs_model_rng* mr, bool include_tp, bool include_gq,
   return 1;
 }
 
-int bs_param_unconstrain(const bs_model_rng* mr, const double* theta,
+int bs_param_unconstrain(const bs_model* m, const double* theta,
                          double* theta_unc, char** error_msg) {
   try {
-    mr->param_unconstrain(theta, theta_unc);
+    m->param_unconstrain(theta, theta_unc);
     return 0;
   } catch (const std::exception& e) {
     if (error_msg) {
@@ -102,10 +102,10 @@ int bs_param_unconstrain(const bs_model_rng* mr, const double* theta,
   return -1;
 }
 
-int bs_param_unconstrain_json(const bs_model_rng* mr, const char* json,
+int bs_param_unconstrain_json(const bs_model* m, const char* json,
                               double* theta_unc, char** error_msg) {
   try {
-    mr->param_unconstrain_json(json, theta_unc);
+    m->param_unconstrain_json(json, theta_unc);
     return 0;
   } catch (const std::exception& e) {
     if (error_msg) {
@@ -125,10 +125,10 @@ int bs_param_unconstrain_json(const bs_model_rng* mr, const char* json,
   return -1;
 }
 
-int bs_log_density(const bs_model_rng* mr, bool propto, bool jacobian,
+int bs_log_density(const bs_model* m, bool propto, bool jacobian,
                    const double* theta_unc, double* val, char** error_msg) {
   try {
-    mr->log_density(propto, jacobian, theta_unc, val);
+    m->log_density(propto, jacobian, theta_unc, val);
     return 0;
   } catch (const std::exception& e) {
     if (error_msg) {
@@ -146,11 +146,11 @@ int bs_log_density(const bs_model_rng* mr, bool propto, bool jacobian,
   return -1;
 }
 
-int bs_log_density_gradient(const bs_model_rng* mr, bool propto, bool jacobian,
+int bs_log_density_gradient(const bs_model* m, bool propto, bool jacobian,
                             const double* theta_unc, double* val, double* grad,
                             char** error_msg) {
   try {
-    mr->log_density_gradient(propto, jacobian, theta_unc, val, grad);
+    m->log_density_gradient(propto, jacobian, theta_unc, val, grad);
     return 0;
   } catch (const std::exception& e) {
     if (error_msg) {
@@ -170,11 +170,11 @@ int bs_log_density_gradient(const bs_model_rng* mr, bool propto, bool jacobian,
   return -1;
 }
 
-int bs_log_density_hessian(const bs_model_rng* mr, bool propto, bool jacobian,
+int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
                            const double* theta_unc, double* val, double* grad,
                            double* hessian, char** error_msg) {
   try {
-    mr->log_density_hessian(propto, jacobian, theta_unc, val, grad, hessian);
+    m->log_density_hessian(propto, jacobian, theta_unc, val, grad, hessian);
     return 0;
   } catch (const std::exception& e) {
     if (error_msg) {
@@ -192,4 +192,17 @@ int bs_log_density_hessian(const bs_model_rng* mr, bool propto, bool jacobian,
     }
   }
   return -1;
+}
+
+bs_rng* bs_rng_construct(unsigned int seed) {
+  try {
+    return new bs_rng(seed);
+  } catch (const std::exception& e) {
+    std::cerr << "bs_rng_construct(" << seed
+              << ") failed with exception: " << e.what() << std::endl;
+  } catch (...) {
+    std::cerr << "bs_rng_construct(" << seed
+              << ") failed with unknown exception" << std::endl;
+  }
+  return nullptr;
 }
