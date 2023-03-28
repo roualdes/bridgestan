@@ -3,10 +3,12 @@
 
 #ifdef __cplusplus
 #include "model_rng.hpp"
+#include "callback_stream.hpp"
 extern "C" {
 #else
 typedef struct bs_model bs_model;
 typedef struct bs_rng bs_rng;
+typedef void (*STREAM_CALLBACK)(const char* data, size_t size);
 typedef int bool;
 #endif
 
@@ -286,6 +288,9 @@ bs_rng* bs_rng_construct(unsigned int seed, char** error_msg);
  * @param[in] rng pointer to RNG object
  */
 void bs_rng_destruct(bs_rng* rng);
+
+
+int bs_set_print_callback(STREAM_CALLBACK callback);
 
 #ifdef __cplusplus
 }

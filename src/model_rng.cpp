@@ -25,6 +25,8 @@
 #include <string>
 #include <vector>
 
+static std::ostream* outstream = &std::cout;
+
 /**
  * Allocate and return a new model as a reference given the specified
  * data context, seed, and message stream.  This function is defined
@@ -61,12 +63,12 @@ char* to_csv(const std::vector<std::string>& names) {
 bs_model::bs_model(const char* data, unsigned int seed) {
   if (data == nullptr) {
     stan::io::empty_var_context data_context;
-    model_ = &new_model(data_context, seed, &std::cout);
+    model_ = &new_model(data_context, seed, outstream);
   } else {
     std::string data_str(data);
     if (data_str.empty()) {
       stan::io::empty_var_context data_context;
-      model_ = &new_model(data_context, seed, &std::cout);
+      model_ = &new_model(data_context, seed, outstream);
     } else {
       if (stan::io::ends_with(".json", data_str)) {
         std::ifstream in(data_str);
@@ -74,11 +76,11 @@ bs_model::bs_model(const char* data, unsigned int seed) {
           throw std::runtime_error("Cannot read input file: " + data_str);
         stan::json::json_data data_context(in);
         in.close();
-        model_ = &new_model(data_context, seed, &std::cout);
+        model_ = &new_model(data_context, seed, outstream);
       } else {
         std::istringstream json(data_str);
         stan::json::json_data data_context(json);
-        model_ = &new_model(data_context, seed, &std::cout);
+        model_ = &new_model(data_context, seed, outstream);
       }
     }
   }
@@ -227,7 +229,7 @@ void bs_model::param_unconstrain(const double* theta, double* theta_unc) const {
   Eigen::VectorXd params = Eigen::VectorXd::Map(theta, param_num_);
   stan::io::array_var_context avc(names, params, dims);
   Eigen::VectorXd unc_params;
-  model_->transform_inits(avc, unc_params, &std::cout);
+  model_->transform_inits(avc, unc_params, outstream);
   Eigen::VectorXd::Map(theta_unc, unc_params.size()) = unc_params;
 }
 
@@ -236,7 +238,7 @@ void bs_model::param_unconstrain_json(const char* json,
   std::stringstream in(json);
   stan::json::json_data inits_context(in);
   Eigen::VectorXd params_unc;
-  model_->transform_inits(inits_context, params_unc, &std::cout);
+  model_->transform_inits(inits_context, params_unc, outstream);
   Eigen::VectorXd::Map(theta_unc, params_unc.size()) = params_unc;
 }
 
@@ -247,7 +249,7 @@ void bs_model::param_constrain(bool include_tp, bool include_gq,
   VectorXd params_unc = VectorXd::Map(theta_unc, param_unc_num_);
   Eigen::VectorXd params;
   model_->write_array(rng, params_unc, params, include_tp, include_gq,
-                      &std::cout);
+                      outstream);
   Eigen::VectorXd::Map(theta, params.size()) = params;
 }
 
@@ -259,15 +261,15 @@ auto bs_model::make_model_lambda(bool propto, bool jacobian) const {
             x);
     if (propto) {
       if (jacobian) {
-        return model->log_prob_propto_jacobian(params, &std::cout);
+        return model->log_prob_propto_jacobian(params, outstream);
       } else {
-        return model->log_prob_propto(params, &std::cout);
+        return model->log_prob_propto(params, outstream);
       }
     } else {
       if (jacobian) {
-        return model->log_prob_jacobian(params, &std::cout);
+        return model->log_prob_jacobian(params, outstream);
       } else {
-        return model->log_prob(params, &std::cout);
+        return model->log_prob(params, outstream);
       }
     }
   };
@@ -287,9 +289,9 @@ void bs_model::log_density(bool propto, bool jacobian, const double* theta_unc,
   } else {
     Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, N);
     if (jacobian) {
-      *val = model_->log_prob_jacobian(params_unc, &std::cout);
+      *val = model_->log_prob_jacobian(params_unc, outstream);
     } else {
-      *val = model_->log_prob(params_unc, &std::cout);
+      *val = model_->log_prob(params_unc, outstream);
     }
   }
 }

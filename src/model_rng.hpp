@@ -221,6 +221,7 @@ class bs_model {
 
   /** number of unconstrained parameters */
   int param_unc_num_ = -1;
+
 };
 
 /**
