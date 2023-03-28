@@ -154,7 +154,7 @@ int bs_param_unc_num(const bs_model* m);
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int bs_param_constrain(bs_model* m, bool include_tp, bool include_gq,
+int bs_param_constrain(const bs_model* m, bool include_tp, bool include_gq,
                        const double* theta_unc, double* theta, bs_rng* rng,
                        char** error_msg);
 
@@ -179,7 +179,7 @@ int bs_param_constrain(bs_model* m, bool include_tp, bool include_gq,
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int bs_param_constrain_seed(bs_model* mr, bool include_tp, bool include_gq,
+int bs_param_constrain_seed(const bs_model* mr, bool include_tp, bool include_gq,
                             const double* theta_unc, double* theta,
                             unsigned int seed, char** error_msg);
 
@@ -297,15 +297,19 @@ int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
  * Construct an RNG object to be used for param_constrain
  *
  * @param[in] seed seed for the RNG
+ * @param[out] error_msg a pointer to a string that will be allocated if there
+ * is an error. This must later be freed by calling `bs_free_error_msg`.
  */
-bs_rng* bs_construct_rng(unsigned int seed);
+bs_rng* bs_construct_rng(unsigned int seed, char** error_msg);
 
 /**
  * Destruct an RNG object
  *
  * @param[in] rng pointer to RNG object
+ * @param[out] error_msg a pointer to a string that will be allocated if there
+ * is an error. This must later be freed by calling `bs_free_error_msg`.
  */
-int bs_destruct_rng(bs_rng* rng);
+int bs_destruct_rng(bs_rng* rng, char** error_msg);
 
 #ifdef __cplusplus
 }

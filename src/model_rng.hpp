@@ -115,7 +115,7 @@ class bs_model {
    */
   void param_constrain(bool include_tp, bool include_gq,
                        const double* theta_unc, double* theta,
-                       boost::ecuyer1988& rng);
+                       boost::ecuyer1988& rng) const;
 
   /**
    * Calculate the log density for the specified unconstrain

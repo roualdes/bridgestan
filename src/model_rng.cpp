@@ -237,7 +237,7 @@ void bs_model::param_unconstrain_json(const char* json,
 
 void bs_model::param_constrain(bool include_tp, bool include_gq,
                                const double* theta_unc, double* theta,
-                               boost::ecuyer1988& rng) {
+                               boost::ecuyer1988& rng) const {
   using Eigen::VectorXd;
   VectorXd params_unc = VectorXd::Map(theta_unc, param_unc_num_);
   Eigen::VectorXd params;

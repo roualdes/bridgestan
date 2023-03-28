@@ -77,9 +77,7 @@ class StanModel:
         self._free_error.argtypes = [ctypes.c_char_p]
 
         err = ctypes.pointer(ctypes.c_char_p())
-        self.model_rng = self._construct(
-            str.encode(self.data_path), self.seed, err
-        )
+        self.model_rng = self._construct(str.encode(self.data_path), self.seed, err)
 
         if not self.model_rng:
             raise self._handle_error(err.contents, "bs_construct")
@@ -127,8 +125,8 @@ class StanModel:
             ctypes.c_int,
             double_array,
             double_array,
-            star_star_char,
             ctypes.c_void_p,
+            star_star_char,
         ]
 
         self._param_constrain_seed = self.stanlib.bs_param_constrain_seed
@@ -139,8 +137,8 @@ class StanModel:
             ctypes.c_int,
             double_array,
             double_array,
-            star_star_char,
             ctypes.c_uint,
+            star_star_char,
         ]
 
         self._param_unconstrain = self.stanlib.bs_param_unconstrain
@@ -356,6 +354,15 @@ class StanModel:
             shape as the return.
         :raises RuntimeError: If the C++ Stan model throws an exception.
         """
+        if seed is None and rng is None:
+            if include_gq:
+                raise ValueError(
+                    "Error: must specify rng or seed when including generated quantities"
+                )
+            else:
+                # neither specified, but not doing gq, so use a fixed seed
+                seed = 0
+
         dims = self.param_num(include_tp=include_tp, include_gq=include_gq)
         if out is None:
             out = np.zeros(dims)
@@ -365,35 +372,27 @@ class StanModel:
             )
         err = ctypes.pointer(ctypes.c_char_p())
 
-        if seed is None:
-            if rng is None:
-                if include_gq:
-                    raise ValueError(
-                        "Error: must specify rng or seed when including generated quantities"
-                    )
-                rc = self._param_constrain(
-                    self.model_rng,
-                    int(include_tp),
-                    int(include_gq),
-                    theta_unc,
-                    out,
-                    None,
-                    err,
-                )
-            else:
-                rc = self._param_constrain(
-                    self.model_rng,
-                    int(include_tp),
-                    int(include_gq),
-                    theta_unc,
-                    out,
-                    rng.ptr,
-                    err,
-                )
+        if rng is not None:
+            rc = self._param_constrain(
+                self.model_rng,
+                int(include_tp),
+                int(include_gq),
+                theta_unc,
+                out,
+                rng.ptr,
+                err,
+            )
         else:
             rc = self._param_constrain_seed(
-                self.model_rng, int(include_tp), int(include_gq), theta_unc, out, seed
+                self.model_rng,
+                int(include_tp),
+                int(include_gq),
+                theta_unc,
+                out,
+                seed,
+                err,
             )
+
         if rc:
             raise self._handle_error(err.contents, "param_constrain")
         return out
@@ -626,16 +625,19 @@ class StanRNG:
 
         construct = self.stanlib.bs_construct_rng
         construct.restype = ctypes.c_void_p
-        construct.argtypes = [ctypes.c_uint]
-        self.ptr = construct(seed)
+        construct.argtypes = [ctypes.c_uint, star_star_char]
+        self.ptr = construct(seed, None)
+
+        if not self.ptr:
+            raise RuntimeError("Failed to construct RNG.")
 
         self._destruct = self.stanlib.bs_destruct_rng
         self._destruct.restype = ctypes.c_int
-        self._destruct.argtypes = [ctypes.c_void_p]
+        self._destruct.argtypes = [ctypes.c_void_p, star_star_char]
 
     def __del__(self) -> None:
         """
         Destroy the Stan model and free memory.
         """
         if hasattr(self, "ptr") and hasattr(self, "_destruct"):
-            self._destruct(self.ptr)
+            self._destruct(self.ptr, None)

@@ -57,7 +57,7 @@ int bs_param_num(const bs_model* m, bool include_tp, bool include_gq) {
 
 int bs_param_unc_num(const bs_model* m) { return m->param_unc_num(); }
 
-int bs_param_constrain(bs_model* m, bool include_tp, bool include_gq,
+int bs_param_constrain(const bs_model* m, bool include_tp, bool include_gq,
                        const double* theta_unc, double* theta, bs_rng* rng,
                        char** error_msg) {
   try {
@@ -80,7 +80,7 @@ int bs_param_constrain(bs_model* m, bool include_tp, bool include_gq,
   return 1;
 }
 
-int bs_param_constrain_seed(bs_model* m, bool include_tp, bool include_gq,
+int bs_param_constrain_seed(const bs_model* m, bool include_tp, bool include_gq,
                             const double* theta_unc, double* theta,
                             unsigned int seed, char** error_msg) {
   bs_rng rng(seed);
@@ -202,25 +202,37 @@ int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
   return -1;
 }
 
-bs_rng* bs_construct_rng(unsigned int seed) {
+bs_rng* bs_construct_rng(unsigned int seed, char** error_msg) {
   try {
     return new bs_rng(seed);
   } catch (const std::exception& e) {
-    std::cerr << "bs_construct_rng(" << seed
-              << ") failed with exception: " << e.what() << std::endl;
+    if (error_msg) {
+      std::stringstream error;
+      error << "construct_rng() failed with exception: " << e.what()
+            << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   } catch (...) {
-    std::cerr << "bs_construct_rng(" << seed
-              << ") failed with unknown exception" << std::endl;
+    if (error_msg) {
+      std::stringstream error;
+      error << "construct_rng() failed with unknown exception" << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   }
+
   return nullptr;
 }
 
-int bs_destruct_rng(bs_rng* mr) {
+int bs_destruct_rng(bs_rng* mr, char** error_msg) {
   try {
     delete (mr);
     return 0;
   } catch (...) {
-    std::cerr << "destruct_rng() failed." << std::endl;
+    if (error_msg) {
+      std::stringstream error;
+      error << "destruct_rng() failed." << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   }
   return -1;
 }
