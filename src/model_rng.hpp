@@ -8,10 +8,9 @@
 #include <random>
 
 /**
- * This structure holds a pointer to a model, holds a pseudorandom
- * number generator, and holds pointers to the parameter names in
- * CSV format.  Instances can be constructed with the C function
- * `construct()` and destroyed with the C function `destruct()`.
+ * This structure holds a pointer to a model and holds pointers to the parameter
+ * names in CSV format.  Instances can be constructed with the C function
+ * `bs_construct()` and destroyed with the C function `destruct()`.
  */
 class bs_model {
  public:

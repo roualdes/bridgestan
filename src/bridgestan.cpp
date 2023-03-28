@@ -58,10 +58,10 @@ int bs_param_num(const bs_model* m, bool include_tp, bool include_gq) {
 int bs_param_unc_num(const bs_model* m) { return m->param_unc_num(); }
 
 int bs_param_constrain(bs_model* m, bool include_tp, bool include_gq,
-                       const double* theta_unc, double* theta, boost::ecuyer1988& rng,
+                       const double* theta_unc, double* theta, bs_rng* rng,
                        char** error_msg) {
   try {
-    m->param_constrain(include_tp, include_gq, theta_unc, theta, rng);
+    m->param_constrain(include_tp, include_gq, theta_unc, theta, rng->rng_);
     return 0;
   } catch (const std::exception& e) {
     if (error_msg) {
@@ -78,6 +78,14 @@ int bs_param_constrain(bs_model* m, bool include_tp, bool include_gq,
     }
   }
   return 1;
+}
+
+int bs_param_constrain_seed(bs_model* m, bool include_tp, bool include_gq,
+                            const double* theta_unc, double* theta,
+                            unsigned int seed, char** error_msg) {
+  bs_rng rng(seed);
+  return bs_param_constrain(m, include_tp, include_gq, theta_unc, theta, &rng,
+                            error_msg);
 }
 
 int bs_param_unconstrain(const bs_model* m, const double* theta,
@@ -194,15 +202,25 @@ int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
   return -1;
 }
 
-bs_rng* bs_rng_construct(unsigned int seed) {
+bs_rng* bs_construct_rng(unsigned int seed) {
   try {
     return new bs_rng(seed);
   } catch (const std::exception& e) {
-    std::cerr << "bs_rng_construct(" << seed
+    std::cerr << "bs_construct_rng(" << seed
               << ") failed with exception: " << e.what() << std::endl;
   } catch (...) {
-    std::cerr << "bs_rng_construct(" << seed
+    std::cerr << "bs_construct_rng(" << seed
               << ") failed with unknown exception" << std::endl;
   }
   return nullptr;
+}
+
+int bs_destruct_rng(bs_rng* mr) {
+  try {
+    delete (mr);
+    return 0;
+  } catch (...) {
+    std::cerr << "destruct_rng() failed." << std::endl;
+  }
+  return -1;
 }

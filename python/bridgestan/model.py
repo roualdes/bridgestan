@@ -41,7 +41,6 @@ class StanModel:
         model_data: Optional[str] = None,
         *,
         seed: int = 1234,
-        chain_id: int = 0,
     ) -> None:
         """
         Construct a StanModel object for a Stan model and data given
@@ -50,9 +49,8 @@ class StanModel:
         :param model_lib: A system path to compiled shared object.
         :param model_data: Either a JSON string literal or a
             system path to a data file in JSON format ending in ``.json``.
-        :param seed: A pseudo random number generator seed.
-        :param chain_id: A unique identifier for concurrent chains of
-            pseudorandom numbers.
+        :param seed: A pseudo random number generator seed. This is only used
+            if the model has RNG usage in the ``transformed data`` block.
         :raises FileNotFoundError or PermissionError: If ``model_lib`` is not readable or
             ``model_data`` is specified and not a path to a readable file.
         :raises RuntimeError: If there is an error instantiating the
@@ -65,13 +63,11 @@ class StanModel:
         self.stanlib = ctypes.CDLL(self.lib_path)
         self.data_path = model_data or ""
         self.seed = seed
-        self.chain_id = chain_id
 
         self._construct = self.stanlib.bs_construct
         self._construct.restype = ctypes.c_void_p
         self._construct.argtypes = [
             ctypes.c_char_p,
-            ctypes.c_uint,
             ctypes.c_uint,
             star_star_char,
         ]
@@ -82,7 +78,7 @@ class StanModel:
 
         err = ctypes.pointer(ctypes.c_char_p())
         self.model_rng = self._construct(
-            str.encode(self.data_path), self.seed, self.chain_id, err
+            str.encode(self.data_path), self.seed, err
         )
 
         if not self.model_rng:
@@ -132,6 +128,19 @@ class StanModel:
             double_array,
             double_array,
             star_star_char,
+            ctypes.c_void_p,
+        ]
+
+        self._param_constrain_seed = self.stanlib.bs_param_constrain_seed
+        self._param_constrain_seed.restype = ctypes.c_int
+        self._param_constrain_seed.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_int,
+            ctypes.c_int,
+            double_array,
+            double_array,
+            star_star_char,
+            ctypes.c_uint,
         ]
 
         self._param_unconstrain = self.stanlib.bs_param_unconstrain
@@ -201,7 +210,6 @@ class StanModel:
         stanc_args: List[str] = [],
         make_args: List[str] = [],
         seed: int = 1234,
-        chain_id: int = 0,
     ):
         """
         Construct a StanModel instance from a ``.stan`` file, compiling if necessary.
@@ -226,7 +234,7 @@ class StanModel:
         :raises RuntimeError: If compilation fails.
         """
         result = compile_model(stan_file, stanc_args=stanc_args, make_args=make_args)
-        return cls(str(result), model_data, seed=seed, chain_id=chain_id)
+        return cls(str(result), model_data, seed=seed)
 
     def __del__(self) -> None:
         """
@@ -237,7 +245,7 @@ class StanModel:
 
     def __repr__(self) -> str:
         data = f"{self.data_path!r}, " if self.data_path else ""
-        return f"StanModel({self.lib_path!r}, {data}seed={self.seed}, chain_id={self.chain_id})"
+        return f"StanModel({self.lib_path!r}, {data}seed={self.seed})"
 
     def name(self) -> str:
         """
@@ -326,6 +334,8 @@ class StanModel:
         include_tp: bool = False,
         include_gq: bool = False,
         out: Optional[FloatArray] = None,
+        rng: Optional["StanRNG"] = None,
+        seed: Optional[int] = None,
     ) -> FloatArray:
         """
         Return the constrained parameters derived from the specified
@@ -354,12 +364,48 @@ class StanModel:
                 "Error: out must be same size as number of constrained parameters"
             )
         err = ctypes.pointer(ctypes.c_char_p())
-        rc = self._param_constrain(
-            self.model_rng, int(include_tp), int(include_gq), theta_unc, out, err
-        )
+
+        if seed is None:
+            if rng is None:
+                if include_gq:
+                    raise ValueError(
+                        "Error: must specify rng or seed when including generated quantities"
+                    )
+                rc = self._param_constrain(
+                    self.model_rng,
+                    int(include_tp),
+                    int(include_gq),
+                    theta_unc,
+                    out,
+                    None,
+                    err,
+                )
+            else:
+                rc = self._param_constrain(
+                    self.model_rng,
+                    int(include_tp),
+                    int(include_gq),
+                    theta_unc,
+                    out,
+                    rng.ptr,
+                    err,
+                )
+        else:
+            rc = self._param_constrain_seed(
+                self.model_rng, int(include_tp), int(include_gq), theta_unc, out, seed
+            )
         if rc:
             raise self._handle_error(err.contents, "param_constrain")
         return out
+
+    def new_rng(self, seed: int) -> "StanRNG":
+        """
+        Return a new PRNG for the model.
+
+        :param seed: The seed for the PRNG.
+        :return: A new PRNG for the model.
+        """
+        return StanRNG(self.stanlib, seed)
 
     def param_unconstrain(
         self, theta: FloatArray, *, out: Optional[FloatArray] = None
@@ -572,3 +618,24 @@ class StanModel:
             return RuntimeError(string)
         else:
             return RuntimeError(f"Unknown error in {method}. ")
+
+
+class StanRNG:
+    def __init__(self, lib: ctypes.CDLL, seed: int) -> None:
+        self.stanlib = lib
+
+        construct = self.stanlib.bs_construct_rng
+        construct.restype = ctypes.c_void_p
+        construct.argtypes = [ctypes.c_uint]
+        self.ptr = construct(seed)
+
+        self._destruct = self.stanlib.bs_destruct_rng
+        self._destruct.restype = ctypes.c_int
+        self._destruct.argtypes = [ctypes.c_void_p]
+
+    def __del__(self) -> None:
+        """
+        Destroy the Stan model and free memory.
+        """
+        if hasattr(self, "ptr") and hasattr(self, "_destruct"):
+            self._destruct(self.ptr)

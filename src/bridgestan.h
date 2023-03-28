@@ -147,14 +147,41 @@ int bs_param_unc_num(const bs_model* m);
  * @param[in] include_gq `true` to include generated quantities
  * @param[in] theta_unc sequence of unconstrained parameters
  * @param[out] theta sequence of constrained parameters
+ * @param[in] rng pointer to pseudorandom number generator, should be created
+ * by `bs_construct_rng`
  * @param[out] error_msg a pointer to a string that will be allocated if there
  * is an error. This must later be freed by calling `bs_free_error_msg`.
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
 int bs_param_constrain(bs_model* m, bool include_tp, bool include_gq,
-                       const double* theta_unc, double* theta,
+                       const double* theta_unc, double* theta, bs_rng* rng,
                        char** error_msg);
+
+/**
+ * Set the sequence of constrained parameters based on the specified
+ * unconstrained parameters, including transformed parameters and/or
+ * generated quantities as specified, and return a return code of 0
+ * for success and -1 for failure.  Parameter order is as declared
+ * in the Stan program, with multivariate parameters given in
+ * last-index-major order.
+ *
+ * @param[in] mr pointer to model and RNG structure
+ * @param[in] include_tp `true` to include transformed parameters
+ * @param[in] include_gq `true` to include generated quantities
+ * @param[in] theta_unc sequence of unconstrained parameters
+ * @param[out] theta sequence of constrained parameters
+ * @param[in] seed seed for pseudorandom number generator which will be created
+ * and destroyed during this call. See `bs_param_constrain` for an option with a
+ * persistent RNG.
+ * @param[out] error_msg a pointer to a string that will be allocated if there
+ * is an error. This must later be freed by calling `bs_free_error_msg`.
+ * @return code 0 if successful and code -1 if there is an exception
+ * in the underlying Stan code
+ */
+int bs_param_constrain_seed(bs_model* mr, bool include_tp, bool include_gq,
+                            const double* theta_unc, double* theta,
+                            unsigned int seed, char** error_msg);
 
 /**
  * Set the sequence of unconstrained parameters based on the
@@ -273,7 +300,12 @@ int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
  */
 bs_rng* bs_construct_rng(unsigned int seed);
 
-// TODO destruct as well
+/**
+ * Destruct an RNG object
+ *
+ * @param[in] rng pointer to RNG object
+ */
+int bs_destruct_rng(bs_rng* rng);
 
 #ifdef __cplusplus
 }

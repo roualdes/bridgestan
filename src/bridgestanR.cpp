@@ -39,7 +39,7 @@ void bs_param_constrain_R(bs_model** model, int* include_tp, int* include_gq,
                           const double* theta_unc, double* theta,
                           int* return_code, char** err_msg, void** err_ptr) {
   *return_code = bs_param_constrain(*model, *include_tp, *include_gq, theta_unc,
-                                    theta, err_msg);
+                                    theta, /* TODO(bmw) */ nullptr, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
 void bs_param_unconstrain_R(bs_model** model, const double* theta,
