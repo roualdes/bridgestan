@@ -268,7 +268,7 @@ StanModel <- R6::R6Class("StanModel",
 handle_error <- function(function_name, err_msg, err_ptr, lib_name) {
   if (all(err_ptr == 0)) {
     return(paste("Unknown error in", function_name))
-  else {
+  } else {
     .C("bs_free_error_msg_R", as.raw(err_ptr), PACKAGE = lib_name)
     return(err_msg)
   }
