@@ -349,9 +349,17 @@ class StanModel:
             provided, it must have shape `(D, )`, where `D` is the number of
             constrained parameters.  If not provided or `None`, a freshly
             allocated array is returned.
+        :param rng: A ``StanRNG`` object to use for generating random
+            numbers.  One of ``rng`` or ``seed`` must be specified if
+            ``include_gq`` is ``True``.
+        :param seed: A pseudo random number generator seed. One of
+            ``rng`` or ``seed`` must be specified if ``include_gq``
+            is ``True``.
         :return: The constrained parameter array.
-        :raises ValueError: If `out` is specified and is not the same
+        :raises ValueError: If ``out`` is specified and is not the same
             shape as the return.
+        :raises ValueError: If neither ``rng`` nor ``seed`` is specified
+            and ``include_gq`` is ``True``.
         :raises RuntimeError: If the C++ Stan model throws an exception.
         """
         if seed is None and rng is None:

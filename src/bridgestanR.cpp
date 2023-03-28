@@ -38,8 +38,10 @@ void bs_param_unc_num_R(bs_model** model, int* num_out) {
 void bs_param_constrain_R(bs_model** model, int* include_tp, int* include_gq,
                           const double* theta_unc, double* theta,
                           int* return_code, char** err_msg, void** err_ptr) {
+  /* TODO(bmw): accept seed as argument, consider persistent version */
+  bs_rng rng(0);
   *return_code = bs_param_constrain(*model, *include_tp, *include_gq, theta_unc,
-                                    theta, /* TODO(bmw) */ nullptr, err_msg);
+                                    theta, &rng, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
 void bs_param_unconstrain_R(bs_model** model, const double* theta,
