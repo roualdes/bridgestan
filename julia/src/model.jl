@@ -71,7 +71,7 @@ mutable struct StanModel
             err,
         )
         if stanmodel == C_NULL
-            error(_get_err(lib, err, "bs_construct"))
+            error(_handle_error(lib, err, "bs_construct"))
         end
 
         sm = new(lib, stanmodel, data, seed, chain_id)
@@ -242,7 +242,7 @@ function param_constrain!(
         err,
     )
     if rc != 0
-        error(_get_err(sm.lib, err, "param_constrain"))
+        error(_handle_error(sm.lib, err, "param_constrain"))
     end
     out
 end
@@ -303,7 +303,7 @@ function param_unconstrain!(sm::StanModel, theta::Vector{Float64}, out::Vector{F
         err,
     )
     if rc != 0
-        error(_get_err(sm.lib, err, "param_unconstrain"))
+        error(_handle_error(sm.lib, err, "param_unconstrain"))
     end
     out
 end
@@ -358,7 +358,7 @@ function param_unconstrain_json!(sm::StanModel, theta::String, out::Vector{Float
         err,
     )
     if rc != 0
-        error(_get_err(sm.lib, err, "param_unconstrain_json"))
+        error(_handle_error(sm.lib, err, "param_unconstrain_json"))
     end
     out
 end
@@ -402,7 +402,7 @@ function log_density(sm::StanModel, q::Vector{Float64}; propto = true, jacobian 
         err,
     )
     if rc != 0
-        error(_get_err(sm.lib, err, "log_density"))
+        error(_handle_error(sm.lib, err, "log_density"))
     end
     lp[]
 end
@@ -457,7 +457,7 @@ function log_density_gradient!(
         err,
     )
     if rc != 0
-        error(_get_err(sm.lib, err, "log_density_gradient"))
+        error(_handle_error(sm.lib, err, "log_density_gradient"))
     end
     (lp[], out)
 end
@@ -544,7 +544,7 @@ function log_density_hessian!(
         err,
     )
     if rc != 0
-        error(_get_err(sm.lib, err, "log_density_hessian"))
+        error(_handle_error(sm.lib, err, "log_density_hessian"))
     end
     (lp[], out_grad, reshape(out_hess, (dims, dims)))
 end
@@ -574,11 +574,11 @@ function log_density_hessian(
 end
 
 """
-    _get_err(sm::StanModel, err::Ref{Cstring}, method::String)
+    _handle_error(sm::StanModel, err::Ref{Cstring}, method::String)
 
 Retrieves the error message allocated in C++ and frees it before returning a copy.
 """
-function _get_err(lib::Ptr{Nothing}, err::Ref{Cstring}, method::String)
+function _handle_error(lib::Ptr{Nothing}, err::Ref{Cstring}, method::String)
     if err[] == C_NULL
         return "Unknown error in $method."
     else

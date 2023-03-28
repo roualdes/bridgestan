@@ -1,12 +1,3 @@
-handle_error <- function(function_name, err_msg, err_ptr, lib_name) {
-  .C("bs_free_error_msg_R", as.raw(err_ptr), PACKAGE = lib_name)
-  if(err_msg == ""){
-    return(paste("Unknown error in", function_name))
-  } else {
-    return(err_msg)
-  }
-}
-
 #' StanModel
 #'
 #' R6 Class representing a compiled BridgeStan model.
@@ -272,3 +263,13 @@ StanModel <- R6::R6Class("StanModel",
   ),
   cloneable=FALSE
 )
+#' Get and free the error message stored at the C++ pointer
+#' @keywords internal
+handle_error <- function(function_name, err_msg, err_ptr, lib_name) {
+  if (all(err_ptr == 0)) {
+    return(paste("Unknown error in", function_name))
+  else {
+    .C("bs_free_error_msg_R", as.raw(err_ptr), PACKAGE = lib_name)
+    return(err_msg)
+  }
+}
