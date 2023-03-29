@@ -28,8 +28,6 @@ class StanModel:
     :param model_data: Either a JSON string literal or a
          path to a data file in JSON format ending in ``.json``.
     :param seed: A pseudo random number generator seed.
-    :param chain_id: A unique identifier for concurrent chains of
-        pseudorandom numbers.
     :raises FileNotFoundError or PermissionError: If ``model_lib`` is not readable or
         ``model_data`` is specified and not a path to a readable file.
     :raises RuntimeError: If there is an error instantiating the Stan model.
@@ -224,8 +222,6 @@ class StanModel:
             threading for the compiled model. If the same flags are defined
             in ``make/local``, the versions passed here will take precedent.
         :param seed: A pseudo random number generator seed.
-        :param chain_id: A unique identifier for concurrent chains of
-            pseudorandom numbers.
         :raises FileNotFoundError or PermissionError: If `stan_file` does not exist
             or is not readable.
         :raises ValueError: If BridgeStan cannot be located.

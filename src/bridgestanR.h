@@ -12,8 +12,8 @@ typedef int bool;
 
 // Shim to convert to R interface requirement of void with pointer args
 // All calls directly delegated to versions without _R suffix
-void bs_construct_R(char** data, int* rng, bs_model** ptr_out,
-                    char** err_msg, void** err_ptr);
+void bs_construct_R(char** data, int* rng, bs_model** ptr_out, char** err_msg,
+                    void** err_ptr);
 
 void bs_version_R(int* major, int* minor, int* patch);
 
@@ -40,8 +40,13 @@ void bs_param_num_R(bs_model** model, int* include_tp, int* include_gq,
 void bs_param_unc_num_R(bs_model** model, int* num_out);
 
 void bs_param_constrain_R(bs_model** model, int* include_tp, int* include_gq,
-                          const double* theta_unc, double* theta,
+                          const double* theta_unc, double* theta, bs_rng** rng,
                           int* return_code, char** err_msg, void** err_ptr);
+
+void bs_param_constrain_seed_R(bs_model** model, int* include_tp,
+                               int* include_gq, const double* theta_unc,
+                               double* theta, int* seed, int* return_code,
+                               char** err_msg, void** err_ptr);
 
 void bs_param_unconstrain_R(bs_model** model, const double* theta,
                             double* theta_unc, int* return_code, char** err_msg,
@@ -64,6 +69,11 @@ void bs_log_density_hessian_R(bs_model** model, int* propto, int* jacobian,
                               const double* theta_unc, double* val,
                               double* grad, double* hess, int* return_code,
                               char** err_msg, void** err_ptr);
+
+void bs_construct_rng_R(int* seed, bs_rng** ptr_out, char** err_msg,
+                        void** err_ptr);
+
+void bs_destruct_rng_R(bs_rng** rng, int* return_code);
 
 #ifdef __cplusplus
 }

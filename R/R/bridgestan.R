@@ -12,9 +12,8 @@ StanModel <- R6::R6Class("StanModel",
     #' @param lib A path to a compiled BridgeStan Shared Object file.
     #' @param data Either a JSON string literal or a path to a data file in JSON format ending in ".json".
     #' @param rng_seed Seed for the RNG in the model object.
-    #' @param chain_id Used to offset the RNG by a fixed amount.
     #' @return A new StanModel.
-    initialize = function(lib, data, rng_seed, chain_id) {
+    initialize = function(lib, data, rng_seed) {
       if (.Platform$OS.type == "windows"){
         lib_old <- lib
         lib <- paste0(tools::file_path_sans_ext(lib), ".dll")
@@ -33,7 +32,7 @@ StanModel <- R6::R6Class("StanModel",
 
       dyn.load(private$lib, PACKAGE = private$lib_name)
       ret <- .C("bs_construct_R",
-        as.character(data), as.integer(rng_seed), as.integer(chain_id),
+        as.character(data), as.integer(rng_seed),
         ptr_out = raw(8),
         err_msg = as.character(""),
         err_ptr = raw(8),
@@ -140,16 +139,41 @@ StanModel <- R6::R6Class("StanModel",
     #' @param theta_unc The vector of unconstrained parameters.
     #' @param include_tp Whether to also output the transformed parameters of the model.
     #' @param include_gq Whether to also output the generated quantities of the model.
+    #' @param seed The seed for the random number generator. One of
+    #' `rng` or `seed` must be specified if `include_gq` is `True`.
+    #' @param rng The random number generator to use. One of
+    #' `rng` or `seed` must be specified if `include_gq` is `True`.
     #' @return The constrained parameters of the model.
-    param_constrain = function(theta_unc, include_tp = FALSE, include_gq = FALSE) {
-      vars <- .C("bs_param_constrain_R", as.raw(private$model),
-        as.logical(include_tp), as.logical(include_gq), as.double(theta_unc),
-        theta = double(self$param_num(include_tp = include_tp, include_gq = include_gq)),
-        return_code = as.integer(0),
-        err_msg = as.character(""),
-        err_ptr = raw(8),
-        PACKAGE = private$lib_name
-      )
+    param_constrain = function(theta_unc, include_tp = FALSE, include_gq = FALSE, seed, rng) {
+      if (missing(seed) && missing(rng)){
+        if (include_gq) {
+          stop("Either seed or rng must be specified if include_gq is True.")
+        } else {
+          seed = 0
+        }
+      }
+      if (!missing(rng)){
+        vars <- .C("bs_param_constrain_R", as.raw(private$model),
+          as.logical(include_tp), as.logical(include_gq), as.double(theta_unc),
+          theta = double(self$param_num(include_tp = include_tp, include_gq = include_gq)),
+          rng = as.raw(rng$rng),
+          return_code = as.integer(0),
+          err_msg = as.character(""),
+          err_ptr = raw(8),
+          PACKAGE = private$lib_name
+        )
+      } else {
+        vars <- .C("bs_param_constrain_seed_R", as.raw(private$model),
+          as.logical(include_tp), as.logical(include_gq), as.double(theta_unc),
+          theta = double(self$param_num(include_tp = include_tp, include_gq = include_gq)),
+          seed = as.integer(seed),
+          return_code = as.integer(0),
+          err_msg = as.character(""),
+          err_ptr = raw(8),
+          PACKAGE = private$lib_name
+        )
+      }
+
       if (vars$return_code) {
         stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "param_constrain"))
       }
@@ -262,6 +286,13 @@ StanModel <- R6::R6Class("StanModel",
         stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "log_density_hessian"))
       }
       list(val = vars$val, gradient = vars$gradient, hessian = matrix(vars$hess, nrow = dims, byrow = TRUE))
+    },
+    #' @description
+    #' Create a new persistent RNG object for use in `param_constrain()`.
+    #' @param seed The seed for the RNG.
+    #' @return A `StanRNG` object.
+    new_rng = function(seed) {
+      StanRNG$new(private$lib_name, seed)
     }
   ),
   private = list(
@@ -287,3 +318,47 @@ handle_error <- function(lib_name, err_msg, err_ptr, function_name) {
     return(err_msg)
   }
 }
+
+#' @description
+#' RNG object for use with `StanModel$param_constrain()`
+#' @field rng The pointer to the RNG object.
+#' @keywords internal
+StanRNG <- R6::R6Class("StanRNG",
+  public = list(
+    #' @description
+    #' Create a StanRng
+    #' @param lib_name The name of the Stan dynamic library.
+    #' @param rng_seed The seed for the RNG.
+    #' @return A new StanRNG.
+    initialize = function(lib_name, rng_seed) {
+      private$lib_name <- lib_name
+
+      vars <- .C("bs_construct_rng_R",
+        as.integer(rng_seed),
+        ptr_out = raw(8),
+        err_msg = as.character(""),
+        err_ptr = raw(8),
+        PACKAGE = private$lib_name
+      )
+
+      if (all(vars$ptr_out == 0)) {
+        stop(handle_error("construct_rng", vars$err_msg, vars$err_ptr, private$lib_name))
+      } else {
+        self$rng <- vars$ptr_out
+      }
+    },
+    rng = NA
+  ),
+  private = list(
+    lib = NA,
+    lib_name = NA,
+    finalize = function() {
+      .C("bs_destruct_rng_R",
+        as.raw(self$rng),
+        return_code = as.integer(0),
+        PACKAGE = private$lib_name
+      )
+    }
+  ),
+  cloneable=FALSE
+)

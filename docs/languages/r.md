@@ -62,7 +62,7 @@ Create a Stan Model instance.
 _Usage_
 
 ```R
-StanModel$new(lib, data, rng_seed, chain_id)
+StanModel$new(lib, data, rng_seed)
 ```
 
 
@@ -73,9 +73,6 @@ _Arguments_
   - `data` Either a JSON string literal or a path to a data file in JSON format ending in ".json".
 
   - `rng_seed` Seed for the RNG in the model object.
-
-  - `chain_id` Used to offset the RNG by a fixed amount.
-
 
 _Returns_
 
@@ -220,7 +217,7 @@ of this function.
 _Usage_
 
 ```R
-StanModel$param_constrain(theta_unc, include_tp = FALSE, include_gq = FALSE)
+StanModel$param_constrain(theta_unc, include_tp = FALSE, include_gq = FALSE, seed, rng)
 ```
 
 
@@ -233,6 +230,12 @@ _Arguments_
 
   - `include_gq` Whether to also output the generated quantities
       of the model.
+
+  - `seed` Seed for the RNG in the model object.  One of
+    `rng` or `seed` must be specified if `include_gq` is `True`
+
+  - `rng` StanRNG to use in the model object.  One of
+    `rng` or `seed` must be specified if `include_gq` is `True`
 
 
 _Returns_
@@ -380,3 +383,24 @@ _Returns_
 
   List containing entries `val` (the log density), `gradient`
   (the gradient), and `hessian` (the Hessian).
+
+
+**Method** `new_rng()`:
+
+Create a new persistent RNG object for use in `param_constrain()`.
+
+
+_Usage_
+
+```R
+StanModel$new_rng(seed)
+```
+
+
+_Arguments_
+
+  - `seed` The seed for the RNG.
+
+_Returns_
+
+  A `StanRNG` object.

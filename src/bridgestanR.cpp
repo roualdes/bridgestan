@@ -1,8 +1,8 @@
 #include "bridgestanR.h"
 #include "bridgestan.h"
 
-void bs_construct_R(char** data, int* rng, bs_model** ptr_out,
-                    char** err_msg, void** err_ptr) {
+void bs_construct_R(char** data, int* rng, bs_model** ptr_out, char** err_msg,
+                    void** err_ptr) {
   *ptr_out = bs_construct(*data, *rng, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
@@ -36,12 +36,18 @@ void bs_param_unc_num_R(bs_model** model, int* num_out) {
   *num_out = bs_param_unc_num(*model);
 }
 void bs_param_constrain_R(bs_model** model, int* include_tp, int* include_gq,
-                          const double* theta_unc, double* theta,
+                          const double* theta_unc, double* theta, bs_rng** rng,
                           int* return_code, char** err_msg, void** err_ptr) {
-  /* TODO(bmw): accept seed as argument, consider persistent version */
-  bs_rng rng(0);
   *return_code = bs_param_constrain(*model, *include_tp, *include_gq, theta_unc,
-                                    theta, &rng, err_msg);
+                                    theta, *rng, err_msg);
+  *err_ptr = static_cast<void*>(*err_msg);
+}
+void bs_param_constrain_seed_R(bs_model** model, int* include_tp,
+                               int* include_gq, const double* theta_unc,
+                               double* theta, int* seed, int* return_code,
+                               char** err_msg, void** err_ptr) {
+  *return_code = bs_param_constrain_seed(*model, *include_tp, *include_gq,
+                                         theta_unc, theta, *seed, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
 void bs_param_unconstrain_R(bs_model** model, const double* theta,
@@ -78,4 +84,12 @@ void bs_log_density_hessian_R(bs_model** model, int* propto, int* jacobian,
   *return_code = bs_log_density_hessian(*model, *propto, *jacobian, theta_unc,
                                         val, grad, hess, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
+}
+void bs_construct_rng_R(int* seed, bs_rng** ptr_out, char** err_msg,
+                        void** err_ptr) {
+  *ptr_out = bs_construct_rng(*seed, err_msg);
+  *err_ptr = static_cast<void*>(*err_msg);
+}
+void bs_destruct_rng_R(bs_rng** rng, int* return_code) {
+  *return_code = bs_destruct_rng(*rng, nullptr);
 }

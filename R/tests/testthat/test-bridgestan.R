@@ -6,12 +6,12 @@ load_model <- function(name, include_data=TRUE) {
     } else {
         data = ""
     }
-    model <- StanModel$new(file.path(base,paste0("/test_models/", name, "/",name,"_model.so")), data, 1234, 0)
+    model <- StanModel$new(file.path(base,paste0("/test_models/", name, "/",name,"_model.so")), data, 1234)
     return(model)
 }
 
 test_that("missing data throws error", {
-    expect_error(StanModel$new(file.path(base,paste0("/test_models/simple/simple_model.so")), "", 1234, 0))
+    expect_error(load_model("simple",include_data=FALSE))
 })
 
 simple <- load_model("simple")
@@ -106,6 +106,23 @@ test_that("param_unconstrain works for a nontrivial case", {
     expect_equal(c, a)
 })
 
+test_that("param_constrain handles rng arguments", {
+    full <- load_model("full", include_data=FALSE)
+    expect_equal(1, length(full$param_constrain(c(1.2))))
+    expect_equal(2, length(full$param_constrain(c(1.2), include_tp=TRUE)))
+    rng <- full$new_rng(123)
+    expect_equal(3, length(full$param_constrain(c(1.2), include_gq=TRUE, rng=rng)))
+    expect_equal(4, length(full$param_constrain(c(1.2), include_tp=TRUE, include_gq=TRUE, rng=rng)))
+
+    # check reproducibility
+    expect_equal(full$param_constrain(c(1.2), include_gq=TRUE, seed=1234),
+                 full$param_constrain(c(1.2), include_gq=TRUE, seed=1234))
+
+    # require at least one present
+    expect_error(full$param_constrain(c(1.2), include_gq=TRUE), "seed or rng must be specified")
+})
+
+
 test_that("constructor propagates errors", {
     expect_error(load_model("throw_data",include_data=FALSE), "find this text: datafails")
 })
@@ -125,5 +142,5 @@ test_that("param_constrain propagates errors", {
 
     m2 <- load_model("throw_gq",include_data=FALSE)
     m2$param_constrain(c(1.2)) # no error
-    expect_error(m2$param_constrain(c(1.2), include_gq=TRUE), "find this text: gqfails")
+    expect_error(m2$param_constrain(c(1.2), include_gq=TRUE, seed=123), "find this text: gqfails")
 })
