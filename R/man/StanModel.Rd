@@ -25,12 +25,12 @@ as well as constraining and unconstraining transforms.
 \item \href{#method-StanModel-param_num}{\code{StanModel$param_num()}}
 \item \href{#method-StanModel-param_unc_num}{\code{StanModel$param_unc_num()}}
 \item \href{#method-StanModel-param_constrain}{\code{StanModel$param_constrain()}}
+\item \href{#method-StanModel-new_rng}{\code{StanModel$new_rng()}}
 \item \href{#method-StanModel-param_unconstrain}{\code{StanModel$param_unconstrain()}}
 \item \href{#method-StanModel-param_unconstrain_json}{\code{StanModel$param_unconstrain_json()}}
 \item \href{#method-StanModel-log_density}{\code{StanModel$log_density()}}
 \item \href{#method-StanModel-log_density_gradient}{\code{StanModel$log_density_gradient()}}
 \item \href{#method-StanModel-log_density_hessian}{\code{StanModel$log_density_hessian()}}
-\item \href{#method-StanModel-new_rng}{\code{StanModel$new_rng()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -194,13 +194,33 @@ See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \item{\code{seed}}{The seed for the random number generator. One of
 \code{rng} or \code{seed} must be specified if \code{include_gq} is \code{True}.}
 
-\item{\code{rng}}{The random number generator to use. One of
-\code{rng} or \code{seed} must be specified if \code{include_gq} is \code{True}.}
+\item{\code{rng}}{The random number generator to use.  See \code{StanModel$new_rng()}.
+One of \code{rng} or \code{seed} must be specified if \code{include_gq} is \code{True}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 The constrained parameters of the model.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-StanModel-new_rng"></a>}}
+\if{latex}{\out{\hypertarget{method-StanModel-new_rng}{}}}
+\subsection{Method \code{new_rng()}}{
+Create a new persistent PRNG object for use in \code{param_constrain()}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$new_rng(seed)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{seed}}{The seed for the PRNG.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A \code{StanRNG} object.
 }
 }
 \if{html}{\out{<hr>}}
@@ -323,26 +343,6 @@ See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 }
 \subsection{Returns}{
 List containing entries \code{val} (the log density), \code{gradient} (the gradient), and \code{hessian} (the Hessian).
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-StanModel-new_rng"></a>}}
-\if{latex}{\out{\hypertarget{method-StanModel-new_rng}{}}}
-\subsection{Method \code{new_rng()}}{
-Create a new persistent RNG object for use in \code{param_constrain()}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StanModel$new_rng(seed)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{seed}}{The seed for the RNG.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A \code{StanRNG} object.
 }
 }
 }

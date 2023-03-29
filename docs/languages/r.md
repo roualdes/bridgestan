@@ -234,13 +234,34 @@ _Arguments_
   - `seed` Seed for the RNG in the model object.  One of
     `rng` or `seed` must be specified if `include_gq` is `True`
 
-  - `rng` StanRNG to use in the model object.  One of
-    `rng` or `seed` must be specified if `include_gq` is `True`
+  - `rng` StanRNG to use in the model object. See `StanModel$new_rng()`.
+    One of `rng` or `seed` must be specified if `include_gq` is `True`
 
 
 _Returns_
 
   The constrained parameters of the model.
+
+
+**Method** `new_rng()`:
+
+Create a new persistent PRNG object for use in `param_constrain()`.
+
+
+_Usage_
+
+```R
+StanModel$new_rng(seed)
+```
+
+
+_Arguments_
+
+  - `seed` The seed for the PRNG.
+
+_Returns_
+
+  A `StanRNG` object.
 
 
 **Method** `param_unconstrain()`:
@@ -384,23 +405,3 @@ _Returns_
   List containing entries `val` (the log density), `gradient`
   (the gradient), and `hessian` (the Hessian).
 
-
-**Method** `new_rng()`:
-
-Create a new persistent RNG object for use in `param_constrain()`.
-
-
-_Usage_
-
-```R
-StanModel$new_rng(seed)
-```
-
-
-_Arguments_
-
-  - `seed` The seed for the RNG.
-
-_Returns_
-
-  A `StanRNG` object.

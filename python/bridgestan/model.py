@@ -328,8 +328,8 @@ class StanModel:
         include_tp: bool = False,
         include_gq: bool = False,
         out: Optional[FloatArray] = None,
-        rng: Optional["StanRNG"] = None,
         seed: Optional[int] = None,
+        rng: Optional["StanRNG"] = None,
     ) -> FloatArray:
         """
         Return the constrained parameters derived from the specified
@@ -345,11 +345,12 @@ class StanModel:
             provided, it must have shape `(D, )`, where `D` is the number of
             constrained parameters.  If not provided or `None`, a freshly
             allocated array is returned.
-        :param rng: A ``StanRNG`` object to use for generating random
-            numbers.  One of ``rng`` or ``seed`` must be specified if
-            ``include_gq`` is ``True``.
         :param seed: A pseudo random number generator seed. One of
             ``rng`` or ``seed`` must be specified if ``include_gq``
+            is ``True``.
+        :param rng: A ``StanRNG`` object to use for generating random
+            numbers, see :meth:`~StanModel.new_rng`.
+            One of ``rng`` or ``seed`` must be specified if ``include_gq``
             is ``True``.
         :return: The constrained parameter array.
         :raises ValueError: If ``out`` is specified and is not the same
@@ -403,7 +404,7 @@ class StanModel:
 
     def new_rng(self, seed: int) -> "StanRNG":
         """
-        Return a new PRNG for the model.
+        Return a new PRNG for use in :meth:`~StanModel.param_constrain`.
 
         :param seed: The seed for the PRNG.
         :return: A new PRNG for the model.

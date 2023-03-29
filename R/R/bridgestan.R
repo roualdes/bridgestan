@@ -141,8 +141,8 @@ StanModel <- R6::R6Class("StanModel",
     #' @param include_gq Whether to also output the generated quantities of the model.
     #' @param seed The seed for the random number generator. One of
     #' `rng` or `seed` must be specified if `include_gq` is `True`.
-    #' @param rng The random number generator to use. One of
-    #' `rng` or `seed` must be specified if `include_gq` is `True`.
+    #' @param rng The random number generator to use.  See `StanModel$new_rng()`.
+    #' One of `rng` or `seed` must be specified if `include_gq` is `True`.
     #' @return The constrained parameters of the model.
     param_constrain = function(theta_unc, include_tp = FALSE, include_gq = FALSE, seed, rng) {
       if (missing(seed) && missing(rng)){
@@ -178,6 +178,13 @@ StanModel <- R6::R6Class("StanModel",
         stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "param_constrain"))
       }
       vars$theta
+    },
+    #' @description
+    #' Create a new persistent PRNG object for use in `param_constrain()`.
+    #' @param seed The seed for the PRNG.
+    #' @return A `StanRNG` object.
+    new_rng = function(seed) {
+      StanRNG$new(private$lib_name, seed)
     },
     #' @description
     #' Returns a vector of unconstrained parameters give the constrained parameters.
@@ -286,13 +293,6 @@ StanModel <- R6::R6Class("StanModel",
         stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "log_density_hessian"))
       }
       list(val = vars$val, gradient = vars$gradient, hessian = matrix(vars$hess, nrow = dims, byrow = TRUE))
-    },
-    #' @description
-    #' Create a new persistent RNG object for use in `param_constrain()`.
-    #' @param seed The seed for the RNG.
-    #' @return A `StanRNG` object.
-    new_rng = function(seed) {
-      StanRNG$new(private$lib_name, seed)
     }
   ),
   private = list(
@@ -319,7 +319,8 @@ handle_error <- function(lib_name, err_msg, err_ptr, function_name) {
   }
 }
 
-#' @description
+#' StanRNG
+#'
 #' RNG object for use with `StanModel$param_constrain()`
 #' @field rng The pointer to the RNG object.
 #' @keywords internal

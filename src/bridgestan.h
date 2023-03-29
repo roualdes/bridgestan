@@ -163,6 +163,9 @@ int bs_param_constrain(const bs_model* m, bool include_tp, bool include_gq,
  * in the Stan program, with multivariate parameters given in
  * last-index-major order.
  *
+ * This version accepts a seed which is used to create a fresh PRNG
+ * which lives only for the duration of this call.
+ *
  * @param[in] mr pointer to model and RNG structure
  * @param[in] include_tp `true` to include transformed parameters
  * @param[in] include_gq `true` to include generated quantities

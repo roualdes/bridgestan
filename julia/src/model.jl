@@ -268,6 +268,7 @@ Additionally (if `include_tp` and `include_gq` are set, respectively)
 returns transformed parameters and generated quantities.
 
 If `include_gq` is set, then either `seed` or `rng` must be provided.
+See `StanRNG` for details on how to construct persistent RNGs.
 
 The result is stored in the vector `out`, and a reference is returned. See
 `param_constrain` for a version which allocates fresh memory.
@@ -347,6 +348,7 @@ Additionally (if `include_tp` and `include_gq` are set, respectively)
 returns transformed parameters and generated quantities.
 
 If `include_gq` is set, then either `seed` or `rng` must be provided.
+See `StanRNG` for details on how to construct persistent RNGs.
 
 This allocates new memory for the output each call.
 See `param_constrain!` for a version which allows
