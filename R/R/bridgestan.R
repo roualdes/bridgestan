@@ -255,7 +255,7 @@ StanModel <- R6::R6Class("StanModel",
     model = NA,
     finalize = function() {
       .C("bs_destruct_R",
-        as.raw(private$model), as.raw(0),
+        as.raw(private$model),
         return_code = as.integer(0),
         PACKAGE = private$lib_name
       )
