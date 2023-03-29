@@ -22,7 +22,8 @@ export StanModel,
     log_density_hessian,
     get_bridgestan_path,
     set_bridgestan_path!,
-    compile_model
+    compile_model,
+    StanRNG
 
 include("model.jl")
 include("compile.jl")

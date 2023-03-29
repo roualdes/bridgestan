@@ -176,12 +176,20 @@ end
 
 
     model2 = load_test_model("full", false)
+    rng = StanRNG(model2, 1234)
     @test 1 == length(BridgeStan.param_constrain(model2, a))
     @test 2 == length(BridgeStan.param_constrain(model2, a; include_tp = true))
-    @test 3 == length(BridgeStan.param_constrain(model2, a; include_gq = true))
+    @test 3 == length(BridgeStan.param_constrain(model2, a; include_gq = true, rng=rng))
     @test 4 == length(
-        BridgeStan.param_constrain(model2, a; include_tp = true, include_gq = true),
+        BridgeStan.param_constrain(model2, a; include_tp = true, include_gq = true, rng=rng),
     )
+
+    # reproducibility
+    @test isapprox(BridgeStan.param_constrain(model2, a; include_gq = true, seed=1234),
+                   BridgeStan.param_constrain(model2, a; include_gq = true, seed=1234))
+
+    # no seed or rng provided
+    @test_throws ArgumentError BridgeStan.param_constrain(model2, a; include_gq = true)
 
     # exception handling
     model3 = load_test_model("throw_tp", false)
@@ -199,6 +207,7 @@ end
         model4,
         y;
         include_gq = true,
+        seed=1234
     )
 end
 

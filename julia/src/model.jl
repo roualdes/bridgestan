@@ -88,30 +88,37 @@ mutable struct StanModel
     end
 end
 
+"""
+    StanRNG(sm::StanModel, seed)
 
+Construct a StanRNG instance from a `StanModel` instance and a seed.
+This can be used in the `param_constrain` and `param_constrain!` methods
+when using the generated quantities block.
+
+This object is not thread-safe, one should be created per thread.
+"""
 mutable struct StanRNG
     lib::Ptr{Nothing}
     rng::Ptr{StanRNGStruct}
     seed::UInt32
 
-    function StanRNG(lib::Ptr{Nothing}, seed)
+    function StanRNG(sm::StanModel, seed)
         seed = convert(UInt32, seed)
 
 
         err = Ref{Cstring}()
-
         rng = ccall(
-            Libc.Libdl.dlsym(lib, "bs_construct_rng"),
+            Libc.Libdl.dlsym(sm.lib, "bs_construct_rng"),
             Ptr{StanModelStruct},
             (UInt32, Ref{Cstring}),
             seed,
             err,
         )
         if rng == C_NULL
-            error(_handle_error(lib, err, "bs_construct_rng"))
+            error(_handle_error(sm.lib, err, "bs_construct_rng"))
         end
 
-        stanrng = new(lib, rng, data, seed)
+        stanrng = new(sm.lib, rng, seed)
 
         function f(stanrng)
             ccall(
@@ -254,11 +261,13 @@ function param_unc_names(sm::StanModel)
 end
 
 """
-    param_constrain!(sm, theta_unc, out; include_tp=false, include_gq=false)
+    param_constrain!(sm, theta_unc, out; include_tp=false, include_gq=false, seed=nothing, rng=nothing)
 
 Returns a vector constrained parameters given unconstrained parameters.
 Additionally (if `include_tp` and `include_gq` are set, respectively)
 returns transformed parameters and generated quantities.
+
+If `include_gq` is set, then either `seed` or `rng` must be provided.
 
 The result is stored in the vector `out`, and a reference is returned. See
 `param_constrain` for a version which allocates fresh memory.
@@ -306,13 +315,13 @@ function param_constrain!(
         include_gq,
         theta_unc,
         out,
-        rng,
+        rng.rng,
         err,
     )
     else
         seed = convert(UInt32, seed)
         rc = ccall(
-        Libc.Libdl.dlsym(sm.lib, "bs_param_constrain"),
+        Libc.Libdl.dlsym(sm.lib, "bs_param_constrain_seed"),
         Cint,
         (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}, Cuint, Ref{Cstring}),
         sm.stanmodel,
@@ -331,11 +340,13 @@ function param_constrain!(
 end
 
 """
-    param_constrain(sm, theta_unc, out; include_tp=false, include_gq=false)
+    param_constrain(sm, theta_unc, out; include_tp=false, include_gq=false, seed=nothing, rng=nothing)
 
 Returns a vector constrained parameters given unconstrained parameters.
 Additionally (if `include_tp` and `include_gq` are set, respectively)
 returns transformed parameters and generated quantities.
+
+If `include_gq` is set, then either `seed` or `rng` must be provided.
 
 This allocates new memory for the output each call.
 See `param_constrain!` for a version which allows
