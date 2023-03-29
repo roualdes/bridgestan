@@ -1,5 +1,7 @@
 
-mutable struct StanModelStruct end
+struct StanModelStruct end
+
+mutable struct StanRNGStruct end
 
 # utility macro to annotate a field as const only if supported
 @eval macro $(Symbol("const"))(x)
@@ -11,19 +13,19 @@ mutable struct StanModelStruct end
 end
 
 """
-    StanModel(lib, datafile="", seed=204, chain_id=0)
+    StanModel(lib, datafile="", seed=204)
 
 A StanModel instance encapsulates a Stan model instantiated with data.
 
 Construct a Stan model from the supplied library file path and data. Data
 should either be a string containing a JSON string literal or a path to a data file ending in `.json`.
-If seed or chain_id are supplied, these are used to initialize the RNG used by the model.
+If seed is supplied, it is used to initialize the RNG used by the model's constructor.
 
-    StanModel(;stan_file, data="", seed=204, chain_id=0)
+    StanModel(;stan_file, data="", seed=204)
 
 Construct a `StanModel` instance from a `.stan` file, compiling if necessary.
 
-    StanModel(;stan_file, stanc_args=[], make_args=[], data="", seed=204, chain_id=0)
+    StanModel(;stan_file, stanc_args=[], make_args=[], data="", seed=204)
 
 Construct a `StanModel` instance from a `.stan` file.  Compilation
 occurs if no shared object file exists for the supplied Stan file or
@@ -36,11 +38,9 @@ mutable struct StanModel
     stanmodel::Ptr{StanModelStruct}
     @const data::String
     @const seed::UInt32
-    @const chain_id::UInt32
 
-    function StanModel(lib::String, data::String = "", seed = 204, chain_id = 0)
+    function StanModel(lib::String, data::String = "", seed = 204)
         seed = convert(UInt32, seed)
-        chain_id = convert(UInt32, chain_id)
 
         if !isfile(lib)
             throw(SystemError("Dynamic library file not found"))
@@ -64,17 +64,16 @@ mutable struct StanModel
         stanmodel = ccall(
             Libc.Libdl.dlsym(lib, "bs_construct"),
             Ptr{StanModelStruct},
-            (Cstring, UInt32, UInt32, Ref{Cstring}),
+            (Cstring, UInt32, Ref{Cstring}),
             data,
             seed,
-            chain_id,
             err,
         )
         if stanmodel == C_NULL
             error(handle_error(lib, err, "bs_construct"))
         end
 
-        sm = new(lib, stanmodel, data, seed, chain_id)
+        sm = new(lib, stanmodel, data, seed)
 
         function f(sm)
             ccall(
@@ -86,6 +85,44 @@ mutable struct StanModel
         end
 
         finalizer(f, sm)
+    end
+end
+
+
+mutable struct StanRNG
+    lib::Ptr{Nothing}
+    rng::Ptr{StanRNGStruct}
+    seed::UInt32
+
+    function StanRNG(lib::Ptr{Nothing}, seed)
+        seed = convert(UInt32, seed)
+
+
+        err = Ref{Cstring}()
+
+        rng = ccall(
+            Libc.Libdl.dlsym(lib, "bs_construct_rng"),
+            Ptr{StanModelStruct},
+            (UInt32, Ref{Cstring}),
+            seed,
+            err,
+        )
+        if rng == C_NULL
+            error(_handle_error(lib, err, "bs_construct_rng"))
+        end
+
+        stanrng = new(lib, rng, data, seed)
+
+        function f(stanrng)
+            ccall(
+                Libc.Libdl.dlsym(stanrng.lib, "bs_destruct_rng"),
+                UInt32,
+                (Ptr{StanModelStruct},Ref{Cstring}),
+                stanrng.rng, C_NULL
+            )
+        end
+
+        finalizer(f, stanrng)
     end
 end
 
@@ -234,6 +271,8 @@ function param_constrain!(
     out::Vector{Float64};
     include_tp = false,
     include_gq = false,
+    seed::Union{Int, Nothing} = nothing,
+    rng::Union{StanRNG, Nothing} = nothing,
 )
     dims = param_num(sm; include_tp = include_tp, include_gq = include_gq)
     if length(out) != dims
@@ -241,18 +280,50 @@ function param_constrain!(
             DimensionMismatch("out must be same size as number of constrained parameters"),
         )
     end
+
+    if seed === nothing && rng === nothing
+        if include_gq
+        throw(
+            ArgumentError(
+                "Must provide either a seed or an RNG when including generated quantities",
+            ),
+        )
+        else
+            seed = 0
+        end
+    end
+
+
     err = Ref{Cstring}()
-    rc = ccall(
+    if rng !== nothing
+
+        rc = ccall(
         Libc.Libdl.dlsym(sm.lib, "bs_param_constrain"),
         Cint,
-        (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}, Ref{Cstring}),
+        (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}, Ptr{StanRNGStruct},Ref{Cstring}),
         sm.stanmodel,
         include_tp,
         include_gq,
         theta_unc,
         out,
+        rng,
         err,
     )
+    else
+        seed = convert(UInt32, seed)
+        rc = ccall(
+        Libc.Libdl.dlsym(sm.lib, "bs_param_constrain"),
+        Cint,
+        (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}, Cuint, Ref{Cstring}),
+        sm.stanmodel,
+        include_tp,
+        include_gq,
+        theta_unc,
+        out,
+        seed,
+        err,
+    )
+    end
     if rc != 0
         error(handle_error(sm.lib, err, "param_constrain"))
     end
@@ -277,9 +348,11 @@ function param_constrain(
     theta_unc::Vector{Float64};
     include_tp = false,
     include_gq = false,
+    seed::Union{Int, Nothing} = nothing,
+    rng::Union{StanRNG, Nothing} = nothing,
 )
     out = zeros(param_num(sm, include_tp = include_tp, include_gq = include_gq))
-    param_constrain!(sm, theta_unc, out; include_tp = include_tp, include_gq = include_gq)
+    param_constrain!(sm, theta_unc, out; include_tp = include_tp, include_gq = include_gq, seed=seed, rng=rng)
 end
 
 """
