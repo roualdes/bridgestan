@@ -80,8 +80,9 @@ mutable struct StanModel
             ccall(
                 Libc.Libdl.dlsym(sm.lib, "bs_destruct"),
                 UInt32,
-                (Ptr{StanModelStruct},),
+                (Ptr{StanModelStruct}, Ref{Cstring}),
                 sm.stanmodel,
+                C_NULL,
             )
         end
 
