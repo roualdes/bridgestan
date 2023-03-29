@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
 
   // this could potentially error, and we may get information back about why.
   char* err;
-  bs_model_rng* model = bs_construct(data, 123, 0, &err);
+  bs_model* model = bs_construct(data, 123, &err);
   if (!model) {
     if (err) {
       printf("Error: %s", err);
