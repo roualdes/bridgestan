@@ -5,5 +5,8 @@ transformed parameters {
   real b = exp(a);
 }
 generated quantities {
-  vector[2] c = [1, 2]';
+  array[2] int d;
+  for (i in 1:2) {
+    d[i] = categorical_rng([0.1, 0.2, 0.2, 0.3, 0.2]');
+  }
 }

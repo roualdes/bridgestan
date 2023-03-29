@@ -23,15 +23,12 @@ extern int bs_patch_version;
  * path to JSON-encoded data file (must end with ".json"), or
  * a JSON string literal.
  * @param[in] seed seed for PRNG
- * @param[in] chain_id identifier for concurrent sequence of PRNG
- * draws
  * @param[out] error_msg a pointer to a string that will be allocated if there
  * is an error. This must later be freed by calling `bs_free_error_msg`.
  * @return pointer to constructed model or `nullptr` if construction
  * fails
  */
-bs_model* bs_construct(const char* data_file, unsigned int seed,
-                       unsigned int chain_id, char** error_msg);
+bs_model* bs_construct(const char* data_file, unsigned int seed, char** error_msg);
 
 /**
  * Destroy the model.

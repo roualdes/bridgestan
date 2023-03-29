@@ -1,9 +1,9 @@
 #include "bridgestanR.h"
 #include "bridgestan.h"
 
-void bs_construct_R(char** data, int* rng, int* chain, bs_model** ptr_out,
+void bs_construct_R(char** data, int* rng, bs_model** ptr_out,
                     char** err_msg, void** err_ptr) {
-  *ptr_out = bs_construct(*data, *rng, *chain, err_msg);
+  *ptr_out = bs_construct(*data, *rng, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
 void bs_free_error_msg_R(void** err_msg) {

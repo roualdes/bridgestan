@@ -12,7 +12,7 @@ typedef int bool;
 
 // Shim to convert to R interface requirement of void with pointer args
 // All calls directly delegated to versions without _R suffix
-void bs_construct_R(char** data, int* rng, int* chain, bs_model** ptr_out,
+void bs_construct_R(char** data, int* rng, bs_model** ptr_out,
                     char** err_msg, void** err_ptr);
 
 void bs_version_R(int* major, int* minor, int* patch);

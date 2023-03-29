@@ -10,14 +10,13 @@ int bs_patch_version = BRIDGESTAN_PATCH;
 #include <sstream>
 
 bs_model* bs_construct(const char* data_file, unsigned int seed,
-                       unsigned int chain_id, char** error_msg) {
+                       char** error_msg) {
   try {
     return new bs_model(data_file, seed);
   } catch (const std::exception& e) {
     if (error_msg) {
       std::stringstream error;
-      error << "construct(" << data_file << ", " << seed << ", " << chain_id
-            << ")"
+      error << "construct(" << data_file << ", " << seed << ")"
             << " failed with exception: " << e.what() << std::endl;
       *error_msg = strdup(error.str().c_str());
     }
@@ -25,8 +24,7 @@ bs_model* bs_construct(const char* data_file, unsigned int seed,
     if (error_msg) {
       std::stringstream error;
 
-      error << "construct(" << data_file << ", " << seed << ", " << chain_id
-            << ")"
+      error << "construct(" << data_file << ", " << seed << ")"
             << " failed with unknown exception" << std::endl;
       *error_msg = strdup(error.str().c_str());
     }
@@ -80,9 +78,10 @@ int bs_param_constrain(const bs_model* m, bool include_tp, bool include_gq,
   return 1;
 }
 
-int bs_param_constrain_seed(const bs_model* m, bool include_tp, bool include_gq,
-                            const double* theta_unc, double* theta,
-                            unsigned int seed, char** error_msg) {
+int bs_param_constrain_seed(const bs_model* m, bool include_tp,
+                            bool include_gq, const double* theta_unc,
+                            double* theta, unsigned int seed,
+                            char** error_msg) {
   bs_rng rng(seed);
   return bs_param_constrain(m, include_tp, include_gq, theta_unc, theta, &rng,
                             error_msg);
