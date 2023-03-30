@@ -9,7 +9,6 @@ int bs_major_version = BRIDGESTAN_MAJOR;
 int bs_minor_version = BRIDGESTAN_MINOR;
 int bs_patch_version = BRIDGESTAN_PATCH;
 
-
 bs_model* bs_model_construct(const char* data, unsigned int seed,
                              char** error_msg) {
   try {
@@ -229,15 +228,18 @@ bs_rng* bs_rng_construct(unsigned int seed, char** error_msg) {
 
 void bs_rng_destruct(bs_rng* rng) { delete (rng); }
 
-
 int bs_set_print_callback(STREAM_CALLBACK callback) {
   try {
-    // TODO(bmw): this can't possibly be right
-    outstream = new std::ostream(new callback_ostreambuf(callback));
+    if (buf != nullptr) {  // nullptr only when `outstream` is initially set to
+                           // &std::cout
+      delete buf;
+      delete outstream;
+    }
+    buf = new callback_ostreambuf(callback);
+    outstream = new std::ostream(buf);
     return 0;
   } catch (...) {
     std::cerr << "unknown exception in C++ set_print_callback()" << std::endl;
   }
   return -1;
 }
-

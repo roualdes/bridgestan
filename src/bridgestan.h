@@ -289,7 +289,13 @@ bs_rng* bs_rng_construct(unsigned int seed, char** error_msg);
  */
 void bs_rng_destruct(bs_rng* rng);
 
-
+/**
+ * Provide a function for printing. This will be called when the Stan
+ * model prints output. The default is to print to stdout.
+ *
+ * @param[in] callback function to call when the Stan model prints
+ * @return code 0 if successful and code -1 if there is an exception
+ */
 int bs_set_print_callback(STREAM_CALLBACK callback);
 
 #ifdef __cplusplus

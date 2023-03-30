@@ -25,7 +25,10 @@
 #include <string>
 #include <vector>
 
-static std::ostream* outstream = &std::cout;
+
+// globals for Stan model output
+std::streambuf* buf = nullptr;
+std::ostream* outstream = &std::cout;
 
 /**
  * Allocate and return a new model as a reference given the specified
