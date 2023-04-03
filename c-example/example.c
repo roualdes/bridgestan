@@ -2,6 +2,9 @@
 #include <stdio.h>
 
 int main(int argc, char** argv) {
+  printf("Using BridgeStan version %d.%d.%d\n", bs_major_version,
+         bs_minor_version, bs_patch_version);
+
   char* data;
   if (argc > 1) {
     data = argv[1];

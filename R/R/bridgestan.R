@@ -60,6 +60,15 @@ StanModel <- R6::R6Class("StanModel",
         PACKAGE = private$lib_name
       )$info_out
     },
+
+    model_version= function() {
+      .C("bs_version_R",
+        major = as.integer(0),
+        minor = as.integer(0),
+        patch = as.integer(0),
+        PACKAGE = private$lib_name
+      )
+    },
     #' @description
     #' Return the indexed names of the (constrained) parameters.
     #' For containers, indexes are separated by periods (.).

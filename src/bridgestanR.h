@@ -13,6 +13,8 @@ typedef int bool;
 // All calls directly delegated to versions without _R suffix
 void bs_construct_R(char** data, int* rng, int* chain, bs_model_rng** ptr_out);
 
+void bs_version_R(int* major, int* minor, int* patch);
+
 void bs_destruct_R(bs_model_rng** model, int* return_code);
 
 void bs_name_R(bs_model_rng** model, char const** name_out);

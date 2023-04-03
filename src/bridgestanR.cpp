@@ -4,6 +4,11 @@
 void bs_construct_R(char** data, int* rng, int* chain, bs_model_rng** ptr_out) {
   *ptr_out = bs_construct(*data, *rng, *chain);
 }
+void bs_version_R(int* major, int* minor, int* patch){
+  *major = bs_major_version;
+  *minor = bs_minor_version;
+  *patch = bs_patch_version;
+}
 void bs_destruct_R(bs_model_rng** model, int* return_code) {
   *return_code = bs_destruct(*model);
 }

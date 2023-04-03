@@ -1,6 +1,11 @@
 #include "bridgestan.h"
 #include "model_rng.cpp"
 #include "bridgestanR.cpp"
+#include "version.hpp"
+
+int bs_major_version = BRIDGESTAN_MAJOR;
+int bs_minor_version = BRIDGESTAN_MINOR;
+int bs_patch_version = BRIDGESTAN_PATCH;
 
 bs_model_rng* bs_construct(const char* data_file, unsigned int seed,
                            unsigned int chain_id) {
