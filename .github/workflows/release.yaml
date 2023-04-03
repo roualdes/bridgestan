@@ -90,7 +90,7 @@ jobs:
           skipIfReleaseExists: true
 
       - name: Upload PyPI wheels
-        uses: pypa/gh-action-pypi-publish@v1.6.4
+        uses: pypa/gh-action-pypi-publish@v1.8.4
         with:
           password: ${{ secrets.PYPI_TOKEN }}
           packages_dir: python/dist/
