@@ -645,6 +645,23 @@ def test_fr_gaussian():
         pos += 1
 
 
+def test_stdout_capture():
+    import contextlib
+    import io
+
+    m = bs.StanModel(str(STAN_FOLDER / "print" / "print_model.so"))
+    theta = 0.1
+
+    with contextlib.redirect_stdout(io.StringIO()) as f:
+        print("Hello from Python!")
+        m.log_density(np.array([theta]))
+
+    lines = f.getvalue().splitlines()
+    assert lines[0] == "Hello from Python!"
+    assert lines[1] == "Hi from Stan!"
+    assert lines[2] == f"theta = {theta}"
+
+
 @pytest.fixture
 def recompile_simple():
     """Recompile simple_model with autodiff hessian enable, then clean-up/restore it after test"""

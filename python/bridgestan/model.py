@@ -15,6 +15,10 @@ double_array = ndpointer(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
 star_star_char = ctypes.POINTER(ctypes.c_char_p)
 
 
+@ctypes.CFUNCTYPE(None, ctypes.c_char_p, ctypes.c_int)
+def print_callback(s, n):
+    print(ctypes.string_at(s, n).decode("utf-8"), end="")
+
 class StanModel:
     """
     A StanModel instance encapsulates a Stan model instantiated with data
@@ -49,6 +53,8 @@ class StanModel:
             validate_readable(model_data)
         self.lib_path = model_lib
         self.stanlib = ctypes.CDLL(self.lib_path)
+        self.stanlib.bs_set_print_callback(print_callback)
+
         self.data_path = model_data or ""
         self.seed = seed
 
