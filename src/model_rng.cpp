@@ -78,6 +78,8 @@ bs_model::bs_model(const char* data_file, unsigned int seed) {
     }
   }
 
+  seed_ = seed;
+
   std::string model_name = model_->model_name();
   const char* model_name_c = model_name.c_str();
   name_ = strdup(model_name_c);
@@ -166,6 +168,8 @@ bs_model::~bs_model() noexcept {
 }
 
 const char* bs_model::name() const { return name_; }
+
+unsigned int bs_model::seed() const { return seed_; }
 
 const char* bs_model::model_info() const { return model_info_; }
 
@@ -322,4 +326,8 @@ void bs_model::log_density_hessian(bool propto, bool jacobian,
 
   Eigen::VectorXd::Map(grad, N) = grad_vec;
   Eigen::MatrixXd::Map(hessian, N, N) = hess_mat;
+}
+
+bs_rng::bs_rng(unsigned int seed, unsigned int chain_id) {
+  rng_ = stan::services::util::create_rng(seed, chain_id + 1);
 }

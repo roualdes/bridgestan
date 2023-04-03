@@ -39,6 +39,14 @@ class bs_model {
   const char* name() const;
 
   /**
+   * Return the pseudorandom number generator seed
+   * used during model construction.
+   *
+   * @return seed
+   */
+  unsigned int seed() const;
+
+  /**
    *  Return information about the compiled model. This class manages the
    * memory, so the returned string should not be freed.
    *
@@ -182,6 +190,9 @@ class bs_model {
   /** Stan model */
   stan::model::model_base* model_;
 
+  /** RNG seed provided during model creation */
+  unsigned int seed_;
+
   /** name of the Stan model */
   char* name_ = nullptr;
 
@@ -230,7 +241,7 @@ class bs_model {
  */
 class bs_rng {
  public:
-  bs_rng(unsigned int seed) : rng_(seed) { rng_.discard(1); }
+  bs_rng(unsigned int seed, unsigned int chain_id);
 
   boost::ecuyer1988 rng_;
 };

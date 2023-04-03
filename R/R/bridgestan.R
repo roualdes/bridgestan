@@ -11,15 +11,16 @@ StanModel <- R6::R6Class("StanModel",
     #' Create a Stan Model instance.
     #' @param lib A path to a compiled BridgeStan Shared Object file.
     #' @param data Either a JSON string literal or a path to a data file in JSON format ending in ".json".
-    #' @param rng_seed Seed for the RNG in the model object.
+    #' @param seed Seed for the RNG in the model object.
     #' @return A new StanModel.
-    initialize = function(lib, data, rng_seed) {
+    initialize = function(lib, data, seed) {
       if (.Platform$OS.type == "windows"){
         lib_old <- lib
         lib <- paste0(tools::file_path_sans_ext(lib), ".dll")
         file.copy(from=lib_old, to=lib)
       }
 
+      private$seed <- seed
       private$lib <- tools::file_path_as_absolute(lib)
       private$lib_name <- tools::file_path_sans_ext(basename(lib))
       if (is.loaded("construct_R", PACKAGE = private$lib_name)) {
@@ -32,7 +33,7 @@ StanModel <- R6::R6Class("StanModel",
 
       dyn.load(private$lib, PACKAGE = private$lib_name)
       ret <- .C("bs_construct_R",
-        as.character(data), as.integer(rng_seed),
+        as.character(data), as.integer(seed),
         ptr_out = raw(8),
         err_msg = as.character(""),
         err_ptr = raw(8),
@@ -139,17 +140,18 @@ StanModel <- R6::R6Class("StanModel",
     #' @param theta_unc The vector of unconstrained parameters.
     #' @param include_tp Whether to also output the transformed parameters of the model.
     #' @param include_gq Whether to also output the generated quantities of the model.
-    #' @param seed The seed for the random number generator. One of
-    #' `rng` or `seed` must be specified if `include_gq` is `True`.
+    #' @param chain_id A chain ID used to offset a PRNG seeded with the model's seed
+    #' which should be unique between calls. One of `rng` or `seed` must be specified
+    #' if `include_gq` is `True`.
     #' @param rng The random number generator to use.  See `StanModel$new_rng()`.
     #' One of `rng` or `seed` must be specified if `include_gq` is `True`.
     #' @return The constrained parameters of the model.
-    param_constrain = function(theta_unc, include_tp = FALSE, include_gq = FALSE, seed, rng) {
-      if (missing(seed) && missing(rng)){
+    param_constrain = function(theta_unc, include_tp = FALSE, include_gq = FALSE, chain_id, rng) {
+      if (missing(chain_id) && missing(rng)){
         if (include_gq) {
-          stop("Either seed or rng must be specified if include_gq is True.")
+          stop("Either chain_id or rng must be specified if include_gq is True.")
         } else {
-          seed = 0
+          chain_id <- 0
         }
       }
       if (!missing(rng)){
@@ -163,10 +165,10 @@ StanModel <- R6::R6Class("StanModel",
           PACKAGE = private$lib_name
         )
       } else {
-        vars <- .C("bs_param_constrain_seed_R", as.raw(private$model),
+        vars <- .C("bs_param_constrain_id_R", as.raw(private$model),
           as.logical(include_tp), as.logical(include_gq), as.double(theta_unc),
           theta = double(self$param_num(include_tp = include_tp, include_gq = include_gq)),
-          seed = as.integer(seed),
+          chain_id = as.integer(chain_id),
           return_code = as.integer(0),
           err_msg = as.character(""),
           err_ptr = raw(8),
@@ -181,10 +183,16 @@ StanModel <- R6::R6Class("StanModel",
     },
     #' @description
     #' Create a new persistent PRNG object for use in `param_constrain()`.
-    #' @param seed The seed for the PRNG.
+    #' @param chain_id Identifier for a sequence in the RNG. This should be made
+    #' a distinct number for each PRNG created with the same seed
+    #' (for example, 1:N for N PRNGS).
+    #' @param seed The seed for the PRNG. If this is not specified, the model's seed is used.
     #' @return A `StanRNG` object.
-    new_rng = function(seed) {
-      StanRNG$new(private$lib_name, seed)
+    new_rng = function(chain_id, seed) {
+      if (missing(seed)){
+        seed <- private$seed
+      }
+      StanRNG$new(private$lib_name, seed, chain_id)
     },
     #' @description
     #' Returns a vector of unconstrained parameters give the constrained parameters.
@@ -299,6 +307,7 @@ StanModel <- R6::R6Class("StanModel",
     lib = NA,
     lib_name = NA,
     model = NA,
+    seed = NA,
     finalize = function() {
       .C("bs_destruct_R",
         as.raw(private$model),
@@ -329,13 +338,15 @@ StanRNG <- R6::R6Class("StanRNG",
     #' @description
     #' Create a StanRng
     #' @param lib_name The name of the Stan dynamic library.
-    #' @param rng_seed The seed for the RNG.
+    #' @param seed The seed for the RNG.
+    #' @param chain_id The chain ID for the RNG.
     #' @return A new StanRNG.
-    initialize = function(lib_name, rng_seed) {
+    initialize = function(lib_name, seed, chain_id) {
       private$lib_name <- lib_name
 
       vars <- .C("bs_construct_rng_R",
-        as.integer(rng_seed),
+        as.integer(seed),
+        as.integer(chain_id),
         ptr_out = raw(8),
         err_msg = as.character(""),
         err_ptr = raw(8),

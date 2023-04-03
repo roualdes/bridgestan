@@ -115,11 +115,11 @@ test_that("param_constrain handles rng arguments", {
     expect_equal(4, length(full$param_constrain(c(1.2), include_tp=TRUE, include_gq=TRUE, rng=rng)))
 
     # check reproducibility
-    expect_equal(full$param_constrain(c(1.2), include_gq=TRUE, seed=1234),
-                 full$param_constrain(c(1.2), include_gq=TRUE, seed=1234))
+    expect_equal(full$param_constrain(c(1.2), include_gq=TRUE, chain_id=3),
+                 full$param_constrain(c(1.2), include_gq=TRUE, chain_id=3))
 
     # require at least one present
-    expect_error(full$param_constrain(c(1.2), include_gq=TRUE), "seed or rng must be specified")
+    expect_error(full$param_constrain(c(1.2), include_gq=TRUE), "chain_id or rng must be specified")
 })
 
 
@@ -142,5 +142,5 @@ test_that("param_constrain propagates errors", {
 
     m2 <- load_model("throw_gq",include_data=FALSE)
     m2$param_constrain(c(1.2)) # no error
-    expect_error(m2$param_constrain(c(1.2), include_gq=TRUE, seed=123), "find this text: gqfails")
+    expect_error(m2$param_constrain(c(1.2), include_gq=TRUE, chain_id=1), "find this text: gqfails")
 })

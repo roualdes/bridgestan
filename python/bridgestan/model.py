@@ -47,8 +47,7 @@ class StanModel:
         :param model_lib: A system path to compiled shared object.
         :param model_data: Either a JSON string literal or a
             system path to a data file in JSON format ending in ``.json``.
-        :param seed: A pseudo random number generator seed. This is only used
-            if the model has RNG usage in the ``transformed data`` block.
+        :param seed: A pseudo random number generator seed.
         :raises FileNotFoundError or PermissionError: If ``model_lib`` is not readable or
             ``model_data`` is specified and not a path to a readable file.
         :raises RuntimeError: If there is an error instantiating the
@@ -127,9 +126,9 @@ class StanModel:
             star_star_char,
         ]
 
-        self._param_constrain_seed = self.stanlib.bs_param_constrain_seed
-        self._param_constrain_seed.restype = ctypes.c_int
-        self._param_constrain_seed.argtypes = [
+        self._param_constrain_id = self.stanlib.bs_param_constrain_id
+        self._param_constrain_id.restype = ctypes.c_int
+        self._param_constrain_id.argtypes = [
             ctypes.c_void_p,
             ctypes.c_int,
             ctypes.c_int,
@@ -239,7 +238,7 @@ class StanModel:
 
     def __repr__(self) -> str:
         data = f"{self.data_path!r}, " if self.data_path else ""
-        return f"StanModel({self.lib_path!r}, {data}seed={self.seed})"
+        return f"StanModel({self.lib_path!r}, {data}, seed={self.seed})"
 
     def name(self) -> str:
         """
@@ -328,7 +327,7 @@ class StanModel:
         include_tp: bool = False,
         include_gq: bool = False,
         out: Optional[FloatArray] = None,
-        seed: Optional[int] = None,
+        chain_id: Optional[int] = None,
         rng: Optional["StanRNG"] = None,
     ) -> FloatArray:
         """
@@ -345,28 +344,28 @@ class StanModel:
             provided, it must have shape `(D, )`, where `D` is the number of
             constrained parameters.  If not provided or `None`, a freshly
             allocated array is returned.
-        :param seed: A pseudo random number generator seed. One of
-            ``rng`` or ``seed`` must be specified if ``include_gq``
-            is ``True``.
+        :param chain_id: A chain ID used to offset a PRNG seeded with the model's
+            seed which should be unique between calls. One of ``rng`` or
+            ``chain_id`` must be specified if ``include_gq`` is ``True``.
         :param rng: A ``StanRNG`` object to use for generating random
             numbers, see :meth:`~StanModel.new_rng`.
-            One of ``rng`` or ``seed`` must be specified if ``include_gq``
+            One of ``rng`` or ``chain_id`` must be specified if ``include_gq``
             is ``True``.
         :return: The constrained parameter array.
         :raises ValueError: If ``out`` is specified and is not the same
             shape as the return.
-        :raises ValueError: If neither ``rng`` nor ``seed`` is specified
+        :raises ValueError: If neither ``rng`` nor ``chain_id`` is specified
             and ``include_gq`` is ``True``.
         :raises RuntimeError: If the C++ Stan model throws an exception.
         """
-        if seed is None and rng is None:
+        if chain_id is None and rng is None:
             if include_gq:
                 raise ValueError(
-                    "Error: must specify rng or seed when including generated quantities"
+                    "Error: must specify rng or chain_id when including generated quantities"
                 )
             else:
-                # neither specified, but not doing gq, so use a fixed seed
-                seed = 0
+                # neither specified, but not doing gq, so use a fixed chain id
+                chain_id = 0
 
         dims = self.param_num(include_tp=include_tp, include_gq=include_gq)
         if out is None:
@@ -388,13 +387,13 @@ class StanModel:
                 err,
             )
         else:
-            rc = self._param_constrain_seed(
+            rc = self._param_constrain_id(
                 self.model_rng,
                 int(include_tp),
                 int(include_gq),
                 theta_unc,
                 out,
-                seed,
+                chain_id,
                 err,
             )
 
@@ -402,14 +401,18 @@ class StanModel:
             raise self._handle_error(err.contents, "param_constrain")
         return out
 
-    def new_rng(self, seed: int) -> "StanRNG":
+    def new_rng(self, chain_id: int, *, seed=None) -> "StanRNG":
         """
         Return a new PRNG for use in :meth:`~StanModel.param_constrain`.
 
-        :param seed: The seed for the PRNG.
+        :param chain_id: Identifier for a sequence in the RNG. This should be made
+            a distinct number for each PRNG created with the same seed
+            (for example, 1:N for N PRNGS).
+        :param seed: A seed for the PRNG.  If not specified, the
+            model's seed is used.
         :return: A new PRNG for the model.
         """
-        return StanRNG(self.stanlib, seed)
+        return StanRNG(self.stanlib, seed or self.seed, chain_id)
 
     def param_unconstrain(
         self, theta: FloatArray, *, out: Optional[FloatArray] = None
@@ -625,13 +628,13 @@ class StanModel:
 
 
 class StanRNG:
-    def __init__(self, lib: ctypes.CDLL, seed: int) -> None:
+    def __init__(self, lib: ctypes.CDLL, seed: int, chain_id: int) -> None:
         self.stanlib = lib
 
         construct = self.stanlib.bs_construct_rng
         construct.restype = ctypes.c_void_p
-        construct.argtypes = [ctypes.c_uint, star_star_char]
-        self.ptr = construct(seed, None)
+        construct.argtypes = [ctypes.c_uint, ctypes.c_uint, star_star_char]
+        self.ptr = construct(seed, chain_id, None)
 
         if not self.ptr:
             raise RuntimeError("Failed to construct RNG.")

@@ -89,9 +89,13 @@ mutable struct StanModel
 end
 
 """
-    StanRNG(sm::StanModel, seed)
+    StanRNG(sm::StanModel, chain_id; seed=nothing)
 
-Construct a StanRNG instance from a `StanModel` instance and a seed.
+Construct a StanRNG instance from a `StanModel` instance and a chain ID.
+This ID serves as an offset in the PRNG stream and should be unique for each
+PRNG created with the same seed.
+A seed can be supplied to use in place of the model's seed, which is used by default.
+
 This can be used in the `param_constrain` and `param_constrain!` methods
 when using the generated quantities block.
 
@@ -101,24 +105,26 @@ mutable struct StanRNG
     lib::Ptr{Nothing}
     rng::Ptr{StanRNGStruct}
     seed::UInt32
+    chain_id::UInt32
 
-    function StanRNG(sm::StanModel, seed)
-        seed = convert(UInt32, seed)
-
+    function StanRNG(sm::StanModel, chain_id; seed=nothing)
+        seed = convert(UInt32, if isnothing(seed) sm.seed else seed end)
+        chain_id = convert(UInt32, chain_id)
 
         err = Ref{Cstring}()
         rng = ccall(
             Libc.Libdl.dlsym(sm.lib, "bs_construct_rng"),
             Ptr{StanModelStruct},
-            (UInt32, Ref{Cstring}),
+            (UInt32, UInt32, Ref{Cstring}),
             seed,
+            chain_id,
             err,
         )
         if rng == C_NULL
             error(_handle_error(sm.lib, err, "bs_construct_rng"))
         end
 
-        stanrng = new(sm.lib, rng, seed)
+        stanrng = new(sm.lib, rng, seed, chain_id)
 
         function f(stanrng)
             ccall(
@@ -261,13 +267,15 @@ function param_unc_names(sm::StanModel)
 end
 
 """
-    param_constrain!(sm, theta_unc, out; include_tp=false, include_gq=false, seed=nothing, rng=nothing)
+    param_constrain!(sm, theta_unc, out; include_tp=false, include_gq=false, chain_id=nothing, rng=nothing)
 
 Returns a vector constrained parameters given unconstrained parameters.
 Additionally (if `include_tp` and `include_gq` are set, respectively)
 returns transformed parameters and generated quantities.
 
-If `include_gq` is set, then either `seed` or `rng` must be provided.
+If `include_gq` is set, then either `chain_id` or `rng` must be provided.
+`chain_id` specifies an offset in a PRNG seeded with the model's
+seed which should be unique between calls.
 See `StanRNG` for details on how to construct persistent RNGs.
 
 The result is stored in the vector `out`, and a reference is returned. See
@@ -281,7 +289,7 @@ function param_constrain!(
     out::Vector{Float64};
     include_tp = false,
     include_gq = false,
-    seed::Union{Int, Nothing} = nothing,
+    chain_id::Union{Int, Nothing} = nothing,
     rng::Union{StanRNG, Nothing} = nothing,
 )
     dims = param_num(sm; include_tp = include_tp, include_gq = include_gq)
@@ -291,15 +299,15 @@ function param_constrain!(
         )
     end
 
-    if seed === nothing && rng === nothing
+    if chain_id === nothing && rng === nothing
         if include_gq
         throw(
             ArgumentError(
-                "Must provide either a seed or an RNG when including generated quantities",
+                "Must provide either a chain_id or an RNG when including generated quantities",
             ),
         )
         else
-            seed = 0
+            chain_id = 0
         end
     end
 
@@ -320,9 +328,9 @@ function param_constrain!(
         err,
     )
     else
-        seed = convert(UInt32, seed)
+        chain_id = convert(UInt32, chain_id)
         rc = ccall(
-        Libc.Libdl.dlsym(sm.lib, "bs_param_constrain_seed"),
+        Libc.Libdl.dlsym(sm.lib, "bs_param_constrain_id"),
         Cint,
         (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}, Cuint, Ref{Cstring}),
         sm.stanmodel,
@@ -330,7 +338,7 @@ function param_constrain!(
         include_gq,
         theta_unc,
         out,
-        seed,
+        chain_id,
         err,
     )
     end
@@ -341,13 +349,15 @@ function param_constrain!(
 end
 
 """
-    param_constrain(sm, theta_unc, out; include_tp=false, include_gq=false, seed=nothing, rng=nothing)
+    param_constrain(sm, theta_unc, out; include_tp=false, include_gq=false, chain_id=nothing, rng=nothing)
 
 Returns a vector constrained parameters given unconstrained parameters.
 Additionally (if `include_tp` and `include_gq` are set, respectively)
 returns transformed parameters and generated quantities.
 
-If `include_gq` is set, then either `seed` or `rng` must be provided.
+If `include_gq` is set, then either `chain_id` or `rng` must be provided.
+`chain_id` specifies an offset in a PRNG seeded with the model's
+seed which should be unique between calls.
 See `StanRNG` for details on how to construct persistent RNGs.
 
 This allocates new memory for the output each call.
@@ -361,11 +371,11 @@ function param_constrain(
     theta_unc::Vector{Float64};
     include_tp = false,
     include_gq = false,
-    seed::Union{Int, Nothing} = nothing,
+    chain_id::Union{Int, Nothing} = nothing,
     rng::Union{StanRNG, Nothing} = nothing,
 )
     out = zeros(param_num(sm, include_tp = include_tp, include_gq = include_gq))
-    param_constrain!(sm, theta_unc, out; include_tp = include_tp, include_gq = include_gq, seed=seed, rng=rng)
+    param_constrain!(sm, theta_unc, out; include_tp = include_tp, include_gq = include_gq, chain_id=chain_id, rng=rng)
 end
 
 """

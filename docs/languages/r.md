@@ -217,7 +217,7 @@ of this function.
 _Usage_
 
 ```R
-StanModel$param_constrain(theta_unc, include_tp = FALSE, include_gq = FALSE, seed, rng)
+StanModel$param_constrain(theta_unc, include_tp = FALSE, include_gq = FALSE, chain_id, rng)
 ```
 
 
@@ -231,11 +231,11 @@ _Arguments_
   - `include_gq` Whether to also output the generated quantities
       of the model.
 
-  - `seed` Seed for the RNG in the model object.  One of
-    `rng` or `seed` must be specified if `include_gq` is `True`
+  - `chain_id` A chain ID used to offset a PRNG seeded with the model's seed
+    which should be unique between calls. One of `rng` or `chain_id` must be specified if `include_gq` is `True`
 
   - `rng` StanRNG to use in the model object. See `StanModel$new_rng()`.
-    One of `rng` or `seed` must be specified if `include_gq` is `True`
+    One of `rng` or `chain_id` must be specified if `include_gq` is `True`
 
 
 _Returns_
@@ -251,13 +251,16 @@ Create a new persistent PRNG object for use in `param_constrain()`.
 _Usage_
 
 ```R
-StanModel$new_rng(seed)
+StanModel$new_rng(chain_id, seed)
 ```
 
 
 _Arguments_
 
-  - `seed` The seed for the PRNG.
+  - `chain_id` Identifier for a sequence in the RNG. This should be made a distinct number for each PRNG created with the sane seed (for example, 1:N for N PRNGS).
+
+  - `seed` The seed for the PRNG. If this is not specified, the model's seed is used.
+
 
 _Returns_
 

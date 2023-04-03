@@ -39,7 +39,7 @@ as well as constraining and unconstraining transforms.
 \subsection{Method \code{new()}}{
 Create a Stan Model instance.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StanModel$new(lib, data, rng_seed)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$new(lib, data, seed)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -49,7 +49,7 @@ Create a Stan Model instance.
 
 \item{\code{data}}{Either a JSON string literal or a path to a data file in JSON format ending in ".json".}
 
-\item{\code{rng_seed}}{Seed for the RNG in the model object.}
+\item{\code{seed}}{Seed for the RNG in the model object.}
 }
 \if{html}{\out{</div>}}
 }
@@ -177,7 +177,7 @@ See also \code{StanModel$param_unconstrain()}, the inverse of this function.
   theta_unc,
   include_tp = FALSE,
   include_gq = FALSE,
-  seed,
+  chain_id,
   rng
 )}\if{html}{\out{</div>}}
 }
@@ -191,8 +191,9 @@ See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 
 \item{\code{include_gq}}{Whether to also output the generated quantities of the model.}
 
-\item{\code{seed}}{The seed for the random number generator. One of
-\code{rng} or \code{seed} must be specified if \code{include_gq} is \code{True}.}
+\item{\code{chain_id}}{A chain ID used to offset a PRNG seeded with the model's seed
+which should be unique between calls. One of \code{rng} or \code{seed} must be specified
+if \code{include_gq} is \code{True}.}
 
 \item{\code{rng}}{The random number generator to use.  See \code{StanModel$new_rng()}.
 One of \code{rng} or \code{seed} must be specified if \code{include_gq} is \code{True}.}
@@ -209,13 +210,17 @@ The constrained parameters of the model.
 \subsection{Method \code{new_rng()}}{
 Create a new persistent PRNG object for use in \code{param_constrain()}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StanModel$new_rng(seed)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$new_rng(chain_id, seed)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{seed}}{The seed for the PRNG.}
+\item{\code{chain_id}}{Identifier for a sequence in the RNG. This should be made
+a distinct number for each PRNG created with the same seed
+(for example, 1:N for N PRNGS).}
+
+\item{\code{seed}}{The seed for the PRNG. If this is not specified, the model's seed is used.}
 }
 \if{html}{\out{</div>}}
 }

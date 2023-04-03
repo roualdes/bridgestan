@@ -28,7 +28,8 @@ extern int bs_patch_version;
  * @return pointer to constructed model or `nullptr` if construction
  * fails
  */
-bs_model* bs_construct(const char* data_file, unsigned int seed, char** error_msg);
+bs_model* bs_construct(const char* data_file, unsigned int seed,
+                       char** error_msg);
 
 /**
  * Destroy the model.
@@ -163,25 +164,26 @@ int bs_param_constrain(const bs_model* m, bool include_tp, bool include_gq,
  * in the Stan program, with multivariate parameters given in
  * last-index-major order.
  *
- * This version accepts a seed which is used to create a fresh PRNG
- * which lives only for the duration of this call.
+ * This version accepts a chain_id which is used to create a PRNG
+ * offset from the model's seed which lives only for the duration
+ * of this call.
  *
  * @param[in] mr pointer to model and RNG structure
  * @param[in] include_tp `true` to include transformed parameters
  * @param[in] include_gq `true` to include generated quantities
  * @param[in] theta_unc sequence of unconstrained parameters
  * @param[out] theta sequence of constrained parameters
- * @param[in] seed seed for pseudorandom number generator which will be created
- * and destroyed during this call. See `bs_param_constrain` for an option with a
- * persistent RNG.
+ * @param[in] chain_id offset for pseudorandom number generator which will be
+ * created and destroyed during this call. seeded with model seed. See
+ * `bs_param_constrain` for an option with a persistent RNG.
  * @param[out] error_msg a pointer to a string that will be allocated if there
  * is an error. This must later be freed by calling `bs_free_error_msg`.
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int bs_param_constrain_seed(const bs_model* mr, bool include_tp,
-                            bool include_gq, const double* theta_unc,
-                            double* theta, unsigned int seed, char** error_msg);
+int bs_param_constrain_id(const bs_model* mr, bool include_tp, bool include_gq,
+                          const double* theta_unc, double* theta,
+                          unsigned int chain_id, char** error_msg);
 
 /**
  * Set the sequence of unconstrained parameters based on the
@@ -294,15 +296,17 @@ int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
                            double* hessian, char** error_msg);
 
 /**
- * Construct an RNG object to be used in `bs_param_constrain`.
+ * Construct an PRNG object to be used in `bs_param_constrain`.
  * This object is not thread safe and should be constructed and
  * destructed for each thread.
  *
  * @param[in] seed seed for the RNG
+ * @param[in] chain_id identifier for the current sequence of PRNG draws
  * @param[out] error_msg a pointer to a string that will be allocated if there
  * is an error. This must later be freed by calling `bs_free_error_msg`.
  */
-bs_rng* bs_construct_rng(unsigned int seed, char** error_msg);
+bs_rng* bs_construct_rng(unsigned int seed, unsigned int chain_id,
+                         char** error_msg);
 
 /**
  * Destruct an RNG object.

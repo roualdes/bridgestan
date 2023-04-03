@@ -42,12 +42,12 @@ void bs_param_constrain_R(bs_model** model, int* include_tp, int* include_gq,
                                     theta, *rng, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
-void bs_param_constrain_seed_R(bs_model** model, int* include_tp,
+void bs_param_constrain_id_R(bs_model** model, int* include_tp,
                                int* include_gq, const double* theta_unc,
-                               double* theta, int* seed, int* return_code,
+                               double* theta, int* chain_id, int* return_code,
                                char** err_msg, void** err_ptr) {
-  *return_code = bs_param_constrain_seed(*model, *include_tp, *include_gq,
-                                         theta_unc, theta, *seed, err_msg);
+  *return_code = bs_param_constrain_id(*model, *include_tp, *include_gq,
+                                         theta_unc, theta, *chain_id, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
 void bs_param_unconstrain_R(bs_model** model, const double* theta,
@@ -85,9 +85,9 @@ void bs_log_density_hessian_R(bs_model** model, int* propto, int* jacobian,
                                         val, grad, hess, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
-void bs_construct_rng_R(int* seed, bs_rng** ptr_out, char** err_msg,
+void bs_construct_rng_R(int* seed, int* chain_id, bs_rng** ptr_out, char** err_msg,
                         void** err_ptr) {
-  *ptr_out = bs_construct_rng(*seed, err_msg);
+  *ptr_out = bs_construct_rng(*seed, *chain_id, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
 void bs_destruct_rng_R(bs_rng** rng, int* return_code) {
