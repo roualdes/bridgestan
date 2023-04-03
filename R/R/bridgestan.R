@@ -41,6 +41,12 @@ StanModel <- R6::R6Class("StanModel",
         stop("Could not construct model RNG.")
       }
       private$model <- ptr_out
+
+      model_version <- self$model_version()
+      if (packageVersion("bridgestan") != paste(model_version$major, model_version$minor, model_version$patch, sep = ".")) {
+        warning(paste0("The version of the compiled model does not match the version of the R library. ",
+                       "Consider recompiling the model."))
+      }
     },
     #' @description
     #' Get the name of this StanModel.
