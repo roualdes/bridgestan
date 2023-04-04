@@ -17,6 +17,7 @@ import pytest
 
 types = ("default", "ad_hessian")
 
+
 def pytest_addoption(parser):
     parser.addoption(
         "--run-type",
@@ -29,8 +30,10 @@ def pytest_addoption(parser):
 
 def pytest_configure(config):
     for type in types[1:]:
-        config.addinivalue_line("markers", f"{type}: mark test as needing a seperate process in group {type}")
-
+        config.addinivalue_line(
+            "markers",
+            f"{type}: mark test as needing a seperate process in group {type}",
+        )
 
 
 def pytest_collection_modifyitems(config, items):

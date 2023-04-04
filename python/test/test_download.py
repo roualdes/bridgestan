@@ -1,7 +1,7 @@
 import os
+from unittest import mock
 
 import bridgestan as bs
-from unittest import mock
 
 
 @mock.patch.dict(os.environ, {"BRIDGESTAN": ""})

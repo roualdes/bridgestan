@@ -1,7 +1,7 @@
 from ast import literal_eval
-from setuptools import setup
 from pathlib import Path
 
+from setuptools import setup
 
 VERSIONFILE = Path(__file__).parent / "bridgestan" / "__version.py"
 with open(VERSIONFILE, "rt") as f:

@@ -107,8 +107,12 @@ mutable struct StanRNG
     seed::UInt32
     chain_id::UInt32
 
-    function StanRNG(sm::StanModel, chain_id; seed=nothing)
-        seed = convert(UInt32, if isnothing(seed) sm.seed else seed end)
+    function StanRNG(sm::StanModel, chain_id; seed = nothing)
+        seed = convert(UInt32, if isnothing(seed)
+            sm.seed
+        else
+            seed
+        end)
         chain_id = convert(UInt32, chain_id)
 
         err = Ref{Cstring}()
@@ -130,8 +134,9 @@ mutable struct StanRNG
             ccall(
                 Libc.Libdl.dlsym(stanrng.lib, "bs_destruct_rng"),
                 UInt32,
-                (Ptr{StanModelStruct},Ref{Cstring}),
-                stanrng.rng, C_NULL
+                (Ptr{StanModelStruct}, Ref{Cstring}),
+                stanrng.rng,
+                C_NULL,
             )
         end
 
@@ -289,8 +294,8 @@ function param_constrain!(
     out::Vector{Float64};
     include_tp = false,
     include_gq = false,
-    chain_id::Union{Int, Nothing} = nothing,
-    rng::Union{StanRNG, Nothing} = nothing,
+    chain_id::Union{Int,Nothing} = nothing,
+    rng::Union{StanRNG,Nothing} = nothing,
 )
     dims = param_num(sm; include_tp = include_tp, include_gq = include_gq)
     if length(out) != dims
@@ -301,11 +306,11 @@ function param_constrain!(
 
     if chain_id === nothing && rng === nothing
         if include_gq
-        throw(
-            ArgumentError(
-                "Must provide either a chain_id or an RNG when including generated quantities",
-            ),
-        )
+            throw(
+                ArgumentError(
+                    "Must provide either a chain_id or an RNG when including generated quantities",
+                ),
+            )
         else
             chain_id = 0
         end
@@ -316,32 +321,49 @@ function param_constrain!(
     if rng !== nothing
 
         rc = ccall(
-        Libc.Libdl.dlsym(sm.lib, "bs_param_constrain"),
-        Cint,
-        (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}, Ptr{StanRNGStruct},Ref{Cstring}),
-        sm.stanmodel,
-        include_tp,
-        include_gq,
-        theta_unc,
-        out,
-        rng.rng,
-        err,
-    )
+            Libc.Libdl.dlsym(sm.lib, "bs_param_constrain"),
+            Cint,
+            (
+                Ptr{StanModelStruct},
+                Cint,
+                Cint,
+                Ref{Cdouble},
+                Ref{Cdouble},
+                Ptr{StanRNGStruct},
+                Ref{Cstring},
+            ),
+            sm.stanmodel,
+            include_tp,
+            include_gq,
+            theta_unc,
+            out,
+            rng.rng,
+            err,
+        )
     else
         chain_id = convert(UInt32, chain_id)
         rc = ccall(
-        Libc.Libdl.dlsym(sm.lib, "bs_param_constrain_seeded"),
-        Cint,
-        (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}, Cuint, Cuint, Ref{Cstring}),
-        sm.stanmodel,
-        include_tp,
-        include_gq,
-        theta_unc,
-        out,
-        sm.seed,
-        chain_id,
-        err,
-    )
+            Libc.Libdl.dlsym(sm.lib, "bs_param_constrain_seeded"),
+            Cint,
+            (
+                Ptr{StanModelStruct},
+                Cint,
+                Cint,
+                Ref{Cdouble},
+                Ref{Cdouble},
+                Cuint,
+                Cuint,
+                Ref{Cstring},
+            ),
+            sm.stanmodel,
+            include_tp,
+            include_gq,
+            theta_unc,
+            out,
+            sm.seed,
+            chain_id,
+            err,
+        )
     end
     if rc != 0
         error(handle_error(sm.lib, err, "param_constrain"))
@@ -372,11 +394,19 @@ function param_constrain(
     theta_unc::Vector{Float64};
     include_tp = false,
     include_gq = false,
-    chain_id::Union{Int, Nothing} = nothing,
-    rng::Union{StanRNG, Nothing} = nothing,
+    chain_id::Union{Int,Nothing} = nothing,
+    rng::Union{StanRNG,Nothing} = nothing,
 )
     out = zeros(param_num(sm, include_tp = include_tp, include_gq = include_gq))
-    param_constrain!(sm, theta_unc, out; include_tp = include_tp, include_gq = include_gq, chain_id=chain_id, rng=rng)
+    param_constrain!(
+        sm,
+        theta_unc,
+        out;
+        include_tp = include_tp,
+        include_gq = include_gq,
+        chain_id = chain_id,
+        rng = rng,
+    )
 end
 
 """
