@@ -124,6 +124,18 @@ function model_info(sm::StanModel)
 end
 
 """
+    model_version(sm)
+
+Return the BridgeStan version of the compiled model `sm`.
+"""
+function model_version(sm::StanModel)
+    major = reinterpret(Ptr{Cint}, Libc.Libdl.dlsym(sm.lib, "bs_major_version"))
+    minor = reinterpret(Ptr{Cint}, Libc.Libdl.dlsym(sm.lib, "bs_minor_version"))
+    patch = reinterpret(Ptr{Cint}, Libc.Libdl.dlsym(sm.lib, "bs_patch_version"))
+    (unsafe_load(major), unsafe_load(minor), unsafe_load(patch))
+end
+
+"""
     param_num(sm; include_tp=false, include_gq=false)
 
 Return the number of (constrained) parameters in the model.

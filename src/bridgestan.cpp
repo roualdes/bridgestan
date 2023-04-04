@@ -1,6 +1,11 @@
 #include "bridgestan.h"
 #include "model_rng.cpp"
 #include "bridgestanR.cpp"
+#include "version.hpp"
+
+int bs_major_version = BRIDGESTAN_MAJOR;
+int bs_minor_version = BRIDGESTAN_MINOR;
+int bs_patch_version = BRIDGESTAN_PATCH;
 
 #include <sstream>
 

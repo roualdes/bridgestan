@@ -1,10 +1,12 @@
 import ctypes
+import warnings
 from typing import List, Optional, Tuple
 
 import numpy as np
 import numpy.typing as npt
 from numpy.ctypeslib import ndpointer
 
+from .__version import __version_info__
 from .compile import compile_model
 from .util import validate_readable
 
@@ -85,6 +87,13 @@ class StanModel:
 
         if not self.model_rng:
             raise self._handle_error(err.contents, "bs_construct")
+
+        if self.model_version() != __version_info__:
+            warnings.warn(
+                "The version of the compiled model does not match the version of the "
+                "Python package. Consider recompiling the model.",
+                RuntimeWarning,
+            )
 
         self._name = self.stanlib.bs_name
         self._name.restype = ctypes.c_char_p
@@ -247,6 +256,16 @@ class StanModel:
         :return: Information about the compiled Stan model.
         """
         return self._model_info(self.model_rng).decode("utf-8")
+
+    def model_version(self) -> Tuple[int, int, int]:
+        """
+        Return the BridgeStan version of the compiled model.
+        """
+        return (
+            ctypes.c_int.in_dll(self.stanlib, "bs_major_version").value,
+            ctypes.c_int.in_dll(self.stanlib, "bs_minor_version").value,
+            ctypes.c_int.in_dll(self.stanlib, "bs_patch_version").value,
+        )
 
     def param_num(self, *, include_tp: bool = False, include_gq: bool = False) -> int:
         """

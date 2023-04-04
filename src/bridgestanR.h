@@ -14,6 +14,8 @@ typedef int bool;
 void bs_construct_R(char** data, int* rng, int* chain, bs_model_rng** ptr_out,
                     char** err_msg, void** err_ptr);
 
+void bs_version_R(int* major, int* minor, int* patch);
+
 void bs_destruct_R(bs_model_rng** model, int* return_code);
 
 /**

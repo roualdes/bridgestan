@@ -9,6 +9,11 @@ void bs_construct_R(char** data, int* rng, int* chain, bs_model_rng** ptr_out,
 void bs_free_error_msg_R(void** err_msg) {
   bs_free_error_msg(static_cast<char*>(*err_msg));
 }
+void bs_version_R(int* major, int* minor, int* patch){
+  *major = bs_major_version;
+  *minor = bs_minor_version;
+  *patch = bs_patch_version;
+}
 void bs_destruct_R(bs_model_rng** model, int* return_code) {
   *return_code = bs_destruct(*model, nullptr);
 }

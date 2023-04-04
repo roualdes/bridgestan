@@ -8,6 +8,11 @@ extern "C" {
 typedef struct bs_model_rng bs_model_rng;
 typedef int bool;
 #endif
+
+extern int bs_major_version;
+extern int bs_minor_version;
+extern int bs_patch_version;
+
 /**
  * Construct an instance of a model and pseudorandom number
  * generator (PRNG) wrapper.  Data must be encoded in JSON as

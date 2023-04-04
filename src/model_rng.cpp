@@ -63,7 +63,7 @@ bs_model_rng::bs_model_rng(const char* data_file, unsigned int seed,
   std::string data(data_file);
   if (data.empty()) {
     auto data_context = stan::io::empty_var_context();
-    model_ = &new_model(data_context, seed, &std::cerr);
+    model_ = &new_model(data_context, seed, &std::cout);
   } else {
     if (stan::io::ends_with(".json", data)) {
       std::ifstream in(data);
@@ -71,11 +71,11 @@ bs_model_rng::bs_model_rng(const char* data_file, unsigned int seed,
         throw std::runtime_error("Cannot read input file: " + data);
       auto data_context = stan::json::json_data(in);
       in.close();
-      model_ = &new_model(data_context, seed, &std::cerr);
+      model_ = &new_model(data_context, seed, &std::cout);
     } else {
       std::istringstream json(data);
       auto data_context = stan::json::json_data(json);
-      model_ = &new_model(data_context, seed, &std::cerr);
+      model_ = &new_model(data_context, seed, &std::cout);
     }
   }
   rng_ = stan::services::util::create_rng(seed, chain_id);
@@ -234,7 +234,7 @@ void bs_model_rng::param_unconstrain_json(const char* json,
   std::stringstream in(json);
   stan::json::json_data inits_context(in);
   Eigen::VectorXd params_unc;
-  model_->transform_inits(inits_context, params_unc, &std::cerr);
+  model_->transform_inits(inits_context, params_unc, &std::cout);
   Eigen::VectorXd::Map(theta_unc, params_unc.size()) = params_unc;
 }
 
@@ -244,7 +244,7 @@ void bs_model_rng::param_constrain(bool include_tp, bool include_gq,
   VectorXd params_unc = VectorXd::Map(theta_unc, param_unc_num_);
   Eigen::VectorXd params;
   model_->write_array(rng_, params_unc, params, include_tp, include_gq,
-                      &std::cerr);
+                      &std::cout);
   Eigen::VectorXd::Map(theta, params.size()) = params;
 }
 
@@ -256,15 +256,15 @@ auto bs_model_rng::make_model_lambda(bool propto, bool jacobian) const {
             x);
     if (propto) {
       if (jacobian) {
-        return model->log_prob_propto_jacobian(params, &std::cerr);
+        return model->log_prob_propto_jacobian(params, &std::cout);
       } else {
-        return model->log_prob_propto(params, &std::cerr);
+        return model->log_prob_propto(params, &std::cout);
       }
     } else {
       if (jacobian) {
-        return model->log_prob_jacobian(params, &std::cerr);
+        return model->log_prob_jacobian(params, &std::cout);
       } else {
-        return model->log_prob(params, &std::cerr);
+        return model->log_prob(params, &std::cout);
       }
     }
   };
@@ -284,9 +284,9 @@ void bs_model_rng::log_density(bool propto, bool jacobian,
   } else {
     Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, N);
     if (jacobian) {
-      *val = model_->log_prob_jacobian(params_unc, &std::cerr);
+      *val = model_->log_prob_jacobian(params_unc, &std::cout);
     } else {
-      *val = model_->log_prob(params_unc, &std::cerr);
+      *val = model_->log_prob(params_unc, &std::cout);
     }
   }
 }

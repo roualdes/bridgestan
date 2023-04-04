@@ -119,8 +119,8 @@ will most likely lead to segmentation faults or other crashes.
 Additional flags, such as those for MPI and OpenCL, are covered in the
 `CmdStan User's Guide page on Parallelization <https://mc-stan.org/docs/cmdstan-guide/parallelization.html>`__.
 
-Faster Hessian calculations
-___________________________
+Autodiff Hessian calculations
+_____________________________
 
 By default, Hessians in BridgeStan are calculated using central finite differences.
 This is because not all Stan models support the nested autodiff required for Hessians
@@ -135,6 +135,9 @@ This value is reported by the ``model_info`` function if you would like to check
 whether Hessians are computed with nested autodiff or with finite differences. Similar to
 ``STAN_THREADS``, it is not advised to mix models which use autodiff Hessians with those that
 do not in the same program.
+
+Autodiff Hessians may be faster than finite differences depending on your model, and will
+generally be more numerically stable.
 
 Using Custom Stan Versions
 __________________________
