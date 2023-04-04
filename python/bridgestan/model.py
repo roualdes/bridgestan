@@ -126,14 +126,15 @@ class StanModel:
             star_star_char,
         ]
 
-        self._param_constrain_id = self.stanlib.bs_param_constrain_id
-        self._param_constrain_id.restype = ctypes.c_int
-        self._param_constrain_id.argtypes = [
+        self._param_constrain_seeded = self.stanlib.bs_param_constrain_seeded
+        self._param_constrain_seeded.restype = ctypes.c_int
+        self._param_constrain_seeded.argtypes = [
             ctypes.c_void_p,
             ctypes.c_int,
             ctypes.c_int,
             double_array,
             double_array,
+            ctypes.c_uint,
             ctypes.c_uint,
             star_star_char,
         ]
@@ -387,12 +388,13 @@ class StanModel:
                 err,
             )
         else:
-            rc = self._param_constrain_id(
+            rc = self._param_constrain_seeded(
                 self.model_rng,
                 int(include_tp),
                 int(include_gq),
                 theta_unc,
                 out,
+                self.seed,
                 chain_id,
                 err,
             )

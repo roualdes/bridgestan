@@ -78,8 +78,6 @@ bs_model::bs_model(const char* data_file, unsigned int seed) {
     }
   }
 
-  seed_ = seed;
-
   std::string model_name = model_->model_name();
   const char* model_name_c = model_name.c_str();
   name_ = strdup(model_name_c);
@@ -168,8 +166,6 @@ bs_model::~bs_model() noexcept {
 }
 
 const char* bs_model::name() const { return name_; }
-
-unsigned int bs_model::seed() const { return seed_; }
 
 const char* bs_model::model_info() const { return model_info_; }
 

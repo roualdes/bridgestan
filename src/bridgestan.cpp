@@ -78,11 +78,11 @@ int bs_param_constrain(const bs_model* m, bool include_tp, bool include_gq,
   return 1;
 }
 
-int bs_param_constrain_id(const bs_model* m, bool include_tp,
+int bs_param_constrain_seeded(const bs_model* m, bool include_tp,
                             bool include_gq, const double* theta_unc,
-                            double* theta, unsigned int chain_id,
+                            double* theta, unsigned int seed, unsigned int chain_id,
                             char** error_msg) {
-  bs_rng rng(m->seed(), chain_id);
+  bs_rng rng(seed, chain_id);
   return bs_param_constrain(m, include_tp, include_gq, theta_unc, theta, &rng,
                             error_msg);
 }

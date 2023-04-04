@@ -43,9 +43,9 @@ void bs_param_constrain_R(bs_model** model, int* include_tp, int* include_gq,
                           const double* theta_unc, double* theta, bs_rng** rng,
                           int* return_code, char** err_msg, void** err_ptr);
 
-void bs_param_constrain_id_R(bs_model** model, int* include_tp,
+void bs_param_constrain_seeded_R(bs_model** model, int* include_tp,
                                int* include_gq, const double* theta_unc,
-                               double* theta, int* chain_id, int* return_code,
+                               double* theta, int* seed, int* chain_id, int* return_code,
                                char** err_msg, void** err_ptr);
 
 void bs_param_unconstrain_R(bs_model** model, const double* theta,

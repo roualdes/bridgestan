@@ -330,14 +330,15 @@ function param_constrain!(
     else
         chain_id = convert(UInt32, chain_id)
         rc = ccall(
-        Libc.Libdl.dlsym(sm.lib, "bs_param_constrain_id"),
+        Libc.Libdl.dlsym(sm.lib, "bs_param_constrain_seeded"),
         Cint,
-        (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}, Cuint, Ref{Cstring}),
+        (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}, Cuint, Cuint, Ref{Cstring}),
         sm.stanmodel,
         include_tp,
         include_gq,
         theta_unc,
         out,
+        sm.seed,
         chain_id,
         err,
     )

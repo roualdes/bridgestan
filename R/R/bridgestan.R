@@ -165,9 +165,10 @@ StanModel <- R6::R6Class("StanModel",
           PACKAGE = private$lib_name
         )
       } else {
-        vars <- .C("bs_param_constrain_id_R", as.raw(private$model),
+        vars <- .C("bs_param_constrain_seeded_R", as.raw(private$model),
           as.logical(include_tp), as.logical(include_gq), as.double(theta_unc),
           theta = double(self$param_num(include_tp = include_tp, include_gq = include_gq)),
+          seed = as.integer(private$seed),
           chain_id = as.integer(chain_id),
           return_code = as.integer(0),
           err_msg = as.character(""),

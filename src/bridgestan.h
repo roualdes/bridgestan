@@ -181,8 +181,8 @@ int bs_param_constrain(const bs_model* m, bool include_tp, bool include_gq,
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int bs_param_constrain_id(const bs_model* mr, bool include_tp, bool include_gq,
-                          const double* theta_unc, double* theta,
+int bs_param_constrain_seeded(const bs_model* mr, bool include_tp, bool include_gq,
+                          const double* theta_unc, double* theta, unsigned int seed,
                           unsigned int chain_id, char** error_msg);
 
 /**
