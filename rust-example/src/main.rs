@@ -1,4 +1,4 @@
-use bridgestan::StanModel;
+use bridgestan::Model;
 use std::env;
 use std::error::Error;
 use std::path::Path;
@@ -12,7 +12,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let data_path = env::args().nth(2).unwrap_or_default();
 
-    let model = StanModel::new(&lib, &data_path, 123, 0)?;
+    let model = Model::new(&lib, &data_path, 123)?;
 
     println!(
         "The model has {} parameters.",
