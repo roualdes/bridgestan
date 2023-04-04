@@ -40,7 +40,7 @@ StanModel <- R6::R6Class("StanModel",
         PACKAGE = private$lib_name
       )
       if (all(ret$ptr_out == 0)) {
-        stop(handle_error("construct", ret$err_msg, ret$err_ptr, private$lib_name))
+        stop(handle_error(private$lib_name, ret$err_msg, ret$err_ptr, "construct"))
       }
       private$model <- ret$ptr_out
 
@@ -151,7 +151,7 @@ StanModel <- R6::R6Class("StanModel",
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop(handle_error("param_constrain", vars$err_msg, vars$err_ptr, private$lib_name))
+        stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "param_constrain"))
       }
       vars$theta
     },
@@ -174,7 +174,7 @@ StanModel <- R6::R6Class("StanModel",
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop(handle_error("param_unconstrain", vars$err_msg, vars$err_ptr, private$lib_name))
+        stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "param_unconstrain"))
       }
       vars$theta_unc
     },
@@ -194,7 +194,7 @@ StanModel <- R6::R6Class("StanModel",
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop(handle_error("param_unconstrain_json", vars$err_msg, vars$err_ptr, private$lib_name))
+        stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "param_unconstrain_json"))
       }
       vars$theta_unc
     },
@@ -215,7 +215,7 @@ StanModel <- R6::R6Class("StanModel",
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop(handle_error("log_density", vars$err_msg, vars$err_ptr, private$lib_name))
+        stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "log_density"))
       }
       vars$val
     },
@@ -237,7 +237,7 @@ StanModel <- R6::R6Class("StanModel",
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop(handle_error("log_density_gradient", vars$err_msg, vars$err_ptr, private$lib_name))
+        stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "log_density_gradient"))
       }
       list(val = vars$val, gradient = vars$gradient)
     },
@@ -259,7 +259,7 @@ StanModel <- R6::R6Class("StanModel",
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop(handle_error("log_density_hessian", vars$err_msg, vars$err_ptr, private$lib_name))
+        stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "log_density_hessian"))
       }
       list(val = vars$val, gradient = vars$gradient, hessian = matrix(vars$hess, nrow = dims, byrow = TRUE))
     }
@@ -280,7 +280,7 @@ StanModel <- R6::R6Class("StanModel",
 )
 #' Get and free the error message stored at the C++ pointer
 #' @keywords internal
-handle_error <- function(function_name, err_msg, err_ptr, lib_name) {
+handle_error <- function(lib_name, err_msg, err_ptr, function_name) {
   if (all(err_ptr == 0)) {
     return(paste("Unknown error in", function_name))
   } else {
