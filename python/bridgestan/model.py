@@ -189,8 +189,8 @@ class StanModel:
         ]
 
         self._destruct = self.stanlib.bs_destruct
-        self._destruct.restype = ctypes.c_int
-        self._destruct.argtypes = [ctypes.c_void_p, star_star_char]
+        self._destruct.restype = None
+        self._destruct.argtypes = [ctypes.c_void_p]
 
     @classmethod
     def from_stan_file(
@@ -233,7 +233,7 @@ class StanModel:
         Destroy the Stan model and free memory.
         """
         if hasattr(self, "model_rng") and hasattr(self, "_destruct"):
-            self._destruct(self.model_rng, None)
+            self._destruct(self.model_rng)
 
     def __repr__(self) -> str:
         data = f"{self.data_path!r}, " if self.data_path else ""

@@ -26,6 +26,6 @@ int main(int argc, char** argv) {
   printf("This model's name is %s.\n", bs_name(model));
   printf("It has %d parameters.\n", bs_param_num(model, 0, 0));
 
-  // we don't care about the error message here, so we pass nullptr
-  return bs_destruct(model, 0);
+  bs_destruct(model);
+  return 0;
 }

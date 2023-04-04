@@ -16,7 +16,7 @@ void bs_construct_R(char** data, int* rng, int* chain, bs_model_rng** ptr_out,
 
 void bs_version_R(int* major, int* minor, int* patch);
 
-void bs_destruct_R(bs_model_rng** model, int* return_code);
+void bs_destruct_R(bs_model_rng** model);
 
 /**
  * Free error message allocated in C++. Because R performs copies

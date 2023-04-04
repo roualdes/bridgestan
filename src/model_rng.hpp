@@ -28,7 +28,7 @@ class bs_model_rng {
   /**
    * Destroy this object and free all of the memory allocated for it.
    */
-  ~bs_model_rng();
+  ~bs_model_rng() noexcept;
 
   /**
    * Return the name of the model.  This class manages the memory,

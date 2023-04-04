@@ -33,16 +33,11 @@ bs_model_rng* bs_construct(const char* data_file, unsigned int seed,
                            unsigned int chain_id, char** error_msg);
 
 /**
- * Destroy the model and return 0 for success and -1 if there is an
- * exception while freeing memory.
+ * Destroy the model.
  *
  * @param[in] mr pointer to model and RNG structure
- * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling `bs_free_error_msg`.
- * @return 0 for success and -1 if there is an exception freeing one
- * of the model components.
  */
-int bs_destruct(bs_model_rng* mr, char** error_msg);
+void bs_destruct(bs_model_rng* mr);
 
 /**
  * Free the error messages created by other methods.

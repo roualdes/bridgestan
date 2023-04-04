@@ -156,7 +156,7 @@ bs_model_rng::bs_model_rng(const char* data_file, unsigned int seed,
   param_tp_gq_num_ = names.size();
 }
 
-bs_model_rng::~bs_model_rng() {
+bs_model_rng::~bs_model_rng() noexcept {
   delete (model_);
   free(name_);
   free(model_info_);

@@ -34,19 +34,7 @@ bs_model_rng* bs_construct(const char* data_file, unsigned int seed,
   return nullptr;
 }
 
-int bs_destruct(bs_model_rng* mr, char** error_msg) {
-  try {
-    delete (mr);
-    return 0;
-  } catch (...) {
-    if (error_msg) {
-      std::stringstream error;
-      error << "destruct() failed." << std::endl;
-      *error_msg = strdup(error.str().c_str());
-    }
-  }
-  return -1;
-}
+void bs_destruct(bs_model_rng* mr) { delete (mr); }
 
 void bs_free_error_msg(char* error_msg) { free(error_msg); }
 
