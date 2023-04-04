@@ -41,6 +41,12 @@ StanModel <- R6::R6Class("StanModel",
         stop("Could not construct model RNG.")
       }
       private$model <- ptr_out
+
+      model_version <- self$model_version()
+      if (packageVersion("bridgestan") != paste(model_version$major, model_version$minor, model_version$patch, sep = ".")) {
+        warning(paste0("The version of the compiled model does not match the version of the R library. ",
+                       "Consider recompiling the model."))
+      }
     },
     #' @description
     #' Get the name of this StanModel.
@@ -59,6 +65,15 @@ StanModel <- R6::R6Class("StanModel",
         info_out = as.character(""),
         PACKAGE = private$lib_name
       )$info_out
+    },
+
+    model_version= function() {
+      .C("bs_version_R",
+        major = as.integer(0),
+        minor = as.integer(0),
+        patch = as.integer(0),
+        PACKAGE = private$lib_name
+      )
     },
     #' @description
     #' Return the indexed names of the (constrained) parameters.
