@@ -1,3 +1,3 @@
 transformed data {
-  reject("");
+  reject("find this text: datafails");
 }

@@ -6,5 +6,5 @@ model {
 }
 generated quantities {
   real z = exp(y);
-  reject("");
+  reject("find this text: gqfails");
 }

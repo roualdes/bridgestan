@@ -2,6 +2,16 @@ using BridgeStan
 using Test
 using Printf
 
+# The ability to detect a specific message is specific to Julia 1.8 and higher
+# so we need to use a less specific test for older versions.
+macro test_throw_string(s, ex)
+    if VERSION >= v"1.8"
+        return :(Test.@test_throws $(esc(s)) $(esc(ex)))
+    else
+        return :(Test.@test_throws $(esc(ErrorException)) $(esc(ex)))
+    end
+end
+
 function load_test_model(name::String, with_data = true)
     bridgestan = BridgeStan.get_bridgestan_path()
     lib = joinpath(bridgestan, @sprintf("test_models/%s/%s_model.so", name, name))
@@ -21,7 +31,7 @@ end
     # missing data
     @test_throws SystemError load_test_model("stdnormal")
     # exception in constructor
-    @test_throws ErrorException load_test_model("throw_data", false)
+    @test_throw_string "find this text: datafails" load_test_model("throw_data", false)
 end
 
 @testset "name" begin
@@ -177,11 +187,19 @@ end
     model3 = load_test_model("throw_tp", false)
     y = rand(1)
     BridgeStan.param_constrain(model3, y)
-    @test_throws ErrorException BridgeStan.param_constrain(model3, y; include_tp = true)
+    @test_throw_string "find this text: tpfails" BridgeStan.param_constrain(
+        model3,
+        y;
+        include_tp = true,
+    )
 
     model4 = load_test_model("throw_gq", false)
     BridgeStan.param_constrain(model4, y)
-    @test_throws ErrorException BridgeStan.param_constrain(model4, y; include_gq = true)
+    @test_throw_string "find this text: gqfails" BridgeStan.param_constrain(
+        model4,
+        y;
+        include_gq = true,
+    )
 end
 
 @testset "param_unconstrain" begin
@@ -250,7 +268,7 @@ end
 
     model2 = load_test_model("throw_lp", false)
     y2 = rand(1)
-    @test_throws ErrorException BridgeStan.log_density(model2, y2)
+    @test_throw_string "find this text: lpfails" BridgeStan.log_density(model2, y2)
 end
 
 

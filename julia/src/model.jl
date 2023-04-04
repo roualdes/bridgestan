@@ -59,16 +59,19 @@ mutable struct StanModel
 
         lib = Libc.Libdl.dlopen(lib)
 
+        err = Ref{Cstring}()
+
         stanmodel = ccall(
             Libc.Libdl.dlsym(lib, "bs_construct"),
             Ptr{StanModelStruct},
-            (Cstring, UInt32, UInt32),
+            (Cstring, UInt32, UInt32, Ref{Cstring}),
             data,
             seed,
             chain_id,
+            err,
         )
         if stanmodel == C_NULL
-            error("could not construct model RNG")
+            error(handle_error(lib, err, "bs_construct"))
         end
 
         sm = new(lib, stanmodel, data, seed, chain_id)
@@ -76,7 +79,7 @@ mutable struct StanModel
         function f(sm)
             ccall(
                 Libc.Libdl.dlsym(sm.lib, "bs_destruct"),
-                UInt32,
+                Cvoid,
                 (Ptr{StanModelStruct},),
                 sm.stanmodel,
             )
@@ -238,18 +241,20 @@ function param_constrain!(
             DimensionMismatch("out must be same size as number of constrained parameters"),
         )
     end
+    err = Ref{Cstring}()
     rc = ccall(
         Libc.Libdl.dlsym(sm.lib, "bs_param_constrain"),
         Cint,
-        (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}),
+        (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}, Ref{Cstring}),
         sm.stanmodel,
         include_tp,
         include_gq,
         theta_unc,
         out,
+        err,
     )
     if rc != 0
-        error("param_constrain failed on C++ side; see stderr for messages")
+        error(handle_error(sm.lib, err, "param_constrain"))
     end
     out
 end
@@ -299,17 +304,18 @@ function param_unconstrain!(sm::StanModel, theta::Vector{Float64}, out::Vector{F
             ),
         )
     end
-
+    err = Ref{Cstring}()
     rc = ccall(
         Libc.Libdl.dlsym(sm.lib, "bs_param_unconstrain"),
         Cint,
-        (Ptr{StanModelStruct}, Ref{Cdouble}, Ref{Cdouble}),
+        (Ptr{StanModelStruct}, Ref{Cdouble}, Ref{Cdouble}, Ref{Cstring}),
         sm.stanmodel,
         theta,
         out,
+        err,
     )
     if rc != 0
-        error("param_unconstrain failed on C++ side; see stderr for messages")
+        error(handle_error(sm.lib, err, "param_unconstrain"))
     end
     out
 end
@@ -353,16 +359,18 @@ function param_unconstrain_json!(sm::StanModel, theta::String, out::Vector{Float
         )
     end
 
+    err = Ref{Cstring}()
     rc = ccall(
         Libc.Libdl.dlsym(sm.lib, "bs_param_unconstrain_json"),
         Cint,
-        (Ptr{StanModelStruct}, Cstring, Ref{Cdouble}),
+        (Ptr{StanModelStruct}, Cstring, Ref{Cdouble}, Ref{Cstring}),
         sm.stanmodel,
         theta,
         out,
+        err,
     )
     if rc != 0
-        error("param_unconstrain_json failed on C++ side; see stderr for messages")
+        error(handle_error(sm.lib, err, "param_unconstrain_json"))
     end
     out
 end
@@ -393,18 +401,20 @@ and includes change of variables terms for constrained parameters if `jacobian` 
 """
 function log_density(sm::StanModel, q::Vector{Float64}; propto = true, jacobian = true)
     lp = Ref(0.0)
+    err = Ref{Cstring}()
     rc = ccall(
         Libc.Libdl.dlsym(sm.lib, "bs_log_density"),
         Cint,
-        (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}),
+        (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}, Ref{Cstring}),
         sm.stanmodel,
         propto,
         jacobian,
         q,
         lp,
+        err,
     )
     if rc != 0
-        error("log_density failed on C++ side; see stderr for messages")
+        error(handle_error(sm.lib, err, "log_density"))
     end
     lp[]
 end
@@ -428,7 +438,6 @@ function log_density_gradient!(
     propto = true,
     jacobian = true,
 )
-    lp = Ref(0.0)
     dims = param_unc_num(sm)
     if length(out) != dims
         throw(
@@ -437,20 +446,30 @@ function log_density_gradient!(
             ),
         )
     end
-
+    lp = Ref(0.0)
+    err = Ref{Cstring}()
     rc = ccall(
         Libc.Libdl.dlsym(sm.lib, "bs_log_density_gradient"),
         Cint,
-        (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}, Ref{Cdouble}),
+        (
+            Ptr{StanModelStruct},
+            Cint,
+            Cint,
+            Ref{Cdouble},
+            Ref{Cdouble},
+            Ref{Cdouble},
+            Ref{Cstring},
+        ),
         sm.stanmodel,
         propto,
         jacobian,
         q,
         lp,
         out,
+        err,
     )
     if rc != 0
-        error("log_density_gradient failed on C++ side; see stderr for messages")
+        error(handle_error(sm.lib, err, "log_density_gradient"))
     end
     (lp[], out)
 end
@@ -498,7 +517,6 @@ function log_density_hessian!(
     propto = true,
     jacobian = true,
 )
-    lp = Ref(0.0)
     dims = param_unc_num(sm)
     if length(out_grad) != dims
         throw(
@@ -513,7 +531,8 @@ function log_density_hessian!(
             ),
         )
     end
-
+    lp = Ref(0.0)
+    err = Ref{Cstring}()
     rc = ccall(
         Libc.Libdl.dlsym(sm.lib, "bs_log_density_hessian"),
         Cint,
@@ -525,6 +544,7 @@ function log_density_hessian!(
             Ref{Cdouble},
             Ref{Cdouble},
             Ref{Cdouble},
+            Ref{Cstring},
         ),
         sm.stanmodel,
         propto,
@@ -533,10 +553,10 @@ function log_density_hessian!(
         lp,
         out_grad,
         out_hess,
+        err,
     )
     if rc != 0
-        error("log_density_hessian failed on C++ side; see stderr for messages")
-
+        error(handle_error(sm.lib, err, "log_density_hessian"))
     end
     (lp[], out_grad, reshape(out_hess, (dims, dims)))
 end
@@ -563,4 +583,19 @@ function log_density_hessian(
     grad = zeros(dims)
     hess = zeros(dims * dims)
     log_density_hessian!(sm, q, grad, hess; propto = propto, jacobian = jacobian)
+end
+
+"""
+    handle_error(lib::Ptr{Nothing}, err::Ref{Cstring}, method::String)
+
+Retrieves the error message allocated in C++ and frees it before returning a copy.
+"""
+function handle_error(lib::Ptr{Nothing}, err::Ref{Cstring}, method::String)
+    if err[] == C_NULL
+        return "Unknown error in $method."
+    else
+        s = string(unsafe_string(err[]))
+        ccall(Libc.Libdl.dlsym(lib, "bs_free_error_msg"), Cvoid, (Cstring,), err[])
+        return s
+    end
 end

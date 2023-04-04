@@ -24,21 +24,27 @@ extern int bs_patch_version;
  * @param[in] seed seed for PRNG
  * @param[in] chain_id identifier for concurrent sequence of PRNG
  * draws
+ * @param[out] error_msg a pointer to a string that will be allocated if there
+ * is an error. This must later be freed by calling `bs_free_error_msg`.
  * @return pointer to constructed model or `nullptr` if construction
  * fails
  */
 bs_model_rng* bs_construct(const char* data_file, unsigned int seed,
-                           unsigned int chain_id);
+                           unsigned int chain_id, char** error_msg);
 
 /**
- * Destroy the model and return 0 for success and -1 if there is an
- * exception while freeing memory.
+ * Destroy the model.
  *
  * @param[in] mr pointer to model and RNG structure
- * @return 0 for success and -1 if there is an exception freeing one
- * of the model components.
  */
-int bs_destruct(bs_model_rng* mr);
+void bs_destruct(bs_model_rng* mr);
+
+/**
+ * Free the error messages created by other methods.
+ *
+ * @param[in] error_msg pointer to error message
+ */
+void bs_free_error_msg(char* error_msg);
 
 /**
  * Return the name of the specified model as a C-style string.
@@ -140,11 +146,14 @@ int bs_param_unc_num(const bs_model_rng* mr);
  * @param[in] include_gq `true` to include generated quantities
  * @param[in] theta_unc sequence of unconstrained parameters
  * @param[out] theta sequence of constrained parameters
+ * @param[out] error_msg a pointer to a string that will be allocated if there
+ * is an error. This must later be freed by calling `bs_free_error_msg`.
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
 int bs_param_constrain(bs_model_rng* mr, bool include_tp, bool include_gq,
-                       const double* theta_unc, double* theta);
+                       const double* theta_unc, double* theta,
+                       char** error_msg);
 
 /**
  * Set the sequence of unconstrained parameters based on the
@@ -156,11 +165,13 @@ int bs_param_constrain(bs_model_rng* mr, bool include_tp, bool include_gq,
  * @param[in] mr pointer to model and RNG structure
  * @param[in] theta sequence of constrained parameters
  * @param[out] theta_unc sequence of unconstrained parameters
+ * @param[out] error_msg a pointer to a string that will be allocated if there
+ * is an error. This must later be freed by calling `bs_free_error_msg`.
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
 int bs_param_unconstrain(const bs_model_rng* mr, const double* theta,
-                         double* theta_unc);
+                         double* theta_unc, char** error_msg);
 
 /**
  * Set the sequence of unconstrained parameters based on the JSON
@@ -173,11 +184,13 @@ int bs_param_unconstrain(const bs_model_rng* mr, const double* theta,
  * @param[in] mr pointer to model and RNG structure
  * @param[in] json JSON-encoded constrained parameters
  * @param[out] theta_unc sequence of unconstrained parameters
+ * @param[out] error_msg a pointer to a string that will be allocated if there
+ * is an error. This must later be freed by calling `bs_free_error_msg`.
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
 int bs_param_unconstrain_json(const bs_model_rng* mr, const char* json,
-                              double* theta_unc);
+                              double* theta_unc, char** error_msg);
 
 /**
  * Set the log density of the specified parameters, dropping
@@ -191,11 +204,13 @@ int bs_param_unconstrain_json(const bs_model_rng* mr, const char* json,
  * @param[in] jacobian `true` to include change-of-variables terms
  * @param[in] theta_unc unconstrained parameters
  * @param[out] lp log density to be set
+ * @param[out] error_msg a pointer to a string that will be allocated if there
+ * is an error. This must later be freed by calling `bs_free_error_msg`.
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
 int bs_log_density(const bs_model_rng* mr, bool propto, bool jacobian,
-                   const double* theta_unc, double* lp);
+                   const double* theta_unc, double* lp, char** error_msg);
 
 /**
  * Set the log density and gradient of the specified parameters,
@@ -213,11 +228,14 @@ int bs_log_density(const bs_model_rng* mr, bool propto, bool jacobian,
  * @param[in] theta_unc unconstrained parameters
  * @param[out] val log density to be set
  * @param[out] grad gradient to set
+ * @param[out] error_msg a pointer to a string that will be allocated if there
+ * is an error. This must later be freed by calling `bs_free_error_msg`.
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
 int bs_log_density_gradient(const bs_model_rng* mr, bool propto, bool jacobian,
-                            const double* theta_unc, double* val, double* grad);
+                            const double* theta_unc, double* val, double* grad,
+                            char** error_msg);
 
 /**
  * Set the log density, gradient, and Hessian of the specified parameters,
@@ -238,12 +256,14 @@ int bs_log_density_gradient(const bs_model_rng* mr, bool propto, bool jacobian,
  * @param[out] val log density to be set
  * @param[out] grad gradient to set
  * @param[out] hessian hessian to set
+ * @param[out] error_msg a pointer to a string that will be allocated if there
+ * is an error. This must later be freed by calling `bs_free_error_msg`.
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
 int bs_log_density_hessian(const bs_model_rng* mr, bool propto, bool jacobian,
                            const double* theta_unc, double* val, double* grad,
-                           double* hessian);
+                           double* hessian, char** error_msg);
 
 #ifdef __cplusplus
 }

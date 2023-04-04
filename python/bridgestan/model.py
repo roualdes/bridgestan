@@ -12,6 +12,7 @@ from .util import validate_readable
 
 FloatArray = npt.NDArray[np.float64]
 double_array = ndpointer(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
+star_star_char = ctypes.POINTER(ctypes.c_char_p)
 
 
 class StanModel:
@@ -68,14 +69,24 @@ class StanModel:
 
         self._construct = self.stanlib.bs_construct
         self._construct.restype = ctypes.c_void_p
-        self._construct.argtypes = [ctypes.c_char_p, ctypes.c_uint, ctypes.c_uint]
+        self._construct.argtypes = [
+            ctypes.c_char_p,
+            ctypes.c_uint,
+            ctypes.c_uint,
+            star_star_char,
+        ]
 
+        self._free_error = self.stanlib.bs_free_error_msg
+        self._free_error.restype = None
+        self._free_error.argtypes = [ctypes.c_char_p]
+
+        err = ctypes.pointer(ctypes.c_char_p())
         self.model_rng = self._construct(
-            str.encode(self.data_path), self.seed, self.chain_id
+            str.encode(self.data_path), self.seed, self.chain_id, err
         )
 
         if not self.model_rng:
-            raise RuntimeError("could not construct model RNG")
+            raise self._handle_error(err.contents, "bs_construct")
 
         if self.model_version() != __version_info__:
             warnings.warn(
@@ -120,11 +131,17 @@ class StanModel:
             ctypes.c_int,
             double_array,
             double_array,
+            star_star_char,
         ]
 
         self._param_unconstrain = self.stanlib.bs_param_unconstrain
         self._param_unconstrain.restype = ctypes.c_int
-        self._param_unconstrain.argtypes = [ctypes.c_void_p, double_array, double_array]
+        self._param_unconstrain.argtypes = [
+            ctypes.c_void_p,
+            double_array,
+            double_array,
+            star_star_char,
+        ]
 
         self._param_unconstrain_json = self.stanlib.bs_param_unconstrain_json
         self._param_unconstrain_json.restype = ctypes.c_int
@@ -132,6 +149,7 @@ class StanModel:
             ctypes.c_void_p,
             ctypes.c_char_p,
             double_array,
+            star_star_char,
         ]
 
         self._log_density = self.stanlib.bs_log_density
@@ -142,6 +160,7 @@ class StanModel:
             ctypes.c_int,
             double_array,
             ctypes.POINTER(ctypes.c_double),
+            star_star_char,
         ]
 
         self._log_density_gradient = self.stanlib.bs_log_density_gradient
@@ -153,6 +172,7 @@ class StanModel:
             double_array,
             ctypes.POINTER(ctypes.c_double),
             double_array,
+            star_star_char,
         ]
 
         self._log_density_hessian = self.stanlib.bs_log_density_hessian
@@ -165,10 +185,11 @@ class StanModel:
             ctypes.POINTER(ctypes.c_double),
             double_array,
             double_array,
+            star_star_char,
         ]
 
         self._destruct = self.stanlib.bs_destruct
-        self._destruct.restype = ctypes.c_int
+        self._destruct.restype = None
         self._destruct.argtypes = [ctypes.c_void_p]
 
     @classmethod
@@ -332,13 +353,12 @@ class StanModel:
             raise ValueError(
                 "Error: out must be same size as number of constrained parameters"
             )
+        err = ctypes.pointer(ctypes.c_char_p())
         rc = self._param_constrain(
-            self.model_rng, int(include_tp), int(include_gq), theta_unc, out
+            self.model_rng, int(include_tp), int(include_gq), theta_unc, out, err
         )
         if rc:
-            raise RuntimeError(
-                "param_constrain failed on C++ side; see stderr for messages"
-            )
+            raise self._handle_error(err.contents, "param_constrain")
         return out
 
     def param_unconstrain(
@@ -365,11 +385,10 @@ class StanModel:
             raise ValueError(
                 f"out size = {out.size} != unconstrained params size = {dims}"
             )
-        rc = self._param_unconstrain(self.model_rng, theta, out)
+        err = ctypes.pointer(ctypes.c_char_p())
+        rc = self._param_unconstrain(self.model_rng, theta, out, err)
         if rc:
-            raise RuntimeError(
-                "param_unconstrain failed on C++ side; see stderr for messages"
-            )
+            raise self._handle_error(err.contents, "param_unconstrain")
         return out
 
     def param_unconstrain_json(
@@ -398,11 +417,10 @@ class StanModel:
                 f"out size = {out.size} != unconstrained params size = {dims}"
             )
         chars = theta_json.encode("UTF-8")
-        rc = self._param_unconstrain_json(self.model_rng, chars, out)
+        err = ctypes.pointer(ctypes.c_char_p())
+        rc = self._param_unconstrain_json(self.model_rng, chars, out, err)
         if rc:
-            raise RuntimeError(
-                "param_unconstrain_json failed on C++ side; see stderr for messages"
-            )
+            raise self._handle_error(err.contents, "param_unconstrain_json")
         return out
 
     def log_density(
@@ -426,13 +444,12 @@ class StanModel:
         :raises RuntimeError: If the C++ Stan model throws an exception.
         """
         lp = ctypes.pointer(ctypes.c_double())
+        err = ctypes.pointer(ctypes.c_char_p())
         rc = self._log_density(
-            self.model_rng, int(propto), int(jacobian), theta_unc, lp
+            self.model_rng, int(propto), int(jacobian), theta_unc, lp, err
         )
         if rc:
-            raise RuntimeError(
-                "C++ exception in log_density(); see stderr for messages"
-            )
+            raise self._handle_error(err.contents, "log_density")
         return lp.contents.value
 
     def log_density_gradient(
@@ -469,13 +486,12 @@ class StanModel:
         elif out.size != dims:
             raise ValueError(f"out size = {out.size} != params size = {dims}")
         lp = ctypes.pointer(ctypes.c_double())
+        err = ctypes.pointer(ctypes.c_char_p())
         rc = self._log_density_gradient(
-            self.model_rng, int(propto), int(jacobian), theta_unc, lp, out
+            self.model_rng, int(propto), int(jacobian), theta_unc, lp, out, err
         )
         if rc:
-            raise RuntimeError(
-                "C++ exception in log_density_gradient(); see stderr for messages"
-            )
+            raise self._handle_error(err.contents, "log_density_gradient")
         return lp.contents.value, out
 
     def log_density_hessian(
@@ -525,6 +541,7 @@ class StanModel:
                 f"out_hess size = {out_hess.size} != params size^2 = {hess_size}"
             )
         lp = ctypes.pointer(ctypes.c_double())
+        err = ctypes.pointer(ctypes.c_char_p())
         rc = self._log_density_hessian(
             self.model_rng,
             int(propto),
@@ -533,10 +550,25 @@ class StanModel:
             lp,
             out_grad,
             out_hess,
+            err,
         )
         if rc:
-            raise RuntimeError(
-                "C++ exception in log_density_hessian(); see stderr for messages"
-            )
+            raise self._handle_error(err.contents, "log_density_hessian")
         out_hess = out_hess.reshape(dims, dims)
         return lp.contents.value, out_grad, out_hess
+
+    def _handle_error(self, err: ctypes.c_char_p, method: str) -> Exception:
+        """
+        Creates an exception based on a string from C++,
+        frees the string, and returns the exception.
+
+        :param err: A C string containing an error message, or nullptr.
+        :param method: The name of the method that threw the error.
+        :return: An exception based on the.
+        """
+        if err:
+            string = ctypes.string_at(err).decode("utf-8")
+            self._free_error(err)
+            return RuntimeError(string)
+        else:
+            return RuntimeError(f"Unknown error in {method}. ")

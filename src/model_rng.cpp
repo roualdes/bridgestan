@@ -6,6 +6,7 @@
 #include <stan/io/empty_var_context.hpp>
 #include <stan/io/var_context.hpp>
 #include <stan/model/model_base.hpp>
+#include <stan/services/util/create_rng.hpp>
 #include <stan/math.hpp>
 #include <stan/math/prim/meta.hpp>
 #include <stan/version.hpp>
@@ -77,9 +78,7 @@ bs_model_rng::bs_model_rng(const char* data_file, unsigned int seed,
       model_ = &new_model(data_context, seed, &std::cout);
     }
   }
-  boost::ecuyer1988 rng(seed);
-  rng.discard(chain_id * 1000000000000L);
-  rng_ = rng;
+  rng_ = stan::services::util::create_rng(seed, chain_id);
 
   std::string model_name = model_->model_name();
   const char* model_name_c = model_name.c_str();
@@ -157,7 +156,7 @@ bs_model_rng::bs_model_rng(const char* data_file, unsigned int seed,
   param_tp_gq_num_ = names.size();
 }
 
-bs_model_rng::~bs_model_rng() {
+bs_model_rng::~bs_model_rng() noexcept {
   delete (model_);
   free(name_);
   free(model_info_);

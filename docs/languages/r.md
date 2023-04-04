@@ -302,13 +302,13 @@ inverse of this function.
 _Usage_
 
 ```R
-StanModel$log_density(theta, propto = TRUE, jacobian = TRUE)
+StanModel$log_density(theta_unc, propto = TRUE, jacobian = TRUE)
 ```
 
 
 _Arguments_
 
-  - `theta` The vector of unconstrained parameters.
+  - `theta_unc` The vector of unconstrained parameters.
 
   - `propto` If `TRUE`, drop terms which do not depend on the
       parameters.
@@ -331,13 +331,13 @@ unconstrained parameters. See also
 _Usage_
 
 ```R
-StanModel$log_density_gradient(theta, propto = TRUE, jacobian = TRUE)
+StanModel$log_density_gradient(theta_unc, propto = TRUE, jacobian = TRUE)
 ```
 
 
 _Arguments_
 
-  - `theta` The vector of unconstrained parameters.
+  - `theta_unc` The vector of unconstrained parameters.
 
   - `propto` If `TRUE`, drop terms which do not depend on the
       parameters.
@@ -361,13 +361,13 @@ unconstrained parameters. See also
 _Usage_
 
 ```R
-StanModel$log_density_hessian(theta, propto = TRUE, jacobian = TRUE)
+StanModel$log_density_hessian(theta_unc, propto = TRUE, jacobian = TRUE)
 ```
 
 
 _Arguments_
 
-  - `theta` The vector of unconstrained parameters.
+  - `theta_unc` The vector of unconstrained parameters.
 
   - `propto` If `TRUE`, drop terms which do not depend on the
       parameters.
