@@ -586,7 +586,7 @@ function log_density_hessian(
 end
 
 """
-    handle_error(sm::StanModel, err::Ref{Cstring}, method::String)
+    handle_error(lib::Ptr{Nothing}, err::Ref{Cstring}, method::String)
 
 Retrieves the error message allocated in C++ and frees it before returning a copy.
 """
