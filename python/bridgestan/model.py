@@ -13,10 +13,10 @@ from .util import validate_readable
 FloatArray = npt.NDArray[np.float64]
 double_array = ndpointer(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
 star_star_char = ctypes.POINTER(ctypes.c_char_p)
+c_print_callback = ctypes.CFUNCTYPE(None, ctypes.c_char_p, ctypes.c_int)
 
-
-@ctypes.CFUNCTYPE(None, ctypes.c_char_p, ctypes.c_int)
-def print_callback(s, n):
+@c_print_callback
+def _print_callback(s, n):
     print(ctypes.string_at(s, n).decode("utf-8"), end="")
 
 class StanModel:
@@ -53,7 +53,6 @@ class StanModel:
             validate_readable(model_data)
         self.lib_path = model_lib
         self.stanlib = ctypes.CDLL(self.lib_path)
-        self.stanlib.bs_set_print_callback(print_callback)
 
         self.data_path = model_data or ""
         self.seed = seed
@@ -69,6 +68,11 @@ class StanModel:
         self._free_error = self.stanlib.bs_free_error_msg
         self._free_error.restype = None
         self._free_error.argtypes = [ctypes.c_char_p]
+
+        self._set_print_callback = self.stanlib.bs_set_print_callback
+        self._set_print_callback.restype = None
+        self._set_print_callback.argtypes = [c_print_callback]
+        self._set_print_callback(_print_callback)
 
         err = ctypes.pointer(ctypes.c_char_p())
         self.model = self._construct(str.encode(self.data_path), self.seed, err)
