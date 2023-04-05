@@ -2,6 +2,7 @@ use crate::ffi;
 use std::borrow::Borrow;
 use std::ffi::c_char;
 use std::ffi::c_int;
+use std::ffi::c_uint;
 use std::ffi::CStr;
 use std::ffi::CString;
 use std::ffi::NulError;
@@ -34,6 +35,10 @@ pub enum BridgeStanError {
 
 type Result<T> = std::result::Result<T, BridgeStanError>;
 
+/// Open a compiled stan library.
+///
+/// The library should have been compiled with bridgestan,
+/// with the same version as the rust library.
 pub fn open_library(path: &std::path::Path) -> Result<StanLibrary> {
     let library = unsafe { libloading::Library::new(path) }?;
     let major: libloading::Symbol<*const c_int> = unsafe { library.get(b"bs_major_version") }?;
@@ -76,16 +81,35 @@ unsafe impl<T: Sync + Borrow<StanLibrary>> Sync for Model<T> {}
 unsafe impl<T: Send + Borrow<StanLibrary>> Send for Model<T> {}
 
 /// A random number generator for Stan
-pub struct Rng<'lib> {
+pub struct Rng<T: Borrow<StanLibrary>> {
     rng: NonNull<ffi::bs_rng>,
-    lib: &'lib StanLibrary,
+    lib: T,
 }
 
-impl<'lib> Drop for Rng<'lib> {
+impl<T: Borrow<StanLibrary>> Drop for Rng<T> {
     fn drop(&mut self) {
         unsafe {
             // We don't handle error messages during deconstruct
-            let _ = self.lib.bs_destruct_rng(self.rng.as_ptr(), null_mut());
+            let _ = self
+                .lib
+                .borrow()
+                .bs_destruct_rng(self.rng.as_ptr(), null_mut());
+        }
+    }
+}
+
+impl<T: Borrow<StanLibrary>> Rng<T> {
+    pub fn new(lib: T, seed: u32, chain_id: u32) -> Result<Self> {
+        let mut err = ErrorMsg::new(lib.borrow());
+        let rng = unsafe {
+            lib.borrow()
+                .bs_construct_rng(seed as c_uint, chain_id as c_uint, err.as_ptr())
+        };
+        if let Some(rng) = NonNull::new(rng) {
+            drop(err);
+            Ok(Self { rng, lib })
+        } else {
+            Err(BridgeStanError::ConstructFailedError(err.message()))
         }
     }
 }
@@ -273,13 +297,13 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         }
     }
 
-    pub fn param_constrain(
+    pub fn param_constrain<R: Borrow<StanLibrary>>(
         &self,
         theta_unc: &[f64],
         include_tp: bool,
         include_gq: bool,
         out: &mut [f64],
-        rng: &mut Rng,
+        rng: &mut Rng<R>,
     ) -> Result<()> {
         let n = self.param_unc_num();
         assert_eq!(
