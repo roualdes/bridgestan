@@ -114,7 +114,7 @@ impl<'lib> ErrorMsg<'lib> {
     /// Return the error message as a String.
     ///
     /// Panics if there was no error message.
-    fn to_string(&self) -> String {
+    fn message(&self) -> String {
         NonNull::new(self.msg)
             .map(|msg| {
                 unsafe { CStr::from_ptr(msg.as_ptr()) }
@@ -140,7 +140,7 @@ impl<'lib> Model<'lib> {
 
         NonNull::new(model)
             .map(|model| Self { model, lib })
-            .ok_or_else(|| BridgeStanError::ConstructFailedError(err.to_string()))
+            .ok_or_else(|| BridgeStanError::ConstructFailedError(err.message()))
             .and_then(|model| {
                 let info = model.info()?;
                 if !info.contains("STAN_THREADS=true") {
@@ -223,7 +223,7 @@ impl<'lib> Model<'lib> {
             .expect("Stan returned an invalid number of parameters")
     }
 
-    pub fn log_density_gradient<'a>(
+    pub fn log_density_gradient(
         &self,
         theta: &[f64],
         propto: bool,
@@ -260,7 +260,7 @@ impl<'lib> Model<'lib> {
         if rc == 0 {
             Ok(val)
         } else {
-            Err(BridgeStanError::EvaluationFailed(err.to_string()))
+            Err(BridgeStanError::EvaluationFailed(err.message()))
         }
     }
 
@@ -301,7 +301,7 @@ impl<'lib> Model<'lib> {
         if rc == 0 {
             Ok(())
         } else {
-            Err(BridgeStanError::EvaluationFailed(err.to_string()))
+            Err(BridgeStanError::EvaluationFailed(err.message()))
         }
     }
 
@@ -337,7 +337,7 @@ impl<'lib> Model<'lib> {
         if rc == 0 {
             Ok(())
         } else {
-            Err(BridgeStanError::EvaluationFailed(err.to_string()))
+            Err(BridgeStanError::EvaluationFailed(err.message()))
         }
     }
 }
