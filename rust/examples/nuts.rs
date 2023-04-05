@@ -1,4 +1,4 @@
-use bridgestan::StanModel;
+use bridgestan::Model;
 use nuts_rs::{new_sampler, Chain, SampleStats, SamplerArgs};
 use std::env;
 use std::error::Error;
@@ -12,7 +12,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let data_path = env::args().nth(2).unwrap_or_default();
 
-    let model = StanModel::new(&lib, &data_path, 123, 0)?;
+    let model = Model::new(lib, &data_path, 123)?;
 
     let n = model.param_unc_num();
 
