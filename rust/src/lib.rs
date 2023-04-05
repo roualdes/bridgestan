@@ -1,4 +1,4 @@
-pub mod bs_safe;
+mod bs_safe;
 pub(crate) mod ffi;
 
-pub use bs_safe::{open_library, BridgeStanError, Model};
+pub use bs_safe::{open_library, BridgeStanError, Model, Rng};
