@@ -6,10 +6,10 @@ edition = "2021"
 [dependencies]
 libloading = "0.7.4"
 nuts-rs = { version = "0.4.1", optional = true }
-thiserror = "1.0.38"
+thiserror = "1.0.40"
 
 [build-dependencies]
-bindgen = "0.63.0"
+bindgen = "0.64.0"
 
 [features]
 nuts = ["dep:nuts-rs"]
