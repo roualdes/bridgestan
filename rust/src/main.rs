@@ -1,6 +1,8 @@
 use bridgestan::{BridgeStanError, Model};
 use std::env;
 use std::error::Error;
+use std::ffi::CString;
+use std::fs::read_to_string;
 use std::path::Path;
 use std::sync::Arc;
 use std::thread::{self, JoinHandle};
@@ -14,13 +16,19 @@ fn main() -> Result<(), Box<dyn Error>> {
     let lib = Arc::new(lib);
 
     let out: JoinHandle<Result<_, BridgeStanError>> = thread::spawn(move || {
-        let data_path = env::args().nth(2).unwrap_or_default();
+        let data_path = env::args().nth(2);
 
-        let model = Model::new(lib, &data_path, 123)?;
+        let data = data_path.map(|path| CString::new(read_to_string(path).unwrap()).unwrap());
+
+        let model = Model::new(lib, data, 123)?;
 
         println!(
             "The model has {} parameters.",
             model.param_num(false, false)
+        );
+        println!(
+            "The model has {} parameters incuding generated and transformed.",
+            model.param_num(true, true)
         );
 
         let name = model.name().unwrap();

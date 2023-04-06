@@ -4,8 +4,9 @@ use std::ffi::c_char;
 use std::ffi::c_int;
 use std::ffi::c_uint;
 use std::ffi::CStr;
-use std::ffi::CString;
 use std::ffi::NulError;
+use std::ffi::OsStr;
+use std::ptr::null;
 use std::ptr::null_mut;
 use std::ptr::NonNull;
 use std::str::Utf8Error;
@@ -39,7 +40,7 @@ type Result<T> = std::result::Result<T, BridgeStanError>;
 ///
 /// The library should have been compiled with bridgestan,
 /// with the same version as the rust library.
-pub fn open_library(path: &std::path::Path) -> Result<StanLibrary> {
+pub fn open_library<P: AsRef<OsStr>>(path: P) -> Result<StanLibrary> {
     let library = unsafe { libloading::Library::new(path) }?;
     let major: libloading::Symbol<*const c_int> = unsafe { library.get(b"bs_major_version") }?;
     let major = unsafe { **major };
@@ -157,12 +158,14 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// Create a new instance of the compiled Stan model.
     /// Data is specified as a JSON file at the given path, or empty for no data
     /// Seed and chain ID are used for reproducibility.
-    pub fn new(lib: T, path: &str, seed: u32) -> Result<Self> {
-        let data = CString::new(path)?;
-
+    pub fn new<D: AsRef<CStr>>(lib: T, data: Option<D>, seed: u32) -> Result<Self> {
         let mut err = ErrorMsg::new(lib.borrow());
-        let model = unsafe { lib.borrow().bs_construct(data.as_ptr(), seed, err.as_ptr()) };
 
+        let data_ptr = data
+            .as_ref()
+            .map(|data| data.as_ref().as_ptr())
+            .unwrap_or(null());
+        let model = unsafe { lib.borrow().bs_construct(data_ptr, seed, err.as_ptr()) };
         // Make sure data lives until here
         drop(data);
 
