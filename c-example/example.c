@@ -9,7 +9,7 @@ int main(int argc, char** argv) {
   if (argc > 1) {
     data = argv[1];
   } else {
-    data = "";
+    data = NULL;
   }
 
   // this could potentially error, and we may get information back about why.

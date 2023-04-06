@@ -16,8 +16,8 @@ bs_model_rng* bs_construct(const char* data, unsigned int seed,
   } catch (const std::exception& e) {
     if (error_msg) {
       std::stringstream error;
-      error << "construct(" << data << ", " << seed << ", " << chain_id
-            << ")"
+      error << "construct(" << (data == nullptr ? "NULL" : data) << ", " << seed
+            << ", " << chain_id << ")"
             << " failed with exception: " << e.what() << std::endl;
       *error_msg = strdup(error.str().c_str());
     }
@@ -25,8 +25,8 @@ bs_model_rng* bs_construct(const char* data, unsigned int seed,
     if (error_msg) {
       std::stringstream error;
 
-      error << "construct(" << data << ", " << seed << ", " << chain_id
-            << ")"
+      error << "construct(" << (data == nullptr ? "NULL" : data) << ", " << seed
+            << ", " << chain_id << ")"
             << " failed with unknown exception" << std::endl;
       *error_msg = strdup(error.str().c_str());
     }
