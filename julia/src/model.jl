@@ -134,7 +134,7 @@ mutable struct StanRNG
             ccall(
                 Libc.Libdl.dlsym(stanrng.lib, "bs_destruct_rng"),
                 Cvoid,
-                (Ptr{StanModelStruct}),
+                (Ptr{StanModelStruct},),
                 stanrng.rng,
             )
         end
