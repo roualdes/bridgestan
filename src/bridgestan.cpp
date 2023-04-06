@@ -9,14 +9,14 @@ int bs_patch_version = BRIDGESTAN_PATCH;
 
 #include <sstream>
 
-bs_model_rng* bs_construct(const char* data_file, unsigned int seed,
+bs_model_rng* bs_construct(const char* data, unsigned int seed,
                            unsigned int chain_id, char** error_msg) {
   try {
-    return new bs_model_rng(data_file, seed, chain_id);
+    return new bs_model_rng(data, seed, chain_id);
   } catch (const std::exception& e) {
     if (error_msg) {
       std::stringstream error;
-      error << "construct(" << data_file << ", " << seed << ", " << chain_id
+      error << "construct(" << data << ", " << seed << ", " << chain_id
             << ")"
             << " failed with exception: " << e.what() << std::endl;
       *error_msg = strdup(error.str().c_str());
@@ -25,7 +25,7 @@ bs_model_rng* bs_construct(const char* data_file, unsigned int seed,
     if (error_msg) {
       std::stringstream error;
 
-      error << "construct(" << data_file << ", " << seed << ", " << chain_id
+      error << "construct(" << data << ", " << seed << ", " << chain_id
             << ")"
             << " failed with unknown exception" << std::endl;
       *error_msg = strdup(error.str().c_str());
