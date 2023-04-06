@@ -312,10 +312,8 @@ bs_rng* bs_construct_rng(unsigned int seed, unsigned int chain_id,
  * Destruct an RNG object.
  *
  * @param[in] rng pointer to RNG object
- * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling `bs_free_error_msg`.
  */
-int bs_destruct_rng(bs_rng* rng, char** error_msg);
+void bs_destruct_rng(bs_rng* rng);
 
 #ifdef __cplusplus
 }

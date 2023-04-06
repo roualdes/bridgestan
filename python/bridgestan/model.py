@@ -642,12 +642,12 @@ class StanRNG:
             raise RuntimeError("Failed to construct RNG.")
 
         self._destruct = self.stanlib.bs_destruct_rng
-        self._destruct.restype = ctypes.c_int
-        self._destruct.argtypes = [ctypes.c_void_p, star_star_char]
+        self._destruct.restype = None
+        self._destruct.argtypes = [ctypes.c_void_p]
 
     def __del__(self) -> None:
         """
         Destroy the Stan model and free memory.
         """
         if hasattr(self, "ptr") and hasattr(self, "_destruct"):
-            self._destruct(self.ptr, None)
+            self._destruct(self.ptr)

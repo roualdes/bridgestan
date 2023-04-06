@@ -223,16 +223,4 @@ bs_rng* bs_construct_rng(unsigned int seed, unsigned int chain_id,
   return nullptr;
 }
 
-int bs_destruct_rng(bs_rng* mr, char** error_msg) {
-  try {
-    delete (mr);
-    return 0;
-  } catch (...) {
-    if (error_msg) {
-      std::stringstream error;
-      error << "destruct_rng() failed." << std::endl;
-      *error_msg = strdup(error.str().c_str());
-    }
-  }
-  return -1;
-}
+void bs_destruct_rng(bs_rng* mr) { delete (mr); }

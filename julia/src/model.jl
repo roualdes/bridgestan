@@ -133,10 +133,9 @@ mutable struct StanRNG
         function f(stanrng)
             ccall(
                 Libc.Libdl.dlsym(stanrng.lib, "bs_destruct_rng"),
-                UInt32,
-                (Ptr{StanModelStruct}, Ref{Cstring}),
+                Cvoid,
+                (Ptr{StanModelStruct}),
                 stanrng.rng,
-                C_NULL,
             )
         end
 

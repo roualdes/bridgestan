@@ -92,6 +92,4 @@ void bs_construct_rng_R(int* seed, int* chain_id, bs_rng** ptr_out,
   *ptr_out = bs_construct_rng(*seed, *chain_id, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
-void bs_destruct_rng_R(bs_rng** rng, int* return_code) {
-  *return_code = bs_destruct_rng(*rng, nullptr);
-}
+void bs_destruct_rng_R(bs_rng** rng) { bs_destruct_rng(*rng); }

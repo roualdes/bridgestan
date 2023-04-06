@@ -368,7 +368,6 @@ StanRNG <- R6::R6Class("StanRNG",
     finalize = function() {
       .C("bs_destruct_rng_R",
         as.raw(self$rng),
-        return_code = as.integer(0),
         PACKAGE = private$lib_name
       )
     }
