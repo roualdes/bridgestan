@@ -11,6 +11,7 @@ use std::ptr::null_mut;
 use std::ptr::NonNull;
 use std::str::Utf8Error;
 
+use itertools::Itertools;
 // This is more or less equivalent to manually defining Display and From<other error types>
 use thiserror::Error;
 
@@ -22,16 +23,18 @@ pub enum BridgeStanError {
     LoadLibraryError(#[from] libloading::Error),
     #[error("Bad Stan library version: Got {0} but expected {1}")]
     BadLibraryVersion(String, String),
-    #[error("The Stan library was compiled without threading support")]
-    StanThreadsError(),
-    #[error("failed to encode string to null-terminated C string")]
+    #[error("The Stan library was compiled without threading support. Config was {0}")]
+    StanThreadsError(String),
+    #[error("Failed to encode string to null-terminated C string")]
     StringEncodeError(#[from] NulError),
-    #[error("failed to decode string to UTF8")]
+    #[error("Failed to decode string to UTF8")]
     StringDecodeError(#[from] Utf8Error),
-    #[error("failed to construct model: {0}")]
+    #[error("Failed to construct model: {0}")]
     ConstructFailedError(String),
-    #[error("failed during evaluation: {0}")]
+    #[error("Failed during evaluation: {0}")]
     EvaluationFailed(String),
+    #[error("Failed to interpret variable names")]
+    InvalidVariableNames(),
 }
 
 type Result<T> = std::result::Result<T, BridgeStanError>;
@@ -75,6 +78,7 @@ pub fn open_library<P: AsRef<OsStr>>(path: P) -> Result<StanLibrary> {
 pub struct Model<T: Borrow<StanLibrary>> {
     model: NonNull<ffi::bs_model>,
     lib: T,
+    seed: u32,
 }
 
 // Stan model is thread safe
@@ -86,6 +90,9 @@ pub struct Rng<T: Borrow<StanLibrary>> {
     rng: NonNull<ffi::bs_rng>,
     lib: T,
 }
+
+unsafe impl<T: Sync + Borrow<StanLibrary>> Sync for Rng<T> {}
+unsafe impl<T: Send + Borrow<StanLibrary>> Send for Rng<T> {}
 
 impl<T: Borrow<StanLibrary>> Drop for Rng<T> {
     fn drop(&mut self) {
@@ -154,6 +161,23 @@ impl<'lib> ErrorMsg<'lib> {
     }
 }
 
+#[non_exhaustive]
+#[derive(Clone, Debug)]
+pub struct Parameter {
+    pub name: String,
+    pub shape: Vec<usize>,
+    pub size: usize,
+    pub start_idx: usize,
+    pub end_idx: usize,
+}
+
+impl<T: Borrow<StanLibrary> + Clone> Model<T> {
+    /// Return a clone of the underlying stan library
+    pub fn clone_library(&self) -> T {
+        self.lib.clone()
+    }
+}
+
 impl<T: Borrow<StanLibrary>> Model<T> {
     /// Create a new instance of the compiled Stan model.
     /// Data is specified as a JSON file at the given path, or empty for no data
@@ -171,18 +195,27 @@ impl<T: Borrow<StanLibrary>> Model<T> {
 
         if let Some(model) = NonNull::new(model) {
             drop(err);
-            let model = Self { model, lib };
+            let model = Self { model, lib, seed };
             // If STAN_THREADS is not true, the safty guaranties we are
             // making would be incorrect
             let info = model.info()?;
             if !info.contains("STAN_THREADS=true") {
-                Err(BridgeStanError::StanThreadsError())
+                Err(BridgeStanError::StanThreadsError(info.to_string()))
             } else {
                 Ok(model)
             }
         } else {
             Err(BridgeStanError::ConstructFailedError(err.message()))
         }
+    }
+
+    /// Return a reference to the underlying stan library
+    pub fn ref_library(&self) -> &StanLibrary {
+        self.lib.borrow()
+    }
+
+    pub fn new_rng(&self, chain_id: u32) -> Result<Rng<&StanLibrary>> {
+        Rng::new(self.ref_library(), self.seed, chain_id)
     }
 
     /// Return the name of the model or error if UTF decode fails
@@ -220,6 +253,64 @@ impl<T: Borrow<StanLibrary>> Model<T> {
             ))
         };
         Ok(cstr.to_str()?)
+    }
+
+    /// Return meta information about the constrained parameters of the model
+    pub fn params(&self, include_tp: bool, include_gq: bool) -> Result<Vec<Parameter>> {
+        let var_string = self.param_names(include_tp, include_gq)?;
+        let name_idxs: Result<Vec<(&str, Vec<usize>)>> = var_string
+            .split(',')
+            .map(|var| {
+                let mut parts = var.split('.');
+                let name = parts
+                    .next()
+                    .ok_or_else(BridgeStanError::InvalidVariableNames)?;
+                let idxs: Result<Vec<usize>> = parts
+                    .map(|mut idx| {
+                        if idx == "real" {
+                            idx = "1";
+                        }
+                        if idx == "imag" {
+                            idx = "2";
+                        }
+                        let idx: usize = idx
+                            .parse()
+                            .map_err(|_| BridgeStanError::InvalidVariableNames())?;
+                        Ok(idx - 1)
+                    })
+                    .collect();
+                Ok((name, idxs?))
+            })
+            .collect();
+
+        let mut variables = Vec::new();
+        let mut start_idx = 0;
+        for (name, idxs) in &name_idxs?.iter().group_by(|(name, _)| name) {
+            let shape: Vec<usize> = idxs
+                .map(|(_name, idx)| idx)
+                .fold(None, |acc, elem| {
+                    let mut shape = acc.unwrap_or(elem.clone());
+                    shape
+                        .iter_mut()
+                        .zip_eq(elem.iter())
+                        .for_each(|(old, &new)| {
+                            *old = new.max(*old);
+                        });
+                    Some(shape)
+                })
+                .unwrap_or(vec![]);
+            let size = shape.iter().product();
+            let end_idx = start_idx + size;
+            variables.push(Parameter {
+                name: name.to_string(),
+                shape,
+                size,
+                start_idx,
+                end_idx,
+            });
+            start_idx = end_idx;
+        }
+        Ok(variables)
     }
 
     /// Return a comma-separated sequence of unconstrained parameters.
