@@ -18,12 +18,15 @@ class bs_model_rng {
    * Construct a model and random number generator with cached
    * parameter numbers and names.
    *
-   * @param[in] data_file file from which to read data or "" if none
+   * @param[in] data C-style string. This is either a
+   * path to JSON-encoded data file (must end with ".json"),
+   * a JSON string literal, or nullptr. An empty string or null
+   * pointer are both interpreted as no data.
    * @param[in] seed pseudorandom number generator seed
    * @param[in] chain_id number of gaps to skip in the pseudorandom
    * number generator for concurrent computations
    */
-  bs_model_rng(const char* data_file, unsigned int seed, unsigned int chain_id);
+  bs_model_rng(const char* data, unsigned int seed, unsigned int chain_id);
 
   /**
    * Destroy this object and free all of the memory allocated for it.

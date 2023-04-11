@@ -18,9 +18,10 @@ extern int bs_patch_version;
  * generator (PRNG) wrapper.  Data must be encoded in JSON as
  * indicated in the *CmdStan Reference Manual*.
  *
- * @param[in] data_file C-style string. This is either a
- * path to JSON-encoded data file (must end with ".json"), or
- * a JSON string literal.
+ * @param[in] data C-style string. This is either a
+ * path to JSON-encoded data file (must end with ".json"),
+ * a JSON string literal, or nullptr. An empty string or null
+ * pointer are both interpreted as no data.
  * @param[in] seed seed for PRNG
  * @param[in] chain_id identifier for concurrent sequence of PRNG
  * draws
@@ -29,7 +30,7 @@ extern int bs_patch_version;
  * @return pointer to constructed model or `nullptr` if construction
  * fails
  */
-bs_model_rng* bs_construct(const char* data_file, unsigned int seed,
+bs_model_rng* bs_construct(const char* data, unsigned int seed,
                            unsigned int chain_id, char** error_msg);
 
 /**
