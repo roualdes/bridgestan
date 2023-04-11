@@ -323,7 +323,3 @@ void bs_model::log_density_hessian(bool propto, bool jacobian,
   Eigen::VectorXd::Map(grad, N) = grad_vec;
   Eigen::MatrixXd::Map(hessian, N, N) = hess_mat;
 }
-
-bs_rng::bs_rng(unsigned int seed, unsigned int chain_id) {
-  rng_ = stan::services::util::create_rng(seed, chain_id + 1);
-}

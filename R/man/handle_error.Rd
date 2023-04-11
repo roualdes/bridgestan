@@ -4,7 +4,7 @@
 \alias{handle_error}
 \title{Get and free the error message stored at the C++ pointer}
 \usage{
-handle_error(function_name, err_msg, err_ptr, lib_name)
+handle_error(lib_name, err_msg, err_ptr, function_name)
 }
 \description{
 Get and free the error message stored at the C++ pointer

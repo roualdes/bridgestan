@@ -20,8 +20,6 @@ class bs_model {
    *
    * @param[in] data_file file from which to read data or "" if none
    * @param[in] seed pseudorandom number generator seed
-   * @param[in] chain_id number of gaps to skip in the pseudorandom
-   * number generator for concurrent computations
    */
   bs_model(const char* data_file, unsigned int seed);
 
@@ -230,7 +228,11 @@ class bs_model {
  */
 class bs_rng {
  public:
-  bs_rng(unsigned int seed, unsigned int chain_id);
+  bs_rng(unsigned int seed) : rng_(seed) {
+    // discard first value as workaround for
+    // https://github.com/stan-dev/stan/issues/3167
+    rng_.discard(1);
+  }
 
   boost::ecuyer1988 rng_;
 };

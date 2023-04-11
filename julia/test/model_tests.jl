@@ -176,7 +176,7 @@ end
 
 
     model2 = load_test_model("full", false)
-    rng = StanRNG(model2, 2; seed = 1234)
+    rng = StanRNG(model2, 1234)
     @test 1 == length(BridgeStan.param_constrain(model2, a))
     @test 2 == length(BridgeStan.param_constrain(model2, a; include_tp = true))
     @test 3 == length(BridgeStan.param_constrain(model2, a; include_gq = true, rng = rng))
@@ -192,8 +192,18 @@ end
 
     # reproducibility
     @test isapprox(
-        BridgeStan.param_constrain(model2, a; include_gq = true, chain_id = 3),
-        BridgeStan.param_constrain(model2, a; include_gq = true, chain_id = 3),
+        BridgeStan.param_constrain(
+            model2,
+            a;
+            include_gq = true,
+            rng = StanRNG(model2, 45678),
+        ),
+        BridgeStan.param_constrain(
+            model2,
+            a;
+            include_gq = true,
+            rng = StanRNG(model2, 45678),
+        ),
     )
 
     # no seed or rng provided
@@ -210,12 +220,13 @@ end
     )
 
     model4 = load_test_model("throw_gq", false)
+    rng_model4 = StanRNG(model4, 1234)
     BridgeStan.param_constrain(model4, y)
     @test_throw_string "find this text: gqfails" BridgeStan.param_constrain(
         model4,
         y;
         include_gq = true,
-        chain_id = 1,
+        rng = rng_model4,
     )
 end
 

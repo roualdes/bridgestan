@@ -31,7 +31,7 @@ RNG object for use with \code{StanModel$param_constrain()}
 \subsection{Method \code{new()}}{
 Create a StanRng
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StanRNG$new(lib_name, seed, chain_id)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{StanRNG$new(lib_name, seed)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -40,8 +40,6 @@ Create a StanRng
 \item{\code{lib_name}}{The name of the Stan dynamic library.}
 
 \item{\code{seed}}{The seed for the RNG.}
-
-\item{\code{chain_id}}{The chain ID for the RNG.}
 }
 \if{html}{\out{</div>}}
 }

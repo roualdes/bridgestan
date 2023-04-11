@@ -59,7 +59,18 @@ int bs_param_constrain(const bs_model* m, bool include_tp, bool include_gq,
                        const double* theta_unc, double* theta, bs_rng* rng,
                        char** error_msg) {
   try {
-    m->param_constrain(include_tp, include_gq, theta_unc, theta, rng->rng_);
+    if (rng == nullptr) {
+      // If RNG is not provided (e.g., we are not using include_gq), use a dummy
+      // RNG.
+      // SAFETY: this can be static because we know the rng is never advanced.
+      static boost::ecuyer1988 dummy_rng(0);
+
+      if (include_gq)
+        throw std::invalid_argument("include_gq=true but rng=nullptr");
+
+      m->param_constrain(include_tp, include_gq, theta_unc, theta, dummy_rng);
+    } else
+      m->param_constrain(include_tp, include_gq, theta_unc, theta, rng->rng_);
     return 0;
   } catch (const std::exception& e) {
     if (error_msg) {
@@ -76,15 +87,6 @@ int bs_param_constrain(const bs_model* m, bool include_tp, bool include_gq,
     }
   }
   return 1;
-}
-
-int bs_param_constrain_seeded(const bs_model* m, bool include_tp,
-                              bool include_gq, const double* theta_unc,
-                              double* theta, unsigned int seed,
-                              unsigned int chain_id, char** error_msg) {
-  bs_rng rng(seed, chain_id);
-  return bs_param_constrain(m, include_tp, include_gq, theta_unc, theta, &rng,
-                            error_msg);
 }
 
 int bs_param_unconstrain(const bs_model* m, const double* theta,
@@ -201,10 +203,9 @@ int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
   return -1;
 }
 
-bs_rng* bs_construct_rng(unsigned int seed, unsigned int chain_id,
-                         char** error_msg) {
+bs_rng* bs_construct_rng(unsigned int seed, char** error_msg) {
   try {
-    return new bs_rng(seed, chain_id);
+    return new bs_rng(seed);
   } catch (const std::exception& e) {
     if (error_msg) {
       std::stringstream error;

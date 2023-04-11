@@ -72,7 +72,7 @@ _Arguments_
 
   - `data` Either a JSON string literal or a path to a data file in JSON format ending in ".json".
 
-  - `rng_seed` Seed for the RNG in the model object.
+  - `rng_seed` Seed for the RNG used in constructing the model.
 
 _Returns_
 
@@ -210,14 +210,13 @@ _Returns_
 
 **Method** `param_constrain()`:
 
-Returns a vector of constrained parameters given the unconstrained parameters.
-parameters See also `StanModel$param_unconstrain()`, the inverse
+Returns a vector of constrained parameters given the unconstrained parameters. See also `StanModel$param_unconstrain()`, the inverse
 of this function.
 
 _Usage_
 
 ```R
-StanModel$param_constrain(theta_unc, include_tp = FALSE, include_gq = FALSE, chain_id, rng)
+StanModel$param_constrain(theta_unc, include_tp = FALSE, include_gq = FALSE, rng)
 ```
 
 
@@ -231,11 +230,8 @@ _Arguments_
   - `include_gq` Whether to also output the generated quantities
       of the model.
 
-  - `chain_id` A chain ID used to offset a PRNG seeded with the model's seed
-    which should be unique between calls. One of `rng` or `chain_id` must be specified if `include_gq` is `True`
-
-  - `rng` StanRNG to use in the model object. See `StanModel$new_rng()`.
-    One of `rng` or `chain_id` must be specified if `include_gq` is `True`
+  - `rng` The random number generator to use if `include_gq` is
+      `TRUE`.  See `StanModel$new_rng()`.
 
 
 _Returns_
@@ -251,16 +247,13 @@ Create a new persistent PRNG object for use in `param_constrain()`.
 _Usage_
 
 ```R
-StanModel$new_rng(chain_id, seed)
+StanModel$new_rng(seed)
 ```
 
 
 _Arguments_
 
-  - `chain_id` Identifier for a sequence in the RNG. This should be made a distinct number for each PRNG created with the sane seed (for example, 1:N for N PRNGS).
-
-  - `seed` The seed for the PRNG. If this is not specified, the model's seed is used.
-
+  - `seed` The seed for the PRNG.
 
 _Returns_
 

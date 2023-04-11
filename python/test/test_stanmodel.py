@@ -208,7 +208,7 @@ def test_param_constrain():
 
     full_so = str(STAN_FOLDER / "full" / "full_model.so")
     bridge2 = bs.StanModel(full_so)
-    rng = bridge2.new_rng(chain_id=1, seed=1234)
+    rng = bridge2.new_rng(seed=1234)
 
     np.testing.assert_equal(1, bridge2.param_constrain(a).size)
     np.testing.assert_equal(2, bridge2.param_constrain(a, include_tp=True).size)
@@ -221,8 +221,8 @@ def test_param_constrain():
 
     # reproducibility test
     np.testing.assert_equal(
-        bridge2.param_constrain(a, include_gq=True, chain_id=4),
-        bridge2.param_constrain(a, include_gq=True, chain_id=4),
+        bridge2.param_constrain(a, include_gq=True, rng=bridge2.new_rng(seed=4567)),
+        bridge2.param_constrain(a, include_gq=True, rng=bridge2.new_rng(seed=4567)),
     )
 
     # test error if neither seed or rng is provided
@@ -251,7 +251,7 @@ def test_param_constrain():
     bridge3 = bs.StanModel(throw_gq_so)
     bridge3.param_constrain(y, include_gq=False)
     with pytest.raises(RuntimeError, match="find this text: gqfails"):
-        bridge3.param_constrain(y, include_gq=True, chain_id=1)
+        bridge3.param_constrain(y, include_gq=True, rng=bridge3.new_rng(seed=1))
 
 
 def test_param_unconstrain():

@@ -126,19 +126,6 @@ class StanModel:
             star_star_char,
         ]
 
-        self._param_constrain_seeded = self.stanlib.bs_param_constrain_seeded
-        self._param_constrain_seeded.restype = ctypes.c_int
-        self._param_constrain_seeded.argtypes = [
-            ctypes.c_void_p,
-            ctypes.c_int,
-            ctypes.c_int,
-            double_array,
-            double_array,
-            ctypes.c_uint,
-            ctypes.c_uint,
-            star_star_char,
-        ]
-
         self._param_unconstrain = self.stanlib.bs_param_unconstrain
         self._param_unconstrain.restype = ctypes.c_int
         self._param_unconstrain.argtypes = [
@@ -210,7 +197,7 @@ class StanModel:
         """
         Construct a StanModel instance from a ``.stan`` file, compiling if necessary.
 
-        This is equivalent to calling :func:`bridgestan.compile_model` and then the
+        This is equivalent to calling :func:`bridgestan.compile_model`` and then the
         constructor of this class.
 
         :param stan_file: A path to a Stan model file.
@@ -222,7 +209,7 @@ class StanModel:
             threading for the compiled model. If the same flags are defined
             in ``make/local``, the versions passed here will take precedent.
         :param seed: A pseudo random number generator seed.
-        :raises FileNotFoundError or PermissionError: If `stan_file` does not exist
+        :raises FileNotFoundError or PermissionError: If ``stan_file`` does not exist
             or is not readable.
         :raises ValueError: If BridgeStan cannot be located.
         :raises RuntimeError: If compilation fails.
@@ -274,8 +261,8 @@ class StanModel:
         Return the number of parameters, including transformed
         parameters and/or generated quantities as indicated.
 
-        :param include_tp: `True` to include the transformed parameters.
-        :param include_gq: `True` to include the generated quantities.
+        :param include_tp: ``True`` to include the transformed parameters.
+        :param include_gq: ``True`` to include the generated quantities.
         :return: The number of parameters.
         """
         return self._param_num(self.model_rng, int(include_tp), int(include_gq))
@@ -295,14 +282,14 @@ class StanModel:
         Return the indexed names of the parameters, including transformed
         parameters and/or generated quantities as indicated.  For
         containers, indexes are separated by periods (`.`).
-        For example, the scalar `a` has
-        indexed name `a`, the vector entry `a[1]` has indexed name `a.1`
-        and the matrix entry `a[2, 3]` has indexed name `a.2.3`.
+        For example, the scalar ``a`` has
+        indexed name ``a``, the vector entry ``a[1]`` has indexed name ``a.1``
+        and the matrix entry ``a[2, 3]`` has indexed name ``a.2.3``.
         Parameter order of the output is column major and more
         generally last-index major for containers.
 
-        :param include_tp: `True` to include transformed parameters.
-        :param include_gq: `True` to include generated quantities.
+        :param include_tp: ``True`` to include transformed parameters.
+        :param include_gq: ``True`` to include generated quantities.
         :return: The indexed names of the parameters.
         """
         return (
@@ -314,8 +301,8 @@ class StanModel:
     def param_unc_names(self) -> List[str]:
         """
         Return the indexed names of the unconstrained parameters.
-        For example, a scalar unconstrained parameter `b` has indexed
-        name `b` and a vector entry `b[3]` has indexed name `b.3`.
+        For example, a scalar unconstrained parameter ``b`` has indexed
+        name ``b`` and a vector entry ``b[3]`` has indexed name ``b.3``.
 
         :return: The indexed names of the unconstrained parameters.
         """
@@ -328,7 +315,6 @@ class StanModel:
         include_tp: bool = False,
         include_gq: bool = False,
         out: Optional[FloatArray] = None,
-        chain_id: Optional[int] = None,
         rng: Optional["StanRNG"] = None,
     ) -> FloatArray:
         """
@@ -336,37 +322,32 @@ class StanModel:
         unconstrained parameters as an array, optionally including the
         transformed parameters and/or generated quantitities as specified.
         Including generated quantities uses the PRNG and may update its state.
-        Setting `out` avoids allocation of a new array for the return value.
+        Setting ``out`` avoids allocation of a new array for the return value.
 
         :param theta_unc: Unconstrained parameter array.
-        :param include_tp: `True` to include transformed parameters.
-        :param include_gq: `True` to include generated quantities.
+        :param include_tp: ``True`` to include transformed parameters.
+        :param include_gq: ``True`` to include generated quantities.
         :param out: A location into which the result is stored.  If
-            provided, it must have shape `(D, )`, where `D` is the number of
-            constrained parameters.  If not provided or `None`, a freshly
+            provided, it must have shape ``(D, )``, where ``D`` is the number of
+            constrained parameters.  If not provided or ``None``, a freshly
             allocated array is returned.
-        :param chain_id: A chain ID used to offset a PRNG seeded with the model's
-            seed which should be unique between calls. One of ``rng`` or
-            ``chain_id`` must be specified if ``include_gq`` is ``True``.
         :param rng: A ``StanRNG`` object to use for generating random
-            numbers, see :meth:`~StanModel.new_rng`.
-            One of ``rng`` or ``chain_id`` must be specified if ``include_gq``
-            is ``True``.
+            numbers, see :meth:`~StanModel.new_rng``. Must be specified
+            if ``include_gq`` is ``True``.
         :return: The constrained parameter array.
         :raises ValueError: If ``out`` is specified and is not the same
             shape as the return.
-        :raises ValueError: If neither ``rng`` nor ``chain_id`` is specified
-            and ``include_gq`` is ``True``.
+        :raises ValueError: If ``rng`` is ``None`` and ``include_gq`` is ``True``.
         :raises RuntimeError: If the C++ Stan model throws an exception.
         """
-        if chain_id is None and rng is None:
+        if rng is None:
             if include_gq:
                 raise ValueError(
-                    "Error: must specify rng or chain_id when including generated quantities"
+                    "Error: must specify rng when including generated quantities"
                 )
-            else:
-                # neither specified, but not doing gq, so use a fixed chain id
-                chain_id = 0
+            rng_ptr = None
+        else:
+            rng_ptr = rng.ptr
 
         dims = self.param_num(include_tp=include_tp, include_gq=include_gq)
         if out is None:
@@ -375,61 +356,46 @@ class StanModel:
             raise ValueError(
                 "Error: out must be same size as number of constrained parameters"
             )
+
         err = ctypes.pointer(ctypes.c_char_p())
 
-        if rng is not None:
-            rc = self._param_constrain(
-                self.model_rng,
-                int(include_tp),
-                int(include_gq),
-                theta_unc,
-                out,
-                rng.ptr,
-                err,
-            )
-        else:
-            rc = self._param_constrain_seeded(
-                self.model_rng,
-                int(include_tp),
-                int(include_gq),
-                theta_unc,
-                out,
-                self.seed,
-                chain_id,
-                err,
-            )
+        rc = self._param_constrain(
+            self.model_rng,
+            int(include_tp),
+            int(include_gq),
+            theta_unc,
+            out,
+            rng_ptr,
+            err,
+        )
 
         if rc:
             raise self._handle_error(err.contents, "param_constrain")
         return out
 
-    def new_rng(self, chain_id: int, *, seed=None) -> "StanRNG":
+    def new_rng(self, seed) -> "StanRNG":
         """
-        Return a new PRNG for use in :meth:`~StanModel.param_constrain`.
+        Return a new PRNG for use in :meth:`~StanModel.param_constrain``.
 
-        :param chain_id: Identifier for a sequence in the RNG. This should be made
-            a distinct number for each PRNG created with the same seed
-            (for example, 1:N for N PRNGS).
-        :param seed: A seed for the PRNG.  If not specified, the
-            model's seed is used.
-        :return: A new PRNG for the model.
+        :param seed: A seed for the PRNG.
+        :return: A new PRNG wrapper.
         """
-        return StanRNG(self.stanlib, seed or self.seed, chain_id)
+        return StanRNG(self.stanlib, seed)
 
     def param_unconstrain(
         self, theta: FloatArray, *, out: Optional[FloatArray] = None
     ) -> FloatArray:
         """
         Return the unconstrained parameters derived from the specified
-        constrained parameters.  Setting `out` avoids allocation of a
+        constrained parameters.  Setting ``out`` avoids allocation of a
         new array for the return value.
 
         :param theta: Constrained parameter array.
         :param out: A location into which the result is stored.  If
-            provided, it must have shape `(D, )`, where `D` is the number of
-            unconstrained parameters.  If not provided or `None`, a freshly
+            provided, it must have shape ``(D, )``, where ``D`` is the number of
+            unconstrained parameters.  If not provided or ``None``, a freshly
             allocated array is returned.
-        :raises ValueError: If `out` is specified and is not the same
+        :raises ValueError: If ``out`` is specified and is not the same
             shape as the return.
         :raises RuntimeError: If the C++ Stan model throws an exception.
         """
@@ -456,11 +422,11 @@ class StanModel:
 
         :param theta_json: The JSON encoded constrained parameters.
         :param out: A location into which the result is stored.  If
-            provided, it must have shape `(D, )`, where `D` is the number of
-            unconstrained parameters.  If not provided or `None`, a freshly
+            provided, it must have shape ``(D, )``, where ``D`` is the number of
+            unconstrained parameters.  If not provided or ``None``, a freshly
             allocated array is returned.
         :return: The unconstrained parameter array.
-        :raises ValueError: If `out` is specified and is not the same
+        :raises ValueError: If ``out`` is specified and is not the same
             shape as the return value.
         :raises RuntimeError: If the C++ Stan model throws an exception.
         """
@@ -488,12 +454,12 @@ class StanModel:
         """
         Return the log density of the specified unconstrained
         parameters, dropping constant terms that do not depend on the
-        parameters if `propto` is `True` and including change of
-        variables terms for constrained parameters if `jacobian` is `True`.
+        parameters if ``propto`` is ``True`` and including change of
+        variables terms for constrained parameters if ``jacobian`` is ``True``.
 
         :param theta_unc: Unconstrained parameter array.
-        :param propto: `True` if constant terms should be dropped from the log density.
-        :param jacobian: `True` if change-of-variables terms for
+        :param propto: ``True`` if constant terms should be dropped from the log density.
+        :param jacobian: ``True`` if change-of-variables terms for
             constrained parameters should be included in the log density.
         :return: The log density.
         :raises RuntimeError: If the C++ Stan model throws an exception.
@@ -518,20 +484,20 @@ class StanModel:
         """
         Return a tuple of the log density and gradient of the specified
         unconstrained parameters, dropping constant terms that do not depend
-        on the parameters if `propto` is `True` and including change of
-        variables terms for constrained parameters if `jacobian`
-        is `True`.
+        on the parameters if ``propto`` is ``True`` and including change of
+        variables terms for constrained parameters if ``jacobian``
+        is ``True``.
 
         :param theta_unc: Unconstrained parameter array.
-        :param propto: `True` if constant terms should be dropped from the log density.
-        :param jacobian: `True` if change-of-variables terms for
+        :param propto: ``True`` if constant terms should be dropped from the log density.
+        :param jacobian: ``True`` if change-of-variables terms for
             constrained parameters should be included in the log density.
         :param out: A location into which the gradient is stored.  If
-            provided, it must have shape `(D, )` where `D` is the number
+            provided, it must have shape `(D, )` where ``D`` is the number
             of parameters.  If not provided, a freshly allocated array
             is returned.
         :return: A tuple consisting of log density and gradient.
-        :raises ValueError: If `out` is specified and is not the same
+        :raises ValueError: If ``out`` is specified and is not the same
             shape as the gradient.
         :raises RuntimeError: If the C++ Stan model throws an exception.
         """
@@ -561,25 +527,25 @@ class StanModel:
         """
         Return a tuple of the log density, gradient, and Hessian of the
         specified unconstrained parameters, dropping constant terms that do
-        not depend on the parameters if `propto` is `True` and including
+        not depend on the parameters if ``propto`` is ``True`` and including
         change of variables terms for constrained parameters if
-        `jacobian` is `True`.
+        ``jacobian`` is ``True``.
 
         :param theta_unc: Unconstrained parameter array.
-        :param propto: `True` if constant terms should be dropped from the log density.
-        :param jacobian: `True` if change-of-variables terms for
+        :param propto: ``True`` if constant terms should be dropped from the log density.
+        :param jacobian: ``True`` if change-of-variables terms for
             constrained parameters should be included in the log density.
         :param out_grad: A location into which the gradient is stored.  If
-            provided, it must have shape `(D, )` where `D` is the number
+            provided, it must have shape `(D, )` where ``D`` is the number
             of parameters.  If not provided, a freshly allocated array
             is returned.
         :param out_hess: A location into which the Hessian is stored. If
-            provided, it must have shape `(D, D)`, where `D` is the
+            provided, it must have shape `(D, D)`, where ``D`` is the
             number of parameters.  If not provided, a freshly allocated
             array is returned.
         :return: A tuple consisting of the log density, gradient, and Hessian.
-        :raises ValueError: If `out_grad` is specified and is not the
-            same shape as the gradient or if `out_hess` is specified and it
+        :raises ValueError: If ``out_grad`` is specified and is not the
+            same shape as the gradient or if ``out_hess`` is specified and it
             is not the same shape as the Hessian.
         :raises RuntimeError: If the C++ Stan model throws an exception.
         """
@@ -630,13 +596,18 @@ class StanModel:
 
 
 class StanRNG:
-    def __init__(self, lib: ctypes.CDLL, seed: int, chain_id: int) -> None:
+    def __init__(self, lib: ctypes.CDLL, seed: int) -> None:
+        """
+        Construct a Stan random number generator.
+        This should not be called directly. Instead, use
+        :meth:`StanModel.new_rng`.
+        """
         self.stanlib = lib
 
         construct = self.stanlib.bs_construct_rng
         construct.restype = ctypes.c_void_p
-        construct.argtypes = [ctypes.c_uint, ctypes.c_uint, star_star_char]
-        self.ptr = construct(seed, chain_id, None)
+        construct.argtypes = [ctypes.c_uint, star_star_char]
+        self.ptr = construct(seed, None)
 
         if not self.ptr:
             raise RuntimeError("Failed to construct RNG.")
