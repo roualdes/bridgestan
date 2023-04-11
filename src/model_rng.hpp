@@ -18,10 +18,13 @@ class bs_model {
    * Construct a model and random number generator with cached
    * parameter numbers and names.
    *
-   * @param[in] data_file file from which to read data or "" if none
+   * @param[in] data C-style string. This is either a
+   * path to JSON-encoded data file (must end with ".json"),
+   * a JSON string literal, or nullptr. An empty string or null
+   * pointer are both interpreted as no data.
    * @param[in] seed pseudorandom number generator seed
    */
-  bs_model(const char* data_file, unsigned int seed);
+  bs_model(const char* data, unsigned int seed);
 
   /**
    * Destroy this object and free all of the memory allocated for it.

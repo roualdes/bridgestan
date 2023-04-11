@@ -58,23 +58,28 @@ char* to_csv(const std::vector<std::string>& names) {
   return strdup(s_c);
 }
 
-bs_model::bs_model(const char* data_file, unsigned int seed) {
-  std::string data(data_file);
-  if (data.empty()) {
-    auto data_context = stan::io::empty_var_context();
+bs_model::bs_model(const char* data, unsigned int seed) {
+  if (data == nullptr) {
+    stan::io::empty_var_context data_context;
     model_ = &new_model(data_context, seed, &std::cout);
   } else {
-    if (stan::io::ends_with(".json", data)) {
-      std::ifstream in(data);
-      if (!in.good())
-        throw std::runtime_error("Cannot read input file: " + data);
-      auto data_context = stan::json::json_data(in);
-      in.close();
+    std::string data_str(data);
+    if (data_str.empty()) {
+      stan::io::empty_var_context data_context;
       model_ = &new_model(data_context, seed, &std::cout);
     } else {
-      std::istringstream json(data);
-      auto data_context = stan::json::json_data(json);
-      model_ = &new_model(data_context, seed, &std::cout);
+      if (stan::io::ends_with(".json", data_str)) {
+        std::ifstream in(data_str);
+        if (!in.good())
+          throw std::runtime_error("Cannot read input file: " + data_str);
+        stan::json::json_data data_context(in);
+        in.close();
+        model_ = &new_model(data_context, seed, &std::cout);
+      } else {
+        std::istringstream json(data_str);
+        stan::json::json_data data_context(json);
+        model_ = &new_model(data_context, seed, &std::cout);
+      }
     }
   }
 
