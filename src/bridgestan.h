@@ -20,7 +20,8 @@ extern int bs_patch_version;
  *
  * @param[in] data C-style string. This is either a
  * path to JSON-encoded data file (must end with ".json"),
- * a JSON string literal, or nullptr, which is interpreted as no data.
+ * a JSON string literal, or nullptr. An empty string or null
+ * pointer are both interpreted as no data.
  * @param[in] seed seed for PRNG
  * @param[in] chain_id identifier for concurrent sequence of PRNG
  * draws
