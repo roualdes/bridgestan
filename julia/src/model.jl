@@ -63,7 +63,7 @@ mutable struct StanModel
         err = Ref{Cstring}()
 
         stanmodel = ccall(
-            Libc.Libdl.dlsym(lib, "bs_construct"),
+            Libc.Libdl.dlsym(lib, "bs_model_construct"),
             Ptr{StanModelStruct},
             (Cstring, UInt32, Ref{Cstring}),
             data,
@@ -71,14 +71,14 @@ mutable struct StanModel
             err,
         )
         if stanmodel == C_NULL
-            error(handle_error(lib, err, "bs_construct"))
+            error(handle_error(lib, err, "bs_model_construct"))
         end
 
         sm = new(lib, stanmodel, data, seed)
 
         function f(sm)
             ccall(
-                Libc.Libdl.dlsym(sm.lib, "bs_destruct"),
+                Libc.Libdl.dlsym(sm.lib, "bs_model_destruct"),
                 Cvoid,
                 (Ptr{StanModelStruct},),
                 sm.stanmodel,
@@ -109,21 +109,21 @@ mutable struct StanRNG
 
         err = Ref{Cstring}()
         ptr = ccall(
-            Libc.Libdl.dlsym(sm.lib, "bs_construct_rng"),
+            Libc.Libdl.dlsym(sm.lib, "bs_rng_construct"),
             Ptr{StanModelStruct},
             (UInt32, Ref{Cstring}),
             seed,
             err,
         )
         if ptr == C_NULL
-            error(handle_error(sm.lib, err, "bs_construct_rng"))
+            error(handle_error(sm.lib, err, "bs_rng_construct"))
         end
 
         stanrng = new(sm.lib, ptr, seed)
 
         function f(stanrng)
             ccall(
-                Libc.Libdl.dlsym(stanrng.lib, "bs_destruct_rng"),
+                Libc.Libdl.dlsym(stanrng.lib, "bs_rng_destruct"),
                 Cvoid,
                 (Ptr{StanModelStruct},),
                 stanrng.ptr,

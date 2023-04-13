@@ -12,12 +12,12 @@ typedef int bool;
 
 // Shim to convert to R interface requirement of void with pointer args
 // All calls directly delegated to versions without _R suffix
-void bs_construct_R(char** data, int* rng, bs_model** ptr_out, char** err_msg,
-                    void** err_ptr);
+void bs_model_construct_R(char** data, int* rng, bs_model** ptr_out,
+                          char** err_msg, void** err_ptr);
 
 void bs_version_R(int* major, int* minor, int* patch);
 
-void bs_destruct_R(bs_model** model);
+void bs_model_destruct_R(bs_model** model);
 
 /**
  * Free error message allocated in C++. Because R performs copies
@@ -65,10 +65,10 @@ void bs_log_density_hessian_R(bs_model** model, int* propto, int* jacobian,
                               double* grad, double* hess, int* return_code,
                               char** err_msg, void** err_ptr);
 
-void bs_construct_rng_R(int* seed, bs_rng** ptr_out, char** err_msg,
+void bs_rng_construct_R(int* seed, bs_rng** ptr_out, char** err_msg,
                         void** err_ptr);
 
-void bs_destruct_rng_R(bs_rng** rng);
+void bs_rng_destruct_R(bs_rng** rng);
 
 #ifdef __cplusplus
 }

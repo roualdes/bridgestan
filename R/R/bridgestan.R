@@ -32,7 +32,7 @@ StanModel <- R6::R6Class("StanModel",
       }
 
       dyn.load(private$lib, PACKAGE = private$lib_name)
-      ret <- .C("bs_construct_R",
+      ret <- .C("bs_model_construct_R",
         as.character(data), as.integer(seed),
         ptr_out = raw(8),
         err_msg = as.character(""),
@@ -288,7 +288,7 @@ StanModel <- R6::R6Class("StanModel",
     model = NA,
     seed = NA,
     finalize = function() {
-      .C("bs_destruct_R",
+      .C("bs_model_destruct_R",
         as.raw(private$model),
         PACKAGE = private$lib_name
       )
@@ -322,7 +322,7 @@ StanRNG <- R6::R6Class("StanRNG",
     initialize = function(lib_name, seed) {
       private$lib_name <- lib_name
 
-      vars <- .C("bs_construct_rng_R",
+      vars <- .C("bs_rng_construct_R",
         as.integer(seed),
         ptr_out = raw(8),
         err_msg = as.character(""),
@@ -341,7 +341,7 @@ StanRNG <- R6::R6Class("StanRNG",
   private = list(
     lib_name = NA,
     finalize = function() {
-      .C("bs_destruct_rng_R",
+      .C("bs_rng_destruct_R",
         as.raw(self$ptr),
         PACKAGE = private$lib_name
       )

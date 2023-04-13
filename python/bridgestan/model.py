@@ -52,7 +52,7 @@ class StanModel:
         self.data_path = model_data or ""
         self.seed = seed
 
-        self._construct = self.stanlib.bs_construct
+        self._construct = self.stanlib.bs_model_construct
         self._construct.restype = ctypes.c_void_p
         self._construct.argtypes = [
             ctypes.c_char_p,
@@ -68,7 +68,7 @@ class StanModel:
         self.model = self._construct(str.encode(self.data_path), self.seed, err)
 
         if not self.model:
-            raise self._handle_error(err.contents, "bs_construct")
+            raise self._handle_error(err.contents, "bs_model_construct")
 
         if self.model_version() != __version_info__:
             warnings.warn(
@@ -171,7 +171,7 @@ class StanModel:
             star_star_char,
         ]
 
-        self._destruct = self.stanlib.bs_destruct
+        self._destruct = self.stanlib.bs_model_destruct
         self._destruct.restype = None
         self._destruct.argtypes = [ctypes.c_void_p]
 
@@ -595,7 +595,7 @@ class StanRNG:
         """
         self.stanlib = lib
 
-        construct = self.stanlib.bs_construct_rng
+        construct = self.stanlib.bs_rng_construct
         construct.restype = ctypes.c_void_p
         construct.argtypes = [ctypes.c_uint, star_star_char]
         self.ptr = construct(seed, None)
@@ -603,7 +603,7 @@ class StanRNG:
         if not self.ptr:
             raise RuntimeError("Failed to construct RNG.")
 
-        self._destruct = self.stanlib.bs_destruct_rng
+        self._destruct = self.stanlib.bs_rng_destruct
         self._destruct.restype = None
         self._destruct.argtypes = [ctypes.c_void_p]
 

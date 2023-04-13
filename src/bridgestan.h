@@ -31,14 +31,15 @@ extern int bs_patch_version;
  * @return pointer to constructed model or `nullptr` if construction
  * fails
  */
-bs_model* bs_construct(const char* data, unsigned int seed, char** error_msg);
+bs_model* bs_model_construct(const char* data, unsigned int seed,
+                             char** error_msg);
 
 /**
  * Destroy the model.
  *
  * @param[in] m pointer to model structure
  */
-void bs_destruct(bs_model* m);
+void bs_model_destruct(bs_model* m);
 
 /**
  * Free the error messages created by other methods.
@@ -147,7 +148,7 @@ int bs_param_unc_num(const bs_model* m);
  * @param[in] theta_unc sequence of unconstrained parameters
  * @param[out] theta sequence of constrained parameters
  * @param[in] rng pointer to pseudorandom number generator, should be created
- * by `bs_construct_rng`. This is only required when `include_gq` is `true`,
+ * by `bs_rng_construct`. This is only required when `include_gq` is `true`,
  * otherwise it can be null.
  * @param[out] error_msg a pointer to a string that will be allocated if there
  * is an error. This must later be freed by calling `bs_free_error_msg`.
@@ -277,14 +278,14 @@ int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
  * @param[out] error_msg a pointer to a string that will be allocated if there
  * is an error. This must later be freed by calling `bs_free_error_msg`.
  */
-bs_rng* bs_construct_rng(unsigned int seed, char** error_msg);
+bs_rng* bs_rng_construct(unsigned int seed, char** error_msg);
 
 /**
  * Destruct an RNG object.
  *
  * @param[in] rng pointer to RNG object
  */
-void bs_destruct_rng(bs_rng* rng);
+void bs_rng_destruct(bs_rng* rng);
 
 #ifdef __cplusplus
 }

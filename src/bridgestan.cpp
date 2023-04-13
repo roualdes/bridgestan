@@ -9,7 +9,8 @@ int bs_patch_version = BRIDGESTAN_PATCH;
 
 #include <sstream>
 
-bs_model* bs_construct(const char* data, unsigned int seed, char** error_msg) {
+bs_model* bs_model_construct(const char* data, unsigned int seed,
+                             char** error_msg) {
   try {
     return new bs_model(data, seed);
   } catch (const std::exception& e) {
@@ -33,7 +34,7 @@ bs_model* bs_construct(const char* data, unsigned int seed, char** error_msg) {
   return nullptr;
 }
 
-void bs_destruct(bs_model* m) { delete (m); }
+void bs_model_destruct(bs_model* m) { delete (m); }
 
 void bs_free_error_msg(char* error_msg) { free(error_msg); }
 
@@ -204,7 +205,7 @@ int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
   return -1;
 }
 
-bs_rng* bs_construct_rng(unsigned int seed, char** error_msg) {
+bs_rng* bs_rng_construct(unsigned int seed, char** error_msg) {
   try {
     return new bs_rng(seed);
   } catch (const std::exception& e) {
@@ -225,4 +226,4 @@ bs_rng* bs_construct_rng(unsigned int seed, char** error_msg) {
   return nullptr;
 }
 
-void bs_destruct_rng(bs_rng* rng) { delete (rng); }
+void bs_rng_destruct(bs_rng* rng) { delete (rng); }

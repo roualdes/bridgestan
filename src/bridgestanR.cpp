@@ -1,9 +1,9 @@
 #include "bridgestanR.h"
 #include "bridgestan.h"
 
-void bs_construct_R(char** data, int* rng, bs_model** ptr_out, char** err_msg,
-                    void** err_ptr) {
-  *ptr_out = bs_construct(*data, *rng, err_msg);
+void bs_model_construct_R(char** data, int* rng, bs_model** ptr_out,
+                          char** err_msg, void** err_ptr) {
+  *ptr_out = bs_model_construct(*data, *rng, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
 void bs_free_error_msg_R(void** err_msg) {
@@ -14,7 +14,7 @@ void bs_version_R(int* major, int* minor, int* patch) {
   *minor = bs_minor_version;
   *patch = bs_patch_version;
 }
-void bs_destruct_R(bs_model** model) { bs_destruct(*model); }
+void bs_model_destruct_R(bs_model** model) { bs_model_destruct(*model); }
 void bs_name_R(bs_model** model, char const** name_out) {
   *name_out = bs_name(*model);
 }
@@ -77,9 +77,9 @@ void bs_log_density_hessian_R(bs_model** model, int* propto, int* jacobian,
                                         val, grad, hess, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
-void bs_construct_rng_R(int* seed, bs_rng** ptr_out, char** err_msg,
+void bs_rng_construct_R(int* seed, bs_rng** ptr_out, char** err_msg,
                         void** err_ptr) {
-  *ptr_out = bs_construct_rng(*seed, err_msg);
+  *ptr_out = bs_rng_construct(*seed, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
-void bs_destruct_rng_R(bs_rng** rng) { bs_destruct_rng(*rng); }
+void bs_rng_destruct_R(bs_rng** rng) { bs_rng_destruct(*rng); }

@@ -542,6 +542,40 @@ end
 end
 
 
+@testset "threaded model: multi" begin
+    # Multivariate Gaussian
+    # make test_models/multi/multi_model.so
+
+    function gaussian(x)
+        return -0.5 * x' * x
+    end
+
+    function grad_gaussian(x)
+        return -x
+    end
+
+    model = load_test_model("multi")
+    nt = Threads.nthreads()
+
+    R = 1000
+    ld = Vector{Bool}(undef, R)
+    g = Vector{Bool}(undef, R)
+
+    @sync for it = 1:nt
+        Threads.@spawn for r = it:nt:R
+            x = randn(BridgeStan.param_num(model))
+            (lp, grad) = BridgeStan.log_density_gradient(model, x)
+
+            ld[r] = isapprox(lp, gaussian(x))
+            g[r] = isapprox(grad, grad_gaussian(x))
+        end
+    end
+
+    @test all(ld)
+    @test all(g)
+end
+
+
 @testset "gaussian" begin
     # Guassian with positive constrained standard deviation
     # make test_models/gaussian/gaussian_model.so
