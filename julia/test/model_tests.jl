@@ -553,19 +553,20 @@ end
 
     # to test the thread safety of our RNGs, we do two runs
     # the first we do in parallel
-    gq1 = zeros(Float64, R, out_size)
+    gq1 = zeros(Float64, out_size, R)
     @Threads.threads for it = 1:nt
-            rng = StanRNG(model,seeds[it]) # RNG is created per-thread
-            for r = it:nt:R
-                BridgeStan.param_constrain!(model, x, gq1[r,:]; include_gq=true, rng=rng)
-            end
+        rng = StanRNG(model,seeds[it]) # RNG is created per-thread
+        for r = it:nt:R
+            gq1[:, r] = BridgeStan.param_constrain(model, x; include_gq=true, rng=rng)
         end
-    # the second we do sequentially.
-    gq2 = zeros(Float64, R, out_size)
+    end
+
+    # the second we do sequentially
+    gq2 = zeros(Float64, out_size, R)
     for it = 1:nt
         rng = StanRNG(model,seeds[it])
         for r = it:nt:R
-            BridgeStan.param_constrain!(model, x, gq2[r,:]; include_gq=true, rng=rng)
+            gq2[:, r] = BridgeStan.param_constrain(model, x; include_gq=true, rng=rng)
         end
     end
 
