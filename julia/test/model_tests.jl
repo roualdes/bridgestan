@@ -509,8 +509,6 @@ end
 
 
 @testset "threaded model: multi" begin
-    # Multivariate Gaussian
-    # make test_models/multi/multi_model.so
 
     function gaussian(x)
         return -0.5 * x' * x
@@ -527,8 +525,8 @@ end
     ld = Vector{Bool}(undef, R)
     g = Vector{Bool}(undef, R)
 
-    @sync for it = 1:nt
-        Threads.@spawn for r = it:nt:R
+    @Threads.threads for it = 1:nt
+        for r = it:nt:R
             x = randn(BridgeStan.param_num(model))
             (lp, grad) = BridgeStan.log_density_gradient(model, x)
 
@@ -542,37 +540,37 @@ end
 end
 
 
-@testset "threaded model: multi" begin
-    # Multivariate Gaussian
-    # make test_models/multi/multi_model.so
+@testset "threaded model: full" begin
 
-    function gaussian(x)
-        return -0.5 * x' * x
-    end
-
-    function grad_gaussian(x)
-        return -x
-    end
-
-    model = load_test_model("multi")
+    model = load_test_model("full", false)
     nt = Threads.nthreads()
+    seeds = rand(UInt32, nt)
+
+    x = [0.5] # bernoulli parameter
 
     R = 1000
-    ld = Vector{Bool}(undef, R)
-    g = Vector{Bool}(undef, R)
+    out_size = BridgeStan.param_num(model;include_tp=false, include_gq=true)
 
-    @sync for it = 1:nt
-        Threads.@spawn for r = it:nt:R
-            x = randn(BridgeStan.param_num(model))
-            (lp, grad) = BridgeStan.log_density_gradient(model, x)
-
-            ld[r] = isapprox(lp, gaussian(x))
-            g[r] = isapprox(grad, grad_gaussian(x))
+    # to test the thread safety of our RNGs, we do two runs
+    # the first we do in parallel
+    gq1 = zeros(Float64, R, out_size)
+    @Threads.threads for it = 1:nt
+            rng = StanRNG(model,seeds[it]) # RNG is created per-thread
+            for r = it:nt:R
+                BridgeStan.param_constrain!(model, x, gq1[r,:]; include_gq=true, rng=rng)
+            end
+        end
+    # the second we do sequentially.
+    gq2 = zeros(Float64, R, out_size)
+    for it = 1:nt
+        rng = StanRNG(model,seeds[it])
+        for r = it:nt:R
+            BridgeStan.param_constrain!(model, x, gq2[r,:]; include_gq=true, rng=rng)
         end
     end
 
-    @test all(ld)
-    @test all(g)
+    # these should be the same if the param_constrain is thread safe
+    @test gq1 == gq2
 end
 
 
