@@ -225,4 +225,4 @@ bs_rng* bs_construct_rng(unsigned int seed, char** error_msg) {
   return nullptr;
 }
 
-void bs_destruct_rng(bs_rng* mr) { delete (mr); }
+void bs_destruct_rng(bs_rng* rng) { delete (rng); }

@@ -15,15 +15,17 @@ extern int bs_minor_version;
 extern int bs_patch_version;
 
 /**
- * Construct an instance of a model and pseudorandom number
- * generator (PRNG) wrapper.  Data must be encoded in JSON as
- * indicated in the *CmdStan Reference Manual*.
+ * Construct an instance of a model wrapper.
+ * Data must be encoded in JSON as indicated
+ * in the *CmdStan Reference Manual*.
  *
  * @param[in] data C-style string. This is either a
  * path to JSON-encoded data file (must end with ".json"),
  * a JSON string literal, or nullptr. An empty string or null
  * pointer are both interpreted as no data.
- * @param[in] seed seed for PRNG
+ * @param[in] seed seed for PRNG used during model construction.
+ * This PRNG is used for RNG functions in the `transformed data`
+ * block of the model, and then discarded.
  * @param[out] error_msg a pointer to a string that will be allocated if there
  * is an error. This must later be freed by calling `bs_free_error_msg`.
  * @return pointer to constructed model or `nullptr` if construction

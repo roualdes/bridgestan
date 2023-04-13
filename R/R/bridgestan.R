@@ -10,7 +10,7 @@ StanModel <- R6::R6Class("StanModel",
     #' @description
     #' Create a Stan Model instance.
     #' @param lib A path to a compiled BridgeStan Shared Object file.
-    #' @param data Either a JSON string literal or a path to a data file in JSON format ending in ".json".
+    #' @param data Either a JSON string literal,a path to a data file in JSON format ending in ".json", or the empty string.
     #' @param seed Seed for the RNG used in constructing the model.
     #' @return A new StanModel.
     initialize = function(lib, data, seed) {
@@ -149,7 +149,7 @@ StanModel <- R6::R6Class("StanModel",
         }
         rng_ptr <- as.integer(0)
       } else {
-        rng_ptr <- as.raw(rng$rng)
+        rng_ptr <- as.raw(rng$ptr)
       }
       vars <- .C("bs_param_constrain_R", as.raw(private$model),
         as.logical(include_tp), as.logical(include_gq), as.double(theta_unc),
@@ -333,16 +333,16 @@ StanRNG <- R6::R6Class("StanRNG",
       if (all(vars$ptr_out == 0)) {
         stop(handle_error("construct_rng", vars$err_msg, vars$err_ptr, private$lib_name))
       } else {
-        self$rng <- vars$ptr_out
+        self$ptr <- vars$ptr_out
       }
     },
-    rng = NA
+    ptr = NA
   ),
   private = list(
     lib_name = NA,
     finalize = function() {
       .C("bs_destruct_rng_R",
-        as.raw(self$rng),
+        as.raw(self$ptr),
         PACKAGE = private$lib_name
       )
     }

@@ -20,17 +20,6 @@ class StanModel:
     A StanModel instance encapsulates a Stan model instantiated with data
     and provides methods to access parameter names, transforms, log
     densities, gradients, and Hessians.
-
-    The constructor method instantiates a Stan model and sets constant
-    return values.  The constructor arguments are
-
-    :param model_lib: A path to a compiled shared object.
-    :param model_data: Either a JSON string literal or a
-         path to a data file in JSON format ending in ``.json``.
-    :param seed: A pseudo random number generator seed.
-    :raises FileNotFoundError or PermissionError: If ``model_lib`` is not readable or
-        ``model_data`` is specified and not a path to a readable file.
-    :raises RuntimeError: If there is an error instantiating the Stan model.
     """
 
     def __init__(
@@ -41,13 +30,15 @@ class StanModel:
         seed: int = 1234,
     ) -> None:
         """
-        Construct a StanModel object for a Stan model and data given
+        Construct a StanModel object for a compiled Stan model and data given
         constructor arguments.
 
         :param model_lib: A system path to compiled shared object.
-        :param model_data: Either a JSON string literal or a
-            system path to a data file in JSON format ending in ``.json``.
-        :param seed: A pseudo random number generator seed.
+        :param model_data: Either a JSON string literal, a
+            system path to a data file in JSON format ending in ``.json``,
+            or the empty string.
+        :param seed: A pseudo random number generator seed, used for RNG functions
+            in the ``transformed data`` block.
         :raises FileNotFoundError or PermissionError: If ``model_lib`` is not readable or
             ``model_data`` is specified and not a path to a readable file.
         :raises RuntimeError: If there is an error instantiating the
@@ -74,9 +65,9 @@ class StanModel:
         self._free_error.argtypes = [ctypes.c_char_p]
 
         err = ctypes.pointer(ctypes.c_char_p())
-        self.model_rng = self._construct(str.encode(self.data_path), self.seed, err)
+        self.model = self._construct(str.encode(self.data_path), self.seed, err)
 
-        if not self.model_rng:
+        if not self.model:
             raise self._handle_error(err.contents, "bs_construct")
 
         if self.model_version() != __version_info__:
@@ -221,8 +212,8 @@ class StanModel:
         """
         Destroy the Stan model and free memory.
         """
-        if hasattr(self, "model_rng") and hasattr(self, "_destruct"):
-            self._destruct(self.model_rng)
+        if hasattr(self, "model") and hasattr(self, "_destruct"):
+            self._destruct(self.model)
 
     def __repr__(self) -> str:
         data = f"{self.data_path!r}, " if self.data_path else ""
@@ -234,7 +225,7 @@ class StanModel:
 
         :return: The name of Stan model.
         """
-        return self._name(self.model_rng).decode("utf-8")
+        return self._name(self.model).decode("utf-8")
 
     def model_info(self) -> str:
         """
@@ -244,7 +235,7 @@ class StanModel:
 
         :return: Information about the compiled Stan model.
         """
-        return self._model_info(self.model_rng).decode("utf-8")
+        return self._model_info(self.model).decode("utf-8")
 
     def model_version(self) -> Tuple[int, int, int]:
         """
@@ -265,7 +256,7 @@ class StanModel:
         :param include_gq: ``True`` to include the generated quantities.
         :return: The number of parameters.
         """
-        return self._param_num(self.model_rng, int(include_tp), int(include_gq))
+        return self._param_num(self.model, int(include_tp), int(include_gq))
 
     def param_unc_num(self) -> int:
         """
@@ -273,7 +264,7 @@ class StanModel:
 
         :return: The number of unconstrained parameters.
         """
-        return self._param_unc_num(self.model_rng)
+        return self._param_unc_num(self.model)
 
     def param_names(
         self, *, include_tp: bool = False, include_gq: bool = False
@@ -293,7 +284,7 @@ class StanModel:
         :return: The indexed names of the parameters.
         """
         return (
-            self._param_names(self.model_rng, int(include_tp), int(include_gq))
+            self._param_names(self.model, int(include_tp), int(include_gq))
             .decode("utf-8")
             .split(",")
         )
@@ -306,7 +297,7 @@ class StanModel:
 
         :return: The indexed names of the unconstrained parameters.
         """
-        return self._param_unc_names(self.model_rng).decode("utf-8").split(",")
+        return self._param_unc_names(self.model).decode("utf-8").split(",")
 
     def param_constrain(
         self,
@@ -360,7 +351,7 @@ class StanModel:
         err = ctypes.pointer(ctypes.c_char_p())
 
         rc = self._param_constrain(
-            self.model_rng,
+            self.model,
             int(include_tp),
             int(include_gq),
             theta_unc,
@@ -407,7 +398,7 @@ class StanModel:
                 f"out size = {out.size} != unconstrained params size = {dims}"
             )
         err = ctypes.pointer(ctypes.c_char_p())
-        rc = self._param_unconstrain(self.model_rng, theta, out, err)
+        rc = self._param_unconstrain(self.model, theta, out, err)
         if rc:
             raise self._handle_error(err.contents, "param_unconstrain")
         return out
@@ -439,7 +430,7 @@ class StanModel:
             )
         chars = theta_json.encode("UTF-8")
         err = ctypes.pointer(ctypes.c_char_p())
-        rc = self._param_unconstrain_json(self.model_rng, chars, out, err)
+        rc = self._param_unconstrain_json(self.model, chars, out, err)
         if rc:
             raise self._handle_error(err.contents, "param_unconstrain_json")
         return out
@@ -467,7 +458,7 @@ class StanModel:
         lp = ctypes.pointer(ctypes.c_double())
         err = ctypes.pointer(ctypes.c_char_p())
         rc = self._log_density(
-            self.model_rng, int(propto), int(jacobian), theta_unc, lp, err
+            self.model, int(propto), int(jacobian), theta_unc, lp, err
         )
         if rc:
             raise self._handle_error(err.contents, "log_density")
@@ -509,7 +500,7 @@ class StanModel:
         lp = ctypes.pointer(ctypes.c_double())
         err = ctypes.pointer(ctypes.c_char_p())
         rc = self._log_density_gradient(
-            self.model_rng, int(propto), int(jacobian), theta_unc, lp, out, err
+            self.model, int(propto), int(jacobian), theta_unc, lp, out, err
         )
         if rc:
             raise self._handle_error(err.contents, "log_density_gradient")
@@ -564,7 +555,7 @@ class StanModel:
         lp = ctypes.pointer(ctypes.c_double())
         err = ctypes.pointer(ctypes.c_char_p())
         rc = self._log_density_hessian(
-            self.model_rng,
+            self.model,
             int(propto),
             int(jacobian),
             theta_unc,

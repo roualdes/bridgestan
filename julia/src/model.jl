@@ -18,7 +18,8 @@ end
 A StanModel instance encapsulates a Stan model instantiated with data.
 
 Construct a Stan model from the supplied library file path and data. Data
-should either be a string containing a JSON string literal or a path to a data file ending in `.json`.
+should either be a string containing a JSON string literal, a path to a data file ending in `.json`,
+or the empty string.
 If seed is supplied, it is used to initialize the RNG used by the model's constructor.
 
     StanModel(;stan_file, data="", seed=204)
@@ -100,32 +101,32 @@ This object is not thread-safe, one should be created per thread.
 """
 mutable struct StanRNG
     lib::Ptr{Nothing}
-    rng::Ptr{StanRNGStruct}
+    ptr::Ptr{StanRNGStruct}
     seed::UInt32
 
     function StanRNG(sm::StanModel, seed)
         seed = convert(UInt32, seed)
 
         err = Ref{Cstring}()
-        rng = ccall(
+        ptr = ccall(
             Libc.Libdl.dlsym(sm.lib, "bs_construct_rng"),
             Ptr{StanModelStruct},
             (UInt32, Ref{Cstring}),
             seed,
             err,
         )
-        if rng == C_NULL
-            error(_handle_error(sm.lib, err, "bs_construct_rng"))
+        if ptr == C_NULL
+            error(handle_error(sm.lib, err, "bs_construct_rng"))
         end
 
-        stanrng = new(sm.lib, rng, seed)
+        stanrng = new(sm.lib, ptr, seed)
 
         function f(stanrng)
             ccall(
                 Libc.Libdl.dlsym(stanrng.lib, "bs_destruct_rng"),
                 Cvoid,
                 (Ptr{StanModelStruct},),
-                stanrng.rng,
+                stanrng.ptr,
             )
         end
 
@@ -296,7 +297,7 @@ function param_constrain!(
         end
         rng_ptr = C_NULL
     else
-        rng_ptr = rng.rng
+        rng_ptr = rng.ptr
     end
 
     err = Ref{Cstring}()
