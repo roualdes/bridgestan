@@ -7,7 +7,6 @@ use std::ffi::CStr;
 use std::ffi::NulError;
 use std::ffi::OsStr;
 use std::ptr::null;
-use std::ptr::null_mut;
 use std::ptr::NonNull;
 use std::str::Utf8Error;
 
@@ -78,7 +77,6 @@ pub fn open_library<P: AsRef<OsStr>>(path: P) -> Result<StanLibrary> {
 pub struct Model<T: Borrow<StanLibrary>> {
     model: NonNull<ffi::bs_model>,
     lib: T,
-    seed: u32,
 }
 
 // Stan model is thread safe
@@ -98,21 +96,15 @@ impl<T: Borrow<StanLibrary>> Drop for Rng<T> {
     fn drop(&mut self) {
         unsafe {
             // We don't handle error messages during deconstruct
-            let _ = self
-                .lib
-                .borrow()
-                .bs_destruct_rng(self.rng.as_ptr(), null_mut());
+            self.lib.borrow().bs_rng_destruct(self.rng.as_ptr());
         }
     }
 }
 
 impl<T: Borrow<StanLibrary>> Rng<T> {
-    pub fn new(lib: T, seed: u32, chain_id: u32) -> Result<Self> {
+    pub fn new(lib: T, seed: u32) -> Result<Self> {
         let mut err = ErrorMsg::new(lib.borrow());
-        let rng = unsafe {
-            lib.borrow()
-                .bs_construct_rng(seed as c_uint, chain_id as c_uint, err.as_ptr())
-        };
+        let rng = unsafe { lib.borrow().bs_rng_construct(seed as c_uint, err.as_ptr()) };
         if let Some(rng) = NonNull::new(rng) {
             drop(err);
             Ok(Self { rng, lib })
@@ -189,13 +181,16 @@ impl<T: Borrow<StanLibrary>> Model<T> {
             .as_ref()
             .map(|data| data.as_ref().as_ptr())
             .unwrap_or(null());
-        let model = unsafe { lib.borrow().bs_construct(data_ptr, seed, err.as_ptr()) };
+        let model = unsafe {
+            lib.borrow()
+                .bs_model_construct(data_ptr, seed, err.as_ptr())
+        };
         // Make sure data lives until here
         drop(data);
 
         if let Some(model) = NonNull::new(model) {
             drop(err);
-            let model = Self { model, lib, seed };
+            let model = Self { model, lib };
             // If STAN_THREADS is not true, the safty guaranties we are
             // making would be incorrect
             let info = model.info()?;
@@ -214,8 +209,8 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         self.lib.borrow()
     }
 
-    pub fn new_rng(&self, chain_id: u32) -> Result<Rng<&StanLibrary>> {
-        Rng::new(self.ref_library(), self.seed, chain_id)
+    pub fn new_rng(&self, seed: u32) -> Result<Rng<&StanLibrary>> {
+        Rng::new(self.ref_library(), seed)
     }
 
     /// Return the name of the model or error if UTF decode fails
@@ -472,7 +467,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
 impl<T: Borrow<StanLibrary>> Drop for Model<T> {
     /// Free the memory allocated in C++.
     fn drop(&mut self) {
-        unsafe { self.lib.borrow().bs_destruct(self.model.as_ptr()) }
+        unsafe { self.lib.borrow().bs_model_destruct(self.model.as_ptr()) }
     }
 }
 
