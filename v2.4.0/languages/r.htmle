@@ -1,0 +1,1136 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>R Interface &#8212; BridgeStan v2.4.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/Documenter.css?v=1b4fb8cc" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=4c71fcf5" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="../_static/documentation_options.js?v=b627b0b9"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'languages/r';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.15.2';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://roualdes.github.io/bridgestan/latest/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'vv2.4.0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Rust Interface" href="rust.html" />
+    <link rel="prev" title="Julia Interface" href="julia.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/icon.png" class="logo__image only-light" alt="BridgeStan - Home"/>
+    <script>document.write(`<img src="../_static/icon_w.png" class="logo__image only-dark" alt="BridgeStan - Home"/>`);</script>
+  
+  
+    <p class="title logo__title">BridgeStan vv2.4.0</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting-started.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../languages.html">
+                        Language Interfaces
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../internals.html">
+                        How It Works
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/roualdes/bridgestan" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discourse.mc-stan.org/" title="Forums" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fas fa-users fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Forums</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting-started.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../languages.html">
+                        Language Interfaces
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../internals.html">
+                        How It Works
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/roualdes/bridgestan" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discourse.mc-stan.org/" title="Forums" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fas fa-users fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">Forums</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="python.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="julia.html">Julia Interface</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">R Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rust.html">Rust Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="c-api.html">C API</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../languages.html" class="nav-link">Language Interfaces</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">R Interface</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="r-interface">
+<h1>R Interface<a class="headerlink" href="#r-interface" title="Link to this heading">#</a></h1>
+<hr class="docutils" />
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
+<p>This assumes you have followed the <a class="reference internal" href="../getting-started.html"><span class="std std-doc">Getting Started guide</span></a>
+to install BridgeStan’s pre-requisites and downloaded a copy of the BridgeStan source code.</p>
+<div class="highlight-R notranslate"><div class="highlight"><pre><span></span><span class="n">devtools</span><span class="o">::</span><span class="nf">install_github</span><span class="p">(</span><span class="s">&quot;https://github.com/roualdes/bridgestan&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">subdir</span><span class="o">=</span><span class="s">&quot;R&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or, since you have already downloaded the repository, you can run</p>
+<div class="highlight-R notranslate"><div class="highlight"><pre><span></span><span class="nf">install.packages</span><span class="p">(</span><span class="nf">file.path</span><span class="p">(</span><span class="nf">getwd</span><span class="p">(),</span><span class="s">&quot;R&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">repos</span><span class="o">=</span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s">&quot;source&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>from the BridgeStan folder.</p>
+<p>Note that the R package depends on R 3+ and R6, and will install R6 if it is not
+already installed.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Mac users have reported issues when using a copy of R installed from <a class="reference external" href="https://conda-forge.org/">conda-forge</a>. If you encounter an issue, you may need to use R from the official <a class="reference external" href="https://www.r-project.org/">R project website</a> or a system package manager like <code class="docutils literal notranslate"><span class="pre">brew</span></code>.</p>
+</div>
+</section>
+<section id="example-program">
+<h2>Example Program<a class="headerlink" href="#example-program" title="Link to this heading">#</a></h2>
+<p>An example program is provided alongside the R interface code in <code class="docutils literal notranslate"><span class="pre">example.R</span></code>:</p>
+<details>
+<summary><a>Show example.R</a></summary>
+<div class="highlight-R notranslate"><div class="highlight"><pre><span></span><span class="c1"># Before running this, make sure you are in the directory bridgestan/R</span>
+
+<span class="nf">library</span><span class="p">(</span><span class="n">bridgestan</span><span class="p">)</span>
+
+<span class="n">model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">StanModel</span><span class="o">$</span><span class="nf">new</span><span class="p">(</span><span class="s">&quot;../test_models/bernoulli/bernoulli.stan&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;../test_models/bernoulli/bernoulli.data.json&quot;</span><span class="p">,</span><span class="w"> </span><span class="m">1234</span><span class="p">)</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="s">&quot;This model&#39;s name is &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="o">$</span><span class="nf">name</span><span class="p">(),</span><span class="w"> </span><span class="s">&quot;.&quot;</span><span class="p">))</span>
+<span class="nf">print</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="s">&quot;This model has &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="o">$</span><span class="nf">param_num</span><span class="p">(),</span><span class="w"> </span><span class="s">&quot; parameters.&quot;</span><span class="p">))</span>
+
+
+<span class="n">x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">runif</span><span class="p">(</span><span class="n">model</span><span class="o">$</span><span class="nf">param_unc_num</span><span class="p">())</span>
+<span class="n">q</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="m">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">x</span><span class="p">))</span>
+
+<span class="n">res</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">model</span><span class="o">$</span><span class="nf">log_density_gradient</span><span class="p">(</span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="n">jacobian</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span>
+
+<span class="nf">print</span><span class="p">(</span><span class="nf">paste0</span><span class="p">(</span><span class="s">&quot;log_density and gradient of Bernoulli model: &quot;</span><span class="p">,</span>
+<span class="w">             </span><span class="n">res</span><span class="o">$</span><span class="n">val</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;, &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">res</span><span class="o">$</span><span class="n">gradient</span><span class="p">))</span>
+</pre></div>
+</div>
+</details>
+</section>
+<section id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h2>
+<section id="stanmodel">
+<h3>StanModel<a class="headerlink" href="#stanmodel" title="Link to this heading">#</a></h3>
+<p>R6 Class representing a compiled BridgeStan model.</p>
+<p>This model exposes log density, gradient, and Hessian information as well as constraining and unconstraining transforms.</p>
+<section id="methods">
+<h4>Methods<a class="headerlink" href="#methods" title="Link to this heading">#</a></h4>
+<section id="method-new">
+<h5>Method <code class="docutils literal notranslate"><span class="pre">new()</span></code><a class="headerlink" href="#method-new" title="Link to this heading">#</a></h5>
+<p>Create a Stan Model instance.</p>
+<section id="usage">
+<h6>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h6>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>StanModel$new(
+  lib,
+  data,
+  seed,
+  stanc_args = NULL,
+  make_args = NULL,
+  warn = TRUE
+)
+</pre></div>
+</div>
+</section>
+<section id="arguments">
+<h6>Arguments<a class="headerlink" href="#arguments" title="Link to this heading">#</a></h6>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">lib</span></code></strong>: A path to a compiled BridgeStan Shared Object file or a .stan file (will be compiled).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">data</span></code></strong>: Either a JSON string literal, a path to a data file in JSON format ending in “.json”, or the empty string.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">seed</span></code></strong>: Seed for the RNG used in constructing the model.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">stanc_args</span></code></strong>: A list of arguments to pass to stanc3 if the model is not already compiled.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">make_args</span></code></strong>: A list of additional arguments to pass to Make if the model is not already compiled.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">warn</span></code></strong>: If false, the warning about re-loading the same shared object is suppressed.</p></li>
+</ul>
+</section>
+<section id="returns">
+<h6>Returns<a class="headerlink" href="#returns" title="Link to this heading">#</a></h6>
+<p>A new StanModel.</p>
+</section>
+</section>
+<section id="method-name">
+<h5>Method <code class="docutils literal notranslate"><span class="pre">name()</span></code><a class="headerlink" href="#method-name" title="Link to this heading">#</a></h5>
+<p>Get the name of this StanModel.</p>
+<section id="id1">
+<h6>Usage<a class="headerlink" href="#id1" title="Link to this heading">#</a></h6>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>StanModel$name()
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h6>Returns<a class="headerlink" href="#id2" title="Link to this heading">#</a></h6>
+<p>A character vector of the name.</p>
+</section>
+</section>
+<section id="method-model-info">
+<h5>Method <code class="docutils literal notranslate"><span class="pre">model_info()</span></code><a class="headerlink" href="#method-model-info" title="Link to this heading">#</a></h5>
+<p>Get compile information about this Stan model.</p>
+<section id="id3">
+<h6>Usage<a class="headerlink" href="#id3" title="Link to this heading">#</a></h6>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>StanModel$model_info()
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h6>Returns<a class="headerlink" href="#id4" title="Link to this heading">#</a></h6>
+<p>A character vector of the Stan version and important flags.</p>
+</section>
+</section>
+<section id="method-model-version">
+<h5>Method <code class="docutils literal notranslate"><span class="pre">model_version()</span></code><a class="headerlink" href="#method-model-version" title="Link to this heading">#</a></h5>
+<p>Get the version of BridgeStan used in the compiled model.</p>
+<section id="id5">
+<h6>Usage<a class="headerlink" href="#id5" title="Link to this heading">#</a></h6>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>StanModel$model_version()
+</pre></div>
+</div>
+</section>
+</section>
+<section id="method-param-names">
+<h5>Method <code class="docutils literal notranslate"><span class="pre">param_names()</span></code><a class="headerlink" href="#method-param-names" title="Link to this heading">#</a></h5>
+<p>Return the indexed names of the (constrained) parameters. For containers, indexes are separated by periods (.).</p>
+<p>For example, the scalar <code class="docutils literal notranslate"><span class="pre">a</span></code> has indexed name “a”, the vector entry <code class="docutils literal notranslate"><span class="pre">a[1]</span></code> has indexed name “a.1” and the matrix entry <code class="docutils literal notranslate"><span class="pre">a[2,</span> <span class="pre">3]</span></code> has indexed name “a.2.3”. Parameter order of the output is column major and more generally last-index major for containers.</p>
+<section id="id6">
+<h6>Usage<a class="headerlink" href="#id6" title="Link to this heading">#</a></h6>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>StanModel$param_names(include_tp = FALSE, include_gq = FALSE)
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h6>Arguments<a class="headerlink" href="#id7" title="Link to this heading">#</a></h6>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">include_tp</span></code></strong>: Whether to include variables from transformed parameters.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">include_gq</span></code></strong>: Whether to include variables from generated quantities.</p></li>
+</ul>
+</section>
+<section id="id8">
+<h6>Returns<a class="headerlink" href="#id8" title="Link to this heading">#</a></h6>
+<p>A list of character vectors of the names.</p>
+</section>
+</section>
+<section id="method-param-unc-names">
+<h5>Method <code class="docutils literal notranslate"><span class="pre">param_unc_names()</span></code><a class="headerlink" href="#method-param-unc-names" title="Link to this heading">#</a></h5>
+<p>Return the indexed names of the unconstrained parameters. For containers, indexes are separated by periods (.).</p>
+<p>For example, the scalar <code class="docutils literal notranslate"><span class="pre">a</span></code> has indexed name “a”, the vector entry <code class="docutils literal notranslate"><span class="pre">a[1]</span></code> has indexed name “a.1” and the matrix entry <code class="docutils literal notranslate"><span class="pre">a[2,</span> <span class="pre">3]</span></code> has indexed name “a.2.3”. Parameter order of the output is column major and more generally last-index major for containers.</p>
+<section id="id9">
+<h6>Usage<a class="headerlink" href="#id9" title="Link to this heading">#</a></h6>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>StanModel$param_unc_names()
+</pre></div>
+</div>
+</section>
+<section id="id10">
+<h6>Returns<a class="headerlink" href="#id10" title="Link to this heading">#</a></h6>
+<p>A list of character vectors of the names.</p>
+</section>
+</section>
+<section id="method-param-num">
+<h5>Method <code class="docutils literal notranslate"><span class="pre">param_num()</span></code><a class="headerlink" href="#method-param-num" title="Link to this heading">#</a></h5>
+<p>Return the number of (constrained) parameters in the model.</p>
+<section id="id11">
+<h6>Usage<a class="headerlink" href="#id11" title="Link to this heading">#</a></h6>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>StanModel$param_num(include_tp = FALSE, include_gq = FALSE)
+</pre></div>
+</div>
+</section>
+<section id="id12">
+<h6>Arguments<a class="headerlink" href="#id12" title="Link to this heading">#</a></h6>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">include_tp</span></code></strong>: Whether to include variables from transformed parameters.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">include_gq</span></code></strong>: Whether to include variables from generated quantities.</p></li>
+</ul>
+</section>
+<section id="id13">
+<h6>Returns<a class="headerlink" href="#id13" title="Link to this heading">#</a></h6>
+<p>The number of parameters in the model.</p>
+</section>
+</section>
+<section id="method-param-unc-num">
+<h5>Method <code class="docutils literal notranslate"><span class="pre">param_unc_num()</span></code><a class="headerlink" href="#method-param-unc-num" title="Link to this heading">#</a></h5>
+<p>Return the number of unconstrained parameters in the model.</p>
+<p>This function is mainly different from <code class="docutils literal notranslate"><span class="pre">param_num</span></code> when variables are declared with constraints. For example, <code class="docutils literal notranslate"><span class="pre">simplex[5]</span></code> has a constrained size of 5, but an unconstrained size of 4.</p>
+<section id="id14">
+<h6>Usage<a class="headerlink" href="#id14" title="Link to this heading">#</a></h6>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>StanModel$param_unc_num()
+</pre></div>
+</div>
+</section>
+<section id="id15">
+<h6>Returns<a class="headerlink" href="#id15" title="Link to this heading">#</a></h6>
+<p>The number of parameters in the model.</p>
+</section>
+</section>
+<section id="method-param-constrain">
+<h5>Method <code class="docutils literal notranslate"><span class="pre">param_constrain()</span></code><a class="headerlink" href="#method-param-constrain" title="Link to this heading">#</a></h5>
+<p>Returns a vector of constrained parameters given the unconstrained parameters. See also <code class="docutils literal notranslate"><span class="pre">StanModel$param_unconstrain()</span></code>, the inverse of this function.</p>
+<section id="id16">
+<h6>Usage<a class="headerlink" href="#id16" title="Link to this heading">#</a></h6>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>StanModel$param_constrain(
+  theta_unc,
+  include_tp = FALSE,
+  include_gq = FALSE,
+  rng
+)
+</pre></div>
+</div>
+</section>
+<section id="id17">
+<h6>Arguments<a class="headerlink" href="#id17" title="Link to this heading">#</a></h6>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">theta_unc</span></code></strong>: The vector of unconstrained parameters.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">include_tp</span></code></strong>: Whether to also output the transformed parameters of the model.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">include_gq</span></code></strong>: Whether to also output the generated quantities of the model.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">rng</span></code></strong>: The random number generator to use if <code class="docutils literal notranslate"><span class="pre">include_gq</span></code> is <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>. See <code class="docutils literal notranslate"><span class="pre">StanModel$new_rng()</span></code>.</p></li>
+</ul>
+</section>
+<section id="id18">
+<h6>Returns<a class="headerlink" href="#id18" title="Link to this heading">#</a></h6>
+<p>The constrained parameters of the model.</p>
+</section>
+</section>
+<section id="method-new-rng">
+<h5>Method <code class="docutils literal notranslate"><span class="pre">new_rng()</span></code><a class="headerlink" href="#method-new-rng" title="Link to this heading">#</a></h5>
+<p>Create a new persistent PRNG object for use in <code class="docutils literal notranslate"><span class="pre">param_constrain()</span></code>.</p>
+<section id="id19">
+<h6>Usage<a class="headerlink" href="#id19" title="Link to this heading">#</a></h6>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>StanModel$new_rng(seed)
+</pre></div>
+</div>
+</section>
+<section id="id20">
+<h6>Arguments<a class="headerlink" href="#id20" title="Link to this heading">#</a></h6>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">seed</span></code></strong>: The seed for the PRNG.</p></li>
+</ul>
+</section>
+<section id="id21">
+<h6>Returns<a class="headerlink" href="#id21" title="Link to this heading">#</a></h6>
+<p>A <code class="docutils literal notranslate"><span class="pre">StanRNG</span></code> object.</p>
+</section>
+</section>
+<section id="method-param-unconstrain">
+<h5>Method <code class="docutils literal notranslate"><span class="pre">param_unconstrain()</span></code><a class="headerlink" href="#method-param-unconstrain" title="Link to this heading">#</a></h5>
+<p>Returns a vector of unconstrained parameters give the constrained parameters.</p>
+<p>It is assumed that these will be in the same order as internally represented by the model (e.g., in the same order as <code class="docutils literal notranslate"><span class="pre">StanModel$param_names()</span></code>). If structured input is needed, use <code class="docutils literal notranslate"><span class="pre">StanModel$param_unconstrain_json()</span></code>. See also <code class="docutils literal notranslate"><span class="pre">StanModel$param_constrain()</span></code>, the inverse of this function.</p>
+<section id="id22">
+<h6>Usage<a class="headerlink" href="#id22" title="Link to this heading">#</a></h6>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>StanModel$param_unconstrain(theta)
+</pre></div>
+</div>
+</section>
+<section id="id23">
+<h6>Arguments<a class="headerlink" href="#id23" title="Link to this heading">#</a></h6>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">theta</span></code></strong>: The vector of constrained parameters.</p></li>
+</ul>
+</section>
+<section id="id24">
+<h6>Returns<a class="headerlink" href="#id24" title="Link to this heading">#</a></h6>
+<p>The unconstrained parameters of the model.</p>
+</section>
+</section>
+<section id="method-param-unconstrain-json">
+<h5>Method <code class="docutils literal notranslate"><span class="pre">param_unconstrain_json()</span></code><a class="headerlink" href="#method-param-unconstrain-json" title="Link to this heading">#</a></h5>
+<p>This accepts a JSON string of constrained parameters and returns the unconstrained parameters.</p>
+<p>The JSON is expected to be in the <a class="reference external" href="https://mc-stan.org/docs/cmdstan-guide/json.html">JSON Format for CmdStan</a>.</p>
+<section id="id25">
+<h6>Usage<a class="headerlink" href="#id25" title="Link to this heading">#</a></h6>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>StanModel$param_unconstrain_json(json)
+</pre></div>
+</div>
+</section>
+<section id="id26">
+<h6>Arguments<a class="headerlink" href="#id26" title="Link to this heading">#</a></h6>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">json</span></code></strong>: Character vector containing a string representation of JSON data.</p></li>
+</ul>
+</section>
+<section id="id27">
+<h6>Returns<a class="headerlink" href="#id27" title="Link to this heading">#</a></h6>
+<p>The unconstrained parameters of the model.</p>
+</section>
+</section>
+<section id="method-log-density">
+<h5>Method <code class="docutils literal notranslate"><span class="pre">log_density()</span></code><a class="headerlink" href="#method-log-density" title="Link to this heading">#</a></h5>
+<p>Return the log density of the specified unconstrained parameters.</p>
+<section id="id28">
+<h6>Usage<a class="headerlink" href="#id28" title="Link to this heading">#</a></h6>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>StanModel$log_density(theta_unc, propto = TRUE, jacobian = TRUE)
+</pre></div>
+</div>
+</section>
+<section id="id29">
+<h6>Arguments<a class="headerlink" href="#id29" title="Link to this heading">#</a></h6>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">theta_unc</span></code></strong>: The vector of unconstrained parameters.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">propto</span></code></strong>: If <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, drop terms which do not depend on the parameters.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">jacobian</span></code></strong>: If <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, include change of variables terms for constrained parameters.</p></li>
+</ul>
+</section>
+<section id="id30">
+<h6>Returns<a class="headerlink" href="#id30" title="Link to this heading">#</a></h6>
+<p>The log density.</p>
+</section>
+</section>
+<section id="method-log-density-gradient">
+<h5>Method <code class="docutils literal notranslate"><span class="pre">log_density_gradient()</span></code><a class="headerlink" href="#method-log-density-gradient" title="Link to this heading">#</a></h5>
+<p>Return the log density and gradient of the specified unconstrained parameters.</p>
+<section id="id31">
+<h6>Usage<a class="headerlink" href="#id31" title="Link to this heading">#</a></h6>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>StanModel$log_density_gradient(theta_unc, propto = TRUE, jacobian = TRUE)
+</pre></div>
+</div>
+</section>
+<section id="id32">
+<h6>Arguments<a class="headerlink" href="#id32" title="Link to this heading">#</a></h6>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">theta_unc</span></code></strong>: The vector of unconstrained parameters.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">propto</span></code></strong>: If <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, drop terms which do not depend on the parameters.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">jacobian</span></code></strong>: If <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, include change of variables terms for constrained parameters.</p></li>
+</ul>
+</section>
+<section id="id33">
+<h6>Returns<a class="headerlink" href="#id33" title="Link to this heading">#</a></h6>
+<p>List containing entries <code class="docutils literal notranslate"><span class="pre">val</span></code> (the log density) and <code class="docutils literal notranslate"><span class="pre">gradient</span></code> (the gradient).</p>
+</section>
+</section>
+<section id="method-log-density-hessian">
+<h5>Method <code class="docutils literal notranslate"><span class="pre">log_density_hessian()</span></code><a class="headerlink" href="#method-log-density-hessian" title="Link to this heading">#</a></h5>
+<p>Return the log density, gradient, and Hessian of the specified unconstrained parameters.</p>
+<section id="id34">
+<h6>Usage<a class="headerlink" href="#id34" title="Link to this heading">#</a></h6>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>StanModel$log_density_hessian(theta_unc, propto = TRUE, jacobian = TRUE)
+</pre></div>
+</div>
+</section>
+<section id="id35">
+<h6>Arguments<a class="headerlink" href="#id35" title="Link to this heading">#</a></h6>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">theta_unc</span></code></strong>: The vector of unconstrained parameters.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">propto</span></code></strong>: If <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, drop terms which do not depend on the parameters.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">jacobian</span></code></strong>: If <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, include change of variables terms for constrained parameters.</p></li>
+</ul>
+</section>
+<section id="id36">
+<h6>Returns<a class="headerlink" href="#id36" title="Link to this heading">#</a></h6>
+<p>List containing entries <code class="docutils literal notranslate"><span class="pre">val</span></code> (the log density), <code class="docutils literal notranslate"><span class="pre">gradient</span></code> (the gradient), and <code class="docutils literal notranslate"><span class="pre">hessian</span></code> (the Hessian).</p>
+</section>
+</section>
+<section id="method-log-density-hessian-vector-product">
+<h5>Method <code class="docutils literal notranslate"><span class="pre">log_density_hessian_vector_product()</span></code><a class="headerlink" href="#method-log-density-hessian-vector-product" title="Link to this heading">#</a></h5>
+<p>Return the log density and the product of the Hessian with the specified vector.</p>
+<section id="id37">
+<h6>Usage<a class="headerlink" href="#id37" title="Link to this heading">#</a></h6>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>StanModel$log_density_hessian_vector_product(
+  theta_unc,
+  v,
+  propto = TRUE,
+  jacobian = TRUE
+)
+</pre></div>
+</div>
+</section>
+<section id="id38">
+<h6>Arguments<a class="headerlink" href="#id38" title="Link to this heading">#</a></h6>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">theta_unc</span></code></strong>: The vector of unconstrained parameters.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">v</span></code></strong>: The vector to multiply the Hessian by.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">propto</span></code></strong>: If <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, drop terms which do not depend on the parameters.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">jacobian</span></code></strong>: If <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, include change of variables terms for constrained parameters.</p></li>
+</ul>
+</section>
+<section id="id39">
+<h6>Returns<a class="headerlink" href="#id39" title="Link to this heading">#</a></h6>
+<p>List containing entries <code class="docutils literal notranslate"><span class="pre">val</span></code> (the log density) and <code class="docutils literal notranslate"><span class="pre">Hvp</span></code> (the hessian-vector product).</p>
+</section>
+</section>
+</section>
+</section>
+<section id="compilation-utilities">
+<h3>Compilation utilities<a class="headerlink" href="#compilation-utilities" title="Link to this heading">#</a></h3>
+</section>
+<section id="function-compile-model">
+<h3>Function <code class="docutils literal notranslate"><span class="pre">compile_model()</span></code><a class="headerlink" href="#function-compile-model" title="Link to this heading">#</a></h3>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">compile_model</span><span class="p">(</span><span class="n">stan_file</span><span class="p">,</span><span class="w"> </span><span class="n">stanc_args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">make_args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="id40">
+<h4>Arguments<a class="headerlink" href="#id40" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">stan_file</span></code>: A path to a Stan model file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make_args</span></code>: A vector of additional arguments to pass to Make. For example, <code class="docutils literal notranslate"><span class="pre">c('STAN_THREADS=True')</span></code> will enable threading for the compiled model. If the same flags are defined in <code class="docutils literal notranslate"><span class="pre">make/local</span></code>, the versions passed here will take precedent.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stanc_arg</span></code>: A vector of arguments to pass to stanc3. For example, <code class="docutils literal notranslate"><span class="pre">c('--O1')</span></code> will enable compiler optimization level 1.</p></li>
+</ul>
+</section>
+<section id="id41">
+<h4>Returns<a class="headerlink" href="#id41" title="Link to this heading">#</a></h4>
+<p>Path to the compiled model.</p>
+<p>Compiles a Stan model.</p>
+</section>
+<section id="details">
+<h4>Details<a class="headerlink" href="#details" title="Link to this heading">#</a></h4>
+<p>Run BridgeStan’s Makefile on a <code class="docutils literal notranslate"><span class="pre">.stan</span></code> file, creating the <code class="docutils literal notranslate"><span class="pre">.so</span></code> used by the StanModel class. This function checks that the path to BridgeStan is valid and will error if not. This can be set with <code class="docutils literal notranslate"><span class="pre">set_bridgestan_path</span></code>.</p>
+</section>
+<section id="see-also">
+<h4>See Also<a class="headerlink" href="#see-also" title="Link to this heading">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">set_bridgestan_path()</span></code></p>
+</section>
+</section>
+<section id="function-set-bridgestan-path">
+<h3>Function <code class="docutils literal notranslate"><span class="pre">set_bridgestan_path()</span></code><a class="headerlink" href="#function-set-bridgestan-path" title="Link to this heading">#</a></h3>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">set_bridgestan_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Set the path to BridgeStan.</p>
+<section id="id42">
+<h4>Details<a class="headerlink" href="#id42" title="Link to this heading">#</a></h4>
+<p>This should point to the top-level folder of the repository.</p>
+</section>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="julia.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Julia Interface</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="rust.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Rust Interface</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-program">Example Program</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#api-reference">API Reference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#stanmodel">StanModel</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#methods">Methods</a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#method-new">Method <code class="docutils literal notranslate"><span class="pre">new()</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#arguments">Arguments</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#returns">Returns</a></li>
+</ul>
+</li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#method-name">Method <code class="docutils literal notranslate"><span class="pre">name()</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Usage</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Returns</a></li>
+</ul>
+</li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#method-model-info">Method <code class="docutils literal notranslate"><span class="pre">model_info()</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Usage</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Returns</a></li>
+</ul>
+</li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#method-model-version">Method <code class="docutils literal notranslate"><span class="pre">model_version()</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Usage</a></li>
+</ul>
+</li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#method-param-names">Method <code class="docutils literal notranslate"><span class="pre">param_names()</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Usage</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Arguments</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Returns</a></li>
+</ul>
+</li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#method-param-unc-names">Method <code class="docutils literal notranslate"><span class="pre">param_unc_names()</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Usage</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Returns</a></li>
+</ul>
+</li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#method-param-num">Method <code class="docutils literal notranslate"><span class="pre">param_num()</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Usage</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Arguments</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Returns</a></li>
+</ul>
+</li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#method-param-unc-num">Method <code class="docutils literal notranslate"><span class="pre">param_unc_num()</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Usage</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">Returns</a></li>
+</ul>
+</li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#method-param-constrain">Method <code class="docutils literal notranslate"><span class="pre">param_constrain()</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id16">Usage</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id17">Arguments</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id18">Returns</a></li>
+</ul>
+</li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#method-new-rng">Method <code class="docutils literal notranslate"><span class="pre">new_rng()</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id19">Usage</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id20">Arguments</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id21">Returns</a></li>
+</ul>
+</li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#method-param-unconstrain">Method <code class="docutils literal notranslate"><span class="pre">param_unconstrain()</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id22">Usage</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id23">Arguments</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id24">Returns</a></li>
+</ul>
+</li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#method-param-unconstrain-json">Method <code class="docutils literal notranslate"><span class="pre">param_unconstrain_json()</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id25">Usage</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id26">Arguments</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id27">Returns</a></li>
+</ul>
+</li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#method-log-density">Method <code class="docutils literal notranslate"><span class="pre">log_density()</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id28">Usage</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id29">Arguments</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id30">Returns</a></li>
+</ul>
+</li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#method-log-density-gradient">Method <code class="docutils literal notranslate"><span class="pre">log_density_gradient()</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id31">Usage</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id32">Arguments</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id33">Returns</a></li>
+</ul>
+</li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#method-log-density-hessian">Method <code class="docutils literal notranslate"><span class="pre">log_density_hessian()</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id34">Usage</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id35">Arguments</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id36">Returns</a></li>
+</ul>
+</li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#method-log-density-hessian-vector-product">Method <code class="docutils literal notranslate"><span class="pre">log_density_hessian_vector_product()</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id37">Usage</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id38">Arguments</a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#id39">Returns</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compilation-utilities">Compilation utilities</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#function-compile-model">Function <code class="docutils literal notranslate"><span class="pre">compile_model()</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id40">Arguments</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id41">Returns</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#details">Details</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#see-also">See Also</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#function-set-bridgestan-path">Function <code class="docutils literal notranslate"><span class="pre">set_bridgestan_path()</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id42">Details</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/roualdes/bridgestan/edit/main/docs/languages/r.md">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/languages/r.md.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, BridgeStan Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
