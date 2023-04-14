@@ -1,0 +1,1223 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Rust Interface &#8212; BridgeStan  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/Documenter.css?v=1b4fb8cc" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=4c71fcf5" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'languages/rust';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://roualdes.us/bridgestan/latest/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'latest';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="C API" href="c-api.html" />
+    <link rel="prev" title="R Interface" href="r.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="latest" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/icon.png" class="logo__image only-light" alt="BridgeStan - Home"/>
+    <img src="../_static/icon_w.png" class="logo__image only-dark pst-js-only" alt="BridgeStan - Home"/>
+  
+  
+    <p class="title logo__title">BridgeStan</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../languages.html">
+    Language Interfaces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../internals.html">
+    How It Works
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/roualdes/bridgestan" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discourse.mc-stan.org/" title="Forums" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-users fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Forums</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting-started.html">
+    Getting Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../languages.html">
+    Language Interfaces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../internals.html">
+    How It Works
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/roualdes/bridgestan" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fab fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discourse.mc-stan.org/" title="Forums" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fas fa-users fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Forums</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="python.html">Python Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="julia.html">Julia Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="r.html">R Interface</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Rust Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="c-api.html">C API</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../languages.html" class="nav-link">Language Interfaces</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Rust Interface</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="rust-interface">
+<h1>Rust Interface<a class="headerlink" href="#rust-interface" title="Link to this heading">#</a></h1>
+<hr class="docutils" />
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
+<p>The BridgeStan Rust client is available on <a class="reference external" href="https://crates.io/crates/bridgestan">crates.io</a> and via <code class="docutils literal notranslate"><span class="pre">cargo</span></code>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cargo<span class="w"> </span>add<span class="w"> </span>bridgestan
+</pre></div>
+</div>
+<p>A copy of the BridgeStan C++ sources is needed to compile models. This can be downloaded to
+<code class="docutils literal notranslate"><span class="pre">~/.bridgestan/</span></code> automatically if you use the <code class="docutils literal notranslate"><span class="pre">download-bridgestan-src</span></code> feature.
+Otherwise, it can be downloaded manually (see <a class="reference internal" href="../getting-started.html"><span class="std std-doc">Getting Started</span></a>).</p>
+<p>Note that the system pre-requisites from the <a class="reference internal" href="../getting-started.html"><span class="std std-doc">Getting Started guide</span></a>
+are still required and will not be automatically installed by this method.</p>
+</section>
+<section id="example-program">
+<h2>Example Program<a class="headerlink" href="#example-program" title="Link to this heading">#</a></h2>
+<p>An example program is provided alongside the Rust crate in <code class="docutils literal notranslate"><span class="pre">examples/example.rs</span></code>:</p>
+<details>
+<summary><a>Show example.rs</a></summary>
+<div class="highlight-Rust notranslate"><div class="highlight"><pre><span></span><span class="k">use</span><span class="w"> </span><span class="n">bridgestan</span><span class="p">::{</span><span class="n">compile_model</span><span class="p">,</span><span class="w"> </span><span class="n">open_library</span><span class="p">,</span><span class="w"> </span><span class="n">BridgeStanError</span><span class="p">,</span><span class="w"> </span><span class="n">Model</span><span class="p">};</span>
+<span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">ffi</span><span class="p">::</span><span class="n">CString</span><span class="p">;</span>
+<span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">path</span><span class="p">::{</span><span class="n">Path</span><span class="p">,</span><span class="w"> </span><span class="n">PathBuf</span><span class="p">};</span>
+
+<span class="k">fn</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Set up logging - optional</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">env</span><span class="p">::</span><span class="n">var</span><span class="p">(</span><span class="s">&quot;RUST_LOG&quot;</span><span class="p">).</span><span class="n">is_err</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="p">::</span><span class="n">env</span><span class="p">::</span><span class="n">set_var</span><span class="p">(</span><span class="s">&quot;RUST_LOG&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bridgestan=info&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">env_logger</span><span class="p">::</span><span class="n">init</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// The path to the Stan model</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Path</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="fm">env!</span><span class="p">[</span><span class="s">&quot;CARGO_MANIFEST_DIR&quot;</span><span class="p">])</span>
+<span class="w">        </span><span class="p">.</span><span class="n">parent</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="n">unwrap</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="s">&quot;test_models&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="s">&quot;simple&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="s">&quot;simple.stan&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// You can manually set the BridgeStan src path or</span>
+<span class="w">    </span><span class="c1">// automatically download it (but remember to</span>
+<span class="w">    </span><span class="c1">// enable the download-bridgestan-src feature first)</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">bs_path</span><span class="p">:</span><span class="w"> </span><span class="nc">PathBuf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;..&quot;</span><span class="p">.</span><span class="n">into</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">// let bs_path = bridgestan::download_bridgestan_src().unwrap();</span>
+
+<span class="w">    </span><span class="c1">// The path to the compiled model</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">compile_model</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bs_path</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="p">[],</span><span class="w"> </span><span class="o">&amp;</span><span class="p">[]).</span><span class="n">expect</span><span class="p">(</span><span class="s">&quot;Could not compile Stan model.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;Compiled model: {path:?}&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">lib</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">open_library</span><span class="p">(</span><span class="n">path</span><span class="p">).</span><span class="n">expect</span><span class="p">(</span><span class="s">&quot;Could not load compiled Stan model.&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// The dataset as json</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">r#&quot;{&quot;N&quot;: 7}&quot;#</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CString</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">to_string</span><span class="p">().</span><span class="n">into_bytes</span><span class="p">()).</span><span class="n">unwrap</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// The seed is used in case the model contains a transformed data section</span>
+<span class="w">    </span><span class="c1">// that uses rng functions.</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">match</span><span class="w"> </span><span class="n">Model</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">lib</span><span class="p">,</span><span class="w"> </span><span class="nb">Some</span><span class="p">(</span><span class="n">data</span><span class="p">),</span><span class="w"> </span><span class="n">seed</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nb">Ok</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">model</span><span class="p">,</span>
+<span class="w">        </span><span class="nb">Err</span><span class="p">(</span><span class="n">BridgeStanError</span><span class="p">::</span><span class="n">ConstructFailed</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="fm">panic!</span><span class="p">(</span><span class="s">&quot;Model initialization failed. Error message from Stan was {msg}&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="nb">Err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="fm">panic!</span><span class="p">(</span><span class="s">&quot;Unexpected error:</span><span class="se">\n</span><span class="s">{e}&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">n_dim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model</span><span class="p">.</span><span class="n">param_unc_num</span><span class="p">();</span>
+<span class="w">    </span><span class="fm">assert_eq!</span><span class="p">(</span><span class="n">n_dim</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">);</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">point</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="mi">1</span><span class="k">f64</span><span class="p">;</span><span class="w"> </span><span class="n">n_dim</span><span class="p">];</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">gradient_out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="fm">vec!</span><span class="p">[</span><span class="mi">0</span><span class="k">f64</span><span class="p">;</span><span class="w"> </span><span class="n">n_dim</span><span class="p">];</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">logp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model</span>
+<span class="w">        </span><span class="p">.</span><span class="n">log_density_gradient</span><span class="p">(</span><span class="o">&amp;</span><span class="n">point</span><span class="p">[</span><span class="o">..</span><span class="p">],</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">gradient_out</span><span class="p">[</span><span class="o">..</span><span class="p">])</span>
+<span class="w">        </span><span class="p">.</span><span class="n">expect</span><span class="p">(</span><span class="s">&quot;Stan failed to evaluate the logp function.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;logp: {logp}</span><span class="se">\n</span><span class="s">grad: {gradient_out:?}&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</details>
+</section>
+<section id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h2>
+<p>This is also available <a class="reference external" href="https://docs.rs/bridgestan">on docs.rs</a></p>
+<dl class="rust crate">
+<dt class="sig sig-object rust" id="bridgestan">
+<span class="sig-name descname"><span class="k"><span class="pre">crate</span></span><span class="w"> </span><span class="n"><span class="pre">bridgestan</span></span></span><a class="headerlink" href="#bridgestan" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+</div>
+<p class="rubric">Variables</p>
+<dl class="rust variable">
+<dt class="sig sig-object rust" id="bridgestan-VERSION">
+<span class="sig-name descname"><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">VERSION</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="n"><span class="pre">str</span></span></span><a class="headerlink" href="#bridgestan-VERSION" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+</div>
+</dd></dl>
+
+<p class="rubric">Functions</p>
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-compile_model">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">compile_model</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">bs_path</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="n"><span class="pre">Path</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">stan_file</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="n"><span class="pre">Path</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">stanc_args</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n"><span class="pre">str</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">make_args</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n"><span class="pre">str</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Result</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">PathBuf</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-compile_model" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Compile a Stan Model. Requires a path to the BridgeStan sources (can be
+downloaded with <a class="reference internal" href="#bridgestan-download_bridgestan_src" title="bridgestan::download_bridgestan_src"><span class="xref myst rust rust-function"><code class="docutils literal notranslate"><span class="pre">download_bridgestan_src</span></code></span></a>
+if that feature is enabled), a path to the <code class="docutils literal notranslate"><span class="pre">.stan</span></code> file, and
+additional arguments for the Stan compiler and the <code class="docutils literal notranslate"><span class="pre">make</span></code> command.</p>
+</div>
+</dd></dl>
+
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-download_bridgestan_src">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">download_bridgestan_src</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Result</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">PathBuf</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-download_bridgestan_src" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Download and unzip the BridgeStan source distribution for this version
+to <code class="docutils literal notranslate"><span class="pre">~/.bridgestan/bridgestan-$VERSION</span></code>.
+Requires feature <code class="docutils literal notranslate"><span class="pre">download-bridgestan-src</span></code>.</p>
+</div>
+</dd></dl>
+
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-open_library">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">open_library</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">P</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">AsRef</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">OsStr</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">P</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Result</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-open_library" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Open a compiled Stan library.</p>
+<p>The library should have been compiled with BridgeStan,
+with the same version as the Rust library.</p>
+</div>
+</dd></dl>
+
+<p class="rubric">Enums</p>
+<dl class="rust enum">
+<dt class="sig sig-object rust" id="bridgestan-BridgeStanError">
+<span class="sig-name descname"><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="n"><span class="pre">BridgeStanError</span></span></span><a class="headerlink" href="#bridgestan-BridgeStanError" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Error type for bridgestan interface</p>
+</div>
+<dl class="rust struct">
+<dt class="sig sig-object rust" id="bridgestan-BridgeStanError-InvalidLibrary">
+<span class="sig-name descname"><span class="n"><span class="pre">InvalidLibrary</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">LoadingError</span></span><span class="p"><span class="pre">)</span></span></span><a class="headerlink" href="#bridgestan-BridgeStanError-InvalidLibrary" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>The provided library could not be loaded.</p>
+</div>
+</dd></dl>
+
+<dl class="rust struct">
+<dt class="sig sig-object rust" id="bridgestan-BridgeStanError-BadLibraryVersion">
+<span class="sig-name descname"><span class="n"><span class="pre">BadLibraryVersion</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">String</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">String</span></span><span class="p"><span class="pre">)</span></span></span><a class="headerlink" href="#bridgestan-BridgeStanError-BadLibraryVersion" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>The version of the Stan library does not match the version of the rust crate.</p>
+</div>
+</dd></dl>
+
+<dl class="rust struct">
+<dt class="sig sig-object rust" id="bridgestan-BridgeStanError-StanThreads">
+<span class="sig-name descname"><span class="n"><span class="pre">StanThreads</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">String</span></span><span class="p"><span class="pre">)</span></span></span><a class="headerlink" href="#bridgestan-BridgeStanError-StanThreads" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>The Stan library could not be loaded because it was compiled without threading support.</p>
+</div>
+</dd></dl>
+
+<dl class="rust struct">
+<dt class="sig sig-object rust" id="bridgestan-BridgeStanError-InvalidString">
+<span class="sig-name descname"><span class="n"><span class="pre">InvalidString</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">Utf8Error</span></span><span class="p"><span class="pre">)</span></span></span><a class="headerlink" href="#bridgestan-BridgeStanError-InvalidString" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Stan returned a string that couldn’t be decoded using UTF8.</p>
+</div>
+</dd></dl>
+
+<dl class="rust struct">
+<dt class="sig sig-object rust" id="bridgestan-BridgeStanError-ConstructFailed">
+<span class="sig-name descname"><span class="n"><span class="pre">ConstructFailed</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">String</span></span><span class="p"><span class="pre">)</span></span></span><a class="headerlink" href="#bridgestan-BridgeStanError-ConstructFailed" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>The model could not be instantiated, possibly because if incorrect data.</p>
+</div>
+</dd></dl>
+
+<dl class="rust struct">
+<dt class="sig sig-object rust" id="bridgestan-BridgeStanError-EvaluationFailed">
+<span class="sig-name descname"><span class="n"><span class="pre">EvaluationFailed</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">String</span></span><span class="p"><span class="pre">)</span></span></span><a class="headerlink" href="#bridgestan-BridgeStanError-EvaluationFailed" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Stan returned an error while computing the density.</p>
+</div>
+</dd></dl>
+
+<dl class="rust struct">
+<dt class="sig sig-object rust" id="bridgestan-BridgeStanError-SetCallbackFailed">
+<span class="sig-name descname"><span class="n"><span class="pre">SetCallbackFailed</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">String</span></span><span class="p"><span class="pre">)</span></span></span><a class="headerlink" href="#bridgestan-BridgeStanError-SetCallbackFailed" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Setting a print-callback failed.</p>
+</div>
+</dd></dl>
+
+<dl class="rust struct">
+<dt class="sig sig-object rust" id="bridgestan-BridgeStanError-ModelCompilingFailed">
+<span class="sig-name descname"><span class="n"><span class="pre">ModelCompilingFailed</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">String</span></span><span class="p"><span class="pre">)</span></span></span><a class="headerlink" href="#bridgestan-BridgeStanError-ModelCompilingFailed" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Compilation of the Stan model shared object failed.</p>
+</div>
+</dd></dl>
+
+<dl class="rust struct">
+<dt class="sig sig-object rust" id="bridgestan-BridgeStanError-DownloadFailed">
+<span class="sig-name descname"><span class="n"><span class="pre">DownloadFailed</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">String</span></span><span class="p"><span class="pre">)</span></span></span><a class="headerlink" href="#bridgestan-BridgeStanError-DownloadFailed" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Downloading BridgeStan’s C++ source code from GitHub failed.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<p class="rubric">Structs and Unions</p>
+<dl class="rust struct">
+<dt class="sig sig-object rust" id="bridgestan-Model">
+<span class="sig-name descname"><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">Model</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">Borrow</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Model" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>A Stan model instance with data</p>
+</div>
+<p class="rubric">Implementations</p>
+<dl class="rust impl">
+<dt class="sig sig-object rust" id="bridgestan-Model">
+<span class="sig-name descname"><span class="k"><span class="pre">impl</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">Borrow</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><a class="reference internal" href="#bridgestan-Model" title="bridgestan::Model"><span class="n"><span class="pre">Model</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Model" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+</div>
+<p class="rubric">Functions</p>
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-Model-info">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">self</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n"><span class="pre">CStr</span></span></span><a class="headerlink" href="#bridgestan-Model-info" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Return information about the compiled model</p>
+</div>
+</dd></dl>
+
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-Model-log_density">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">log_density</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">self</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">theta_unc</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">f64</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">propto</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">jacobian</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">bool</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Result</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">f64</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Model-log_density" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Compute the log of the prior times likelihood density</p>
+<p>Drop jacobian determinant terms of the transformation from unconstrained
+to the constrained space if <code class="docutils literal notranslate"><span class="pre">jacobian</span> <span class="pre">==</span> <span class="pre">false</span></code> and drop terms
+of the density that do not depend on the parameters if <code class="docutils literal notranslate"><span class="pre">propto</span> <span class="pre">==</span> <span class="pre">true</span></code>.</p>
+</div>
+</dd></dl>
+
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-Model-log_density_gradient">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">log_density_gradient</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">self</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">theta_unc</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">f64</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">propto</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">jacobian</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">grad</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">mut</span></span><span class="w"> </span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">f64</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Result</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">f64</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Model-log_density_gradient" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Compute the log of the prior times likelihood density and its gradient</p>
+<p>Drop jacobian determinant terms of the transformation from unconstrained
+to the constrained space if <code class="docutils literal notranslate"><span class="pre">jacobian</span> <span class="pre">==</span> <span class="pre">false</span></code> and drop terms
+of the density that do not depend on the parameters if <code class="docutils literal notranslate"><span class="pre">propto</span> <span class="pre">==</span> <span class="pre">true</span></code>.</p>
+<p>The gradient of the log density will be stored in <code class="docutils literal notranslate"><span class="pre">grad</span></code>.</p>
+<p><em>Panics</em> if the provided buffer has incorrect shape. The gradient buffer <code class="docutils literal notranslate"><span class="pre">grad</span></code>
+must have length <a class="reference internal" href="#bridgestan-Model-param_unc_num" title="bridgestan::Model::param_unc_num"><span class="xref myst rust rust-function"><code class="docutils literal notranslate"><span class="pre">self.param_unc_num()</span></code></span></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-Model-log_density_hessian">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">log_density_hessian</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">self</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">theta_unc</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">f64</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">propto</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">jacobian</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">grad</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">mut</span></span><span class="w"> </span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">f64</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">hessian</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">mut</span></span><span class="w"> </span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">f64</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Result</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">f64</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Model-log_density_hessian" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Compute the log of the prior times likelihood density and its gradient and hessian.</p>
+<p>Drop jacobian determinant terms of the transformation from unconstrained
+to the constrained space if <code class="docutils literal notranslate"><span class="pre">jacobian</span> <span class="pre">==</span> <span class="pre">false</span></code> and drop terms
+of the density that do not depend on the parameters if <code class="docutils literal notranslate"><span class="pre">propto</span> <span class="pre">==</span> <span class="pre">true</span></code>.</p>
+<p>The gradient of the log density will be stored in <code class="docutils literal notranslate"><span class="pre">grad</span></code>, the
+hessian is stored in <code class="docutils literal notranslate"><span class="pre">hessian</span></code>.</p>
+<p><em>Panics</em> if the provided buffers have incorrect shapes. The gradient buffer <code class="docutils literal notranslate"><span class="pre">grad</span></code>
+must have length <a class="reference internal" href="#bridgestan-Model-param_unc_num" title="bridgestan::Model::param_unc_num"><span class="xref myst rust rust-function"><code class="docutils literal notranslate"><span class="pre">self.param_unc_num()</span></code></span></a> and the <code class="docutils literal notranslate"><span class="pre">hessian</span></code>
+buffer must have length <a class="reference internal" href="#bridgestan-Model-param_unc_num" title="bridgestan::Model::param_unc_num"><span class="xref myst rust rust-function"><code class="docutils literal notranslate"><span class="pre">self.param_unc_num()</span></code></span></a> <code class="docutils literal notranslate"><span class="pre">*</span></code>
+<a class="reference internal" href="#bridgestan-Model-param_unc_num" title="bridgestan::Model::param_unc_num"><span class="xref myst rust rust-function"><code class="docutils literal notranslate"><span class="pre">self.param_unc_num()</span></code></span></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-Model-log_density_hessian_vector_product">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">log_density_hessian_vector_product</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">self</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">theta_unc</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">f64</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">f64</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">propto</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">jacobian</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">hvp</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">mut</span></span><span class="w"> </span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">f64</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Result</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">f64</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Model-log_density_hessian_vector_product" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Compute the log of the prior times likelihood density the product of
+the Hessian and specified vector.</p>
+<p>Drop jacobian determinant terms of the transformation from unconstrained
+to the constrained space if <code class="docutils literal notranslate"><span class="pre">jacobian</span> <span class="pre">==</span> <span class="pre">false</span></code> and drop terms
+of the density that do not depend on the parameters if <code class="docutils literal notranslate"><span class="pre">propto</span> <span class="pre">==</span> <span class="pre">true</span></code>.</p>
+<p>The product of the Hessian of the log density and the provided vector
+will be stored in <code class="docutils literal notranslate"><span class="pre">hvp</span></code>.</p>
+<p><em>Panics</em> if the provided buffer has incorrect shape. The buffer <code class="docutils literal notranslate"><span class="pre">hvp</span></code>
+must have length <a class="reference internal" href="#bridgestan-Model-param_unc_num" title="bridgestan::Model::param_unc_num"><span class="xref myst rust rust-function"><code class="docutils literal notranslate"><span class="pre">self.param_unc_num()</span></code></span></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-Model-name">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">self</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Result</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n"><span class="pre">str</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Model-name" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Return the name of the model or error if UTF decode fails</p>
+</div>
+</dd></dl>
+
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-Model-new">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">new</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">D</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">AsRef</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">CStr</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">lib</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">Option</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">D</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">u32</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Result</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Self</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Model-new" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Create a new instance of the compiled Stan model.</p>
+<p>Data is specified as a JSON file at the given path, a JSON string literal,
+or empty for no data. The seed is used if the model has RNG functions in
+the <code class="docutils literal notranslate"><span class="pre">transformed</span> <span class="pre">data</span></code> section.</p>
+</div>
+</dd></dl>
+
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-Model-new_rng">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">new_rng</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">self</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">u32</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Result</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#bridgestan-Rng" title="bridgestan::Rng"><span class="n"><span class="pre">Rng</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&amp;</span></span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Model-new_rng" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Create a new <a class="reference internal" href="#bridgestan-Rng" title="bridgestan::Rng"><span class="xref myst rust rust-struct"><code class="docutils literal notranslate"><span class="pre">Rng</span></code></span></a> random number generator from the library underlying this model.</p>
+<p>This can be used in <a class="reference internal" href="#bridgestan-Model-param_constrain" title="bridgestan::Model::param_constrain"><span class="xref myst rust rust-function"><code class="docutils literal notranslate"><span class="pre">param_constrain()</span></code></span></a> when values
+from the <code class="docutils literal notranslate"><span class="pre">generated</span> <span class="pre">quantities</span></code> block are desired.</p>
+<p>This instance can only be used with models from the same
+Stan library. Invalid usage will otherwise result in a
+panic.</p>
+</div>
+</dd></dl>
+
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-Model-param_constrain">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">param_constrain</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">R</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">Borrow</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">self</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">theta_unc</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">f64</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">include_tp</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">include_gq</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">out</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">mut</span></span><span class="w"> </span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">f64</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">Option</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">mut</span></span><span class="w"> </span><a class="reference internal" href="#bridgestan-Rng" title="bridgestan::Rng"><span class="n"><span class="pre">Rng</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">R</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Result</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Model-param_constrain" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Map a point in unconstrained parameter space to the constrained space.</p>
+<p><code class="docutils literal notranslate"><span class="pre">theta_unc</span></code> must contain the point in the unconstrained parameter space.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">include_tp</span></code> is set the output will also include the transformed
+parameters of the Stan model after the parameters. If <code class="docutils literal notranslate"><span class="pre">include_gq</span></code> is
+set, we also include the generated quantities at the very end.</p>
+<p><em>Panics</em> if the provided buffer has incorrect shape. The length of the <code class="docutils literal notranslate"><span class="pre">out</span></code> buffer
+must be <a class="reference internal" href="#bridgestan-Model-param_num" title="bridgestan::Model::param_num"><span class="xref myst rust rust-function"><code class="docutils literal notranslate"><span class="pre">self.param_num(include_tp,</span> <span class="pre">include_gq)</span></code></span></a>.</p>
+<p><em>Panics</em> if <code class="docutils literal notranslate"><span class="pre">include_gq</span></code> is set but no random number generator is provided.</p>
+</div>
+</dd></dl>
+
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-Model-param_names">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">param_names</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">self</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">include_tp</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">include_gq</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">bool</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n"><span class="pre">str</span></span></span><a class="headerlink" href="#bridgestan-Model-param_names" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Return a comma-separated sequence of indexed parameter names,
+including the transformed parameters and/or generated quantities
+as specified.</p>
+<p>The parameters are returned in the order they are declared.
+Multivariate parameters are return in column-major (more
+generally last-index major) order.  Parameter indices are separated
+with periods (<code class="docutils literal notranslate"><span class="pre">.</span></code>).  For example, <code class="docutils literal notranslate"><span class="pre">a[3]</span></code> is written <code class="docutils literal notranslate"><span class="pre">a.3</span></code> and <code class="docutils literal notranslate"><span class="pre">b[2,</span> <span class="pre">3]</span></code>
+as <code class="docutils literal notranslate"><span class="pre">b.2.3</span></code>.  The numbering follows Stan and is indexed from 1.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">include_tp</span></code> is set the names will also include the transformed
+parameters of the Stan model after the parameters. If <code class="docutils literal notranslate"><span class="pre">include_gq</span></code> is
+set, we also include the names of the generated quantities at
+the very end.</p>
+</div>
+</dd></dl>
+
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-Model-param_num">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">param_num</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">self</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">include_tp</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">include_gq</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">bool</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">usize</span></span></span><a class="headerlink" href="#bridgestan-Model-param_num" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Number of parameters in the model on the constrained scale.</p>
+<p>Will also count transformed parameters (<code class="docutils literal notranslate"><span class="pre">include_tp</span></code>) and generated
+quantities (<code class="docutils literal notranslate"><span class="pre">include_gq</span></code>) if requested.</p>
+</div>
+</dd></dl>
+
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-Model-param_unc_names">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">param_unc_names</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">self</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n"><span class="pre">str</span></span></span><a class="headerlink" href="#bridgestan-Model-param_unc_names" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Return a comma-separated sequence of unconstrained parameters.
+Only parameters are unconstrained, so there are no unconstrained
+transformed parameters or generated quantities.</p>
+<p>The parameters are returned in the order they are declared.
+Multivariate parameters are return in column-major (more
+generally last-index major) order.  Parameter indices are separated with
+periods (<code class="docutils literal notranslate"><span class="pre">.</span></code>).  For example, <code class="docutils literal notranslate"><span class="pre">a[3]</span></code> is written <code class="docutils literal notranslate"><span class="pre">a.3</span></code> and <code class="docutils literal notranslate"><span class="pre">b[2,</span> <span class="pre">3]</span></code> as <code class="docutils literal notranslate"><span class="pre">b.2.3</span></code>.  The numbering follows Stan and is indexed from 1.</p>
+</div>
+</dd></dl>
+
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-Model-param_unc_num">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">param_unc_num</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">self</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">usize</span></span></span><a class="headerlink" href="#bridgestan-Model-param_unc_num" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Return the number of parameters on the unconstrained scale.</p>
+<p>In particular, this is the size of the slice required by the <code class="docutils literal notranslate"><span class="pre">log_density</span></code> functions.</p>
+</div>
+</dd></dl>
+
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-Model-param_unconstrain">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">param_unconstrain</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">self</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">f64</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">theta_unc</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">mut</span></span><span class="w"> </span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">f64</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Result</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Model-param_unconstrain" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Map a point in constrained parameter space to the unconstrained space.</p>
+</div>
+</dd></dl>
+
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-Model-param_unconstrain_json">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">param_unconstrain_json</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">S</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">AsRef</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">CStr</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">self</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">json</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">S</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">theta_unc</span></span><span class="p"><span class="pre">:</span> </span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">mut</span></span><span class="w"> </span><span class="p"><span class="pre">[</span></span><span class="n"><span class="pre">f64</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Result</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Model-param_unconstrain_json" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Map a constrained point in json format to the unconstrained space.</p>
+<p>The JSON is expected to be in the
+<a class="reference external" href="https://mc-stan.org/docs/cmdstan-guide/json.html">JSON Format for CmdStan</a>.
+A value for each parameter in the Stan program should be provided, with
+dimensions and size corresponding to the Stan program declarations.</p>
+</div>
+</dd></dl>
+
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-Model-ref_library">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">ref_library</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">self</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a></span><a class="headerlink" href="#bridgestan-Model-ref_library" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Return a reference to the underlying Stan library</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="rust impl">
+<dt class="sig sig-object rust" id="bridgestan-Model">
+<span class="sig-name descname"><span class="k"><span class="pre">impl</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">Borrow</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"> <span class="pre">+</span> </span><span class="n"><span class="pre">Clone</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><a class="reference internal" href="#bridgestan-Model" title="bridgestan::Model"><span class="n"><span class="pre">Model</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Model" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+</div>
+<p class="rubric">Functions</p>
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-Model-clone_library_ref">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">clone_library_ref</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">self</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></span><a class="headerlink" href="#bridgestan-Model-clone_library_ref" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Return a clone of the underlying Stan library</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<p class="rubric">Traits implemented</p>
+<dl class="rust impl">
+<dt class="sig sig-object rust" id="bridgestan-Model-Sync">
+<span class="sig-name descname"><span class="k"><span class="pre">unsafe</span></span><span class="w"> </span><span class="k"><span class="pre">impl</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">Sync</span></span><span class="p"> <span class="pre">+</span> </span><span class="n"><span class="pre">Borrow</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Sync</span></span><span class="w"> </span><span class="k"><span class="pre">for</span></span><span class="w"> </span><a class="reference internal" href="#bridgestan-Model" title="bridgestan::Model"><span class="n"><span class="pre">Model</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Model-Sync" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+</div>
+</dd></dl>
+
+<dl class="rust impl">
+<dt class="sig sig-object rust" id="bridgestan-Model-Send">
+<span class="sig-name descname"><span class="k"><span class="pre">unsafe</span></span><span class="w"> </span><span class="k"><span class="pre">impl</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">Send</span></span><span class="p"> <span class="pre">+</span> </span><span class="n"><span class="pre">Borrow</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Send</span></span><span class="w"> </span><span class="k"><span class="pre">for</span></span><span class="w"> </span><a class="reference internal" href="#bridgestan-Model" title="bridgestan::Model"><span class="n"><span class="pre">Model</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Model-Send" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+</div>
+</dd></dl>
+
+<dl class="rust impl">
+<dt class="sig sig-object rust" id="bridgestan-Model-Drop">
+<span class="sig-name descname"><span class="k"><span class="pre">impl</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">Borrow</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Drop</span></span><span class="w"> </span><span class="k"><span class="pre">for</span></span><span class="w"> </span><a class="reference internal" href="#bridgestan-Model" title="bridgestan::Model"><span class="n"><span class="pre">Model</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Model-Drop" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="rust struct">
+<dt class="sig sig-object rust" id="bridgestan-Rng">
+<span class="sig-name descname"><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">Rng</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">Borrow</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Rng" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>A random number generator for Stan models.
+This is only used in the <a class="reference internal" href="#bridgestan-Model-param_constrain" title="bridgestan::Model::param_constrain"><span class="xref myst rust rust-function"><code class="docutils literal notranslate"><span class="pre">Model::param_constrain()</span></code></span></a> method
+of the model when requesting values from the <code class="docutils literal notranslate"><span class="pre">generated</span> <span class="pre">quantities</span></code> block.
+Different threads should use different instances.</p>
+</div>
+<p class="rubric">Implementations</p>
+<dl class="rust impl">
+<dt class="sig sig-object rust" id="bridgestan-Rng">
+<span class="sig-name descname"><span class="k"><span class="pre">impl</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">Borrow</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><a class="reference internal" href="#bridgestan-Rng" title="bridgestan::Rng"><span class="n"><span class="pre">Rng</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Rng" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+</div>
+<p class="rubric">Functions</p>
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-Rng-new">
+<span class="sig-name descname"><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">new</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">lib</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">u32</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Result</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Self</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Rng-new" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<p class="rubric">Traits implemented</p>
+<dl class="rust impl">
+<dt class="sig sig-object rust" id="bridgestan-Rng-Sync">
+<span class="sig-name descname"><span class="k"><span class="pre">unsafe</span></span><span class="w"> </span><span class="k"><span class="pre">impl</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">Sync</span></span><span class="p"> <span class="pre">+</span> </span><span class="n"><span class="pre">Borrow</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Sync</span></span><span class="w"> </span><span class="k"><span class="pre">for</span></span><span class="w"> </span><a class="reference internal" href="#bridgestan-Rng" title="bridgestan::Rng"><span class="n"><span class="pre">Rng</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Rng-Sync" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+</div>
+</dd></dl>
+
+<dl class="rust impl">
+<dt class="sig sig-object rust" id="bridgestan-Rng-Send">
+<span class="sig-name descname"><span class="k"><span class="pre">unsafe</span></span><span class="w"> </span><span class="k"><span class="pre">impl</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">Send</span></span><span class="p"> <span class="pre">+</span> </span><span class="n"><span class="pre">Borrow</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Send</span></span><span class="w"> </span><span class="k"><span class="pre">for</span></span><span class="w"> </span><a class="reference internal" href="#bridgestan-Rng" title="bridgestan::Rng"><span class="n"><span class="pre">Rng</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Rng-Send" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+</div>
+</dd></dl>
+
+<dl class="rust impl">
+<dt class="sig sig-object rust" id="bridgestan-Rng-Drop">
+<span class="sig-name descname"><span class="k"><span class="pre">impl</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">Borrow</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Drop</span></span><span class="w"> </span><span class="k"><span class="pre">for</span></span><span class="w"> </span><a class="reference internal" href="#bridgestan-Rng" title="bridgestan::Rng"><span class="n"><span class="pre">Rng</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-Rng-Drop" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="rust struct">
+<dt class="sig sig-object rust" id="bridgestan-StanLibrary">
+<span class="sig-name descname"><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="n"><span class="pre">StanLibrary</span></span></span><a class="headerlink" href="#bridgestan-StanLibrary" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>A loaded shared library for a Stan model</p>
+</div>
+<p class="rubric">Implementations</p>
+<dl class="rust impl">
+<dt class="sig sig-object rust" id="bridgestan-StanLibrary">
+<span class="sig-name descname"><span class="k"><span class="pre">impl</span></span><span class="w"> </span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a></span><a class="headerlink" href="#bridgestan-StanLibrary" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+</div>
+<p class="rubric">Functions</p>
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-StanLibrary-set_print_callback">
+<span class="sig-name descname"><span class="k"><span class="pre">unsafe</span></span><span class="w"> </span><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">set_print_callback</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">&amp;</span></span><span class="k"><span class="pre">mut</span></span><span class="w"> </span><span class="k"><span class="pre">self</span></span><span class="p"><span class="pre">,</span> </span><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span> </span><span class="n"><span class="pre">StanPrintCallback</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><span class="n"><span class="pre">Result</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span></span><a class="headerlink" href="#bridgestan-StanLibrary-set_print_callback" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Provide a callback function to be called when Stan prints a message</p>
+<p class="rubric" id="safety">Safety</p>
+<p>The provided function must never panic.</p>
+<p>Since the call is protected by a mutex internally, it does not
+need to be thread safe.</p>
+</div>
+</dd></dl>
+
+<dl class="rust function">
+<dt class="sig sig-object rust" id="bridgestan-StanLibrary-unload_library">
+<span class="sig-name descname"><span class="k"><span class="pre">unsafe</span></span><span class="w"> </span><span class="k"><span class="pre">fn</span></span><span class="w"> </span><span class="n"><span class="pre">unload_library</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">mut</span></span><span class="w"> </span><span class="k"><span class="pre">self</span></span><span class="p"><span class="pre">)</span></span></span><a class="headerlink" href="#bridgestan-StanLibrary-unload_library" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+<p>Unload the Stan library.</p>
+<p class="rubric" id="id1">Safety</p>
+<p>There seem to be issues around unloading libraries in threaded
+code that are not fully understood:
+<a class="github reference external" href="https://github.com/roualdes/bridgestan/issues/111">roualdes/bridgestan#111</a></p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<p class="rubric">Traits implemented</p>
+<dl class="rust impl">
+<dt class="sig sig-object rust" id="bridgestan-StanLibrary-Send">
+<span class="sig-name descname"><span class="k"><span class="pre">unsafe</span></span><span class="w"> </span><span class="k"><span class="pre">impl</span></span><span class="w"> </span><span class="n"><span class="pre">Send</span></span><span class="w"> </span><span class="k"><span class="pre">for</span></span><span class="w"> </span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a></span><a class="headerlink" href="#bridgestan-StanLibrary-Send" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+</div>
+</dd></dl>
+
+<dl class="rust impl">
+<dt class="sig sig-object rust" id="bridgestan-StanLibrary-Sync">
+<span class="sig-name descname"><span class="k"><span class="pre">unsafe</span></span><span class="w"> </span><span class="k"><span class="pre">impl</span></span><span class="w"> </span><span class="n"><span class="pre">Sync</span></span><span class="w"> </span><span class="k"><span class="pre">for</span></span><span class="w"> </span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a></span><a class="headerlink" href="#bridgestan-StanLibrary-Sync" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+</div>
+</dd></dl>
+
+<dl class="rust impl">
+<dt class="sig sig-object rust" id="bridgestan-StanLibrary-Drop">
+<span class="sig-name descname"><span class="k"><span class="pre">impl</span></span><span class="w"> </span><span class="n"><span class="pre">Drop</span></span><span class="w"> </span><span class="k"><span class="pre">for</span></span><span class="w"> </span><a class="reference internal" href="#bridgestan-StanLibrary" title="bridgestan::StanLibrary"><span class="n"><span class="pre">StanLibrary</span></span></a></span><a class="headerlink" href="#bridgestan-StanLibrary-Drop" title="Link to this definition">#</a></dt>
+<dd><div class="docutils">
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="r.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">R Interface</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="c-api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">C API</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-program">Example Program</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#api-reference">API Reference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-VERSION"><code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">VERSION</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-compile_model"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">compile_model</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-download_bridgestan_src"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">download_bridgestan_src</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-open_library"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">open_library</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-BridgeStanError"><code class="docutils literal notranslate"><span class="pre">enum</span> <span class="pre">BridgeStanError</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-BridgeStanError-InvalidLibrary"><code class="docutils literal notranslate"><span class="pre">InvalidLibrary</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-BridgeStanError-BadLibraryVersion"><code class="docutils literal notranslate"><span class="pre">BadLibraryVersion</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-BridgeStanError-StanThreads"><code class="docutils literal notranslate"><span class="pre">StanThreads</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-BridgeStanError-InvalidString"><code class="docutils literal notranslate"><span class="pre">InvalidString</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-BridgeStanError-ConstructFailed"><code class="docutils literal notranslate"><span class="pre">ConstructFailed</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-BridgeStanError-EvaluationFailed"><code class="docutils literal notranslate"><span class="pre">EvaluationFailed</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-BridgeStanError-SetCallbackFailed"><code class="docutils literal notranslate"><span class="pre">SetCallbackFailed</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-BridgeStanError-ModelCompilingFailed"><code class="docutils literal notranslate"><span class="pre">ModelCompilingFailed</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-BridgeStanError-DownloadFailed"><code class="docutils literal notranslate"><span class="pre">DownloadFailed</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model"><code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">Model</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model"><code class="docutils literal notranslate"><span class="pre">impl</span> <span class="pre">Model</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-info"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">info</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-log_density"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">log_density</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-log_density_gradient"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">log_density_gradient</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-log_density_hessian"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">log_density_hessian</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-log_density_hessian_vector_product"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">log_density_hessian_vector_product</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-name"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">name</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-new"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">new</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-new_rng"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">new_rng</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-param_constrain"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">param_constrain</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-param_names"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">param_names</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-param_num"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">param_num</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-param_unc_names"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">param_unc_names</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-param_unc_num"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">param_unc_num</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-param_unconstrain"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">param_unconstrain</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-param_unconstrain_json"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">param_unconstrain_json</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-ref_library"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">ref_library</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model"><code class="docutils literal notranslate"><span class="pre">impl</span> <span class="pre">Model</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-clone_library_ref"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">clone_library_ref</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-Sync"><code class="docutils literal notranslate"><span class="pre">impl</span> <span class="pre">Sync</span> <span class="pre">for</span> <span class="pre">Model</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-Send"><code class="docutils literal notranslate"><span class="pre">impl</span> <span class="pre">Send</span> <span class="pre">for</span> <span class="pre">Model</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Model-Drop"><code class="docutils literal notranslate"><span class="pre">impl</span> <span class="pre">Drop</span> <span class="pre">for</span> <span class="pre">Model</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Rng"><code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">Rng</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Rng"><code class="docutils literal notranslate"><span class="pre">impl</span> <span class="pre">Rng</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Rng-new"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">new</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Rng-Sync"><code class="docutils literal notranslate"><span class="pre">impl</span> <span class="pre">Sync</span> <span class="pre">for</span> <span class="pre">Rng</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Rng-Send"><code class="docutils literal notranslate"><span class="pre">impl</span> <span class="pre">Send</span> <span class="pre">for</span> <span class="pre">Rng</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-Rng-Drop"><code class="docutils literal notranslate"><span class="pre">impl</span> <span class="pre">Drop</span> <span class="pre">for</span> <span class="pre">Rng</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-StanLibrary"><code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">StanLibrary</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-StanLibrary"><code class="docutils literal notranslate"><span class="pre">impl</span> <span class="pre">StanLibrary</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-StanLibrary-set_print_callback"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">set_print_callback</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-StanLibrary-unload_library"><code class="docutils literal notranslate"><span class="pre">fn</span> <span class="pre">unload_library</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-StanLibrary-Send"><code class="docutils literal notranslate"><span class="pre">impl</span> <span class="pre">Send</span> <span class="pre">for</span> <span class="pre">StanLibrary</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-StanLibrary-Sync"><code class="docutils literal notranslate"><span class="pre">impl</span> <span class="pre">Sync</span> <span class="pre">for</span> <span class="pre">StanLibrary</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#bridgestan-StanLibrary-Drop"><code class="docutils literal notranslate"><span class="pre">impl</span> <span class="pre">Drop</span> <span class="pre">for</span> <span class="pre">StanLibrary</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/roualdes/bridgestan/edit/main/docs/languages/rust.md">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/languages/rust.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, BridgeStan Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
