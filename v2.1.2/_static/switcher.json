@@ -1,0 +1,37 @@
+[
+    {
+        "name": "latest",
+        "version": "latest",
+        "url": "https://roualdes.github.io/bridgestan/latest/"
+    },
+    {
+        "name": "v2.1.1",
+        "version": "v2.1.1",
+        "url": "https://roualdes.github.io/bridgestan/v2.1.1/"
+    },
+    {
+        "name": "v2.1.0",
+        "version": "v2.1.0",
+        "url": "https://roualdes.github.io/bridgestan/v2.1.0/"
+    },
+    {
+        "name": "v2.0.0",
+        "version": "v2.0.0",
+        "url": "https://roualdes.github.io/bridgestan/v2.0.0/"
+    },
+    {
+        "name": "v1.0.2",
+        "version": "v1.0.2",
+        "url": "https://roualdes.github.io/bridgestan/v1.0.2/"
+    },
+    {
+        "name": "v1.0.1",
+        "version": "v1.0.1",
+        "url": "https://roualdes.github.io/bridgestan/v1.0.1/"
+    },
+    {
+        "name": "v1.0.0",
+        "version": "v1.0.0",
+        "url": "https://roualdes.github.io/bridgestan/v1.0.0/"
+    }
+]
