@@ -1,0 +1,97 @@
+[
+    {
+        "name": "latest",
+        "version": "latest",
+        "url": "https://roualdes.us/bridgestan/latest/"
+    },
+    {
+        "name": "v2.7.0",
+        "version": "v2.7.0",
+        "url": "https://roualdes.us/bridgestan/v2.7.0/"
+    },
+    {
+        "name": "v2.6.2",
+        "version": "v2.6.2",
+        "url": "https://roualdes.us/bridgestan/v2.6.2/"
+    },
+    {
+        "name": "v2.6.1",
+        "version": "v2.6.1",
+        "url": "https://roualdes.us/bridgestan/v2.6.1/"
+    },
+    {
+        "name": "v2.6.0",
+        "version": "v2.6.0",
+        "url": "https://roualdes.us/bridgestan/v2.6.0/"
+    },
+    {
+        "name": "v2.5.0",
+        "version": "v2.5.0",
+        "url": "https://roualdes.us/bridgestan/v2.5.0/"
+    },
+    {
+        "name": "v2.4.1",
+        "version": "v2.4.1",
+        "url": "https://roualdes.us/bridgestan/v2.4.1/"
+    },
+    {
+        "name": "v2.4.0",
+        "version": "v2.4.0",
+        "url": "https://roualdes.us/bridgestan/v2.4.0/"
+    },
+    {
+        "name": "v2.3.0",
+        "version": "v2.3.0",
+        "url": "https://roualdes.us/bridgestan/v2.3.0/"
+    },
+    {
+        "name": "v2.2.2",
+        "version": "v2.2.2",
+        "url": "https://roualdes.us/bridgestan/v2.2.2/"
+    },
+    {
+        "name": "v2.2.1",
+        "version": "v2.2.1",
+        "url": "https://roualdes.us/bridgestan/v2.2.1/"
+    },
+    {
+        "name": "v2.2.0",
+        "version": "v2.2.0",
+        "url": "https://roualdes.us/bridgestan/v2.2.0/"
+    },
+    {
+        "name": "v2.1.2",
+        "version": "v2.1.2",
+        "url": "https://roualdes.us/bridgestan/v2.1.2/"
+    },
+    {
+        "name": "v2.1.1",
+        "version": "v2.1.1",
+        "url": "https://roualdes.us/bridgestan/v2.1.1/"
+    },
+    {
+        "name": "v2.1.0",
+        "version": "v2.1.0",
+        "url": "https://roualdes.us/bridgestan/v2.1.0/"
+    },
+    {
+        "name": "v2.0.0",
+        "version": "v2.0.0",
+        "url": "https://roualdes.us/bridgestan/v2.0.0/"
+    },
+    {
+        "name": "v1.0.2",
+        "version": "v1.0.2",
+        "url": "https://roualdes.us/bridgestan/v1.0.2/"
+    },
+    {
+        "name": "v1.0.1",
+        "version": "v1.0.1",
+        "url": "https://roualdes.us/bridgestan/v1.0.1/"
+    },
+    {
+        "name": "v1.0.0",
+        "version": "v1.0.0",
+        "url": "https://roualdes.us/bridgestan/v1.0.0/"
+    }
+]
