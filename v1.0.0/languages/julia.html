@@ -1,0 +1,748 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Julia Interface &#8212; BridgeStan 1.0.0 documentation</title>
+  <script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+
+  
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/6.1.2/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/Documenter.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'languages/julia';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://roualdes.github.io/bridgestan/latest/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.0.0';
+        </script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="R Interface" href="r.html" />
+    <link rel="prev" title="Python Interface" href="python.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fas fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+    <p class="title logo__title">BridgeStan 1.0.0 documentation</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../getting-started.html">
+                        Getting Started
+                    </a>
+                </li>
+                
+
+                <li class="nav-item current active">
+                    <a class="nav-link" href="../languages.html">
+                        Language Interfaces
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../internals.html">
+                        How It Works
+                    </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      <div class="navbar-end-item navbar-end__search-button-container">
+        
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/roualdes/bridgestan" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://discourse.mc-stan.org/" title="Forums" class="nav-link" rel="noopener" target="_blank"><span><i class="fas fa-users"></i></span>
+            <label class="sr-only">Forums</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-toggle="dropdown">
+        v1.0.0  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  <div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+  </div>
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fas fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../getting-started.html">
+                        Getting Started
+                    </a>
+                </li>
+                
+
+                <li class="nav-item current active">
+                    <a class="nav-link" href="../languages.html">
+                        Language Interfaces
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../internals.html">
+                        How It Works
+                    </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/roualdes/bridgestan" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://discourse.mc-stan.org/" title="Forums" class="nav-link" rel="noopener" target="_blank"><span><i class="fas fa-users"></i></span>
+            <label class="sr-only">Forums</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-toggle="dropdown">
+        v1.0.0  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="python.html">
+   Python Interface
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Julia Interface
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="r.html">
+   R Interface
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="c-api.html">
+   C API
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+      </div>
+      <main class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <p><a id='Julia-Interface'></a></p>
+<p><a id='Julia-Interface-1'></a></p>
+<section id="julia-interface">
+<h1>Julia Interface<a class="headerlink" href="#julia-interface" title="Permalink to this heading">#</a></h1>
+<hr class="docutils" />
+<p><a id='Installation'></a></p>
+<p><a id='Installation-1'></a></p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
+<p>This assumes you have followed the <a class="reference internal" href="../getting-started.html"><span class="doc std std-doc">Getting Started guide</span></a> to install BridgeStan’s pre-requisites and downloaded a copy of the BridgeStan source code.</p>
+<p>To install the Julia interface, you can either install it directly from Github by running the following inside a Julia REPL</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="p">]</span><span class="w"> </span><span class="n">add</span><span class="w"> </span><span class="n">https</span><span class="o">://</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">roualdes</span><span class="o">/</span><span class="n">bridgestan</span><span class="o">.</span><span class="n">git</span><span class="o">:</span><span class="n">julia</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Or, since you have already downloaded the repository, you can run</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="p">]</span><span class="w"> </span><span class="n">dev</span><span class="w"> </span><span class="n">julia</span><span class="o">/</span><span class="w"></span>
+</pre></div>
+</div>
+<p>from the BridgeStan folder.</p>
+<p>Note that the Julia package depends on Julia 1.8+.</p>
+<p><a id='Example-Program'></a></p>
+<p><a id='Example-Program-1'></a></p>
+</section>
+<section id="example-program">
+<h2>Example Program<a class="headerlink" href="#example-program" title="Permalink to this heading">#</a></h2>
+<p>An example program is provided alongside the Julia interface code in <code class="docutils literal notranslate"><span class="pre">example.jl</span></code>:</p>
+<details>
+<summary><a>Show example.jl</a></summary>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">BridgeStan</span><span class="w"></span>
+
+<span class="k">const</span><span class="w"> </span><span class="n">BS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BridgeStan</span><span class="w"></span>
+
+<span class="n">BS</span><span class="o">.</span><span class="n">set_bridgestan_path!</span><span class="p">(</span><span class="s">&quot;../&quot;</span><span class="p">)</span><span class="w"></span>
+
+<span class="n">bernoulli_stan</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">joinpath</span><span class="p">(</span><span class="nd">@__DIR__</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;../test_models/bernoulli/bernoulli.stan&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="n">bernoulli_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">joinpath</span><span class="p">(</span><span class="nd">@__DIR__</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;../test_models/bernoulli/bernoulli.data.json&quot;</span><span class="p">)</span><span class="w"></span>
+
+<span class="n">smb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BS</span><span class="o">.</span><span class="n">StanModel</span><span class="p">(</span><span class="n">stan_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bernoulli_stan</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bernoulli_data</span><span class="p">);</span><span class="w"></span>
+
+<span class="n">println</span><span class="p">(</span><span class="s">&quot;This model&#39;s name is </span><span class="si">$</span><span class="p">(</span><span class="n">BS</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">smb</span><span class="p">))</span><span class="s">.&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="n">println</span><span class="p">(</span><span class="s">&quot;It has </span><span class="si">$</span><span class="p">(</span><span class="n">BS</span><span class="o">.</span><span class="n">param_num</span><span class="p">(</span><span class="n">smb</span><span class="p">))</span><span class="s"> parameters.&quot;</span><span class="p">)</span><span class="w"></span>
+
+<span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rand</span><span class="p">(</span><span class="n">BS</span><span class="o">.</span><span class="n">param_unc_num</span><span class="p">(</span><span class="n">smb</span><span class="p">));</span><span class="w"></span>
+<span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nd">@.</span><span class="w"> </span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">x</span><span class="p">));</span><span class="w"> </span><span class="c"># unconstrained scale</span><span class="w"></span>
+
+<span class="n">lp</span><span class="p">,</span><span class="w"> </span><span class="n">grad</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BS</span><span class="o">.</span><span class="n">log_density_gradient</span><span class="p">(</span><span class="n">smb</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="n">jacobian</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">)</span><span class="w"></span>
+
+<span class="n">println</span><span class="p">(</span><span class="s">&quot;log_density and gradient of Bernoulli model: </span><span class="si">$</span><span class="p">((</span><span class="n">lp</span><span class="p">,</span><span class="w"> </span><span class="n">grad</span><span class="p">))</span><span class="s">&quot;</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+</details>
+<p><a id='API-Reference'></a></p>
+<p><a id='API-Reference-1'></a></p>
+</section>
+<section id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading">#</a></h2>
+<p><a id='StanModel-interface'></a></p>
+<p><a id='StanModel-interface-1'></a></p>
+<section id="stanmodel-interface">
+<h3>StanModel interface<a class="headerlink" href="#stanmodel-interface" title="Permalink to this heading">#</a></h3>
+<p><a id='BridgeStan.StanModel' href='#BridgeStan.StanModel'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.StanModel</span></code></strong> — <em>Type</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">StanModel</span><span class="p">(</span><span class="n">lib</span><span class="p">,</span><span class="w"> </span><span class="n">datafile</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">seed</span><span class="o">=</span><span class="mi">204</span><span class="p">,</span><span class="w"> </span><span class="n">chain_id</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>A StanModel instance encapsulates a Stan model instantiated with data.</p>
+<p>The constructor a Stan model from the supplied library file path and data. Data should either be a string containing a JSON object or a path to a data file ending in <code class="docutils literal notranslate"><span class="pre">.json</span></code>. If seed or chain_id are supplied, these are used to initialize the RNG used by the model.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">StanModel</span><span class="p">(;</span><span class="n">stan_file</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">204</span><span class="p">,</span> <span class="n">chain_id</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Construct a StanModel instance from a <code class="docutils literal notranslate"><span class="pre">.stan</span></code> file, compiling if necessary.</p>
+<p>This is equivalent to calling <code class="docutils literal notranslate"><span class="pre">compile_model</span></code> and then the original constructor of StanModel.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L4-L18' class='documenter-source'>source</a><br></p>
+<p><a id='BridgeStan.log_density' href='#BridgeStan.log_density'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.log_density</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">log_density</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">;</span><span class="w"> </span><span class="n">propto</span><span class="o">=</span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">jacobian</span><span class="o">=</span><span class="nb">true</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Return the log density of the specified unconstrained parameters.</p>
+<p>This calculation drops constant terms that do not depend on the parameters if <code class="docutils literal notranslate"><span class="pre">propto</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code> and includes change of variables terms for constrained parameters if <code class="docutils literal notranslate"><span class="pre">jacobian</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L359-L366' class='documenter-source'>source</a><br></p>
+<p><a id='BridgeStan.log_density_gradient' href='#BridgeStan.log_density_gradient'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.log_density_gradient</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">log_density_gradient</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">;</span><span class="w"> </span><span class="n">propto</span><span class="o">=</span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">jacobian</span><span class="o">=</span><span class="nb">true</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Returns a tuple of the log density and gradient of the specified unconstrained parameters.</p>
+<p>This calculation drops constant terms that do not depend on the parameters if <code class="docutils literal notranslate"><span class="pre">propto</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code> and includes change of variables terms for constrained parameters if <code class="docutils literal notranslate"><span class="pre">jacobian</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
+<p>This allocates new memory for the gradient output each call. See <code class="docutils literal notranslate"><span class="pre">log_density_gradient!</span></code> for a version which allows re-using existing memory.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L431-L443' class='documenter-source'>source</a><br></p>
+<p><a id='BridgeStan.log_density_hessian' href='#BridgeStan.log_density_hessian'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.log_density_hessian</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">log_density_hessian</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">;</span><span class="w"> </span><span class="n">propto</span><span class="o">=</span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">jacobian</span><span class="o">=</span><span class="nb">true</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Returns a tuple of the log density, gradient, and Hessian  of the specified unconstrained parameters.</p>
+<p>This calculation drops constant terms that do not depend on the parameters if <code class="docutils literal notranslate"><span class="pre">propto</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code> and includes change of variables terms for constrained parameters if <code class="docutils literal notranslate"><span class="pre">jacobian</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
+<p>This allocates new memory for the gradient and Hessian output each call. See <code class="docutils literal notranslate"><span class="pre">log_density_gradient!</span></code> for a version which allows re-using existing memory.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L517-L528' class='documenter-source'>source</a><br></p>
+<p><a id='BridgeStan.param_constrain' href='#BridgeStan.param_constrain'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.param_constrain</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">param_constrain</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span><span class="w"> </span><span class="n">theta_unc</span><span class="p">,</span><span class="w"> </span><span class="n">out</span><span class="p">;</span><span class="w"> </span><span class="n">include_tp</span><span class="o">=</span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="n">include_gq</span><span class="o">=</span><span class="nb">false</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Returns a vector constrained parameters given unconstrained parameters. Additionally (if <code class="docutils literal notranslate"><span class="pre">include_tp</span></code> and <code class="docutils literal notranslate"><span class="pre">include_gq</span></code> are set, respectively) returns transformed parameters and generated quantities.</p>
+<p>This allocates new memory for the output each call. See <code class="docutils literal notranslate"><span class="pre">param_constrain!</span></code> for a version which allows re-using existing memory.</p>
+<p>This is the inverse of <code class="docutils literal notranslate"><span class="pre">param_unconstrain</span></code>.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L230-L242' class='documenter-source'>source</a><br></p>
+<p><a id='BridgeStan.param_unconstrain' href='#BridgeStan.param_unconstrain'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.param_unconstrain</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">param_unconstrain</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span><span class="w"> </span><span class="n">theta</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Returns a vector of unconstrained params give the constrained parameters.</p>
+<p>It is assumed that these will be in the same order as internally represented by the model (e.g., in the same order as <code class="docutils literal notranslate"><span class="pre">param_unc_names(sm)</span></code>). If structured input is needed, use <code class="docutils literal notranslate"><span class="pre">param_unconstrain_json</span></code></p>
+<p>This allocates new memory for the output each call. See <code class="docutils literal notranslate"><span class="pre">param_unconstrain!</span></code> for a version which allows re-using existing memory.</p>
+<p>This is the inverse of <code class="docutils literal notranslate"><span class="pre">param_constrain</span></code>.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L290-L303' class='documenter-source'>source</a><br></p>
+<p><a id='BridgeStan.param_unconstrain_json' href='#BridgeStan.param_unconstrain_json'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.param_unconstrain_json</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">param_unconstrain_json</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span><span class="w"> </span><span class="n">theta</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This accepts a JSON string of constrained parameters and returns the unconstrained parameters.</p>
+<p>The JSON is expected to be in the <a class="reference external" href="https://mc-stan.org/docs/cmdstan-guide/json.html">JSON Format for CmdStan</a>.</p>
+<p>This allocates new memory for the output each call. See <code class="docutils literal notranslate"><span class="pre">param_unconstrain_json!</span></code> for a version which allows re-using existing memory.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L343-L353' class='documenter-source'>source</a><br></p>
+<p><a id='BridgeStan.name' href='#BridgeStan.name'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.name</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">name</span><span class="p">(</span><span class="n">sm</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Return the name of the model <code class="docutils literal notranslate"><span class="pre">sm</span></code></p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L74-L78' class='documenter-source'>source</a><br></p>
+<p><a id='BridgeStan.model_info' href='#BridgeStan.model_info'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.model_info</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">model_info</span><span class="p">(</span><span class="n">sm</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Return information about the model <code class="docutils literal notranslate"><span class="pre">sm</span></code>.</p>
+<p>This includes the Stan version and important compiler flags.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L89-L96' class='documenter-source'>source</a><br></p>
+<p><a id='BridgeStan.param_num' href='#BridgeStan.param_num'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.param_num</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">param_num</span><span class="p">(</span><span class="n">sm</span><span class="p">;</span><span class="w"> </span><span class="n">include_tp</span><span class="o">=</span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="n">include_gq</span><span class="o">=</span><span class="nb">false</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Return the number of (constrained) parameters in the model.</p>
+<p>This is the total of all the sizes of items declared in the <code class="docutils literal notranslate"><span class="pre">parameters</span></code> block of the model. If <code class="docutils literal notranslate"><span class="pre">include_tp</span></code> or <code class="docutils literal notranslate"><span class="pre">include_gq</span></code> are true, items declared in the <code class="docutils literal notranslate"><span class="pre">transformed</span> <span class="pre">parameters</span></code> and <code class="docutils literal notranslate"><span class="pre">generate</span> <span class="pre">quantities</span></code> blocks are included, respectively.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L107-L116' class='documenter-source'>source</a><br></p>
+<p><a id='BridgeStan.param_unc_num' href='#BridgeStan.param_unc_num'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.param_unc_num</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">param_unc_num</span><span class="p">(</span><span class="n">sm</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Return the number of unconstrained parameters in the model.</p>
+<p>This function is mainly different from <code class="docutils literal notranslate"><span class="pre">param_num</span></code> when variables are declared with constraints. For example, <code class="docutils literal notranslate"><span class="pre">simplex[5]</span></code> has a constrained size of 5, but an unconstrained size of 4.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L129-L137' class='documenter-source'>source</a><br></p>
+<p><a id='BridgeStan.param_names' href='#BridgeStan.param_names'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.param_names</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">param_names</span><span class="p">(</span><span class="n">sm</span><span class="p">;</span><span class="w"> </span><span class="n">include_tp</span><span class="o">=</span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="n">include_gq</span><span class="o">=</span><span class="nb">false</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Return the indexed names of the (constrained) parameters, including transformed parameters and/or generated quantities as indicated.</p>
+<p>For containers, indexes are separated by periods (.).</p>
+<p>For example, the scalar <code class="docutils literal notranslate"><span class="pre">a</span></code> has indexed name <code class="docutils literal notranslate"><span class="pre">&quot;a&quot;</span></code>, the vector entry <code class="docutils literal notranslate"><span class="pre">a[1]</span></code> has indexed name <code class="docutils literal notranslate"><span class="pre">&quot;a.1&quot;</span></code> and the matrix entry <code class="docutils literal notranslate"><span class="pre">a[2,</span> <span class="pre">3]</span></code> has indexed names <code class="docutils literal notranslate"><span class="pre">&quot;a.2.3&quot;</span></code>. Parameter order of the output is column major and more generally last-index major for containers.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L147-L158' class='documenter-source'>source</a><br></p>
+<p><a id='BridgeStan.param_unc_names' href='#BridgeStan.param_unc_names'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.param_unc_names</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">param_unc_names</span><span class="p">(</span><span class="n">sm</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Return the indexed names of the unconstrained parameters.</p>
+<p>For example, a scalar unconstrained parameter <code class="docutils literal notranslate"><span class="pre">b</span></code> has indexed name <code class="docutils literal notranslate"><span class="pre">b</span></code> and a vector entry <code class="docutils literal notranslate"><span class="pre">b[3]</span></code> has indexed name <code class="docutils literal notranslate"><span class="pre">b.3</span></code>.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L171-L178' class='documenter-source'>source</a><br></p>
+<p><a id='BridgeStan.log_density_gradient!' href='#BridgeStan.log_density_gradient!'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.log_density_gradient!</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">log_density_gradient!</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="n">out</span><span class="p">;</span><span class="w"> </span><span class="n">propto</span><span class="o">=</span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">jacobian</span><span class="o">=</span><span class="nb">true</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Returns a tuple of the log density and gradient of the specified unconstrained parameters.</p>
+<p>This calculation drops constant terms that do not depend on the parameters if <code class="docutils literal notranslate"><span class="pre">propto</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code> and includes change of variables terms for constrained parameters if <code class="docutils literal notranslate"><span class="pre">jacobian</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
+<p>The gradient is stored in the vector <code class="docutils literal notranslate"><span class="pre">out</span></code>, and a reference is returned. See <code class="docutils literal notranslate"><span class="pre">log_density_gradient</span></code> for a version which allocates fresh memory.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L386-L396' class='documenter-source'>source</a><br></p>
+<p><a id='BridgeStan.log_density_hessian!' href='#BridgeStan.log_density_hessian!'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.log_density_hessian!</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">log_density_hessian!</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="n">out_grad</span><span class="p">,</span><span class="w"> </span><span class="n">out_hess</span><span class="p">;</span><span class="w"> </span><span class="n">propto</span><span class="o">=</span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">jacobian</span><span class="o">=</span><span class="nb">true</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Returns a tuple of the log density, gradient, and Hessian  of the specified unconstrained parameters.</p>
+<p>This calculation drops constant terms that do not depend on the parameters if <code class="docutils literal notranslate"><span class="pre">propto</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code> and includes change of variables terms for constrained parameters if <code class="docutils literal notranslate"><span class="pre">jacobian</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
+<p>The gradient is stored in the vector <code class="docutils literal notranslate"><span class="pre">out_grad</span></code> and the Hessian is stored in <code class="docutils literal notranslate"><span class="pre">out_hess</span></code> and references are returned. See <code class="docutils literal notranslate"><span class="pre">log_density_hessian</span></code> for a version which allocates fresh memory.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L454-L465' class='documenter-source'>source</a><br></p>
+<p><a id='BridgeStan.param_constrain!' href='#BridgeStan.param_constrain!'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.param_constrain!</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">param_constrain!</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span><span class="w"> </span><span class="n">theta_unc</span><span class="p">,</span><span class="w"> </span><span class="n">out</span><span class="p">;</span><span class="w"> </span><span class="n">include_tp</span><span class="o">=</span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="n">include_gq</span><span class="o">=</span><span class="nb">false</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Returns a vector constrained parameters given unconstrained parameters. Additionally (if <code class="docutils literal notranslate"><span class="pre">include_tp</span></code> and <code class="docutils literal notranslate"><span class="pre">include_gq</span></code> are set, respectively) returns transformed parameters and generated quantities.</p>
+<p>The result is stored in the vector <code class="docutils literal notranslate"><span class="pre">out</span></code>, and a reference is returned. See <code class="docutils literal notranslate"><span class="pre">param_constrain</span></code> for a version which allocates fresh memory.</p>
+<p>This is the inverse of <code class="docutils literal notranslate"><span class="pre">param_unconstrain!</span></code>.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L189-L200' class='documenter-source'>source</a><br></p>
+<p><a id='BridgeStan.param_unconstrain!' href='#BridgeStan.param_unconstrain!'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.param_unconstrain!</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">param_unconstrain!</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span><span class="w"> </span><span class="n">theta</span><span class="p">,</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Returns a vector of unconstrained params give the constrained parameters.</p>
+<p>It is assumed that these will be in the same order as internally represented by the model (e.g., in the same order as <code class="docutils literal notranslate"><span class="pre">param_names(sm)</span></code>). If structured input is needed, use <code class="docutils literal notranslate"><span class="pre">param_unconstrain_json!</span></code></p>
+<p>The result is stored in the vector <code class="docutils literal notranslate"><span class="pre">out</span></code>, and a reference is returned. See <code class="docutils literal notranslate"><span class="pre">param_unconstrain</span></code> for a version which allocates fresh memory.</p>
+<p>This is the inverse of <code class="docutils literal notranslate"><span class="pre">param_constrain!</span></code>.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L253-L265' class='documenter-source'>source</a><br></p>
+<p><a id='BridgeStan.param_unconstrain_json!' href='#BridgeStan.param_unconstrain_json!'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.param_unconstrain_json!</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">param_unconstrain_json!</span><span class="p">(</span><span class="n">sm</span><span class="p">,</span><span class="w"> </span><span class="n">theta</span><span class="p">,</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This accepts a JSON string of constrained parameters and returns the unconstrained parameters.</p>
+<p>The JSON is expected to be in the <a class="reference external" href="https://mc-stan.org/docs/cmdstan-guide/json.html">JSON Format for CmdStan</a>.</p>
+<p>The result is stored in the vector <code class="docutils literal notranslate"><span class="pre">out</span></code>, and a reference is returned. See <code class="docutils literal notranslate"><span class="pre">param_unconstrain_json</span></code> for a version which allocates fresh memory.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L309-L318' class='documenter-source'>source</a><br></p>
+<p><a id='Compilation-utilities'></a></p>
+<p><a id='Compilation-utilities-1'></a></p>
+</section>
+<section id="compilation-utilities">
+<h3>Compilation utilities<a class="headerlink" href="#compilation-utilities" title="Permalink to this heading">#</a></h3>
+<p><a id='BridgeStan.compile_model' href='#BridgeStan.compile_model'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.compile_model</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">compile_model</span><span class="p">(</span><span class="n">stan_file</span><span class="p">;</span><span class="w"> </span><span class="n">stanc_args</span><span class="o">=</span><span class="p">[],</span><span class="w"> </span><span class="n">make_args</span><span class="o">=</span><span class="p">[])</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Run BridgeStan’s Makefile on a <code class="docutils literal notranslate"><span class="pre">.stan</span></code> file, creating the <code class="docutils literal notranslate"><span class="pre">.so</span></code> used by StanModel and return a path to the compiled library. Arguments to <code class="docutils literal notranslate"><span class="pre">stanc3</span></code> can be passed as a vector, for example <code class="docutils literal notranslate"><span class="pre">[&quot;--O1&quot;]</span></code> enables level 1 compiler optimizations. Additional arguments to <code class="docutils literal notranslate"><span class="pre">make</span></code> can be passed as a vector, for example <code class="docutils literal notranslate"><span class="pre">[&quot;STAN_THREADS=true&quot;]</span></code> enables the model’s threading capabilities. If the same flags are defined in <code class="docutils literal notranslate"><span class="pre">make/local</span></code>, the versions passed here will take precedent.</p>
+<p>This function assumes that the path to BridgeStan is valid. This can be set with <code class="docutils literal notranslate"><span class="pre">set_bridgestan_path!()</span></code>.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L42-L55' class='documenter-source'>source</a><br></p>
+<p><a id='BridgeStan.set_bridgestan_path!' href='#BridgeStan.set_bridgestan_path!'>#</a>
+<strong><code class="docutils literal notranslate"><span class="pre">BridgeStan.set_bridgestan_path!</span></code></strong> — <em>Function</em>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">set_bridgestan_path!</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Set the path BridgeStan.</p>
+<p>By default this is set to the value of the environment variable <code class="docutils literal notranslate"><span class="pre">BRIDGESTAN</span></code>.</p>
+<p><a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L28-L35' class='documenter-source'>source</a><br></p>
+</section>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="python.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Python Interface</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="r.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">R Interface</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fas fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#installation">
+   Installation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#example-program">
+   Example Program
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#api-reference">
+   API Reference
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#stanmodel-interface">
+     StanModel interface
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#compilation-utilities">
+     Compilation utilities
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/roualdes/bridgestan/edit/main/docs/languages/julia.md">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="../_sources/languages/julia.md.txt">
+        <i class="fas fa-file-alt"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2022, BridgeStan Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>
