@@ -1,0 +1,924 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bridgestan.model &#8212; BridgeStan 1.0.1 documentation</title>
+  <script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+
+  
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/Documenter.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/bridgestan/model';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://roualdes.github.io/bridgestan/latest/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.0.1';
+        </script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fas fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+    <p class="title logo__title">BridgeStan 1.0.1 documentation</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../../getting-started.html">
+                        Getting Started
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../languages.html">
+                        Language Interfaces
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../internals.html">
+                        How It Works
+                    </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      <div class="navbar-end-item navbar-end__search-button-container">
+        
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/roualdes/bridgestan" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://discourse.mc-stan.org/" title="Forums" class="nav-link" rel="noopener" target="_blank"><span><i class="fas fa-users"></i></span>
+            <label class="sr-only">Forums</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-toggle="dropdown">
+        v1.0.1  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  <div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+  </div>
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fas fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../../getting-started.html">
+                        Getting Started
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../languages.html">
+                        Language Interfaces
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../../internals.html">
+                        How It Works
+                    </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/roualdes/bridgestan" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://discourse.mc-stan.org/" title="Forums" class="nav-link" rel="noopener" target="_blank"><span><i class="fas fa-users"></i></span>
+            <label class="sr-only">Forums</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-toggle="dropdown">
+        v1.0.1  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+      </div>
+      <main class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for bridgestan.model</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">ctypes</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
+<span class="kn">from</span> <span class="nn">numpy.ctypeslib</span> <span class="kn">import</span> <span class="n">ndpointer</span>
+
+<span class="kn">from</span> <span class="nn">.compile</span> <span class="kn">import</span> <span class="n">compile_model</span>
+<span class="kn">from</span> <span class="nn">.util</span> <span class="kn">import</span> <span class="n">validate_readable</span>
+
+<span class="n">FloatArray</span> <span class="o">=</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+<span class="n">double_array</span> <span class="o">=</span> <span class="n">ndpointer</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;C_CONTIGUOUS&quot;</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="StanModel"><a class="viewcode-back" href="../../languages/python.html#bridgestan.StanModel">[docs]</a><span class="k">class</span> <span class="nc">StanModel</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A StanModel instance encapsulates a Stan model instantiated with data</span>
+<span class="sd">    and provides methods to access parameter names, transforms, log</span>
+<span class="sd">    densities, gradients, and Hessians.</span>
+
+<span class="sd">    The constructor method instantiates a Stan model and sets constant</span>
+<span class="sd">    return values.  The constructor arguments are</span>
+
+<span class="sd">    :param model_lib: A path to a compiled shared object.</span>
+<span class="sd">    :param model_data: Either a JSON string literal or a</span>
+<span class="sd">         path to a data file in JSON format ending in ``.json``.</span>
+<span class="sd">    :param seed: A pseudo random number generator seed.</span>
+<span class="sd">    :param chain_id: A unique identifier for concurrent chains of</span>
+<span class="sd">        pseudorandom numbers.</span>
+<span class="sd">    :raises FileNotFoundError or PermissionError: If ``model_lib`` is not readable or</span>
+<span class="sd">        ``model_data`` is specified and not a path to a readable file.</span>
+<span class="sd">    :raises RuntimeError: If there is an error instantiating the Stan model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model_lib</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">model_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1234</span><span class="p">,</span>
+        <span class="n">chain_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct a StanModel object for a Stan model and data given</span>
+<span class="sd">        constructor arguments.</span>
+
+<span class="sd">        :param model_lib: A system path to compiled shared object.</span>
+<span class="sd">        :param model_data: Either a JSON string literal or a</span>
+<span class="sd">            system path to a data file in JSON format ending in ``.json``.</span>
+<span class="sd">        :param seed: A pseudo random number generator seed.</span>
+<span class="sd">        :param chain_id: A unique identifier for concurrent chains of</span>
+<span class="sd">            pseudorandom numbers.</span>
+<span class="sd">        :raises FileNotFoundError or PermissionError: If ``model_lib`` is not readable or</span>
+<span class="sd">            ``model_data`` is specified and not a path to a readable file.</span>
+<span class="sd">        :raises RuntimeError: If there is an error instantiating the</span>
+<span class="sd">            model from C++.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">validate_readable</span><span class="p">(</span><span class="n">model_lib</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">model_data</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">model_data</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">):</span>
+            <span class="n">validate_readable</span><span class="p">(</span><span class="n">model_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lib_path</span> <span class="o">=</span> <span class="n">model_lib</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stanlib</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">CDLL</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lib_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span> <span class="o">=</span> <span class="n">model_data</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="n">seed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chain_id</span> <span class="o">=</span> <span class="n">chain_id</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_construct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stanlib</span><span class="o">.</span><span class="n">bs_construct</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_construct</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_construct</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_char_p</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_rng</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_construct</span><span class="p">(</span>
+            <span class="nb">str</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chain_id</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_rng</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;could not construct model RNG&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stanlib</span><span class="o">.</span><span class="n">bs_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_char_p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stanlib</span><span class="o">.</span><span class="n">bs_model_info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_info</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_char_p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_info</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stanlib</span><span class="o">.</span><span class="n">bs_param_num</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_num</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_num</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_unc_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stanlib</span><span class="o">.</span><span class="n">bs_param_unc_num</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_unc_num</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_unc_num</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stanlib</span><span class="o">.</span><span class="n">bs_param_names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_names</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_char_p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_names</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_unc_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stanlib</span><span class="o">.</span><span class="n">bs_param_unc_names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_unc_names</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_char_p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_unc_names</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_constrain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stanlib</span><span class="o">.</span><span class="n">bs_param_constrain</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_constrain</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_constrain</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span>
+            <span class="n">double_array</span><span class="p">,</span>
+            <span class="n">double_array</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_unconstrain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stanlib</span><span class="o">.</span><span class="n">bs_param_unconstrain</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_unconstrain</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_unconstrain</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">,</span> <span class="n">double_array</span><span class="p">,</span> <span class="n">double_array</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_unconstrain_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stanlib</span><span class="o">.</span><span class="n">bs_param_unconstrain_json</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_unconstrain_json</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_unconstrain_json</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_char_p</span><span class="p">,</span>
+            <span class="n">double_array</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_density</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stanlib</span><span class="o">.</span><span class="n">bs_log_density</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_density</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_density</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span>
+            <span class="n">double_array</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_density_gradient</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stanlib</span><span class="o">.</span><span class="n">bs_log_density_gradient</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_density_gradient</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_density_gradient</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span>
+            <span class="n">double_array</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">),</span>
+            <span class="n">double_array</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_density_hessian</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stanlib</span><span class="o">.</span><span class="n">bs_log_density_hessian</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_density_hessian</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_density_hessian</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">,</span>
+            <span class="n">double_array</span><span class="p">,</span>
+            <span class="n">ctypes</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">),</span>
+            <span class="n">double_array</span><span class="p">,</span>
+            <span class="n">double_array</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_destruct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stanlib</span><span class="o">.</span><span class="n">bs_destruct</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_destruct</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_destruct</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">]</span>
+
+<div class="viewcode-block" id="StanModel.from_stan_file"><a class="viewcode-back" href="../../languages/python.html#bridgestan.StanModel.from_stan_file">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_stan_file</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">stan_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">model_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">stanc_args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">make_args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1234</span><span class="p">,</span>
+        <span class="n">chain_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct a StanModel instance from a ``.stan`` file, compiling if necessary.</span>
+
+<span class="sd">        This is equivalent to calling :func:`bridgestan.compile_model` and then the</span>
+<span class="sd">        constructor of this class.</span>
+
+<span class="sd">        :param stan_file: A path to a Stan model file.</span>
+<span class="sd">        :param model_data: A path to data in JSON format.</span>
+<span class="sd">        :param stanc_args: A list of arguments to pass to stanc3.</span>
+<span class="sd">            For example, ``[&quot;--O1&quot;]`` will enable compiler optimization level 1.</span>
+<span class="sd">        :param make_args: A list of additional arguments to pass to Make.</span>
+<span class="sd">            For example, ``[&quot;STAN_THREADS=True&quot;]`` will enable</span>
+<span class="sd">            threading for the compiled model. If the same flags are defined</span>
+<span class="sd">            in ``make/local``, the versions passed here will take precedent.</span>
+<span class="sd">        :param seed: A pseudo random number generator seed.</span>
+<span class="sd">        :param chain_id: A unique identifier for concurrent chains of</span>
+<span class="sd">            pseudorandom numbers.</span>
+<span class="sd">        :raises FileNotFoundError or PermissionError: If `stan_file` does not exist</span>
+<span class="sd">            or is not readable.</span>
+<span class="sd">        :raises ValueError: If BridgeStan cannot be located.</span>
+<span class="sd">        :raises RuntimeError: If compilation fails.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">compile_model</span><span class="p">(</span><span class="n">stan_file</span><span class="p">,</span> <span class="n">stanc_args</span><span class="o">=</span><span class="n">stanc_args</span><span class="p">,</span> <span class="n">make_args</span><span class="o">=</span><span class="n">make_args</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">),</span> <span class="n">model_data</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">chain_id</span><span class="o">=</span><span class="n">chain_id</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Destroy the Stan model and free memory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;model_rng&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_destruct&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_destruct</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_rng</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span><span class="si">!r}</span><span class="s2">, &quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;StanModel(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lib_path</span><span class="si">!r}</span><span class="s2">, </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">seed=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="si">}</span><span class="s2">, chain_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chain_id</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+<div class="viewcode-block" id="StanModel.name"><a class="viewcode-back" href="../../languages/python.html#bridgestan.StanModel.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the name of the Stan model.</span>
+
+<span class="sd">        :return: The name of Stan model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_rng</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StanModel.model_info"><a class="viewcode-back" href="../../languages/python.html#bridgestan.StanModel.model_info">[docs]</a>    <span class="k">def</span> <span class="nf">model_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return compilation information about the model. For example,</span>
+<span class="sd">        this includes the current Stan version and important</span>
+<span class="sd">        compiler settings.</span>
+
+<span class="sd">        :return: Information about the compiled Stan model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_rng</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StanModel.param_num"><a class="viewcode-back" href="../../languages/python.html#bridgestan.StanModel.param_num">[docs]</a>    <span class="k">def</span> <span class="nf">param_num</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">include_tp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">include_gq</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the number of parameters, including transformed</span>
+<span class="sd">        parameters and/or generated quantities as indicated.</span>
+
+<span class="sd">        :param include_tp: `True` to include the transformed parameters.</span>
+<span class="sd">        :param include_gq: `True` to include the generated quantities.</span>
+<span class="sd">        :return: The number of parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_param_num</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_rng</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">include_tp</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">include_gq</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="StanModel.param_unc_num"><a class="viewcode-back" href="../../languages/python.html#bridgestan.StanModel.param_unc_num">[docs]</a>    <span class="k">def</span> <span class="nf">param_unc_num</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the number of unconstrained parameters.</span>
+
+<span class="sd">        :return: The number of unconstrained parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_param_unc_num</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_rng</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StanModel.param_names"><a class="viewcode-back" href="../../languages/python.html#bridgestan.StanModel.param_names">[docs]</a>    <span class="k">def</span> <span class="nf">param_names</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">include_tp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">include_gq</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the indexed names of the parameters, including transformed</span>
+<span class="sd">        parameters and/or generated quantities as indicated.  For</span>
+<span class="sd">        containers, indexes are separated by periods (`.`).</span>
+<span class="sd">        For example, the scalar `a` has</span>
+<span class="sd">        indexed name `a`, the vector entry `a[1]` has indexed name `a.1`</span>
+<span class="sd">        and the matrix entry `a[2, 3]` has indexed name `a.2.3`.</span>
+<span class="sd">        Parameter order of the output is column major and more</span>
+<span class="sd">        generally last-index major for containers.</span>
+
+<span class="sd">        :param include_tp: `True` to include transformed parameters.</span>
+<span class="sd">        :param include_gq: `True` to include generated quantities.</span>
+<span class="sd">        :return: The indexed names of the parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_param_names</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_rng</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">include_tp</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">include_gq</span><span class="p">))</span>
+            <span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="StanModel.param_unc_names"><a class="viewcode-back" href="../../languages/python.html#bridgestan.StanModel.param_unc_names">[docs]</a>    <span class="k">def</span> <span class="nf">param_unc_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the indexed names of the unconstrained parameters.</span>
+<span class="sd">        For example, a scalar unconstrained parameter `b` has indexed</span>
+<span class="sd">        name `b` and a vector entry `b[3]` has indexed name `b.3`.</span>
+
+<span class="sd">        :return: The indexed names of the unconstrained parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_param_unc_names</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_rng</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StanModel.param_constrain"><a class="viewcode-back" href="../../languages/python.html#bridgestan.StanModel.param_constrain">[docs]</a>    <span class="k">def</span> <span class="nf">param_constrain</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">theta_unc</span><span class="p">:</span> <span class="n">FloatArray</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">include_tp</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">include_gq</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">FloatArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FloatArray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the constrained parameters derived from the specified</span>
+<span class="sd">        unconstrained parameters as an array, optionally including the</span>
+<span class="sd">        transformed parameters and/or generated quantitities as specified.</span>
+<span class="sd">        Including generated quantities uses the PRNG and may update its state.</span>
+<span class="sd">        Setting `out` avoids allocation of a new array for the return value.</span>
+
+<span class="sd">        :param theta_unc: Unconstrained parameter array.</span>
+<span class="sd">        :param include_tp: `True` to include transformed parameters.</span>
+<span class="sd">        :param include_gq: `True` to include generated quantities.</span>
+<span class="sd">        :param out: A location into which the result is stored.  If</span>
+<span class="sd">            provided, it must have shape `(D, )`, where `D` is the number of</span>
+<span class="sd">            constrained parameters.  If not provided or `None`, a freshly</span>
+<span class="sd">            allocated array is returned.</span>
+<span class="sd">        :return: The constrained parameter array.</span>
+<span class="sd">        :raises ValueError: If `out` is specified and is not the same</span>
+<span class="sd">            shape as the return.</span>
+<span class="sd">        :raises RuntimeError: If the C++ Stan model throws an exception.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_num</span><span class="p">(</span><span class="n">include_tp</span><span class="o">=</span><span class="n">include_tp</span><span class="p">,</span> <span class="n">include_gq</span><span class="o">=</span><span class="n">include_gq</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">dims</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">out</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">dims</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Error: out must be same size as number of constrained parameters&quot;</span>
+            <span class="p">)</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_param_constrain</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model_rng</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">include_tp</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">include_gq</span><span class="p">),</span> <span class="n">theta_unc</span><span class="p">,</span> <span class="n">out</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;param_constrain failed on C++ side; see stderr for messages&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="StanModel.param_unconstrain"><a class="viewcode-back" href="../../languages/python.html#bridgestan.StanModel.param_unconstrain">[docs]</a>    <span class="k">def</span> <span class="nf">param_unconstrain</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">theta</span><span class="p">:</span> <span class="n">FloatArray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">FloatArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FloatArray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the unconstrained parameters derived from the specified</span>
+<span class="sd">        constrained parameters.  Setting `out` avoids allocation of a</span>
+<span class="sd">        new array for the return value.</span>
+
+<span class="sd">        :param theta: Constrained parameter array.</span>
+<span class="sd">        :param out: A location into which the result is stored.  If</span>
+<span class="sd">            provided, it must have shape `(D, )`, where `D` is the number of</span>
+<span class="sd">            unconstrained parameters.  If not provided or `None`, a freshly</span>
+<span class="sd">            allocated array is returned.</span>
+<span class="sd">        :raises ValueError: If `out` is specified and is not the same</span>
+<span class="sd">            shape as the return.</span>
+<span class="sd">        :raises RuntimeError: If the C++ Stan model throws an exception.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_unc_num</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">dims</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">out</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">dims</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;out size = </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> != unconstrained params size = </span><span class="si">{</span><span class="n">dims</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_param_unconstrain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_rng</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;param_unconstrain failed on C++ side; see stderr for messages&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="StanModel.param_unconstrain_json"><a class="viewcode-back" href="../../languages/python.html#bridgestan.StanModel.param_unconstrain_json">[docs]</a>    <span class="k">def</span> <span class="nf">param_unconstrain_json</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">theta_json</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">FloatArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FloatArray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return an array of the unconstrained parameters derived from the</span>
+<span class="sd">        specified JSON formatted data.  See the *CmdStan Reference</span>
+<span class="sd">        Manual* for the schema definition used.</span>
+
+<span class="sd">        :param theta_json: The JSON encoded constrained parameters.</span>
+<span class="sd">        :param out: A location into which the result is stored.  If</span>
+<span class="sd">            provided, it must have shape `(D, )`, where `D` is the number of</span>
+<span class="sd">            unconstrained parameters.  If not provided or `None`, a freshly</span>
+<span class="sd">            allocated array is returned.</span>
+<span class="sd">        :return: The unconstrained parameter array.</span>
+<span class="sd">        :raises ValueError: If `out` is specified and is not the same</span>
+<span class="sd">            shape as the return value.</span>
+<span class="sd">        :raises RuntimeError: If the C++ Stan model throws an exception.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_unc_num</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">dims</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">out</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">dims</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;out size = </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> != unconstrained params size = </span><span class="si">{</span><span class="n">dims</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">chars</span> <span class="o">=</span> <span class="n">theta_json</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_param_unconstrain_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_rng</span><span class="p">,</span> <span class="n">chars</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;param_unconstrain_json failed on C++ side; see stderr for messages&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="StanModel.log_density"><a class="viewcode-back" href="../../languages/python.html#bridgestan.StanModel.log_density">[docs]</a>    <span class="k">def</span> <span class="nf">log_density</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">theta_unc</span><span class="p">:</span> <span class="n">FloatArray</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">propto</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">jacobian</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the log density of the specified unconstrained</span>
+<span class="sd">        parameters, dropping constant terms that do not depend on the</span>
+<span class="sd">        parameters if `propto` is `True` and including change of</span>
+<span class="sd">        variables terms for constrained parameters if `jacobian` is `True`.</span>
+
+<span class="sd">        :param theta_unc: Unconstrained parameter array.</span>
+<span class="sd">        :param propto: `True` if constant terms should be dropped from the log density.</span>
+<span class="sd">        :param jacobian: `True` if change-of-variables terms for</span>
+<span class="sd">            constrained parameters should be included in the log density.</span>
+<span class="sd">        :return: The log density.</span>
+<span class="sd">        :raises RuntimeError: If the C++ Stan model throws an exception.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lp</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">pointer</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">())</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_density</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model_rng</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">propto</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">jacobian</span><span class="p">),</span> <span class="n">theta_unc</span><span class="p">,</span> <span class="n">lp</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;C++ exception in log_density(); see stderr for messages&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">lp</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">value</span></div>
+
+<div class="viewcode-block" id="StanModel.log_density_gradient"><a class="viewcode-back" href="../../languages/python.html#bridgestan.StanModel.log_density_gradient">[docs]</a>    <span class="k">def</span> <span class="nf">log_density_gradient</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">theta_unc</span><span class="p">:</span> <span class="n">FloatArray</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">propto</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">jacobian</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">out</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">FloatArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">FloatArray</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a tuple of the log density and gradient of the specified</span>
+<span class="sd">        unconstrained parameters, dropping constant terms that do not depend</span>
+<span class="sd">        on the parameters if `propto` is `True` and including change of</span>
+<span class="sd">        variables terms for constrained parameters if `jacobian`</span>
+<span class="sd">        is `True`.</span>
+
+<span class="sd">        :param theta_unc: Unconstrained parameter array.</span>
+<span class="sd">        :param propto: `True` if constant terms should be dropped from the log density.</span>
+<span class="sd">        :param jacobian: `True` if change-of-variables terms for</span>
+<span class="sd">            constrained parameters should be included in the log density.</span>
+<span class="sd">        :param out: A location into which the gradient is stored.  If</span>
+<span class="sd">            provided, it must have shape `(D, )` where `D` is the number</span>
+<span class="sd">            of parameters.  If not provided, a freshly allocated array</span>
+<span class="sd">            is returned.</span>
+<span class="sd">        :return: A tuple consisting of log density and gradient.</span>
+<span class="sd">        :raises ValueError: If `out` is specified and is not the same</span>
+<span class="sd">            shape as the gradient.</span>
+<span class="sd">        :raises RuntimeError: If the C++ Stan model throws an exception.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_unc_num</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">dims</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">out</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">dims</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;out size = </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> != params size = </span><span class="si">{</span><span class="n">dims</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">lp</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">pointer</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">())</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_density_gradient</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model_rng</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">propto</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">jacobian</span><span class="p">),</span> <span class="n">theta_unc</span><span class="p">,</span> <span class="n">lp</span><span class="p">,</span> <span class="n">out</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;C++ exception in log_density_gradient(); see stderr for messages&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">lp</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="StanModel.log_density_hessian"><a class="viewcode-back" href="../../languages/python.html#bridgestan.StanModel.log_density_hessian">[docs]</a>    <span class="k">def</span> <span class="nf">log_density_hessian</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">theta_unc</span><span class="p">:</span> <span class="n">FloatArray</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">propto</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">jacobian</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">out_grad</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">FloatArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">out_hess</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">FloatArray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">FloatArray</span><span class="p">,</span> <span class="n">FloatArray</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a tuple of the log density, gradient, and Hessian of the</span>
+<span class="sd">        specified unconstrained parameters, dropping constant terms that do</span>
+<span class="sd">        not depend on the parameters if `propto` is `True` and including</span>
+<span class="sd">        change of variables terms for constrained parameters if</span>
+<span class="sd">        `jacobian` is `True`.</span>
+
+<span class="sd">        :param theta_unc: Unconstrained parameter array.</span>
+<span class="sd">        :param propto: `True` if constant terms should be dropped from the log density.</span>
+<span class="sd">        :param jacobian: `True` if change-of-variables terms for</span>
+<span class="sd">            constrained parameters should be included in the log density.</span>
+<span class="sd">        :param out_grad: A location into which the gradient is stored.  If</span>
+<span class="sd">            provided, it must have shape `(D, )` where `D` is the number</span>
+<span class="sd">            of parameters.  If not provided, a freshly allocated array</span>
+<span class="sd">            is returned.</span>
+<span class="sd">        :param out_hess: A location into which the Hessian is stored. If</span>
+<span class="sd">            provided, it must have shape `(D, D)`, where `D` is the</span>
+<span class="sd">            number of parameters.  If not provided, a freshly allocated</span>
+<span class="sd">            array is returned.</span>
+<span class="sd">        :return: A tuple consisting of the log density, gradient, and Hessian.</span>
+<span class="sd">        :raises ValueError: If `out_grad` is specified and is not the</span>
+<span class="sd">            same shape as the gradient or if `out_hess` is specified and it</span>
+<span class="sd">            is not the same shape as the Hessian.</span>
+<span class="sd">        :raises RuntimeError: If the C++ Stan model throws an exception.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dims</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_unc_num</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">out_grad</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">out_grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">dims</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">out_grad</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">dims</span><span class="p">,):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;out_grad size = </span><span class="si">{</span><span class="n">out_grad</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> != params size = </span><span class="si">{</span><span class="n">dims</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">hess_size</span> <span class="o">=</span> <span class="n">dims</span> <span class="o">*</span> <span class="n">dims</span>
+        <span class="k">if</span> <span class="n">out_hess</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">out_hess</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">hess_size</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">out_hess</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">dims</span><span class="p">,</span> <span class="n">dims</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;out_hess size = </span><span class="si">{</span><span class="n">out_hess</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2"> != params size^2 = </span><span class="si">{</span><span class="n">hess_size</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">lp</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">pointer</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">())</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_density_hessian</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model_rng</span><span class="p">,</span>
+            <span class="nb">int</span><span class="p">(</span><span class="n">propto</span><span class="p">),</span>
+            <span class="nb">int</span><span class="p">(</span><span class="n">jacobian</span><span class="p">),</span>
+            <span class="n">theta_unc</span><span class="p">,</span>
+            <span class="n">lp</span><span class="p">,</span>
+            <span class="n">out_grad</span><span class="p">,</span>
+            <span class="n">out_hess</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">rc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;C++ exception in log_density_hessian(); see stderr for messages&quot;</span>
+            <span class="p">)</span>
+        <span class="n">out_hess</span> <span class="o">=</span> <span class="n">out_hess</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">dims</span><span class="p">,</span> <span class="n">dims</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">lp</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">out_grad</span><span class="p">,</span> <span class="n">out_hess</span></div></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2022, BridgeStan Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>
