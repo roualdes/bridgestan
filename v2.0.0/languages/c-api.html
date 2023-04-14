@@ -1,0 +1,1010 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>C API &#8212; BridgeStan 2.0.0 documentation</title>
+  <script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=9b1a4fa89bdd0e95b23b" rel="stylesheet">
+
+  
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/6.1.2/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/Documenter.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'languages/c-api';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://roualdes.github.io/bridgestan/latest/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v2.0.0';
+        </script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="How It Works" href="../internals.html" />
+    <link rel="prev" title="R Interface" href="r.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fas fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+    <p class="title logo__title">BridgeStan 2.0.0 documentation</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../getting-started.html">
+                        Getting Started
+                    </a>
+                </li>
+                
+
+                <li class="nav-item current active">
+                    <a class="nav-link" href="../languages.html">
+                        Language Interfaces
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../internals.html">
+                        How It Works
+                    </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      <div class="navbar-end-item navbar-end__search-button-container">
+        
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/roualdes/bridgestan" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://discourse.mc-stan.org/" title="Forums" class="nav-link" rel="noopener" target="_blank"><span><i class="fas fa-users"></i></span>
+            <label class="sr-only">Forums</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-toggle="dropdown">
+        v2.0.0  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  <div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search">
+  <i class="fas fa-search"></i>
+</button>
+  </div>
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fas fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                <li class="nav-item">
+                    <a class="nav-link" href="../getting-started.html">
+                        Getting Started
+                    </a>
+                </li>
+                
+
+                <li class="nav-item current active">
+                    <a class="nav-link" href="../languages.html">
+                        Language Interfaces
+                    </a>
+                </li>
+                
+
+                <li class="nav-item">
+                    <a class="nav-link" href="../internals.html">
+                        How It Works
+                    </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/roualdes/bridgestan" title="GitHub" class="nav-link" rel="noopener" target="_blank"><span><i class="fab fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          <a href="https://discourse.mc-stan.org/" title="Forums" class="nav-link" rel="noopener" target="_blank"><span><i class="fas fa-users"></i></span>
+            <label class="sr-only">Forums</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-toggle="dropdown">
+        v2.0.0  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">
+    Section Navigation
+  </p>
+  <div class="bd-toc-item navbar-nav">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="python.html">
+   Python Interface
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="julia.html">
+   Julia Interface
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="r.html">
+   R Interface
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   C API
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+      </div>
+      <main class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="c-api">
+<h1>C API<a class="headerlink" href="#c-api" title="Permalink to this heading">#</a></h1>
+<hr class="docutils" />
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
+<p>Please follow the <a class="reference internal" href="../getting-started.html"><span class="doc">Getting Started guide</span></a> to install
+BridgeStan’s pre-requisites and downloaded a copy of the BridgeStan source code.</p>
+</section>
+<section id="example-program">
+<h2>Example Program<a class="headerlink" href="#example-program" title="Permalink to this heading">#</a></h2>
+<p>An example program is provided alongside the BridgeStan source in <code class="docutils literal notranslate"><span class="pre">c-example/</span></code>.
+Details for building the example can be found in <code class="docutils literal notranslate"><span class="pre">c-example/Makefile</span></code>.</p>
+<details>
+<summary><a>Show example.c</a></summary><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;bridgestan.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Using BridgeStan version %d.%d.%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bs_major_version</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="n">bs_minor_version</span><span class="p">,</span><span class="w"> </span><span class="n">bs_patch_version</span><span class="p">);</span><span class="w"></span>
+
+<span class="w">  </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">data</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">argc</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1">// this could potentially error, and we may get information back about why.</span>
+<span class="w">  </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">err</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">bs_model</span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bs_model_construct</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="mi">123</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">err</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">model</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Error: %s&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">err</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">bs_free_error_msg</span><span class="p">(</span><span class="n">err</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;This model&#39;s name is %s.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bs_name</span><span class="p">(</span><span class="n">model</span><span class="p">));</span><span class="w"></span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;It has %d parameters.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bs_param_num</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span><span class="w"></span>
+
+<span class="w">  </span><span class="n">bs_model_destruct</span><span class="p">(</span><span class="n">model</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+</details></section>
+<section id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading">#</a></h2>
+<p>The following are the C functions exposed by the BridgeStan library in <code class="docutils literal notranslate"><span class="pre">bridgestan.h</span></code>.
+These are wrapped in the various high-level interfaces.</p>
+<p>These functions are implemented in C++, see <a class="reference internal" href="../internals.html"><span class="doc">How It Works</span></a> for more details.</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418bs_model_constructPKcjPPc">
+<span class="target" id="bridgestan_8h_1a9495989f19b02c770ff5dbe7e332a20f"></span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">bs_model_construct</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">data</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">seed</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">error_msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418bs_model_constructPKcjPPc" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Construct an instance of a model wrapper. Data must be encoded in JSON as indicated in the <em>CmdStan Reference Manual</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – <strong>[in]</strong> C-style string. This is either a path to JSON-encoded data file (must end with “.json”), a JSON string literal, or nullptr. An empty string or null pointer are both interpreted as no data. </p></li>
+<li><p><strong>seed</strong> – <strong>[in]</strong> seed for PRNG used during model construction. This PRNG is used for RNG functions in the <code class="docutils literal notranslate"><span class="pre">transformed</span> <span class="pre">data</span></code> block of the model, and then discarded. </p></li>
+<li><p><strong>error_msg</strong> – <strong>[out]</strong> a pointer to a string that will be allocated if there is an error. This must later be freed by calling <code class="docutils literal notranslate"><span class="pre">bs_free_error_msg</span></code>. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>pointer to constructed model or <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> if construction fails </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417bs_model_destructP8bs_model">
+<span class="target" id="bridgestan_8h_1ae1d742fe9ef750affd07e0a289ad1b8d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_model_destruct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417bs_model_destructP8bs_model" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Destroy the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>m</strong> – <strong>[in]</strong> pointer to model structure </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417bs_free_error_msgPc">
+<span class="target" id="bridgestan_8h_1a2c5d6c4a792f59226d5e2f27d2ced332"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_free_error_msg</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">error_msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417bs_free_error_msgPc" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Free the error messages created by other methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>error_msg</strong> – <strong>[in]</strong> pointer to error message </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv47bs_namePK8bs_model">
+<span class="target" id="bridgestan_8h_1aabdf02aefc3b4f239d8ca73d716ab724"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">bs_name</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv47bs_namePK8bs_model" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the name of the specified model as a C-style string.</p>
+<p>The returned string should not be modified; it is freed when the model wrapper is destroyed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>m</strong> – <strong>[in]</strong> pointer to model and RNG structure </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>name of model </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413bs_model_infoPK8bs_model">
+<span class="target" id="bridgestan_8h_1aecb4ecac81c9b19a62f4eaf7bd896f06"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">bs_model_info</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413bs_model_infoPK8bs_model" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return information about the compiled model as a C-style string.</p>
+<p>The returned string should not be modified; it is freed when the model wrapper is destroyed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>m</strong> – <strong>[in]</strong> pointer to model structure </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Information about the model including Stan version, Stan defines, and compiler flags. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414bs_param_namesPK8bs_modelbb">
+<span class="target" id="bridgestan_8h_1af8ecadbf72c25b3e253b0655d7041d9f"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">bs_param_names</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">include_tp</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">include_gq</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414bs_param_namesPK8bs_modelbb" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return a comma-separated sequence of indexed parameter names, including the transformed parameters and/or generated quantities as specified.</p>
+<p>The parameters are returned in the order they are declared. Multivariate parameters are return in column-major (more generally last-index major) order. Parameters are separated with periods (<code class="docutils literal notranslate"><span class="pre">.</span></code>). For example, <code class="docutils literal notranslate"><span class="pre">a[3]</span></code> is written <code class="docutils literal notranslate"><span class="pre">a.3</span></code> and <code class="docutils literal notranslate"><span class="pre">b[2,</span> <span class="pre">3]</span></code> as <code class="docutils literal notranslate"><span class="pre">b.2.3</span></code>. The numbering follows Stan and is indexed from 1.</p>
+<p>The returned string should not be modified; it is freed when the model wrapper is destroyed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – <strong>[in]</strong> pointer to model structure </p></li>
+<li><p><strong>include_tp</strong> – <strong>[in]</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code> to include transformed parameters </p></li>
+<li><p><strong>include_gq</strong> – <strong>[in]</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code> to include generated quantities </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>CSV-separated, indexed, parameter names </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418bs_param_unc_namesPK8bs_model">
+<span class="target" id="bridgestan_8h_1a55ff0e46976c0e1917caa158169a0134"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">bs_param_unc_names</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418bs_param_unc_namesPK8bs_model" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return a comma-separated sequence of unconstrained parameters. Only parameters are unconstrained, so there are no unconstrained transformed parameters or generated quantities.</p>
+<p>The parameters are returned in the order they are declared. Multivariate parameters are return in column-major (more generally last-index major) order. Parameters are separated with periods (<code class="docutils literal notranslate"><span class="pre">.</span></code>). For example, <code class="docutils literal notranslate"><span class="pre">a[3]</span></code> is written <code class="docutils literal notranslate"><span class="pre">a.3</span></code> and <code class="docutils literal notranslate"><span class="pre">b[2,</span> <span class="pre">3]</span></code> as <code class="docutils literal notranslate"><span class="pre">b.2.3</span></code>. The numbering follows Stan and is indexed from 1.</p>
+<p>The returned string should not be modified; it is freed when the model wrapper is destroyed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>m</strong> – <strong>[in]</strong> pointer to model structure </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>CSV-separated, indexed, unconstrained parameter names </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412bs_param_numPK8bs_modelbb">
+<span class="target" id="bridgestan_8h_1aa3b4d634ad45c1ab289dba5d5e0b7d45"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_param_num</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">include_tp</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">include_gq</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412bs_param_numPK8bs_modelbb" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the number of scalar parameters, optionally including the number of transformed parameters and/or generated quantities. For example, a 2 x 3 matrix counts as 6 scalar parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – <strong>[in]</strong> pointer to model structure </p></li>
+<li><p><strong>include_tp</strong> – <strong>[in]</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code> to include transformed parameters </p></li>
+<li><p><strong>include_gq</strong> – <strong>[in]</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code> to include generated quantities </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>number of parameters </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416bs_param_unc_numPK8bs_model">
+<span class="target" id="bridgestan_8h_1a3ec99ca2f13b43dd7904bb4eb8dc405a"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_param_unc_num</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416bs_param_unc_numPK8bs_model" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Return the number of unconstrained parameters. The number of unconstrained parameters might be smaller than the number of parameters if the unconstrained space has fewer dimensions than the constrained (e.g., for simplexes or correlation matrices).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>m</strong> – <strong>[in]</strong> pointer to model structure </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>number of unconstrained parameters </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418bs_param_constrainPK8bs_modelbbPKdPdP6bs_rngPPc">
+<span class="target" id="bridgestan_8h_1acca739465374f8109fe6f6b9d2934b76"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_param_constrain</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">include_tp</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">include_gq</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">theta_unc</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">theta</span></span>, <a class="reference internal" href="#_CPPv46bs_rng" title="bs_rng"><span class="n"><span class="pre">bs_rng</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rng</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">error_msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418bs_param_constrainPK8bs_modelbbPKdPdP6bs_rngPPc" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Set the sequence of constrained parameters based on the specified unconstrained parameters, including transformed parameters and/or generated quantities as specified, and return a return code of 0 for success and -1 for failure. Parameter order is as declared in the Stan program, with multivariate parameters given in last-index-major order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – <strong>[in]</strong> pointer to model structure </p></li>
+<li><p><strong>include_tp</strong> – <strong>[in]</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code> to include transformed parameters </p></li>
+<li><p><strong>include_gq</strong> – <strong>[in]</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code> to include generated quantities </p></li>
+<li><p><strong>theta_unc</strong> – <strong>[in]</strong> sequence of unconstrained parameters </p></li>
+<li><p><strong>theta</strong> – <strong>[out]</strong> sequence of constrained parameters </p></li>
+<li><p><strong>rng</strong> – <strong>[in]</strong> pointer to pseudorandom number generator, should be created by <code class="docutils literal notranslate"><span class="pre">bs_rng_construct</span></code>. This is only required when <code class="docutils literal notranslate"><span class="pre">include_gq</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code>, otherwise it can be null. </p></li>
+<li><p><strong>error_msg</strong> – <strong>[out]</strong> a pointer to a string that will be allocated if there is an error. This must later be freed by calling <code class="docutils literal notranslate"><span class="pre">bs_free_error_msg</span></code>. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>code 0 if successful and code -1 if there is an exception in the underlying Stan code </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420bs_param_unconstrainPK8bs_modelPKdPdPPc">
+<span class="target" id="bridgestan_8h_1afb906c4d819fccaf0bfcf6e3b4ab6c11"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_param_unconstrain</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">theta</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">theta_unc</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">error_msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420bs_param_unconstrainPK8bs_modelPKdPdPPc" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Set the sequence of unconstrained parameters based on the specified constrained parameters, and return a return code of 0 for success and -1 for failure. Parameter order is as declared in the Stan program, with multivariate parameters given in last-index-major order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – <strong>[in]</strong> pointer to model structure </p></li>
+<li><p><strong>theta</strong> – <strong>[in]</strong> sequence of constrained parameters </p></li>
+<li><p><strong>theta_unc</strong> – <strong>[out]</strong> sequence of unconstrained parameters </p></li>
+<li><p><strong>error_msg</strong> – <strong>[out]</strong> a pointer to a string that will be allocated if there is an error. This must later be freed by calling <code class="docutils literal notranslate"><span class="pre">bs_free_error_msg</span></code>. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>code 0 if successful and code -1 if there is an exception in the underlying Stan code </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425bs_param_unconstrain_jsonPK8bs_modelPKcPdPPc">
+<span class="target" id="bridgestan_8h_1a4362922f328c085f9de2f8ac4a79bbc3"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_param_unconstrain_json</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">json</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">theta_unc</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">error_msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425bs_param_unconstrain_jsonPK8bs_modelPKcPdPPc" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Set the sequence of unconstrained parameters based on the JSON specification of the constrained parameters, and return a return code of 0 for success and -1 for failure. Parameter order is as declared in the Stan program, with multivariate parameters given in last-index-major order. The JSON schema assumed is fully defined in the <em>CmdStan Reference Manual</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – <strong>[in]</strong> pointer to model structure </p></li>
+<li><p><strong>json</strong> – <strong>[in]</strong> JSON-encoded constrained parameters </p></li>
+<li><p><strong>theta_unc</strong> – <strong>[out]</strong> sequence of unconstrained parameters </p></li>
+<li><p><strong>error_msg</strong> – <strong>[out]</strong> a pointer to a string that will be allocated if there is an error. This must later be freed by calling <code class="docutils literal notranslate"><span class="pre">bs_free_error_msg</span></code>. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>code 0 if successful and code -1 if there is an exception in the underlying Stan code </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414bs_log_densityPK8bs_modelbbPKdPdPPc">
+<span class="target" id="bridgestan_8h_1a61f7421b708a2079a339c08a816788b5"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_log_density</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">propto</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jacobian</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">theta_unc</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lp</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">error_msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414bs_log_densityPK8bs_modelbbPKdPdPPc" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Set the log density of the specified parameters, dropping constants if <code class="docutils literal notranslate"><span class="pre">propto</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code> and including the Jacobian terms resulting from constraining parameters if <code class="docutils literal notranslate"><span class="pre">jacobian</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code>, and return a return code of 0 for success and -1 if there is an exception executing the Stan program.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – <strong>[in]</strong> pointer to model structure </p></li>
+<li><p><strong>propto</strong> – <strong>[in]</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code> to discard constant terms </p></li>
+<li><p><strong>jacobian</strong> – <strong>[in]</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code> to include change-of-variables terms </p></li>
+<li><p><strong>theta_unc</strong> – <strong>[in]</strong> unconstrained parameters </p></li>
+<li><p><strong>lp</strong> – <strong>[out]</strong> log density to be set </p></li>
+<li><p><strong>error_msg</strong> – <strong>[out]</strong> a pointer to a string that will be allocated if there is an error. This must later be freed by calling <code class="docutils literal notranslate"><span class="pre">bs_free_error_msg</span></code>. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>code 0 if successful and code -1 if there is an exception in the underlying Stan code </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423bs_log_density_gradientPK8bs_modelbbPKdPdPdPPc">
+<span class="target" id="bridgestan_8h_1a4086a9dc75cd819426461cd24fd1045c"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_log_density_gradient</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">propto</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jacobian</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">theta_unc</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">val</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">grad</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">error_msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423bs_log_density_gradientPK8bs_modelbbPKdPdPdPPc" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Set the log density and gradient of the specified parameters, dropping constants if <code class="docutils literal notranslate"><span class="pre">propto</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code> and including the Jacobian terms resulting from constraining parameters if <code class="docutils literal notranslate"><span class="pre">jacobian</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code>, and return a return code of 0 for success and -1 if there is an exception executing the Stan program. The gradient must have enough space to hold the gradient.</p>
+<p>The gradients are computed using automatic differentiation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – <strong>[in]</strong> pointer to model structure </p></li>
+<li><p><strong>propto</strong> – <strong>[in]</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code> to discard constant terms </p></li>
+<li><p><strong>jacobian</strong> – <strong>[in]</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code> to include change-of-variables terms </p></li>
+<li><p><strong>theta_unc</strong> – <strong>[in]</strong> unconstrained parameters </p></li>
+<li><p><strong>val</strong> – <strong>[out]</strong> log density to be set </p></li>
+<li><p><strong>grad</strong> – <strong>[out]</strong> gradient to set </p></li>
+<li><p><strong>error_msg</strong> – <strong>[out]</strong> a pointer to a string that will be allocated if there is an error. This must later be freed by calling <code class="docutils literal notranslate"><span class="pre">bs_free_error_msg</span></code>. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>code 0 if successful and code -1 if there is an exception in the underlying Stan code </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422bs_log_density_hessianPK8bs_modelbbPKdPdPdPdPPc">
+<span class="target" id="bridgestan_8h_1ab46a3ace7a76b896c5f71f193a6d4dd0"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_log_density_hessian</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">propto</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">jacobian</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">theta_unc</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">val</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">grad</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">hessian</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">error_msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422bs_log_density_hessianPK8bs_modelbbPKdPdPdPdPPc" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Set the log density, gradient, and Hessian of the specified parameters, dropping constants if <code class="docutils literal notranslate"><span class="pre">propto</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code> and including the Jacobian terms resulting from constraining parameters if <code class="docutils literal notranslate"><span class="pre">jacobian</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code>, and return a return code of 0 for success and -1 if there is an exception executing the Stan program. The pointer <code class="docutils literal notranslate"><span class="pre">grad</span></code> must have enough space to hold the gradient. The pointer <code class="docutils literal notranslate"><span class="pre">Hessian</span></code> must have enough space to hold the Hessian.</p>
+<p>The gradients are computed using automatic differentiation. the Hessians are</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – <strong>[in]</strong> pointer to model structure </p></li>
+<li><p><strong>propto</strong> – <strong>[in]</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code> to discard constant terms </p></li>
+<li><p><strong>jacobian</strong> – <strong>[in]</strong> <code class="docutils literal notranslate"><span class="pre">true</span></code> to include change-of-variables terms </p></li>
+<li><p><strong>theta_unc</strong> – <strong>[in]</strong> unconstrained parameters </p></li>
+<li><p><strong>val</strong> – <strong>[out]</strong> log density to be set </p></li>
+<li><p><strong>grad</strong> – <strong>[out]</strong> gradient to set </p></li>
+<li><p><strong>hessian</strong> – <strong>[out]</strong> hessian to set </p></li>
+<li><p><strong>error_msg</strong> – <strong>[out]</strong> a pointer to a string that will be allocated if there is an error. This must later be freed by calling <code class="docutils literal notranslate"><span class="pre">bs_free_error_msg</span></code>. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>code 0 if successful and code -1 if there is an exception in the underlying Stan code </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416bs_rng_constructjPPc">
+<span class="target" id="bridgestan_8h_1a077177c30404210eeebe99a9793fb61a"></span><a class="reference internal" href="#_CPPv46bs_rng" title="bs_rng"><span class="n"><span class="pre">bs_rng</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">bs_rng_construct</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">seed</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">error_msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416bs_rng_constructjPPc" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Construct an PRNG object to be used in <code class="docutils literal notranslate"><span class="pre">bs_param_constrain</span></code>. This object is not thread safe and should be constructed and destructed for each thread.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>seed</strong> – <strong>[in]</strong> seed for the RNG </p></li>
+<li><p><strong>error_msg</strong> – <strong>[out]</strong> a pointer to a string that will be allocated if there is an error. This must later be freed by calling <code class="docutils literal notranslate"><span class="pre">bs_free_error_msg</span></code>. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415bs_rng_destructP6bs_rng">
+<span class="target" id="bridgestan_8h_1abda94f1a55a59e7380dbb6558417df48"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_rng_destruct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv46bs_rng" title="bs_rng"><span class="n"><span class="pre">bs_rng</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rng</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415bs_rng_destructP6bs_rng" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Destruct an RNG object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rng</strong> – <strong>[in]</strong> pointer to RNG object </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421bs_set_print_callback15STREAM_CALLBACKPPc">
+<span class="target" id="bridgestan_8h_1a0da68fe222329c6fd7c84c3ecc01f599"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_set_print_callback</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv415STREAM_CALLBACK" title="STREAM_CALLBACK"><span class="n"><span class="pre">STREAM_CALLBACK</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">callback</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">error_msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421bs_set_print_callback15STREAM_CALLBACKPPc" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Provide a function for printing. This will be called when the Stan model prints output. The default is to print to stdout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>callback</strong> – <strong>[in]</strong> function to call when the Stan model prints. This function will be guarded by a mutex, so it need not be thread safe. It must never propagate an exception. Passing NULL will redirect printing back to stdout. </p></li>
+<li><p><strong>error_msg</strong> – <strong>[out]</strong> a pointer to a string that will be allocated if there is an error. This must later be freed by calling <code class="docutils literal notranslate"><span class="pre">bs_free_error_msg</span></code>. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>code 0 if successful and code -1 if there is an exception </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-typedefs">Typedefs</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv48bs_model">
+<span class="target" id="bridgestan_8h_1aa4e365a78bc71848646064991d545ed2"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_model</span></span></span><a class="headerlink" href="#_CPPv48bs_model" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Opaque type for model. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv46bs_rng">
+<span class="target" id="bridgestan_8h_1a2c3ff1f038db2dc353c03f0e42a35abb"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv46bs_rng" title="bs_rng"><span class="n"><span class="pre">bs_rng</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_rng</span></span></span><a class="headerlink" href="#_CPPv46bs_rng" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Opaque type for RNG. </p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv415STREAM_CALLBACK">
+<span class="target" id="bridgestan_8h_1ad8bc6eb393d8d5323b5ea07ed0ed6cca"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">STREAM_CALLBACK</span></span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv415STREAM_CALLBACK" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Type signature for optional print callback </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416bs_major_version">
+<span class="target" id="bridgestan_8h_1afa272b8ed4d3ac41a22ac32934d29928"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_major_version</span></span></span><a class="headerlink" href="#_CPPv416bs_major_version" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Version information for the BridgeStan library. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These are <em>not</em> the version of the wrapped Stan library. </p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These were not available pre-2.0.0, so their absence implies the library is in the 1.0.x series </p>
+</div>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416bs_minor_version">
+<span class="target" id="bridgestan_8h_1a06da9c368b4e06d28dad744bce56b282"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_minor_version</span></span></span><a class="headerlink" href="#_CPPv416bs_minor_version" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv416bs_patch_version">
+<span class="target" id="bridgestan_8h_1aed5ef9525a7cf095e53ad5e5654dc68c"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_patch_version</span></span></span><a class="headerlink" href="#_CPPv416bs_patch_version" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+<section id="r-compatible-functions">
+<h2>R-compatible functions<a class="headerlink" href="#r-compatible-functions" title="Permalink to this heading">#</a></h2>
+<p>To support calling these functions from R without including R-specific headers
+into the project, the following functions are exposed in <code class="docutils literal notranslate"><span class="pre">bridgestanR.h</span></code>.</p>
+<p>These are small shims which call the above functions. All arguments and return values
+must be handeled via pointers.</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-functions">Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420bs_model_construct_RPPcPiPP8bs_modelPPcPPv">
+<span class="target" id="bridgestan_r_8h_1a63d0cce10b512c06e74e343daa49637a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_model_construct_R</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">data</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rng</span></span>, <a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ptr_out</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">err_msg</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">err_ptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420bs_model_construct_RPPcPiPP8bs_modelPPcPPv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412bs_version_RPiPiPi">
+<span class="target" id="bridgestan_r_8h_1ae9de0302260cb8b65ea491309e3dfa1c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_version_R</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">major</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">minor</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">patch</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412bs_version_RPiPiPi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419bs_model_destruct_RPP8bs_model">
+<span class="target" id="bridgestan_r_8h_1ab318c77290c0a428f7180a27016fc8d8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_model_destruct_R</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">model</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419bs_model_destruct_RPP8bs_model" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419bs_free_error_msg_RPPv">
+<span class="target" id="bridgestan_r_8h_1ac1d3be0af1c42377be769c312c5b7b0f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_free_error_msg_R</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">err_msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419bs_free_error_msg_RPPv" title="Permalink to this definition">#</a><br /></dt>
+<dd><p>Free error message allocated in C++. Because R performs copies at the boundary on char**s, this uses void** pointing to the same memory </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49bs_name_RPP8bs_modelPPKc">
+<span class="target" id="bridgestan_r_8h_1a9ef477dd55de57341d3a566b0baa79a0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_name_R</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">model</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name_out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49bs_name_RPP8bs_modelPPKc" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415bs_model_info_RPP8bs_modelPPKc">
+<span class="target" id="bridgestan_r_8h_1a90f9c24cc3084ba25f0ea997e68026e5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_model_info_R</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">model</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">info_out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415bs_model_info_RPP8bs_modelPPKc" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416bs_param_names_RPP8bs_modelPiPiPPKc">
+<span class="target" id="bridgestan_r_8h_1a39866691658b99a65717b18ea991224d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_param_names_R</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">model</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">include_tp</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">include_gq</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name_out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416bs_param_names_RPP8bs_modelPiPiPPKc" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420bs_param_unc_names_RPP8bs_modelPPKc">
+<span class="target" id="bridgestan_r_8h_1a4c76795d1f862ea2d58f4f30af54de90"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_param_unc_names_R</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">model</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">name_out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420bs_param_unc_names_RPP8bs_modelPPKc" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414bs_param_num_RPP8bs_modelPiPiPi">
+<span class="target" id="bridgestan_r_8h_1a978f9d277ed2c2114b287355b2bcbdd5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_param_num_R</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">model</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">include_tp</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">include_gq</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">num_out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414bs_param_num_RPP8bs_modelPiPiPi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418bs_param_unc_num_RPP8bs_modelPi">
+<span class="target" id="bridgestan_r_8h_1a249f49b23b2e03fdcfc7d58ef3e43e92"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_param_unc_num_R</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">model</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">num_out</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418bs_param_unc_num_RPP8bs_modelPi" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420bs_param_constrain_RPP8bs_modelPiPiPKdPdPP6bs_rngPiPPcPPv">
+<span class="target" id="bridgestan_r_8h_1a93e819742b31483c80f3e184354d41ec"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_param_constrain_R</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">model</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">include_tp</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">include_gq</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">theta_unc</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">theta</span></span>, <a class="reference internal" href="#_CPPv46bs_rng" title="bs_rng"><span class="n"><span class="pre">bs_rng</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rng</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">return_code</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">err_msg</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">err_ptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420bs_param_constrain_RPP8bs_modelPiPiPKdPdPP6bs_rngPiPPcPPv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422bs_param_unconstrain_RPP8bs_modelPKdPdPiPPcPPv">
+<span class="target" id="bridgestan_r_8h_1ab5f99f18b240646b597d30d3d4ec347f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_param_unconstrain_R</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">model</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">theta</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">theta_unc</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">return_code</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">err_msg</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">err_ptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422bs_param_unconstrain_RPP8bs_modelPKdPdPiPPcPPv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427bs_param_unconstrain_json_RPP8bs_modelPPKcPdPiPPcPPv">
+<span class="target" id="bridgestan_r_8h_1a5599221e7f4acee203e2189444193814"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_param_unconstrain_json_R</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">model</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">json</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">theta_unc</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">return_code</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">err_msg</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">err_ptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427bs_param_unconstrain_json_RPP8bs_modelPPKcPdPiPPcPPv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416bs_log_density_RPP8bs_modelPiPiPKdPdPiPPcPPv">
+<span class="target" id="bridgestan_r_8h_1a82ed5f8ab5781ca3c8d6e8f421662df1"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_log_density_R</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">model</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">propto</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">jacobian</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">theta_unc</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">val</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">return_code</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">err_msg</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">err_ptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416bs_log_density_RPP8bs_modelPiPiPKdPdPiPPcPPv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv425bs_log_density_gradient_RPP8bs_modelPiPiPKdPdPdPiPPcPPv">
+<span class="target" id="bridgestan_r_8h_1acb851310e4a46a8f8be905d82cbdc91e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_log_density_gradient_R</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">model</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">propto</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">jacobian</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">theta_unc</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">val</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">grad</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">return_code</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">err_msg</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">err_ptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425bs_log_density_gradient_RPP8bs_modelPiPiPKdPdPdPiPPcPPv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424bs_log_density_hessian_RPP8bs_modelPiPiPKdPdPdPdPiPPcPPv">
+<span class="target" id="bridgestan_r_8h_1a528bf2e6ca132ad880a519c78cea1f9a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_log_density_hessian_R</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48bs_model" title="bs_model"><span class="n"><span class="pre">bs_model</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">model</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">propto</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">jacobian</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">theta_unc</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">val</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">grad</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">hess</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">return_code</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">err_msg</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">err_ptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424bs_log_density_hessian_RPP8bs_modelPiPiPKdPdPdPdPiPPcPPv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418bs_rng_construct_RPiPP6bs_rngPPcPPv">
+<span class="target" id="bridgestan_r_8h_1a80e09caaaa625d1d0b32ea800b8628bd"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_rng_construct_R</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">seed</span></span>, <a class="reference internal" href="#_CPPv46bs_rng" title="bs_rng"><span class="n"><span class="pre">bs_rng</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ptr_out</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">err_msg</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">err_ptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418bs_rng_construct_RPiPP6bs_rngPPcPPv" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417bs_rng_destruct_RPP6bs_rng">
+<span class="target" id="bridgestan_r_8h_1a8aca7e0d8ce642acf71878932953f59b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bs_rng_destruct_R</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv46bs_rng" title="bs_rng"><span class="n"><span class="pre">bs_rng</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rng</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417bs_rng_destruct_RPP6bs_rng" title="Permalink to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="r.html" title="previous page">
+      <i class="fas fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">R Interface</p>
+      </div>
+  </a>
+  <a class='right-next' id="next-link" href="../internals.html" title="next page">
+  <div class="prev-next-info">
+      <p class="prev-next-subtitle">next</p>
+      <p class="prev-next-title">How It Works</p>
+  </div>
+  <i class="fas fa-angle-right"></i>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fas fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#installation">
+   Installation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#example-program">
+   Example Program
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#api-reference">
+   API Reference
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#r-compatible-functions">
+   R-compatible functions
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+
+<div class="tocsection editthispage">
+    <a href="https://github.com/roualdes/bridgestan/edit/main/docs/languages/c-api.rst">
+        <i class="fas fa-pencil-alt"></i> Edit this page
+    </a>
+</div>
+
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="../_sources/languages/c-api.rst.txt">
+        <i class="fas fa-file-alt"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=9b1a4fa89bdd0e95b23b"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2023, BridgeStan Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,685 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Getting Started &#8212; BridgeStan v2.1.2 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/Documenter.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'getting-started';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://roualdes.github.io/bridgestan/latest/_static/switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'vv2.1.2';
+        </script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Language Interfaces" href="languages.html" />
+    <link rel="prev" title="Welcome to BridgeStan’s documentation!" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">BridgeStan v2.1.2 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="languages.html">
+                        Language Interfaces
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="internals.html">
+                        How It Works
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/roualdes/bridgestan" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discourse.mc-stan.org/" title="Forums" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fas fa-users"></i></span>
+            <label class="sr-only">Forums</label></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
+      vv2.1.2  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="languages.html">
+                        Language Interfaces
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="internals.html">
+                        How It Works
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/roualdes/bridgestan" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discourse.mc-stan.org/" title="Forums" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fas fa-users"></i></span>
+            <label class="sr-only">Forums</label></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-bs-toggle="dropdown">
+      vv2.1.2  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Getting Started</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading">#</a></h1>
+<section id="requirement-c-toolchain">
+<h2>Requirement: C++ toolchain<a class="headerlink" href="#requirement-c-toolchain" title="Permalink to this heading">#</a></h2>
+<p>Stan requires a C++ tool chain consisting of</p>
+<ul class="simple">
+<li><p>A C++14 compiler. On Windows, MSCV is <em>not</em> supported, so something like MinGW GCC is required.</p></li>
+<li><p>The Gnu <strong class="command">make</strong> utility for *nix <em>or</em> <strong class="command">mingw32-make</strong> for Windows</p></li>
+</ul>
+<p>Here are complete instructions by platform for installing both, from the CmdStan installation instructions.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html#cpp-toolchain">C++ tool chain installation - CmdStan User’s Guide</a></p></li>
+</ul>
+</section>
+<section id="downloading-bridgestan">
+<h2>Downloading BridgeStan<a class="headerlink" href="#downloading-bridgestan" title="Permalink to this heading">#</a></h2>
+<p>Installing BridgeStan is as simple as ensuring that the above requirements are installed and then downloading
+the source repository. All of the following ways of downloading BridgeStan will additionally download the
+<a class="reference external" href="https://github.com/stan-dev/stan">Stan</a> and <a class="reference external" href="https://github.com/stan-dev/math">Stan Math</a> libraries for you,
+and no additional dependencies are required to be installed separately for the C++ source code.</p>
+<p>As of version 1.0.2, the <a class="reference internal" href="languages/julia.html"><span class="doc">Julia</span></a> and
+<a class="reference internal" href="languages/python.html"><span class="doc">Python</span></a> interfaces will download
+the source for you the first time you compile a model, so
+this section is optional.</p>
+<section id="downloading-a-released-archive">
+<h3>Downloading a released archive<a class="headerlink" href="#downloading-a-released-archive" title="Permalink to this heading">#</a></h3>
+<p>Downloads of a complete copy of the source code and interfaces are available
+on <a class="reference external" href="https://github.com/roualdes/bridgestan/releases">our GitHub releases page</a>.</p>
+<p>To use these, simply download the file associated with the version you wish to use,
+and unzip its contents into the folder you would like BridgeStan to be in.</p>
+</section>
+<section id="installing-the-latest-version-with-git">
+<h3>Installing the latest version with <strong class="command">git</strong><a class="headerlink" href="#installing-the-latest-version-with-git" title="Permalink to this heading">#</a></h3>
+<p>If you have <strong class="command">git</strong> installed, you may download BridgeStan by navigating to the folder you’d like
+BridgeStan to be in and running</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>--recurse-submodules<span class="w"> </span>--shallow-submodules<span class="w"> </span>--depth<span class="o">=</span><span class="m">1</span><span class="w"> </span>https://github.com/roualdes/bridgestan.git
+</pre></div>
+</div>
+<p>If you clone without the <code class="docutils literal notranslate"><span class="pre">--recurse-submodules</span></code> argument, you can download the required
+submodules with <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">stan-update</span></code>. The arguments <code class="docutils literal notranslate"><span class="pre">--shallow-submodules</span></code> and <code class="docutils literal notranslate"><span class="pre">--depth=1</span></code> are
+to reduce the size of the download, but are not required.</p>
+</section>
+<section id="testing-the-installation">
+<h3>Testing the Installation<a class="headerlink" href="#testing-the-installation" title="Permalink to this heading">#</a></h3>
+<p>After this, BridgeStan is installed. You can test a basic compilation by opening
+a terminal in your BridgeStan folder and running</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># MacOS and Linux</span>
+make<span class="w"> </span>test_models/multi/multi_model.so
+<span class="c1"># Windows</span>
+mingw32-make.exe<span class="w"> </span>test_models/multi/multi_model.so
+</pre></div>
+</div>
+<p>This will compile the file <code class="file docutils literal notranslate"><span class="pre">test_models/multi/multi.stan</span></code> into a shared library object for use with BridgeStan.
+This will require internet access the first time you run it in order
+to download the appropriate Stan compiler for your platform into
+<code class="file docutils literal notranslate"><em><span class="pre">&lt;bridgestan-dir&gt;</span></em><span class="pre">/bin/stanc</span><em><span class="pre">[.exe]</span></em></code></p>
+</section>
+</section>
+<section id="installing-an-interface">
+<h2>Installing an Interface<a class="headerlink" href="#installing-an-interface" title="Permalink to this heading">#</a></h2>
+<p>To see instructions for installing the BridgeStan client package in your language of
+choice, see the <a class="reference internal" href="languages.html"><span class="doc">Language Interfaces page</span></a>.</p>
+</section>
+<section id="optional-customizing-bridgestan">
+<h2>Optional: Customizing BridgeStan<a class="headerlink" href="#optional-customizing-bridgestan" title="Permalink to this heading">#</a></h2>
+<p>BridgeStan has many compiler flags and options set by default. Many of these defaults
+are the same as those used by the CmdStan interface to Stan.
+You can override the defaults or add new flags
+on the command line when invoking <strong class="command">make</strong>, or make them persistent by
+creating or editing the file <code class="file docutils literal notranslate"><em><span class="pre">&lt;bridgestan</span> <span class="pre">dir&gt;</span></em><span class="pre">/make/local</span></code>.</p>
+<p>For example, setting the contents of <code class="file docutils literal notranslate"><span class="pre">make/local</span></code> to the following
+includes compiler flags for optimization level and architecture.</p>
+<div class="highlight-Makefile notranslate"><div class="highlight"><pre><span></span><span class="c"># By default we use -O3, this sets a less aggressive C++ optimization level</span>
+<span class="nv">O</span><span class="o">=</span><span class="m">2</span>
+<span class="c"># Adding other arbitrary C++ compiler flags</span>
+<span class="nv">CXXFLAGS</span><span class="o">+=</span><span class="w"> </span>-march<span class="o">=</span>native
+</pre></div>
+</div>
+<p>Flags for <strong class="command">stanc3</strong> can also be set here</p>
+<div class="highlight-Makefile notranslate"><div class="highlight"><pre><span></span><span class="c"># pedantic mode and level 1 optimization</span>
+<span class="nv">STANCFLAGS</span><span class="o">+=</span><span class="w"> </span>--warn-pedantic<span class="w"> </span>--O1
+</pre></div>
+</div>
+<section id="enabling-parallel-calls-of-stan-programs">
+<h3>Enabling Parallel Calls of Stan Programs<a class="headerlink" href="#enabling-parallel-calls-of-stan-programs" title="Permalink to this heading">#</a></h3>
+<p>In order for Python or Julia to be able to call a single Stan model
+concurrently from multiple threads or for a Stan model to execute its
+own code in parallel, the following flag must be set in <code class="file docutils literal notranslate"><span class="pre">make/local</span></code>
+or on the command line.</p>
+<div class="highlight-Makefile notranslate"><div class="highlight"><pre><span></span><span class="c"># Enable threading</span>
+<span class="nv">STAN_THREADS</span><span class="o">=</span><span class="nb">true</span>
+</pre></div>
+</div>
+<p>Note that this flag changes a lot of the internals of the Stan library
+and as such, <strong>all models used in the same process should have the same
+setting</strong>. Mixing models which have <strong class="makevar">STAN_THREADS</strong> enabled with those that do not
+will most likely lead to segmentation faults or other crashes.</p>
+<p>Additional flags, such as those for MPI and OpenCL, are covered in the
+<a class="reference external" href="https://mc-stan.org/docs/cmdstan-guide/parallelization.html">CmdStan User’s Guide page on Parallelization</a>.</p>
+</section>
+<section id="autodiff-hessian-calculations">
+<h3>Autodiff Hessian calculations<a class="headerlink" href="#autodiff-hessian-calculations" title="Permalink to this heading">#</a></h3>
+<p>By default, Hessians in BridgeStan are calculated using central finite differences.
+This is because not all Stan models support the nested autodiff required for Hessians
+to be computed directly, particularly models which use implicit functions like the <code class="docutils literal notranslate"><span class="pre">algebra_solver</span></code>
+or ODE integrators.</p>
+<p>If your Stan model does not use these features, you can enable autodiff Hessians by
+setting the compile-time flag <code class="docutils literal notranslate"><span class="pre">BRIDGESTAN_AD_HESSIAN=true</span></code> in the invocation to <strong class="command">make</strong>.
+This can be set in <code class="file docutils literal notranslate"><span class="pre">make/local</span></code> if you wish to use it by default.</p>
+<p>This value is reported by the <code class="docutils literal notranslate"><span class="pre">model_info</span></code> function if you would like to check at run time
+whether Hessians are computed with nested autodiff or with finite differences. Similar to
+<strong class="makevar">STAN_THREADS</strong>, it is not advised to mix models which use autodiff Hessians with those that
+do not in the same program.</p>
+<p>Autodiff Hessians may be faster than finite differences depending on your model, and will
+generally be more numerically stable.</p>
+</section>
+<section id="using-older-stan-versions">
+<h3>Using Older Stan Versions<a class="headerlink" href="#using-older-stan-versions" title="Permalink to this heading">#</a></h3>
+<p>If you wish to use BridgeStan for an older released version, all you need to do is</p>
+<ol class="arabic simple">
+<li><p>Set <strong class="makevar">STANC3_VERSION</strong> in <code class="file docutils literal notranslate"><span class="pre">make/local</span></code> to your desired version, e.g. <code class="docutils literal notranslate"><span class="pre">v2.26.0</span></code></p></li>
+<li><p>Go into the <code class="docutils literal notranslate"><span class="pre">stan</span></code> submodule and run <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">release/VERSION</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">release/v2.26.0</span></code></p></li>
+<li><p>Also in the <code class="docutils literal notranslate"><span class="pre">stan</span></code> submodule, run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">math-update</span></code></p></li>
+<li><p>In the top level BridgeStan directory, run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">clean</span></code></p></li>
+</ol>
+<p>To return to the version of Stan currently used by BridgeStan, you can run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">stan-update</span></code> from the top level directory
+and remove <strong class="makevar">STANC3_VERSION</strong> from your <code class="docutils literal notranslate"><span class="pre">make/local</span></code> file, before running <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">clean</span></code> again.</p>
+</section>
+<section id="using-pre-existing-stan-installations">
+<h3>Using Pre-Existing Stan Installations<a class="headerlink" href="#using-pre-existing-stan-installations" title="Permalink to this heading">#</a></h3>
+<p>If you wish to use BridgeStan with a pre-existing download of the Stan repository, or with
+a custom fork or branch, you can set the <strong class="makevar">STAN</strong> (and, optionally, <strong class="makevar">MATH</strong>) variables to the
+path to your existing copy in calls to <strong class="command">make</strong>, or more permanently by setting them in a
+<code class="file docutils literal notranslate"><span class="pre">make/local</span></code> file as described above.</p>
+<p>The easiest way to use a custom stanc3 is to place the built executable at
+<code class="file docutils literal notranslate"><span class="pre">bin/stanc</span><em><span class="pre">[.exe]</span></em></code>.</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Welcome to BridgeStan’s documentation!</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="languages.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Language Interfaces</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requirement-c-toolchain">Requirement: C++ toolchain</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#downloading-bridgestan">Downloading BridgeStan</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#downloading-a-released-archive">Downloading a released archive</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#installing-the-latest-version-with-git">Installing the latest version with <strong class="command">git</strong></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#testing-the-installation">Testing the Installation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installing-an-interface">Installing an Interface</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-customizing-bridgestan">Optional: Customizing BridgeStan</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#enabling-parallel-calls-of-stan-programs">Enabling Parallel Calls of Stan Programs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#autodiff-hessian-calculations">Autodiff Hessian calculations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-older-stan-versions">Using Older Stan Versions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-pre-existing-stan-installations">Using Pre-Existing Stan Installations</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/roualdes/bridgestan/edit/main/docs/getting-started.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div class="tocsection sourcelink">
+    <a href="_sources/getting-started.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, BridgeStan Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
