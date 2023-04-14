@@ -1,7 +1,7 @@
-from pathlib import Path
-import urllib.request
-import urllib.error
 import tarfile
+import urllib.error
+import urllib.request
+from pathlib import Path
 from time import sleep
 
 from .__version import __version__

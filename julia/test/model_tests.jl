@@ -176,12 +176,38 @@ end
 
 
     model2 = load_test_model("full", false)
+    rng = StanRNG(model2, 1234)
     @test 1 == length(BridgeStan.param_constrain(model2, a))
     @test 2 == length(BridgeStan.param_constrain(model2, a; include_tp = true))
-    @test 3 == length(BridgeStan.param_constrain(model2, a; include_gq = true))
+    @test 3 == length(BridgeStan.param_constrain(model2, a; include_gq = true, rng = rng))
     @test 4 == length(
-        BridgeStan.param_constrain(model2, a; include_tp = true, include_gq = true),
+        BridgeStan.param_constrain(
+            model2,
+            a;
+            include_tp = true,
+            include_gq = true,
+            rng = rng,
+        ),
     )
+
+    # reproducibility
+    @test isapprox(
+        BridgeStan.param_constrain(
+            model2,
+            a;
+            include_gq = true,
+            rng = StanRNG(model2, 45678),
+        ),
+        BridgeStan.param_constrain(
+            model2,
+            a;
+            include_gq = true,
+            rng = StanRNG(model2, 45678),
+        ),
+    )
+
+    # no seed or rng provided
+    @test_throws ArgumentError BridgeStan.param_constrain(model2, a; include_gq = true)
 
     # exception handling
     model3 = load_test_model("throw_tp", false)
@@ -194,11 +220,13 @@ end
     )
 
     model4 = load_test_model("throw_gq", false)
+    rng_model4 = StanRNG(model4, 1234)
     BridgeStan.param_constrain(model4, y)
     @test_throw_string "find this text: gqfails" BridgeStan.param_constrain(
         model4,
         y;
         include_gq = true,
+        rng = rng_model4,
     )
 end
 
@@ -481,8 +509,6 @@ end
 
 
 @testset "threaded model: multi" begin
-    # Multivariate Gaussian
-    # make test_models/multi/multi_model.so
 
     function gaussian(x)
         return -0.5 * x' * x
@@ -499,8 +525,8 @@ end
     ld = Vector{Bool}(undef, R)
     g = Vector{Bool}(undef, R)
 
-    @sync for it = 1:nt
-        Threads.@spawn for r = it:nt:R
+    @Threads.threads for it = 1:nt
+        for r = it:nt:R
             x = randn(BridgeStan.param_num(model))
             (lp, grad) = BridgeStan.log_density_gradient(model, x)
 
@@ -511,6 +537,41 @@ end
 
     @test all(ld)
     @test all(g)
+end
+
+
+@testset "threaded model: full" begin
+
+    model = load_test_model("full", false)
+    nt = Threads.nthreads()
+    seeds = rand(UInt32, nt)
+
+    x = [0.5] # bernoulli parameter
+
+    R = 1000
+    out_size = BridgeStan.param_num(model;include_tp=false, include_gq=true)
+
+    # to test the thread safety of our RNGs, we do two runs
+    # the first we do in parallel
+    gq1 = zeros(Float64, out_size, R)
+    @Threads.threads for it = 1:nt
+        rng = StanRNG(model,seeds[it]) # RNG is created per-thread
+        for r = it:nt:R
+            gq1[:, r] = BridgeStan.param_constrain(model, x; include_gq=true, rng=rng)
+        end
+    end
+
+    # the second we do sequentially
+    gq2 = zeros(Float64, out_size, R)
+    for it = 1:nt
+        rng = StanRNG(model,seeds[it])
+        for r = it:nt:R
+            gq2[:, r] = BridgeStan.param_constrain(model, x; include_gq=true, rng=rng)
+        end
+    end
+
+    # these should be the same if the param_constrain is thread safe
+    @test gq1 == gq2
 end
 
 

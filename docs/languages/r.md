@@ -62,7 +62,7 @@ Create a Stan Model instance.
 _Usage_
 
 ```R
-StanModel$new(lib, data, rng_seed, chain_id)
+StanModel$new(lib, data, rng_seed)
 ```
 
 
@@ -70,12 +70,9 @@ _Arguments_
 
   - `lib` A path to a compiled BridgeStan Shared Object file.
 
-  - `data` Either a JSON string literal or a path to a data file in JSON format ending in ".json".
+  - `data` Either a JSON string literal, a path to a data file in JSON format ending in ".json", or the empty string.
 
-  - `rng_seed` Seed for the RNG in the model object.
-
-  - `chain_id` Used to offset the RNG by a fixed amount.
-
+  - `rng_seed` Seed for the RNG used in constructing the model.
 
 _Returns_
 
@@ -213,14 +210,13 @@ _Returns_
 
 **Method** `param_constrain()`:
 
-Returns a vector of constrained parameters given the unconstrained parameters.
-parameters See also `StanModel$param_unconstrain()`, the inverse
+Returns a vector of constrained parameters given the unconstrained parameters. See also `StanModel$param_unconstrain()`, the inverse
 of this function.
 
 _Usage_
 
 ```R
-StanModel$param_constrain(theta_unc, include_tp = FALSE, include_gq = FALSE)
+StanModel$param_constrain(theta_unc, include_tp = FALSE, include_gq = FALSE, rng)
 ```
 
 
@@ -234,10 +230,34 @@ _Arguments_
   - `include_gq` Whether to also output the generated quantities
       of the model.
 
+  - `rng` The random number generator to use if `include_gq` is
+      `TRUE`.  See `StanModel$new_rng()`.
+
 
 _Returns_
 
   The constrained parameters of the model.
+
+
+**Method** `new_rng()`:
+
+Create a new persistent PRNG object for use in `param_constrain()`.
+
+
+_Usage_
+
+```R
+StanModel$new_rng(seed)
+```
+
+
+_Arguments_
+
+  - `seed` The seed for the PRNG.
+
+_Returns_
+
+  A `StanRNG` object.
 
 
 **Method** `param_unconstrain()`:
@@ -380,3 +400,4 @@ _Returns_
 
   List containing entries `val` (the log density), `gradient`
   (the gradient), and `hessian` (the Hessian).
+

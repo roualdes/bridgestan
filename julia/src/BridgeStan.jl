@@ -22,13 +22,14 @@ export StanModel,
     log_density_hessian,
     get_bridgestan_path,
     set_bridgestan_path!,
-    compile_model
+    compile_model,
+    StanRNG
 
 include("model.jl")
 include("compile.jl")
 
 """
-    StanModel(;stan_file, stanc_args=[], make_args=[], data="", seed=204, chain_id=0)
+    StanModel(;stan_file, stanc_args=[], make_args=[], data="", seed=204)
 
 Construct a StanModel instance from a `.stan` file, compiling if necessary.
 
@@ -40,7 +41,6 @@ StanModel(;
     make_args::AbstractVector{String} = String[],
     data::String = "",
     seed = 204,
-    chain_id = 0,
-) = StanModel(compile_model(stan_file; stanc_args, make_args), data, seed, chain_id)
+) = StanModel(compile_model(stan_file; stanc_args, make_args), data, seed)
 
 end

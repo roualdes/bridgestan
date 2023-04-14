@@ -5,14 +5,14 @@
 #include <boost/random/additive_combine.hpp>
 #include <string>
 #include <vector>
+#include <random>
 
 /**
- * This structure holds a pointer to a model, holds a pseudorandom
- * number generator, and holds pointers to the parameter names in
- * CSV format.  Instances can be constructed with the C function
- * `construct()` and destroyed with the C function `destruct()`.
+ * This structure holds a pointer to a model and holds pointers to the parameter
+ * names in CSV format.  Instances can be constructed with the C function
+ * `bs_construct()` and destroyed with the C function `bs_destruct()`.
  */
-class bs_model_rng {
+class bs_model {
  public:
   /**
    * Construct a model and random number generator with cached
@@ -23,15 +23,13 @@ class bs_model_rng {
    * a JSON string literal, or nullptr. An empty string or null
    * pointer are both interpreted as no data.
    * @param[in] seed pseudorandom number generator seed
-   * @param[in] chain_id number of gaps to skip in the pseudorandom
-   * number generator for concurrent computations
    */
-  bs_model_rng(const char* data, unsigned int seed, unsigned int chain_id);
+  bs_model(const char* data, unsigned int seed);
 
   /**
    * Destroy this object and free all of the memory allocated for it.
    */
-  ~bs_model_rng() noexcept;
+  ~bs_model() noexcept;
 
   /**
    * Return the name of the model.  This class manages the memory,
@@ -117,7 +115,8 @@ class bs_model_rng {
    * @param[in,out] theta constrained parameters generated
    */
   void param_constrain(bool include_tp, bool include_gq,
-                       const double* theta_unc, double* theta);
+                       const double* theta_unc, double* theta,
+                       boost::ecuyer1988& rng) const;
 
   /**
    * Calculate the log density for the specified unconstrain
@@ -184,9 +183,6 @@ class bs_model_rng {
   /** Stan model */
   stan::model::model_base* model_;
 
-  /** pseudorandom number generator */
-  boost::ecuyer1988 rng_;
-
   /** name of the Stan model */
   char* name_ = nullptr;
 
@@ -225,6 +221,23 @@ class bs_model_rng {
 
   /** number of unconstrained parameters */
   int param_unc_num_ = -1;
+};
+
+/**
+ * A wrapper around the Boost random number generator required
+ * by the Stan model's write_array methods. Instances can be
+ * constructed with the C function `bs_construct_rng()` and destroyed
+ * with the C function `bs_destruct_rng()`.
+ */
+class bs_rng {
+ public:
+  bs_rng(unsigned int seed) : rng_(seed) {
+    // discard first value as workaround for
+    // https://github.com/stan-dev/stan/issues/3167
+    rng_.discard(1);
+  }
+
+  boost::ecuyer1988 rng_;
 };
 
 #endif

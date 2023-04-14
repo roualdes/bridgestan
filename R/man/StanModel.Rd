@@ -20,11 +20,13 @@ as well as constraining and unconstraining transforms.
 \item \href{#method-StanModel-new}{\code{StanModel$new()}}
 \item \href{#method-StanModel-name}{\code{StanModel$name()}}
 \item \href{#method-StanModel-model_info}{\code{StanModel$model_info()}}
+\item \href{#method-StanModel-model_version}{\code{StanModel$model_version()}}
 \item \href{#method-StanModel-param_names}{\code{StanModel$param_names()}}
 \item \href{#method-StanModel-param_unc_names}{\code{StanModel$param_unc_names()}}
 \item \href{#method-StanModel-param_num}{\code{StanModel$param_num()}}
 \item \href{#method-StanModel-param_unc_num}{\code{StanModel$param_unc_num()}}
 \item \href{#method-StanModel-param_constrain}{\code{StanModel$param_constrain()}}
+\item \href{#method-StanModel-new_rng}{\code{StanModel$new_rng()}}
 \item \href{#method-StanModel-param_unconstrain}{\code{StanModel$param_unconstrain()}}
 \item \href{#method-StanModel-param_unconstrain_json}{\code{StanModel$param_unconstrain_json()}}
 \item \href{#method-StanModel-log_density}{\code{StanModel$log_density()}}
@@ -38,7 +40,7 @@ as well as constraining and unconstraining transforms.
 \subsection{Method \code{new()}}{
 Create a Stan Model instance.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StanModel$new(lib, data, rng_seed, chain_id)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$new(lib, data, seed)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -48,9 +50,7 @@ Create a Stan Model instance.
 
 \item{\code{data}}{Either a JSON string literal or a path to a data file in JSON format ending in ".json".}
 
-\item{\code{rng_seed}}{Seed for the RNG in the model object.}
-
-\item{\code{chain_id}}{Used to offset the RNG by a fixed amount.}
+\item{\code{seed}}{Seed for the RNG used in constructing the model.}
 }
 \if{html}{\out{</div>}}
 }
@@ -83,6 +83,15 @@ Get compile information about this Stan model.
 \subsection{Returns}{
 A character vector of the Stan version and important flags.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-StanModel-model_version"></a>}}
+\if{latex}{\out{\hypertarget{method-StanModel-model_version}{}}}
+\subsection{Method \code{model_version()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$model_version()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-StanModel-param_names"></a>}}
@@ -174,7 +183,12 @@ The number of parameters in the model.
 Returns a vector of constrained parameters given the unconstrained parameters.
 See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StanModel$param_constrain(theta_unc, include_tp = FALSE, include_gq = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$param_constrain(
+  theta_unc,
+  include_tp = FALSE,
+  include_gq = FALSE,
+  rng
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -185,11 +199,33 @@ See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \item{\code{include_tp}}{Whether to also output the transformed parameters of the model.}
 
 \item{\code{include_gq}}{Whether to also output the generated quantities of the model.}
+
+\item{\code{rng}}{The random number generator to use if \code{include_gq} is \code{TRUE}.  See \code{StanModel$new_rng()}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 The constrained parameters of the model.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-StanModel-new_rng"></a>}}
+\if{latex}{\out{\hypertarget{method-StanModel-new_rng}{}}}
+\subsection{Method \code{new_rng()}}{
+Create a new persistent PRNG object for use in \code{param_constrain()}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$new_rng(seed)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{seed}}{The seed for the PRNG.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A \code{StanRNG} object.
 }
 }
 \if{html}{\out{<hr>}}

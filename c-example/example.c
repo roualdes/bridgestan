@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
 
   // this could potentially error, and we may get information back about why.
   char* err;
-  bs_model_rng* model = bs_construct(data, 123, 0, &err);
+  bs_model* model = bs_model_construct(data, 123, &err);
   if (!model) {
     if (err) {
       printf("Error: %s", err);
@@ -26,6 +26,6 @@ int main(int argc, char** argv) {
   printf("This model's name is %s.\n", bs_name(model));
   printf("It has %d parameters.\n", bs_param_num(model, 0, 0));
 
-  bs_destruct(model);
+  bs_model_destruct(model);
   return 0;
 }

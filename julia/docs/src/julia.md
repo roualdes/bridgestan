@@ -89,6 +89,7 @@ log_density_hessian!
 param_constrain!
 param_unconstrain!
 param_unconstrain_json!
+StanRNG
 ```
 
 ### Compilation utilities

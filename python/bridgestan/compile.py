@@ -4,9 +4,9 @@ import subprocess
 from pathlib import Path
 from typing import List
 
-from .util import validate_readable
 from .__version import __version__
 from .download import CURRENT_BRIDGESTAN, get_bridgestan_src
+from .util import validate_readable
 
 
 def verify_bridgestan_path(path: str) -> None:
