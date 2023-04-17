@@ -4,7 +4,15 @@ on:
   push:
     branches:
       - 'main'
-  workflow_dispatch: {}
+  release:
+    types: ['published']
+  workflow_dispatch:
+    inputs:
+      upload:
+        description: 'Push built docs to github pages?'
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   build-docs:
@@ -36,7 +44,7 @@ jobs:
       - name: Install os dependencies
         run: |
           sudo apt-get update -y
-          sudo apt-get install pandoc doxygen -y
+          sudo apt-get install pandoc doxygen latexmk -y
 
       - name: Set up Julia
         uses: julia-actions/setup-julia@v1
@@ -80,6 +88,7 @@ jobs:
           git branch -m gh-pages
 
       - name: Push changes
+        if: github.event_name == 'release' || github.event.inputs.upload
         uses: ad-m/github-push-action@master
         with:
           branch: gh-pages
