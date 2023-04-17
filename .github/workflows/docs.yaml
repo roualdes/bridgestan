@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies (python)
         run: |
           python -m pip install --upgrade pip wheel
-          python -m pip install --upgrade "sphinx>5" nbsphinx ipython ipykernel ipywidgets sphinx-copybutton pydata-sphinx-theme breathe myst-parser
+          python -m pip install --upgrade -r docs/requirements.txt
 
       - name: Install os dependencies
         run: |
@@ -69,6 +69,8 @@ jobs:
         run: |
           cd docs/_build/
 
+          ls
+
           rm -rf bs-docs/latest
           cp -r html bs-docs/latest/
 
@@ -83,6 +85,6 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           branch: gh-pages
-          directory: docs/_build/html
+          directory: docs/_build/bs-docs
           force: true
 

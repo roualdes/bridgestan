@@ -19,9 +19,11 @@ import bridgestan
 version = bridgestan.__version__
 if os.getenv("BS_DEV_DOCS"):
     # don't display a version number for "latest" docs
+    switcher_version = "latest"
     release = ""
 else:
     release = version
+    switcher_version = version
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -68,6 +70,11 @@ html_theme_options = {
         },
     ],
     "use_edit_page_button": True,
+    "switcher": {
+        "json_url": "https://wardbrian.github.io/bridgestan/latest/_static/switcher.json",
+        "version_match": switcher_version
+    },
+       "navbar_end": ["navbar-icon-links", "version-switcher"]
 }
 
 html_context = {
