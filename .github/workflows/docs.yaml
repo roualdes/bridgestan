@@ -45,6 +45,7 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install pandoc doxygen latexmk -y
+          sudo apt-get install texlive-latex-extra -y --no-install-recommends
 
       - name: Set up Julia
         uses: julia-actions/setup-julia@v1
