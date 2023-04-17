@@ -13,8 +13,15 @@ year = datetime.date.today().year
 copyright = f"{year}, BridgeStan Developers"
 author = "BridgeStan Developers"
 
+import os
+
 import bridgestan
-version = release = bridgestan.__version__
+version = bridgestan.__version__
+if os.getenv("BS_DEV_DOCS"):
+    # don't display a version number for "latest" docs
+    release = ""
+else:
+    release = version
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

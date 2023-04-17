@@ -1,22 +1,13 @@
-name: Build github pages docs
+name: Build latest BridgeStan docs
 
 on:
   push:
     branches:
       - 'main'
-  release:
-    types: ['published']
-  workflow_dispatch:
-    inputs:
-      upload:
-        description: 'Push built docs to github pages?'
-        required: true
-        default: false
-        type: boolean
+  workflow_dispatch: {}
 
 jobs:
   build-docs:
-    name: Publish documentation to gh-pages
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -44,8 +35,7 @@ jobs:
       - name: Install os dependencies
         run: |
           sudo apt-get update -y
-          sudo apt-get install pandoc doxygen latexmk -y
-          sudo apt-get install texlive-latex-extra -y --no-install-recommends
+          sudo apt-get install pandoc doxygen -y
 
       - name: Set up Julia
         uses: julia-actions/setup-julia@v1
@@ -67,29 +57,29 @@ jobs:
       - name: Build docs
         run: |
           cd docs/
-          make latexpdf
-          make html
+          BS_DEV_DOCS=true make html
 
-      - name: Upload pdf artifact
-        uses: actions/upload-artifact@v3
+      - name: Check out github
+        uses: actions/checkout@v3
         with:
-          name: bridgestan-docs-pdf
-          path: docs/_build/latex/bridgestan.pdf
-          retention-days: 5
+          path: docs/_build/bs-docs
+          ref: gh-pages
 
       - name: Commit html docs
         run: |
-          cd docs/_build/html
+          cd docs/_build/
 
-          git init
+          rm -rf bs-docs/latest
+          cp -r html bs-docs/latest/
+
+          cd bs-docs/
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+
           git add .
-          git commit -m "Rebuild docs"
-          git branch -m gh-pages
+          git commit --amend -m "Rebuild docs"
 
       - name: Push changes
-        if: github.event_name == 'release' || github.event.inputs.upload
         uses: ad-m/github-push-action@master
         with:
           branch: gh-pages
