@@ -58,8 +58,19 @@ jobs:
       - name: Build docs
         run: |
           cd docs/
+          make latexpdf
           make html
-          cd _build/html
+
+      - name: Upload pdf artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: bridgestan-docs-pdf
+          path: docs/_build/latex/bridgestan.pdf
+          retention-days: 5
+
+      - name: Commit html docs
+        run: |
+          cd docs/_build/html
 
           git init
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"

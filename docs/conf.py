@@ -3,12 +3,18 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+import datetime
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "BridgeStan"
-copyright = "2022, BridgeStan Developers"
+year = datetime.date.today().year
+copyright = f"{year}, BridgeStan Developers"
 author = "BridgeStan Developers"
+
+import bridgestan
+version = release = bridgestan.__version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
