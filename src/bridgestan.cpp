@@ -228,7 +228,7 @@ bs_rng* bs_rng_construct(unsigned int seed, char** error_msg) {
 
 void bs_rng_destruct(bs_rng* rng) { delete (rng); }
 
-int bs_set_print_callback(STREAM_CALLBACK callback) {
+int bs_set_print_callback(STREAM_CALLBACK callback, char** error_msg) {
   try {
     if (buf != nullptr) {  // nullptr only when `outstream` is initially set to
                            // &std::cout
@@ -239,7 +239,12 @@ int bs_set_print_callback(STREAM_CALLBACK callback) {
     outstream = new std::ostream(buf);
     return 0;
   } catch (...) {
-    std::cerr << "unknown exception in C++ set_print_callback()" << std::endl;
+    if (error_msg) {
+      std::stringstream error;
+      error << "set_print_callback() failed with unknown exception"
+            << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
   }
   return -1;
 }

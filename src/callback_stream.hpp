@@ -16,7 +16,7 @@ struct callback_ostreambuf : public std::streambuf {
     return n;
   };
 
-  int_type overflow(int_type ch) {
+  int_type overflow(int_type ch) override {
     std::lock_guard<std::mutex> lock(callback_mutex);
     if (ch != traits_type::eof()) {
       char c = ch;

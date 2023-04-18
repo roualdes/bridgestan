@@ -71,8 +71,8 @@ class StanModel:
 
         self._set_print_callback = self.stanlib.bs_set_print_callback
         self._set_print_callback.restype = None
-        self._set_print_callback.argtypes = [c_print_callback]
-        self._set_print_callback(_print_callback)
+        self._set_print_callback.argtypes = [c_print_callback, star_star_char]
+        self._set_print_callback(_print_callback, None)
 
         err = ctypes.pointer(ctypes.c_char_p())
         self.model = self._construct(str.encode(self.data_path), self.seed, err)
