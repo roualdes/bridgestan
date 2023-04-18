@@ -51,9 +51,11 @@ class StanModel:
             the model does not contain any ``print`` statements, but may have
             a performance impact if it does. If ``False``, ``print`` statements
             from the Stan model will be sent to ``cout`` and will not be seen in
-            Jupyter or capturable with ``contextlib.redirect_stdout``.
-            Note: multiple ``StanModel`` instances from the same shared library will
-            either _all_ capture or _all_ not capture ``print`` statements.
+            Jupyter or capturable with :func:`contextlib.redirect_stdout`.
+
+            **Note:** If this is set for a model, any other models instantiated
+            from the *same shared library* will also have the callback set, even
+            if they were created *before* this model.
         :raises FileNotFoundError or PermissionError: If ``model_lib`` is not readable or
             ``model_data`` is specified and not a path to a readable file.
         :raises RuntimeError: If there is an error instantiating the
