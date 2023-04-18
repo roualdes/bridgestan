@@ -3,10 +3,5 @@
         "name": "latest",
         "version": "latest",
         "url": "https://roualdes.github.io/bridgestan/latest/"
-    },
-    {
-        "name": "v1.0.3",
-        "version": "v1.0.3",
-        "url": "https://brianward.dev/bridgestan/v1.0.3/"
     }
 ]
