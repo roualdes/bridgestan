@@ -6,6 +6,7 @@
 #include "callback_stream.hpp"
 extern "C" {
 #else
+#include <stddef.h> // for size_t
 typedef struct bs_model bs_model;
 typedef struct bs_rng bs_rng;
 typedef void (*STREAM_CALLBACK)(const char* data, size_t size);
