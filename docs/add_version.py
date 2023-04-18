@@ -17,6 +17,6 @@ if __name__ == "__main__":
     version = sys.argv[1]
     with open("_static/switcher.json", "r") as f:
         switcher = json.load(f)
-    switcher.append(new_version(version))
+    switcher.insert(1, new_version(version))
     with open("_static/switcher.json", "w") as f:
         json.dump(switcher, f, indent=4)
