@@ -15,9 +15,11 @@ double_array = ndpointer(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
 star_star_char = ctypes.POINTER(ctypes.c_char_p)
 c_print_callback = ctypes.CFUNCTYPE(None, ctypes.c_char_p, ctypes.c_int)
 
+
 @c_print_callback
 def _print_callback(s, n):
     print(ctypes.string_at(s, n).decode("utf-8"), end="")
+
 
 class StanModel:
     """
@@ -32,6 +34,7 @@ class StanModel:
         model_data: Optional[str] = None,
         *,
         seed: int = 1234,
+        capture_stan_prints: bool = True,
     ) -> None:
         """
         Construct a StanModel object for a compiled Stan model and data given
@@ -43,6 +46,14 @@ class StanModel:
             or the empty string.
         :param seed: A pseudo random number generator seed, used for RNG functions
             in the ``transformed data`` block.
+        :param capture_stan_prints: If ``True``, capture all ``print`` statements
+            from the Stan model and print them from Python. This has no effect if
+            the model does not contain any ``print`` statements, but may have
+            a performance impact if it does. If ``False``, ``print`` statements
+            from the Stan model will be sent to ``cout`` and will not be seen in
+            Jupyter or capturable with ``contextlib.redirect_stdout``.
+            Note: multiple ``StanModel`` instances from the same shared library will
+            either _all_ capture or _all_ not capture ``print`` statements.
         :raises FileNotFoundError or PermissionError: If ``model_lib`` is not readable or
             ``model_data`` is specified and not a path to a readable file.
         :raises RuntimeError: If there is an error instantiating the
@@ -72,7 +83,8 @@ class StanModel:
         self._set_print_callback = self.stanlib.bs_set_print_callback
         self._set_print_callback.restype = None
         self._set_print_callback.argtypes = [c_print_callback, star_star_char]
-        self._set_print_callback(_print_callback, None)
+        if capture_stan_prints:
+            self._set_print_callback(_print_callback, None)
 
         err = ctypes.pointer(ctypes.c_char_p())
         self.model = self._construct(str.encode(self.data_path), self.seed, err)
@@ -194,6 +206,7 @@ class StanModel:
         stanc_args: List[str] = [],
         make_args: List[str] = [],
         seed: int = 1234,
+        capture_stan_prints: bool = True,
     ):
         """
         Construct a StanModel instance from a ``.stan`` file, compiling if necessary.
@@ -209,14 +222,23 @@ class StanModel:
             For example, ``["STAN_THREADS=True"]`` will enable
             threading for the compiled model. If the same flags are defined
             in ``make/local``, the versions passed here will take precedent.
-        :param seed: A pseudo random number generator seed.
+        :param seed: A pseudo random number generator seed, used for RNG functions
+            in the ``transformed data`` block.
+        :param capture_stan_prints: If ``True``, capture all ``print`` statements
+            from the Stan model and print them from Python. This has no effect if
+            the model does not contain any ``print`` statements, but may have
+            a performance impact if it does. If ``False``, ``print`` statements
+            from the Stan model will be sent to ``cout`` and will not be seen in
+            Jupyter or capturable with ``contextlib.redirect_stdout``.
         :raises FileNotFoundError or PermissionError: If ``stan_file`` does not exist
             or is not readable.
         :raises ValueError: If BridgeStan cannot be located.
         :raises RuntimeError: If compilation fails.
         """
         result = compile_model(stan_file, stanc_args=stanc_args, make_args=make_args)
-        return cls(str(result), model_data, seed=seed)
+        return cls(
+            str(result), model_data, seed=seed, capture_stan_prints=capture_stan_prints
+        )
 
     def __del__(self) -> None:
         """

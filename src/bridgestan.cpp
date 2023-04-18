@@ -230,13 +230,17 @@ void bs_rng_destruct(bs_rng* rng) { delete (rng); }
 
 int bs_set_print_callback(STREAM_CALLBACK callback, char** error_msg) {
   try {
-    if (buf != nullptr) {  // nullptr only when `outstream` is initially set to
-                           // &std::cout
+    if (buf != nullptr) {  // nullptr only when `outstream` is &std::cout
       delete buf;
       delete outstream;
     }
-    buf = new callback_ostreambuf(callback);
-    outstream = new std::ostream(buf);
+    if (callback == nullptr) {
+      outstream = &std::cout;
+      buf = nullptr;
+    } else {
+      buf = new callback_ostreambuf(callback);
+      outstream = new std::ostream(buf);
+    }
     return 0;
   } catch (...) {
     if (error_msg) {

@@ -296,7 +296,8 @@ void bs_rng_destruct(bs_rng* rng);
  *
  * @param[in] callback function to call when the Stan model prints. This
  * function will be guarded by a mutex, so it need not be thread safe. It must
- * never propagate an exception.
+ * never propagate an exception. Passing NULL will redirect printing back to
+ * stdout.
  * @param[out] error_msg a pointer to a string that will be allocated if there
  * is an error. This must later be freed by calling `bs_free_error_msg`.
  * @return code 0 if successful and code -1 if there is an exception

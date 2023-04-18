@@ -649,17 +649,29 @@ def test_stdout_capture():
     import contextlib
     import io
 
-    m = bs.StanModel(str(STAN_FOLDER / "print" / "print_model.so"))
     theta = 0.1
+
+    m = bs.StanModel(str(STAN_FOLDER / "print" / "print_model.so"), capture_stan_prints=False)
 
     with contextlib.redirect_stdout(io.StringIO()) as f:
         print("Hello from Python!")
         m.log_density(np.array([theta]))
 
+    captured = f.getvalue()
+    assert captured.splitlines()[0] == "Hello from Python!"
+    assert "Stan" not in captured
+
+    m2 = bs.StanModel(str(STAN_FOLDER / "print" / "print_model.so"))
+
+    with contextlib.redirect_stdout(io.StringIO()) as f:
+        print("Hello from Python!")
+        m2.log_density(np.array([theta]))
+
     lines = f.getvalue().splitlines()
     assert lines[0] == "Hello from Python!"
     assert lines[1] == "Hi from Stan!"
     assert lines[2] == f"theta = {theta}"
+
 
 
 @pytest.fixture
