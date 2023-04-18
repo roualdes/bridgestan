@@ -57,8 +57,8 @@ jobs:
       - name: Calculate version
         if:
         run: |
-          if [[ "${{ github.event.inputs.version }}" != "" ]]; then
-            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          if [[ "${{ inputs.version }}" != "" ]]; then
+            echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
           else
             echo "VERSION=latest" >> $GITHUB_ENV
           fi
