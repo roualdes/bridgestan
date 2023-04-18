@@ -1,4 +1,4 @@
-name: Build latest BridgeStan docs
+name: Build BridgeStan docs
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
     inputs:
       version:
         description: 'Version of BridgeStan docs to build'
-        required: true
+        required: false
         type: string
         default: ''
   workflow_call:
@@ -20,12 +20,7 @@ on:
 
 jobs:
   build-docs:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python-version: [3.9]
-      fail-fast: false
+    runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -34,10 +29,10 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python 3.9
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.9
 
       - name: Install dependencies (python)
         run: |
@@ -51,13 +46,6 @@ jobs:
 
       - name: Set up Julia
         uses: julia-actions/setup-julia@v1
-
-      - name: Stan submodule cacheing
-        uses: actions/cache@v3
-        id: stan-cache
-        with:
-          path: ./stan/
-          key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
       - name: Install package
         run: |

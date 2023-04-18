@@ -6,7 +6,7 @@ def new_version(version):
     return {
         "name": version,
         "version": version,
-        "url": f"https://wardbrian.github.io/bridgestan/{version}/",
+        "url": f"https://roualdes.github.io/bridgestan/{version}/",
     }
 
 
