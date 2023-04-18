@@ -39,7 +39,7 @@ git clone --recurse-submodules https://github.com/roualdes/bridgestan.git
 ```
 
 For a full guide on installing, configuring, and using BridgeStan, consult the
-[documentation](https://roualdes.github.io/bridgestan/getting-started.html)
+[documentation](https://roualdes.github.io/bridgestan/latest/getting-started.html)
 
 ## Using BridgeStan
 

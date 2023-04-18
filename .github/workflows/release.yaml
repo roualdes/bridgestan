@@ -9,6 +9,10 @@ on:
       is_rerun:
         type: boolean
         description: Set to true if this version has already been 'released', e.g. to only re-run PyPI and Julia release steps
+      dry_run:
+        type: boolean
+        description: Set to true to avoid PyPI and Julia release steps
+        default: false
 
 jobs:
   release:
@@ -32,24 +36,26 @@ jobs:
       - name: Update version numbers
         if: ${{ !inputs.is_rerun }}
         run: |
-          sed -i 's/Version:.*/Version: ${{ github.event.inputs.new_version }}/' R/DESCRIPTION
-          sed -i 's/version = .*/version = "${{ github.event.inputs.new_version }}"/' julia/Project.toml
-          sed -i 's/__version__ = .*/__version__ = "${{ github.event.inputs.new_version }}"/' python/bridgestan/__version.py
+          sed -i 's/Version:.*/Version: ${{ inputs.new_version }}/' R/DESCRIPTION
+          sed -i 's/version = .*/version = "${{ inputs.new_version }}"/' julia/Project.toml
+          sed -i 's/__version__ = .*/__version__ = "${{ inputs.new_version }}"/' python/bridgestan/__version.py
 
-          sed -i 's/#define BRIDGESTAN_MAJOR .*/#define BRIDGESTAN_MAJOR '"$(echo ${{ github.event.inputs.new_version }} | cut -d. -f1)"'/' src/version.hpp
-          sed -i 's/#define BRIDGESTAN_MINOR .*/#define BRIDGESTAN_MINOR '"$(echo ${{ github.event.inputs.new_version }} | cut -d. -f2)"'/' src/version.hpp
-          sed -i 's/#define BRIDGESTAN_PATCH .*/#define BRIDGESTAN_PATCH '"$(echo ${{ github.event.inputs.new_version }} | cut -d. -f3)"'/' src/version.hpp
+          sed -i 's/#define BRIDGESTAN_MAJOR .*/#define BRIDGESTAN_MAJOR '"$(echo ${{ inputs.new_version }} | cut -d. -f1)"'/' src/version.hpp
+          sed -i 's/#define BRIDGESTAN_MINOR .*/#define BRIDGESTAN_MINOR '"$(echo ${{ inputs.new_version }} | cut -d. -f2)"'/' src/version.hpp
+          sed -i 's/#define BRIDGESTAN_PATCH .*/#define BRIDGESTAN_PATCH '"$(echo ${{ inputs.new_version }} | cut -d. -f3)"'/' src/version.hpp
 
+          cd docs/
+          python add_version.py "v${{ inputs.new_version }}"
 
       - name: Create tarball
         run: |
-          tar --exclude-vcs -czvf bridgestan-${{ github.event.inputs.new_version }}.tar.gz --transform 's,^,bridgestan-${{ github.event.inputs.new_version }}/,' *
+          tar --exclude-vcs -czvf bridgestan-${{ inputs.new_version }}.tar.gz --transform 's,^,bridgestan-${{ inputs.new_version }}/,' *
 
         # Note: because of the order of operations here, the Julia package inside the tarball can never point to itself.
       - name: Update Julia artifact
         if: ${{ !inputs.is_rerun }}
         run: |
-          julia ./julia/updateArtifacts.jl bridgestan-${{ github.event.inputs.new_version }}.tar.gz "v${{ github.event.inputs.new_version }}"
+          julia ./julia/updateArtifacts.jl bridgestan-${{ inputs.new_version }}.tar.gz "v${{ inputs.new_version }}"
 
       - name: Setup git identity
         run: |
@@ -59,7 +65,7 @@ jobs:
       - name: Create commit
         id: commit
         run: |
-          git commit -am "Release ${{ github.event.inputs.new_version }}: updating version numbers" || true
+          git commit -am "Release ${{ inputs.new_version }}: updating version numbers" || true
           git push origin main
           echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
@@ -81,7 +87,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "bridgestan-*.tar.gz,python/dist/*"
-          tag: "v${{ github.event.inputs.new_version }}"
+          tag: "v${{ inputs.new_version }}"
           commit: main
           draft: true
           generateReleaseNotes: true
@@ -90,6 +96,7 @@ jobs:
           skipIfReleaseExists: true
 
       - name: Upload PyPI wheels
+        if: ${{ !inputs.dry_run }}
         uses: pypa/gh-action-pypi-publish@v1.8.4
         with:
           password: ${{ secrets.PYPI_TOKEN }}
@@ -97,8 +104,17 @@ jobs:
           skip_existing: true
 
       - name: Create JuliaRegistration comment
+        if: ${{ !inputs.dry_run }}
         uses: peter-evans/commit-comment@v2
         with:
           sha: ${{ steps.commit.outputs.sha }}
           body: |
             @JuliaRegistrator register subdir=julia
+
+  docs:
+    name: Build release docs
+    needs: release
+    uses: roualdes/bridgestan/.github/workflows/docs.yaml@main
+    with:
+      version: "v${{ inputs.new_version }}"
+    secrets: inherit

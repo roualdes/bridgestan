@@ -3,12 +3,28 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+import datetime
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "BridgeStan"
-copyright = "2022, BridgeStan Developers"
+year = datetime.date.today().year
+copyright = f"{year}, BridgeStan Developers"
 author = "BridgeStan Developers"
+
+import os
+
+import bridgestan
+
+version = bridgestan.__version__
+if os.getenv("BS_DEV_DOCS"):
+    # don't display a version number for "latest" docs
+    switcher_version = "latest"
+    release = ""
+else:
+    release = version
+    switcher_version = version
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -55,6 +71,11 @@ html_theme_options = {
         },
     ],
     "use_edit_page_button": True,
+    "switcher": {
+        "json_url": "https://roualdes.github.io/bridgestan/latest/_static/switcher.json",
+        "version_match": switcher_version,
+    },
+    "navbar_end": ["theme-switcher", "navbar-icon-links", "version-switcher"],
 }
 
 html_context = {

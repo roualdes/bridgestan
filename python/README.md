@@ -1,6 +1,6 @@
 # bridgestan.py - The Python interface to BridgeStan
 
-[View the Python interface documentation online](https://roualdes.github.io/bridgestan/languages/python.html)
+[View the Python interface documentation online](https://roualdes.github.io/bridgestan/latest/languages/python.html)
 
 ## Installation
 
