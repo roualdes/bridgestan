@@ -9,6 +9,10 @@ on:
       is_rerun:
         type: boolean
         description: Set to true if this version has already been 'released', e.g. to only re-run PyPI and Julia release steps
+      dry_run:
+        type: boolean
+        description: Set to true to avoid PyPI and Julia release steps
+        default: false
 
 jobs:
   release:
@@ -92,6 +96,7 @@ jobs:
           skipIfReleaseExists: true
 
       - name: Upload PyPI wheels
+        if: ${{ !inputs.dry_run }}
         uses: pypa/gh-action-pypi-publish@v1.8.4
         with:
           password: ${{ secrets.PYPI_TOKEN }}
@@ -99,13 +104,16 @@ jobs:
           skip_existing: true
 
       - name: Create JuliaRegistration comment
+        if: ${{ !inputs.dry_run }}
         uses: peter-evans/commit-comment@v2
         with:
           sha: ${{ steps.commit.outputs.sha }}
           body: |
             @JuliaRegistrator register subdir=julia
+
   docs:
-    uses: WardBrian/bridgestan/.github/workflows/build_docs.yaml@main
+    needs: release
+    uses: WardBrian/bridgestan/.github/workflows/docs.yaml@main
     with:
       version: "v${{ github.event.inputs.new_version }}"
     secrets: inherit
