@@ -40,6 +40,8 @@ jobs:
           sed -i 's/#define BRIDGESTAN_MINOR .*/#define BRIDGESTAN_MINOR '"$(echo ${{ github.event.inputs.new_version }} | cut -d. -f2)"'/' src/version.hpp
           sed -i 's/#define BRIDGESTAN_PATCH .*/#define BRIDGESTAN_PATCH '"$(echo ${{ github.event.inputs.new_version }} | cut -d. -f3)"'/' src/version.hpp
 
+          cd docs/
+          python add_version.py "v${{ github.event.inputs.new_version }}"
 
       - name: Create tarball
         run: |
@@ -102,3 +104,8 @@ jobs:
           sha: ${{ steps.commit.outputs.sha }}
           body: |
             @JuliaRegistrator register subdir=julia
+  docs:
+    uses: WardBrian/bridgestan/.github/workflows/build_docs.yaml@main
+    with:
+      version: "v${{ github.event.inputs.new_version }}"
+    secrets: inherit

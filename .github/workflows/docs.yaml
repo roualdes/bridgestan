@@ -4,7 +4,19 @@ on:
   push:
     branches:
       - 'main'
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version of BridgeStan docs to build'
+        required: true
+        type: string
+        default: ''
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version of BridgeStan docs to build'
+        required: true
+        type: string
 
 jobs:
   build-docs:
@@ -54,10 +66,22 @@ jobs:
           cd ../julia
           julia --project=./docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
 
+      - name: Calculate version
+        if:
+        run: |
+          if [[ "${{ github.event.inputs.version }}" != "" ]]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=latest" >> $GITHUB_ENV
+          fi
+
       - name: Build docs
         run: |
           cd docs/
-          BS_DEV_DOCS=true make html
+          if [[ $VERSION == "latest" ]]; then
+            export BS_DEV_DOCS=true
+          fi
+          make html
 
       - name: Check out github
         uses: actions/checkout@v3
@@ -71,8 +95,8 @@ jobs:
 
           ls
 
-          rm -rf bs-docs/latest
-          cp -r html bs-docs/latest/
+          rm -rf bs-docs/$VERSION
+          cp -r html bs-docs/$VERSION
 
           cd bs-docs/
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
