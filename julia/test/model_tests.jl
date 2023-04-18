@@ -659,6 +659,7 @@ end
     function f()
         println("Hello from Julia")
         BridgeStan.log_density(m, [theta])
+        Base.Libc.flush_cstdio() # NOTE: not necessary after Stan 2.32
     end
 
     out = @capture_out f()
