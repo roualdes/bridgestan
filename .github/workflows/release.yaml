@@ -112,8 +112,9 @@ jobs:
             @JuliaRegistrator register subdir=julia
 
   docs:
+    name: Build release docs
     needs: release
-    uses: WardBrian/bridgestan/.github/workflows/docs.yaml@main
+    uses: roualdes/bridgestan/.github/workflows/docs.yaml@main
     with:
       version: "v${{ inputs.new_version }}"
     secrets: inherit

@@ -16,6 +16,7 @@ author = "BridgeStan Developers"
 import os
 
 import bridgestan
+
 version = bridgestan.__version__
 if os.getenv("BS_DEV_DOCS"):
     # don't display a version number for "latest" docs
@@ -72,9 +73,9 @@ html_theme_options = {
     "use_edit_page_button": True,
     "switcher": {
         "json_url": "https://roualdes.github.io/bridgestan/latest/_static/switcher.json",
-        "version_match": switcher_version
+        "version_match": switcher_version,
     },
-       "navbar_end": ["theme-switcher", "navbar-icon-links", "version-switcher"]
+    "navbar_end": ["theme-switcher", "navbar-icon-links", "version-switcher"],
 }
 
 html_context = {
