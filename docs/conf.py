@@ -24,7 +24,7 @@ if os.getenv("BS_DEV_DOCS"):
     release = ""
 else:
     release = version
-    switcher_version = version
+    switcher_version = f'v{version}'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
