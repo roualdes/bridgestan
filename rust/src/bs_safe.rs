@@ -4,7 +4,6 @@ use std::ffi::c_char;
 use std::ffi::c_int;
 use std::ffi::c_uint;
 use std::ffi::CStr;
-use std::ffi::NulError;
 use std::ffi::OsStr;
 use std::ptr::null;
 use std::ptr::NonNull;
@@ -21,21 +20,17 @@ pub use ffi::Bridgestan as StanLibrary;
 #[non_exhaustive]
 pub enum BridgeStanError {
     #[error("Could not load target library: {0}")]
-    LoadLibraryError(#[from] libloading::Error),
+    InvalidLibrary(#[from] libloading::Error),
     #[error("Bad Stan library version: Got {0} but expected {1}")]
     BadLibraryVersion(String, String),
     #[error("The Stan library was compiled without threading support. Config was {0}")]
-    StanThreadsError(String),
-    #[error("Failed to encode string to null-terminated C string")]
-    StringEncodeError(#[from] NulError),
+    StanThreads(String),
     #[error("Failed to decode string to UTF8")]
-    StringDecodeError(#[from] Utf8Error),
+    InvalidString(#[from] Utf8Error),
     #[error("Failed to construct model: {0}")]
-    ConstructFailedError(String),
+    ConstructFailed(String),
     #[error("Failed during evaluation: {0}")]
     EvaluationFailed(String),
-    #[error("Failed to interpret variable names")]
-    InvalidVariableNames(),
 }
 
 type Result<T> = std::result::Result<T, BridgeStanError>;
@@ -101,7 +96,7 @@ impl<T: Borrow<StanLibrary>> Rng<T> {
             drop(err);
             Ok(Self { rng, lib })
         } else {
-            Err(BridgeStanError::ConstructFailedError(err.message()))
+            Err(BridgeStanError::ConstructFailed(err.message()))
         }
     }
 }
@@ -170,14 +165,14 @@ impl<T: Borrow<StanLibrary>> Model<T> {
             // making would be incorrect
             let info = model.info();
             if !info.to_string_lossy().contains("STAN_THREADS=true") {
-                Err(BridgeStanError::StanThreadsError(
+                Err(BridgeStanError::StanThreads(
                     info.to_string_lossy().into_owned(),
                 ))
             } else {
                 Ok(model)
             }
         } else {
-            Err(BridgeStanError::ConstructFailedError(err.message()))
+            Err(BridgeStanError::ConstructFailed(err.message()))
         }
     }
 
@@ -223,7 +218,8 @@ impl<T: Borrow<StanLibrary>> Model<T> {
                 include_gq as c_int,
             ))
         };
-        cstr.to_str().expect("Stan model has invalid parameter names")
+        cstr.to_str()
+            .expect("Stan model has invalid parameter names")
     }
 
     /// Return a comma-separated sequence of unconstrained parameters.
@@ -238,7 +234,8 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     pub fn param_unc_names(&mut self) -> &str {
         let cstr =
             unsafe { CStr::from_ptr(self.lib.borrow().bs_param_unc_names(self.model.as_ptr())) };
-        cstr.to_str().expect("Stan model has invalid parameter names")
+        cstr.to_str()
+            .expect("Stan model has invalid parameter names")
     }
 
     /// Number of parameters in the model on the constrained scale.

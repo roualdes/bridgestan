@@ -64,7 +64,7 @@ fn throw_data() {
         panic!("throw_data model should not successfully be created.");
     };
 
-    let BridgeStanError::ConstructFailedError(msg) = err else {
+    let BridgeStanError::ConstructFailed(msg) = err else {
         panic!("Creating throw_data model return an unexpected error");
     };
     assert!(msg.contains("find this text: datafails"));

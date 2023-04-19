@@ -32,7 +32,7 @@ let seed = 42;
 
 let model = match Model::new(&lib, Some(data), seed) {
 Ok(model) => { model },
-Err(BridgeStanError::ConstructFailedError(msg)) => {
+Err(BridgeStanError::ConstructFailed(msg)) => {
     panic!("Model initialization failed. Error message from stan was {}", msg)
 },
 _ => { panic!("Unexpected error") },
