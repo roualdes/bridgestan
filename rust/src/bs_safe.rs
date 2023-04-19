@@ -411,28 +411,3 @@ impl<T: Borrow<StanLibrary>> Drop for Model<T> {
         unsafe { self.lib.borrow().bs_model_destruct(self.model.as_ptr()) }
     }
 }
-
-#[cfg(feature = "nuts")]
-use nuts_rs::{CpuLogpFunc, LogpError};
-
-#[cfg(feature = "nuts")]
-impl LogpError for BridgeStanError {
-    fn is_recoverable(&self) -> bool {
-        !matches!(self, BridgeStanError::EvaluationFailed(_))
-    }
-}
-
-#[cfg(feature = "nuts")]
-impl<T: Borrow<StanLibrary>> CpuLogpFunc for Model<T> {
-    type Err = BridgeStanError;
-
-    fn dim(&self) -> usize {
-        self.param_unc_num()
-    }
-
-    fn logp(&mut self, position: &[f64], grad: &mut [f64]) -> Result<f64> {
-        let logp = self.log_density_gradient(position, false, true, grad)?;
-
-        Ok(logp)
-    }
-}
