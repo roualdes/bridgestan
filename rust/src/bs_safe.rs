@@ -10,7 +10,6 @@ use std::ptr::null;
 use std::ptr::NonNull;
 use std::str::Utf8Error;
 
-use itertools::Itertools;
 // This is more or less equivalent to manually defining Display and From<other error types>
 use thiserror::Error;
 
@@ -248,64 +247,6 @@ impl<T: Borrow<StanLibrary>> Model<T> {
             ))
         };
         Ok(cstr.to_str()?)
-    }
-
-    /// Return meta information about the constrained parameters of the model
-    pub fn params(&self, include_tp: bool, include_gq: bool) -> Result<Vec<Parameter>> {
-        let var_string = self.param_names(include_tp, include_gq)?;
-        let name_idxs: Result<Vec<(&str, Vec<usize>)>> = var_string
-            .split(',')
-            .map(|var| {
-                let mut parts = var.split('.');
-                let name = parts
-                    .next()
-                    .ok_or_else(BridgeStanError::InvalidVariableNames)?;
-                let idxs: Result<Vec<usize>> = parts
-                    .map(|mut idx| {
-                        if idx == "real" {
-                            idx = "1";
-                        }
-                        if idx == "imag" {
-                            idx = "2";
-                        }
-                        let idx: usize = idx
-                            .parse()
-                            .map_err(|_| BridgeStanError::InvalidVariableNames())?;
-                        Ok(idx - 1)
-                    })
-                    .collect();
-                Ok((name, idxs?))
-            })
-            .collect();
-
-        let mut variables = Vec::new();
-        let mut start_idx = 0;
-        for (name, idxs) in &name_idxs?.iter().group_by(|(name, _)| name) {
-            let shape: Vec<usize> = idxs
-                .map(|(_name, idx)| idx)
-                .fold(None, |acc, elem| {
-                    let mut shape = acc.unwrap_or(elem.clone());
-                    shape
-                        .iter_mut()
-                        .zip_eq(elem.iter())
-                        .for_each(|(old, &new)| {
-                            *old = new.max(*old);
-                        });
-                    Some(shape)
-                })
-                .unwrap_or(vec![]);
-            let size = shape.iter().product();
-            let end_idx = start_idx + size;
-            variables.push(Parameter {
-                name: name.to_string(),
-                shape,
-                size,
-                start_idx,
-                end_idx,
-            });
-            start_idx = end_idx;
-        }
-        Ok(variables)
     }
 
     /// Return a comma-separated sequence of unconstrained parameters.
