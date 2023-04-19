@@ -194,6 +194,36 @@ jobs:
           cd ../..
           Rscript -e "devtools::test(reporter = c(\"summary\", \"fail\"))"
 
+  test_rust_client:
+    needs: [build_test_models]
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+      fail-fast: false
+    steps:
+      - name: Check out github
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Restore Stan
+        uses: actions/cache@v3
+        with:
+          path: ./stan/
+          key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
+
+      - name: Restore built models
+        uses: actions/cache@v3
+        id: test-models
+        with:
+          path: ./test_models/
+          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
+
+      - name: Run rust tests
+        uses: dtolnay/rust-toolchain@stable
+        runs: cargo test --verbose --manifest-path=./rust/Cargo.toml
+
   # Seperate for now, weird dynamic linking issues need resolving in GHA runner
   test_clients_windows:
     needs: [build_test_models]
