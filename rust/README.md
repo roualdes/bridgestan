@@ -1,44 +1,48 @@
 # BridgeStan from Rust
 
-This is a minimal Rust wrapper for BridgeStan.
+This is a Rust wrapper for BridgeStan.
 It relies on `bindgen` and `libloading`.
 
-A very simple safe wrapper is sketched, however it does
-not currently expose all the behavior required to
-use bridgestan in full.
+The rust wrapper does not have any functionality to compile stan models, but
+requires one of the other language buindings to provide compiled shared libraries.
 
 ## Usage:
 
-```shell
-cargo r  ../test_models/multi/multi_model.so ../test_models/multi/multi.data.json
-```
+```rust
+use std::ffi::{OsStr, CString};
+use std::path::Path;
+use bridgestan::{BridgeStanError, Model, open_library};
 
-Should output:
+// The path to the compiled model.
+// Get for instance from python `bridgestan.compile_model`
+let path = Path::new(env!["CARGO_MANIFEST_DIR"])
+    .parent()
+    .unwrap()
+    .join("test_models/simple/simple_model.so");
 
-```
-The model has 10 parameters.
-The model's name is multi_model.
-[[-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0, -10.0],
-* repeated 25 times *
-```
+let lib = open_library(path).expect("Could not load compiled stan model.");
 
-These 25 calls to log_density_gradient are done in parallel with threads.
+// The dataset as json
+let data = r#"{"N": 7}"#;
+let data = CString::new(data.to_string().into_bytes()).unwrap();
 
+// The seed is used in case the model contains a transformed data section
+// that uses rng functions.
+let seed = 42;
 
-## Example: nuts-rs
+let model = match Model::new(&lib, Some(data), seed) {
+Ok(model) => { model },
+Err(BridgeStanError::ConstructFailedError(msg)) => {
+    panic!("Model initialization failed. Error message from stan was {}", msg)
+},
+_ => { panic!("Unexpected error") },
+};
 
-We also include an feature to use the BridgeStan wrapper with [nuts-rs](https://github.com/pymc-devs/nuts-rs).
-This implements the `CpuLogpFunc` and `LogpError` traits for the BridgeStan struct.
-
-An example is provided to sample and print one of the final draws from the posterior:
-
-```shell
-cargo r -r --features=nuts --example nuts ../test_models/multi/multi_model.so  ../test_models/multi/multi.data.json
-```
-
-Outputs
-
-```
-[-0.7492664338050083, 1.3638668456632483, -0.5250675759468274, -0.2714837242561625, -0.3839224681163139, -1.5989557104812806, -0.19106094532098128, -1.2464839328119341, -0.9932869161133645, -1.5862836535025469]
-Done!
+let n_dim = model.param_unc_num();
+assert_eq!(n_dim, 7);
+let point = vec![1f64; n_dim];
+let mut gradient_out = vec![0f64; n_dim];
+let logp = model.log_density_gradient(&point[..], true, true, &mut gradient_out[..])
+    .expect("Stan failed to evaluate the logp function.");
+// gradient_out contains the gradient of the logp density
 ```

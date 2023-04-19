@@ -13,9 +13,12 @@ use std::str::Utf8Error;
 // This is more or less equivalent to manually defining Display and From<other error types>
 use thiserror::Error;
 
+/// A loaded shared library for a stan model
 pub use ffi::Bridgestan as StanLibrary;
 
+/// Error type for bridgestan interface
 #[derive(Error, Debug)]
+#[non_exhaustive]
 pub enum BridgeStanError {
     #[error("Could not load target library: {0}")]
     LoadLibraryError(#[from] libloading::Error),
@@ -61,16 +64,6 @@ pub fn open_library<P: AsRef<OsStr>>(path: P) -> Result<StanLibrary> {
     }
     Ok(unsafe { StanLibrary::from_library(library) }?)
 }
-
-// TODO for C Api
-//
-// * Access generated data?
-// * integer generated values? (expand and generated data)
-// * StanThreads?
-// * Should bs_destruct_rng return an int? Should we panic if that happens?
-// * Return &[u8] or assume utf8 and convert to str?
-// * param_unconstrain: What lengths are allowed (ie include_tp, inclued_gq)
-// * Put lib in Arc?
 
 /// A Stan model instance with data
 pub struct Model<T: Borrow<StanLibrary>> {
@@ -152,23 +145,6 @@ impl<'lib> ErrorMsg<'lib> {
     }
 }
 
-#[non_exhaustive]
-#[derive(Clone, Debug)]
-pub struct Parameter {
-    pub name: String,
-    pub shape: Vec<usize>,
-    pub size: usize,
-    pub start_idx: usize,
-    pub end_idx: usize,
-}
-
-impl<T: Borrow<StanLibrary> + Clone> Model<T> {
-    /// Return a clone of the underlying stan library
-    pub fn clone_library(&self) -> T {
-        self.lib.clone()
-    }
-}
-
 impl<T: Borrow<StanLibrary>> Model<T> {
     /// Create a new instance of the compiled Stan model.
     /// Data is specified as a JSON file at the given path, or empty for no data
@@ -192,9 +168,11 @@ impl<T: Borrow<StanLibrary>> Model<T> {
             let model = Self { model, lib };
             // If STAN_THREADS is not true, the safty guaranties we are
             // making would be incorrect
-            let info = model.info()?;
-            if !info.contains("STAN_THREADS=true") {
-                Err(BridgeStanError::StanThreadsError(info.to_string()))
+            let info = model.info();
+            if !info.to_string_lossy().contains("STAN_THREADS=true") {
+                Err(BridgeStanError::StanThreadsError(
+                    info.to_string_lossy().into_owned(),
+                ))
             } else {
                 Ok(model)
             }
@@ -402,6 +380,13 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         } else {
             Err(BridgeStanError::EvaluationFailed(err.message()))
         }
+    }
+}
+
+impl<T: Borrow<StanLibrary> + Clone> Model<T> {
+    /// Return a clone of the underlying stan library
+    pub fn clone_library(&self) -> T {
+        self.lib.clone()
     }
 }
 
