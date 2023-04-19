@@ -197,9 +197,8 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     }
 
     /// Return information about the compiled model
-    pub fn info(&self) -> Result<&str> {
-        let cstr = unsafe { CStr::from_ptr(self.lib.borrow().bs_model_info(self.model.as_ptr())) };
-        Ok(cstr.to_str()?)
+    pub fn info(&self) -> &CStr {
+        unsafe { CStr::from_ptr(self.lib.borrow().bs_model_info(self.model.as_ptr())) }
     }
 
     /// Return a comma-separated sequence of indexed parameter names,
@@ -216,7 +215,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     ///
     /// `include_tp`: Include transformed parameters
     /// `include_gp`: Include generated quantities
-    pub fn param_names(&self, include_tp: bool, include_gq: bool) -> Result<&str> {
+    pub fn param_names(&self, include_tp: bool, include_gq: bool) -> &str {
         let cstr = unsafe {
             CStr::from_ptr(self.lib.borrow().bs_param_names(
                 self.model.as_ptr(),
@@ -224,7 +223,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
                 include_gq as c_int,
             ))
         };
-        Ok(cstr.to_str()?)
+        cstr.to_str().expect("Stan model has invalid parameter names")
     }
 
     /// Return a comma-separated sequence of unconstrained parameters.
@@ -236,10 +235,10 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// generally last-index major) order.  Parameters are separated with
     /// periods (`.`).  For example, `a[3]` is written `a.3` and `b[2,
     /// 3]` as `b.2.3`.  The numbering follows Stan and is indexed from 1.
-    pub fn param_unc_names(&mut self) -> Result<&str> {
+    pub fn param_unc_names(&mut self) -> &str {
         let cstr =
             unsafe { CStr::from_ptr(self.lib.borrow().bs_param_unc_names(self.model.as_ptr())) };
-        Ok(cstr.to_str()?)
+        cstr.to_str().expect("Stan model has invalid parameter names")
     }
 
     /// Number of parameters in the model on the constrained scale.
