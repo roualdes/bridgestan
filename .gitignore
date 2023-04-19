@@ -10,7 +10,8 @@ c-example/example_static
 *.exe
 
 # Rust
-rust-example/target/
+rust/target/
+rust/Cargo.lock
 
 notes.org
 
