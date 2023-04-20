@@ -100,6 +100,7 @@ breathe_projects = {"bridgestan": "./_build/cppxml/"}
 breathe_projects_source = {"bridgestan": ("../src/", ["bridgestan.h", "bridgestanR.h"])}
 breathe_default_project = "bridgestan"
 
+autoclass_content = 'both'
 
 # Julia and C++ doc build
 import os

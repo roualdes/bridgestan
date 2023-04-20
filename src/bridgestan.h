@@ -3,10 +3,13 @@
 
 #ifdef __cplusplus
 #include "model_rng.hpp"
+#include "callback_stream.hpp"
 extern "C" {
 #else
+#include <stddef.h>  // for size_t
 typedef struct bs_model bs_model;
 typedef struct bs_rng bs_rng;
+typedef void (*STREAM_CALLBACK)(const char* data, size_t size);
 typedef int bool;
 #endif
 
@@ -286,6 +289,20 @@ bs_rng* bs_rng_construct(unsigned int seed, char** error_msg);
  * @param[in] rng pointer to RNG object
  */
 void bs_rng_destruct(bs_rng* rng);
+
+/**
+ * Provide a function for printing. This will be called when the Stan
+ * model prints output. The default is to print to stdout.
+ *
+ * @param[in] callback function to call when the Stan model prints. This
+ * function will be guarded by a mutex, so it need not be thread safe. It must
+ * never propagate an exception. Passing NULL will redirect printing back to
+ * stdout.
+ * @param[out] error_msg a pointer to a string that will be allocated if there
+ * is an error. This must later be freed by calling `bs_free_error_msg`.
+ * @return code 0 if successful and code -1 if there is an exception
+ */
+int bs_set_print_callback(STREAM_CALLBACK callback, char** error_msg);
 
 #ifdef __cplusplus
 }

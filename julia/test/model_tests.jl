@@ -1,6 +1,7 @@
 using BridgeStan
 using Test
 using Printf
+using Suppressor
 
 # The ability to detect a specific message is specific to Julia 1.8 and higher
 # so we need to use a less specific test for older versions.
@@ -650,4 +651,21 @@ end
     using LinearAlgebra
     @test isapprox(-Matrix(1.0I, D, D), hess)
 
+end
+
+@testset "printing" begin
+    m = load_test_model("print", false)
+    theta = 0.2
+    function f()
+        println("Hello from Julia")
+        BridgeStan.log_density(m, [theta])
+        Base.Libc.flush_cstdio() # NOTE: not necessary after Stan 2.32
+    end
+
+    out = @capture_out f()
+
+    lines = split(out, "\n")
+    @test lines[1] == "Hello from Julia"
+    @test lines[2] == "Hi from Stan!"
+    @test lines[3] == "theta = $theta"
 end

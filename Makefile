@@ -37,7 +37,7 @@ else
 endif
 STAN_FLAGS=$(STAN_FLAG_THREADS)$(STAN_FLAG_OPENCL)$(STAN_FLAG_HESS)
 
-BRIDGE_DEPS = $(SRC)bridgestan.cpp $(SRC)bridgestan.h $(SRC)model_rng.cpp $(SRC)model_rng.hpp $(SRC)bridgestanR.cpp $(SRC)bridgestanR.h
+BRIDGE_DEPS = $(SRC)bridgestan.cpp $(SRC)bridgestan.h $(SRC)model_rng.cpp $(SRC)model_rng.hpp $(SRC)bridgestanR.cpp $(SRC)bridgestanR.h $(SRC)callback_stream.hpp
 BRIDGE_O = $(patsubst %.cpp,%$(STAN_FLAGS).o,$(SRC)bridgestan.cpp)
 
 $(BRIDGE_O) : $(BRIDGE_DEPS)
@@ -77,7 +77,9 @@ clean:
 
 
 # build all test models at once
-TEST_MODEL_LIBS = test_models/throw_tp/throw_tp_model.so test_models/ode/ode_model.so test_models/throw_gq/throw_gq_model.so test_models/throw_lp/throw_lp_model.so test_models/throw_data/throw_data_model.so test_models/jacobian/jacobian_model.so test_models/matrix/matrix_model.so test_models/simplex/simplex_model.so test_models/full/full_model.so test_models/stdnormal/stdnormal_model.so test_models/bernoulli/bernoulli_model.so test_models/gaussian/gaussian_model.so test_models/fr_gaussian/fr_gaussian_model.so test_models/simple/simple_model.so test_models/multi/multi_model.so
+TEST_MODEL_NAMES = $(patsubst $(BS_ROOT)/test_models/%/, %, $(sort $(dir $(wildcard $(BS_ROOT)/test_models/*/))))
+TEST_MODEL_NAMES := $(filter-out syntax_error, $(TEST_MODEL_NAMES))
+TEST_MODEL_LIBS = $(join $(addprefix test_models/, $(TEST_MODEL_NAMES)), $(addsuffix _model.so, $(addprefix /, $(TEST_MODEL_NAMES))))
 
 .PHONY: test_models
 test_models: $(TEST_MODEL_LIBS)
