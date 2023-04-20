@@ -199,7 +199,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
       fail-fast: false
     steps:
       - name: Check out github
@@ -234,7 +234,8 @@ jobs:
         env:
           LIBCLANG_PATH: ${{ runner.temp }}/llvm/lib
           LLVM_CONFIG_PATH: ${{ runner.temp }}/llvm/bin/llvm-config
-        run: cargo test --verbose
+        run: |
+          cargo test --verbose
 
   # Seperate for now, weird dynamic linking issues need resolving in GHA runner
   test_clients_windows:
@@ -289,3 +290,20 @@ jobs:
           gcc -fpic -shared -o test_collisions.dll test_collisions.c
           cd ../..
           Rscript -e 'devtools::test(reporter = c(\"summary\", \"fail\"))'
+
+      - name: Install LLVM and Clang  # Required for bindgen
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "15.0"
+          directory: ${{ runner.temp }}/llvm
+
+      - name: Get rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run rust tests
+        working-directory: ./rust
+        env:
+          LIBCLANG_PATH: ${{ runner.temp }}/llvm/lib
+          LLVM_CONFIG_PATH: ${{ runner.temp }}/llvm/bin/llvm-config
+        run: |
+          cargo test --verbose
