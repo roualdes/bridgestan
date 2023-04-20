@@ -25,7 +25,6 @@
 #include <string>
 #include <vector>
 
-
 // globals for Stan model output
 std::streambuf* buf = nullptr;
 std::ostream* outstream = &std::cout;
