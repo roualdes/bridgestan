@@ -6,3 +6,6 @@ model {
   print("Hi from Stan!");
   print("theta = ", theta);
 }
+generated quantities {
+  print("Hi from Stan GQ!");
+}

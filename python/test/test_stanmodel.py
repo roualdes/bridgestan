@@ -646,12 +646,13 @@ def test_fr_gaussian():
 
 
 def test_stdout_capture():
-    import contextlib
-    import io
+    import contextlib, io
 
     theta = 0.1
 
-    m = bs.StanModel(str(STAN_FOLDER / "print" / "print_model.so"), capture_stan_prints=False)
+    m = bs.StanModel(
+        str(STAN_FOLDER / "print" / "print_model.so"), capture_stan_prints=False
+    )
 
     with contextlib.redirect_stdout(io.StringIO()) as f:
         print("Hello from Python!")
@@ -672,6 +673,29 @@ def test_stdout_capture():
     assert lines[1] == "Hi from Stan!"
     assert lines[2] == f"theta = {theta}"
 
+    # test re-entrancy
+    import ctypes, threading
+
+    # define a new, sillier, callback which lets us test thread safety
+    x = 0
+    @ctypes.CFUNCTYPE(None, ctypes.POINTER(ctypes.c_char), ctypes.c_int)
+    def callback(s, n):
+        nonlocal x
+        x += 1
+    m2._set_print_callback(callback, None)
+
+    # call it many times from several threads
+    def f():
+        rng = m2.new_rng(1234)
+        for _ in range(25):
+            m2.param_constrain(np.array([theta]), include_gq=True, rng=rng)
+    threads = [threading.Thread(target=f) for _ in range(10)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert x == 500  # 2 calls per print, 10 threads, 25 iterations
 
 
 @pytest.fixture
