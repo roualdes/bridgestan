@@ -13,7 +13,7 @@ from .util import validate_readable
 FloatArray = npt.NDArray[np.float64]
 double_array = ndpointer(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
 star_star_char = ctypes.POINTER(ctypes.c_char_p)
-c_print_callback = ctypes.CFUNCTYPE(None, ctypes.c_char_p, ctypes.c_int)
+c_print_callback = ctypes.CFUNCTYPE(None, ctypes.POINTER(ctypes.c_char), ctypes.c_int)
 
 
 @c_print_callback
