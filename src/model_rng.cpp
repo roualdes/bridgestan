@@ -203,31 +203,10 @@ int bs_model::param_num(bool include_tp, bool include_gq) const {
 }
 
 void bs_model::param_unconstrain(const double* theta, double* theta_unc) const {
-  using std::set;
-  using std::string;
-  using std::vector;
-  vector<vector<size_t>> base_dims;
-  model_->get_dims(base_dims);  // includes tp, gq
-  vector<string> base_names;
-  model_->get_param_names(base_names);
-  vector<string> indexed_names;
-  model_->constrained_param_names(indexed_names, false, false);
-  set<string> names_used;
-  for (const auto& name : indexed_names) {
-    size_t index = name.find('.');
-    if (index != std::string::npos)
-      names_used.emplace(name.substr(0, index));
-    else
-      names_used.emplace(name);
-  }
-  vector<string> names;
-  vector<vector<size_t>> dims;
-  for (size_t i = 0; i < base_names.size(); ++i) {
-    if (names_used.find(base_names[i]) != names_used.end()) {
-      names.emplace_back(base_names[i]);
-      dims.emplace_back(base_dims[i]);
-    }
-  }
+  std::vector<std::vector<size_t>> dims;
+  model_->get_dims(dims, false, false);
+  std::vector<std::string> names;
+  model_->get_param_names(names, false, false);
   Eigen::VectorXd params = Eigen::VectorXd::Map(theta, param_num_);
   stan::io::array_var_context avc(names, params, dims);
   Eigen::VectorXd unc_params;
@@ -247,8 +226,7 @@ void bs_model::param_unconstrain_json(const char* json,
 void bs_model::param_constrain(bool include_tp, bool include_gq,
                                const double* theta_unc, double* theta,
                                boost::ecuyer1988& rng) const {
-  using Eigen::VectorXd;
-  VectorXd params_unc = VectorXd::Map(theta_unc, param_unc_num_);
+  Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, param_unc_num_);
   Eigen::VectorXd params;
   model_->write_array(rng, params_unc, params, include_tp, include_gq,
                       outstream);
