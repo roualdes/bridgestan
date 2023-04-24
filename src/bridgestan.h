@@ -6,13 +6,21 @@
 #include "callback_stream.hpp"
 extern "C" {
 #else
-#include <stddef.h>  // for size_t
-typedef struct bs_model bs_model;
-typedef struct bs_rng bs_rng;
+#include <stddef.h>   // for size_t
+#include <stdbool.h>  // for bool
+typedef struct bs_model bs_model;  ///< Opaque type for model
+typedef struct bs_rng bs_rng;      ///< Opaque type for RNG
+
+/** Type signature for optional print callback */
 typedef void (*STREAM_CALLBACK)(const char* data, size_t size);
-typedef int bool;
 #endif
 
+/**
+ * Version information for the BridgeStan library.
+ * @note These are *not* the version of the wrapped Stan library.
+ * @note These were not available pre-2.0.0, so their absence
+ * implies the library is in the 1.0.x series
+ */
 extern int bs_major_version;
 extern int bs_minor_version;
 extern int bs_patch_version;
