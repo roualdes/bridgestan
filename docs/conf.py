@@ -133,6 +133,6 @@ except Exception as e:
         raise e
     else:
         print("Breathe/doxygen not installed, skipping C++ Doc")
-        exclude_patterns += ["languages/cpp-api.rst"]
+        exclude_patterns += ["languages/c-api.rst"]
 else:
     extensions.append("breathe")
