@@ -33,6 +33,28 @@ impl Drop for StanLibrary {
     }
 }
 
+/// A callback for print statements in stan models
+pub type StanPrintCallback = extern "C" fn(*const c_char, usize);
+
+impl StanLibrary {
+    /// Provide a callback function to be called when stan prints a message
+    ///
+    /// The provided function must never panic.
+    ///
+    /// Since the call is proteted by a mutex internally, it does not
+    /// need to be thread safe.
+    pub unsafe fn set_print_callback(&mut self, callback: StanPrintCallback) -> Result<()> {
+        let mut err = ErrorMsg::new(&self);
+        let rc = unsafe { self.0.bs_set_print_callback(Some(callback), err.as_ptr()) };
+
+        if rc == 0 {
+            Ok(())
+        } else {
+            Err(BridgeStanError::EvaluationFailed(err.message()))
+        }
+    }
+}
+
 /// Error type for bridgestan interface
 #[derive(Error, Debug)]
 #[non_exhaustive]
@@ -286,36 +308,27 @@ impl<T: Borrow<StanLibrary>> Model<T> {
             .expect("Stan returned an invalid number of parameters")
     }
 
-    pub fn log_density_gradient(
-        &self,
-        theta: &[f64],
-        propto: bool,
-        jacobian: bool,
-        out: &mut [f64],
-    ) -> Result<f64> {
+    /// Compute the log of the prior times likelihood density
+    ///
+    /// Drop jacobian determinant terms if `jacobian == false` and
+    /// drop constant terms of the density if `propto == true`.
+    pub fn log_density(&self, theta_unc: &[f64], propto: bool, jacobian: bool) -> Result<f64> {
         let n = self.param_unc_num();
         assert_eq!(
-            theta.len(),
+            theta_unc.len(),
             n,
-            "Argument 'theta' must be the same size as the number of parameters!"
+            "Argument 'theta_unc' must be the same size as the number of parameters!"
         );
-        assert_eq!(
-            out.len(),
-            n,
-            "Argument 'out' must be the same size as the number of parameters!"
-        );
-
         let mut val = 0.0;
 
         let mut err = ErrorMsg::new(self.lib.borrow());
         let rc = unsafe {
-            self.lib.borrow().0.bs_log_density_gradient(
+            self.lib.borrow().0.bs_log_density(
                 self.model.as_ptr(),
                 propto as c_int,
                 jacobian as c_int,
-                theta.as_ptr(),
+                theta_unc.as_ptr(),
                 &mut val,
-                out.as_mut_ptr(),
                 err.as_ptr(),
             )
         };
@@ -327,6 +340,107 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         }
     }
 
+    /// Compute the log of the prior times likelihood density and its gradient
+    ///
+    /// Drop jacobian determinant terms if `jacobian == false` and
+    /// drop constant terms of the density if `propto == true`.
+    /// The gradient of the log density is stored in `grad`.
+    pub fn log_density_gradient(
+        &self,
+        theta_unc: &[f64],
+        propto: bool,
+        jacobian: bool,
+        grad: &mut [f64],
+    ) -> Result<f64> {
+        let n = self.param_unc_num();
+        assert_eq!(
+            theta_unc.len(),
+            n,
+            "Argument 'theta_unc' must be the same size as the number of parameters!"
+        );
+        assert_eq!(
+            grad.len(),
+            n,
+            "Argument 'grad' must be the same size as the number of parameters!"
+        );
+
+        let mut val = 0.0;
+
+        let mut err = ErrorMsg::new(self.lib.borrow());
+        let rc = unsafe {
+            self.lib.borrow().0.bs_log_density_gradient(
+                self.model.as_ptr(),
+                propto as c_int,
+                jacobian as c_int,
+                theta_unc.as_ptr(),
+                &mut val,
+                grad.as_mut_ptr(),
+                err.as_ptr(),
+            )
+        };
+
+        if rc == 0 {
+            Ok(val)
+        } else {
+            Err(BridgeStanError::EvaluationFailed(err.message()))
+        }
+    }
+
+    /// Compute the log of the prior times likelihood density and gradient and hessian.
+    ///
+    /// Drop jacobian determinant terms if `jacobian == false` and
+    /// drop constant terms of the density if `propto == true`.
+    /// The gradient of the log density is stored in `grad`, the
+    /// hessian is stored in `hessian`.
+    pub fn log_density_hessian(
+        &self,
+        theta_unc: &[f64],
+        propto: bool,
+        jacobian: bool,
+        grad: &mut [f64],
+        hessian: &mut [f64],
+    ) -> Result<f64> {
+        let n = self.param_unc_num();
+        assert_eq!(
+            theta_unc.len(),
+            n,
+            "Argument 'theta_unc' must be the same size as the number of parameters!"
+        );
+        assert_eq!(
+            grad.len(),
+            n,
+            "Argument 'grad' must be the same size as the number of parameters!"
+        );
+        assert_eq!(
+            hessian.len(),
+            n.checked_mul(n).expect("Overflow for size of hessian"),
+            "Argument 'hessian' must be the same size as the number of parameters squared!"
+        );
+
+        let mut val = 0.0;
+
+        let mut err = ErrorMsg::new(self.lib.borrow());
+        let rc = unsafe {
+            self.lib.borrow().0.bs_log_density_hessian(
+                self.model.as_ptr(),
+                propto as c_int,
+                jacobian as c_int,
+                theta_unc.as_ptr(),
+                &mut val,
+                grad.as_mut_ptr(),
+                hessian.as_mut_ptr(),
+                err.as_ptr(),
+            )
+        };
+
+        if rc == 0 {
+            Ok(val)
+        } else {
+            Err(BridgeStanError::EvaluationFailed(err.message()))
+        }
+    }
+
+    /// Map a point in unconstrained parameter space to the constrained space
     pub fn param_constrain<R: Borrow<StanLibrary>>(
         &self,
         theta_unc: &[f64],
@@ -376,6 +490,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     ///
     /// # Arguments
     /// `theta`: The vector of constrained parameters
+    ///
     /// `theta_unc` Vector of unconstrained parameters
     pub fn param_unconstrain(&self, theta: &mut [f64], theta_unc: &mut [f64]) -> Result<()> {
         assert_eq!(

@@ -6,7 +6,7 @@ use std::{
     thread::spawn,
 };
 
-use approx::assert_ulps_eq;
+use approx::{abs_diff_eq, assert_abs_diff_eq, assert_ulps_eq};
 use bridgestan::{open_library, BridgeStanError, Model, StanLibrary};
 
 fn model_dir() -> PathBuf {
@@ -350,4 +350,19 @@ fn logp_gradient() {
         .unwrap();
     assert_ulps_eq!(logp, (2. * PI).sqrt().recip().ln() - 0.5);
     assert_ulps_eq!(grad[0], -1f64);
+}
+
+#[test]
+fn logp_hessian() {
+    let (lib, data) = get_model("stdnormal");
+    let model = Model::new(&lib, data, 42).unwrap();
+    let theta = vec![1f64];
+    let mut grad = vec![0f64];
+    let mut hessian = vec![0f64];
+    let logp = model
+        .log_density_hessian(&theta[..], false, true, &mut grad[..], &mut hessian)
+        .unwrap();
+    assert_ulps_eq!(logp, (2. * PI).sqrt().recip().ln() - 0.5);
+    assert_ulps_eq!(grad[0], -1f64);
+    assert_abs_diff_eq!(hessian[0], -1f64, epsilon = 1e-10);
 }
