@@ -5,6 +5,9 @@ use std::ffi::c_int;
 use std::ffi::c_uint;
 use std::ffi::CStr;
 use std::ffi::OsStr;
+#[cfg(windows)]
+use std::mem::forget;
+use std::mem::ManuallyDrop;
 use std::ptr::null;
 use std::ptr::NonNull;
 use std::str::Utf8Error;
@@ -13,7 +16,22 @@ use std::str::Utf8Error;
 use thiserror::Error;
 
 /// A loaded shared library for a stan model
-pub use ffi::Bridgestan as StanLibrary;
+pub struct StanLibrary(ManuallyDrop<ffi::Bridgestan>);
+
+#[cfg(windows)]
+impl Drop for StanLibrary {
+    fn drop(&mut self) {
+        let lib = unsafe { ManuallyDrop::take(&mut self.0) };
+        forget(lib.into_library());
+    }
+}
+
+#[cfg(not(windows))]
+impl Drop for StanLibrary {
+    fn drop(&mut self) {
+        unsafe { ManuallyDrop::drop(&mut self.0) };
+    }
+}
 
 /// Error type for bridgestan interface
 #[derive(Error, Debug)]
@@ -57,7 +75,10 @@ pub fn open_library<P: AsRef<OsStr>>(path: P) -> Result<StanLibrary> {
             format!("{}.{}.{}", self_major, self_minor, self_patch),
         ));
     }
-    Ok(unsafe { StanLibrary::from_library(library) }?)
+
+    let lib = unsafe { ffi::Bridgestan::from_library(library) }?;
+    let lib = ManuallyDrop::new(lib);
+    Ok(StanLibrary(lib))
 }
 
 /// A Stan model instance with data
@@ -83,7 +104,7 @@ impl<T: Borrow<StanLibrary>> Drop for Rng<T> {
     fn drop(&mut self) {
         unsafe {
             // We don't handle error messages during deconstruct
-            self.lib.borrow().bs_rng_destruct(self.rng.as_ptr());
+            self.lib.borrow().0.bs_rng_destruct(self.rng.as_ptr());
         }
     }
 }
@@ -91,7 +112,11 @@ impl<T: Borrow<StanLibrary>> Drop for Rng<T> {
 impl<T: Borrow<StanLibrary>> Rng<T> {
     pub fn new(lib: T, seed: u32) -> Result<Self> {
         let mut err = ErrorMsg::new(lib.borrow());
-        let rng = unsafe { lib.borrow().bs_rng_construct(seed as c_uint, err.as_ptr()) };
+        let rng = unsafe {
+            lib.borrow()
+                .0
+                .bs_rng_construct(seed as c_uint, err.as_ptr())
+        };
         if let Some(rng) = NonNull::new(rng) {
             drop(err);
             Ok(Self { rng, lib })
@@ -109,7 +134,7 @@ struct ErrorMsg<'lib> {
 impl<'lib> Drop for ErrorMsg<'lib> {
     fn drop(&mut self) {
         if !self.msg.is_null() {
-            unsafe { self.lib.bs_free_error_msg(self.msg) };
+            unsafe { self.lib.0.bs_free_error_msg(self.msg) };
         }
     }
 }
@@ -153,6 +178,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
             .unwrap_or(null());
         let model = unsafe {
             lib.borrow()
+                .0
                 .bs_model_construct(data_ptr, seed, err.as_ptr())
         };
         // Make sure data lives until here
@@ -187,13 +213,13 @@ impl<T: Borrow<StanLibrary>> Model<T> {
 
     /// Return the name of the model or error if UTF decode fails
     pub fn name(&self) -> Result<&str> {
-        let cstr = unsafe { CStr::from_ptr(self.lib.borrow().bs_name(self.model.as_ptr())) };
+        let cstr = unsafe { CStr::from_ptr(self.lib.borrow().0.bs_name(self.model.as_ptr())) };
         Ok(cstr.to_str()?)
     }
 
     /// Return information about the compiled model
     pub fn info(&self) -> &CStr {
-        unsafe { CStr::from_ptr(self.lib.borrow().bs_model_info(self.model.as_ptr())) }
+        unsafe { CStr::from_ptr(self.lib.borrow().0.bs_model_info(self.model.as_ptr())) }
     }
 
     /// Return a comma-separated sequence of indexed parameter names,
@@ -212,7 +238,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// `include_gp`: Include generated quantities
     pub fn param_names(&self, include_tp: bool, include_gq: bool) -> &str {
         let cstr = unsafe {
-            CStr::from_ptr(self.lib.borrow().bs_param_names(
+            CStr::from_ptr(self.lib.borrow().0.bs_param_names(
                 self.model.as_ptr(),
                 include_tp as c_int,
                 include_gq as c_int,
@@ -233,7 +259,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// 3]` as `b.2.3`.  The numbering follows Stan and is indexed from 1.
     pub fn param_unc_names(&mut self) -> &str {
         let cstr =
-            unsafe { CStr::from_ptr(self.lib.borrow().bs_param_unc_names(self.model.as_ptr())) };
+            unsafe { CStr::from_ptr(self.lib.borrow().0.bs_param_unc_names(self.model.as_ptr())) };
         cstr.to_str()
             .expect("Stan model has invalid parameter names")
     }
@@ -242,7 +268,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// Will also count transformed parameters and generated quantities if requested
     pub fn param_num(&self, include_tp: bool, include_gq: bool) -> usize {
         unsafe {
-            self.lib.borrow().bs_param_num(
+            self.lib.borrow().0.bs_param_num(
                 self.model.as_ptr(),
                 include_tp as c_int,
                 include_gq as c_int,
@@ -255,7 +281,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// Return the number of parameters on the unconstrained scale.
     /// In particular, this is the size of the slice required by the log_density functions.
     pub fn param_unc_num(&self) -> usize {
-        unsafe { self.lib.borrow().bs_param_unc_num(self.model.as_ptr()) }
+        unsafe { self.lib.borrow().0.bs_param_unc_num(self.model.as_ptr()) }
             .try_into()
             .expect("Stan returned an invalid number of parameters")
     }
@@ -283,7 +309,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
 
         let mut err = ErrorMsg::new(self.lib.borrow());
         let rc = unsafe {
-            self.lib.borrow().bs_log_density_gradient(
+            self.lib.borrow().0.bs_log_density_gradient(
                 self.model.as_ptr(),
                 propto as c_int,
                 jacobian as c_int,
@@ -324,7 +350,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
 
         let mut err = ErrorMsg::new(self.lib.borrow());
         let rc = unsafe {
-            self.lib.borrow().bs_param_constrain(
+            self.lib.borrow().0.bs_param_constrain(
                 self.model.as_ptr(),
                 include_tp as c_int,
                 include_gq as c_int,
@@ -364,7 +390,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         );
         let mut err = ErrorMsg::new(self.lib.borrow());
         let rc = unsafe {
-            self.lib.borrow().bs_param_unconstrain(
+            self.lib.borrow().0.bs_param_unconstrain(
                 self.model.as_ptr(),
                 theta.as_ptr(),
                 theta_unc.as_mut_ptr(),
@@ -381,7 +407,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
 
 impl<T: Borrow<StanLibrary> + Clone> Model<T> {
     /// Return a clone of the underlying stan library
-    pub fn clone_library(&self) -> T {
+    pub fn clone_library_ref(&self) -> T {
         self.lib.clone()
     }
 }
@@ -389,6 +415,6 @@ impl<T: Borrow<StanLibrary> + Clone> Model<T> {
 impl<T: Borrow<StanLibrary>> Drop for Model<T> {
     /// Free the memory allocated in C++.
     fn drop(&mut self) {
-        unsafe { self.lib.borrow().bs_model_destruct(self.model.as_ptr()) }
+        unsafe { self.lib.borrow().0.bs_model_destruct(self.model.as_ptr()) }
     }
 }
