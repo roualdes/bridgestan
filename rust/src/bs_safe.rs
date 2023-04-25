@@ -276,8 +276,8 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         let cstr = unsafe {
             CStr::from_ptr(self.lib.borrow().0.bs_param_names(
                 self.model.as_ptr(),
-                include_tp as c_int,
-                include_gq as c_int,
+                include_tp,
+                include_gq,
             ))
         };
         cstr.to_str()
@@ -304,11 +304,10 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// Will also count transformed parameters and generated quantities if requested
     pub fn param_num(&self, include_tp: bool, include_gq: bool) -> usize {
         unsafe {
-            self.lib.borrow().0.bs_param_num(
-                self.model.as_ptr(),
-                include_tp as c_int,
-                include_gq as c_int,
-            )
+            self.lib
+                .borrow()
+                .0
+                .bs_param_num(self.model.as_ptr(), include_tp, include_gq)
         }
         .try_into()
         .expect("Stan returned an invalid number of parameters")
@@ -339,8 +338,8 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         let rc = unsafe {
             self.lib.borrow().0.bs_log_density(
                 self.model.as_ptr(),
-                propto as c_int,
-                jacobian as c_int,
+                propto,
+                jacobian,
                 theta_unc.as_ptr(),
                 &mut val,
                 err.as_ptr(),
@@ -384,8 +383,8 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         let rc = unsafe {
             self.lib.borrow().0.bs_log_density_gradient(
                 self.model.as_ptr(),
-                propto as c_int,
-                jacobian as c_int,
+                propto,
+                jacobian,
                 theta_unc.as_ptr(),
                 &mut val,
                 grad.as_mut_ptr(),
@@ -437,8 +436,8 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         let rc = unsafe {
             self.lib.borrow().0.bs_log_density_hessian(
                 self.model.as_ptr(),
-                propto as c_int,
-                jacobian as c_int,
+                propto,
+                jacobian,
                 theta_unc.as_ptr(),
                 &mut val,
                 grad.as_mut_ptr(),
@@ -500,8 +499,8 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         let rc = unsafe {
             self.lib.borrow().0.bs_param_constrain(
                 self.model.as_ptr(),
-                include_tp as c_int,
-                include_gq as c_int,
+                include_tp,
+                include_gq,
                 theta_unc.as_ptr(),
                 out.as_mut_ptr(),
                 rng.map(|rng| rng.rng.as_ptr()).unwrap_or(null_mut()),
