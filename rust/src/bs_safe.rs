@@ -551,6 +551,37 @@ impl<T: Borrow<StanLibrary>> Model<T> {
             Err(BridgeStanError::EvaluationFailed(err.message()))
         }
     }
+
+    /// Map a constrained point in json format to the unconstrained space.
+    ///
+    /// The parameter order in the JSON is as declared in the Stan program, with
+    /// multivariate parameters given in last-index-major order. The JSON schema
+    /// assumed is fully defined in the *CmdStan Reference Manual*.
+    pub fn param_unconstrain_json<S: AsRef<CStr>>(
+        &self,
+        json: S,
+        theta_unc: &mut [f64],
+    ) -> Result<()> {
+        assert_eq!(
+            theta_unc.len(),
+            self.param_unc_num(),
+            "Argument 'theta_unc' must be the same size as the number of parameters!"
+        );
+        let mut err = ErrorMsg::new(self.lib.borrow());
+        let rc = unsafe {
+            self.lib.borrow().0.bs_param_unconstrain_json(
+                self.model.as_ptr(),
+                json.as_ref().as_ptr(),
+                theta_unc.as_mut_ptr(),
+                err.as_ptr(),
+            )
+        };
+        if rc == 0 {
+            Ok(())
+        } else {
+            Err(BridgeStanError::EvaluationFailed(err.message()))
+        }
+    }
 }
 
 impl<T: Borrow<StanLibrary> + Clone> Model<T> {
