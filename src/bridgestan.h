@@ -191,10 +191,8 @@ int bs_param_unconstrain(const bs_model* m, const double* theta,
 /**
  * Set the sequence of unconstrained parameters based on the JSON
  * specification of the constrained parameters, and return a return
- * code of 0 for success and -1 for failure.  Parameter order is as
- * declared in the Stan program, with multivariate parameters given
- * in last-index-major order. The JSON schema assumed is fully
- * defined in the *CmdStan Reference Manual*.
+ * code of 0 for success and -1 for failure. The JSON schema assumed
+ * is fully defined in the *CmdStan Reference Manual*.
  *
  * @param[in] m pointer to model structure
  * @param[in] json JSON-encoded constrained parameters

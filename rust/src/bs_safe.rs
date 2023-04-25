@@ -555,9 +555,9 @@ impl<T: Borrow<StanLibrary>> Model<T> {
 
     /// Map a constrained point in json format to the unconstrained space.
     ///
-    /// The parameter order in the JSON is as declared in the Stan program, with
-    /// multivariate parameters given in last-index-major order. The JSON schema
-    /// assumed is fully defined in the *CmdStan Reference Manual*.
+    /// The JSON schema assumed is fully defined in the *CmdStan Reference Manual*.
+    /// A value for each parameter in the Stan program should be provided, with
+    /// dimensions and size corresponding to the Stan program declarations.
     pub fn param_unconstrain_json<S: AsRef<CStr>>(
         &self,
         json: S,
