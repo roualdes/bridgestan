@@ -13,7 +13,7 @@ fn main() {
         .header("../src/bridgestan.h")
         .opaque_type("model")
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
-        .dynamic_library_name("Bridgestan")
+        .dynamic_library_name("BridgeStan")
         .dynamic_link_require_all(true)
         .generate()
         .expect("Unable to generate bindings");

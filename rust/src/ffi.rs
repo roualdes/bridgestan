@@ -5,7 +5,7 @@
 // Include generated bindings file
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
-impl Bridgestan {
+impl BridgeStan {
     pub(crate) fn into_library(self) -> libloading::Library {
         self.__library
     }

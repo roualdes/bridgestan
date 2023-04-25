@@ -16,7 +16,7 @@ use std::str::Utf8Error;
 use thiserror::Error;
 
 /// A loaded shared library for a stan model
-pub struct StanLibrary(ManuallyDrop<ffi::Bridgestan>);
+pub struct StanLibrary(ManuallyDrop<ffi::BridgeStan>);
 
 // To work around a bug on windows where unloading a library
 // can lead to deadlocks.
@@ -110,7 +110,7 @@ pub fn open_library<P: AsRef<OsStr>>(path: P) -> Result<StanLibrary> {
         ));
     }
 
-    let lib = unsafe { ffi::Bridgestan::from_library(library) }?;
+    let lib = unsafe { ffi::BridgeStan::from_library(library) }?;
     let lib = ManuallyDrop::new(lib);
     Ok(StanLibrary(lib))
 }
