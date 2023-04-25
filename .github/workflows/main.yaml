@@ -228,6 +228,8 @@ jobs:
 
       - name: Get rust toolchain
         uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
 
       - name: Run rust tests
         working-directory: ./rust
@@ -237,6 +239,7 @@ jobs:
         run: |
           cargo test --verbose
           cargo clippy
+          cargo fmt --check
           cargo run --example=make_model
 
   # Seperate for now, weird dynamic linking issues need resolving in GHA runner
@@ -301,6 +304,8 @@ jobs:
 
       - name: Get rust toolchain
         uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
 
       - name: Run rust tests
         working-directory: ./rust
@@ -310,4 +315,5 @@ jobs:
         run: |
           cargo test --verbose
           cargo clippy
+          cargo fmt --check
           cargo run --example=make_model
