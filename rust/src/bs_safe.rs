@@ -18,6 +18,10 @@ use thiserror::Error;
 /// A loaded shared library for a stan model
 pub struct StanLibrary(ManuallyDrop<ffi::Bridgestan>);
 
+// To work around a bug on windows where unloading a library
+// can lead to deadlocks.
+//
+// See https://github.com/roualdes/bridgestan/issues/111
 #[cfg(windows)]
 impl Drop for StanLibrary {
     fn drop(&mut self) {
@@ -127,7 +131,6 @@ unsafe impl<T: Send + Borrow<StanLibrary>> Send for Rng<T> {}
 impl<T: Borrow<StanLibrary>> Drop for Rng<T> {
     fn drop(&mut self) {
         unsafe {
-            // We don't handle error messages during deconstruct
             self.lib.borrow().0.bs_rng_destruct(self.rng.as_ptr());
         }
     }
@@ -191,8 +194,10 @@ impl<'lib> ErrorMsg<'lib> {
 
 impl<T: Borrow<StanLibrary>> Model<T> {
     /// Create a new instance of the compiled Stan model.
-    /// Data is specified as a JSON file at the given path, or empty for no data
-    /// Seed and chain ID are used for reproducibility.
+    ///
+    /// Data is specified as a JSON file at the given path, a JSON string literal,
+    /// or empty for no data. The seed is used if the model has RNG functions in
+    /// the `transformed data` section.
     pub fn new<D: AsRef<CStr>>(lib: T, data: Option<D>, seed: u32) -> Result<Self> {
         let mut err = ErrorMsg::new(lib.borrow());
 
@@ -443,6 +448,19 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     }
 
     /// Map a point in unconstrained parameter space to the constrained space
+    ///
+    /// # Arguments
+    ///
+    /// `theta_unc`: The point in the unconstained parameter space.
+    ///
+    /// `include_tp`: Include transformed parameters
+    ///
+    /// `include_gq`: Include generated quantities
+    ///
+    /// `out`: Array of length `self.param_num(include_tp, include_gp)`, where
+    /// the constrained parameters will be stored.
+    ///
+    /// `rng`: A Stan random number generator. Has to be provided if `include_gp`.
     pub fn param_constrain<R: Borrow<StanLibrary>>(
         &self,
         theta_unc: &[f64],

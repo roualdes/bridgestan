@@ -1,10 +1,12 @@
 # BridgeStan from Rust
 
-This is a Rust wrapper for BridgeStan.
-It relies on `bindgen` and `libloading`.
+This is a Rust wrapper for [BridgeStan](https://roualdes.github.io/bridgestan/latest/).
 
-The rust wrapper does not have any functionality to compile stan models, but
-requires one of the other language buindings to provide compiled shared libraries.
+It relies on [`bindgen`](https://docs.rs/bindgen/) and [`libloading`](https://docs.rs/libloading/).
+
+The Rust wrapper does not have any functionality to compile Stan models.
+Compiled shared libraries need to be built manually using `make` or with the Julia
+or Python bindings.
 
 ## Usage:
 
