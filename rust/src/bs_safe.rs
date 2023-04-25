@@ -61,12 +61,16 @@ impl StanLibrary {
     }
 }
 
+#[derive(Error, Debug)]
+#[error("Could not load target library: {0}")]
+pub struct LoadingError(#[from] libloading::Error);
+
 /// Error type for bridgestan interface
 #[derive(Error, Debug)]
 #[non_exhaustive]
 pub enum BridgeStanError {
-    #[error("Could not load target library: {0}")]
-    InvalidLibrary(String),
+    #[error(transparent)]
+    InvalidLibrary(#[from] LoadingError),
     #[error("Bad Stan library version: Got {0} but expected {1}")]
     BadLibraryVersion(String, String),
     #[error("The Stan library was compiled without threading support. Config was {0}")]
@@ -81,23 +85,20 @@ pub enum BridgeStanError {
 
 type Result<T> = std::result::Result<T, BridgeStanError>;
 
-impl From<libloading::Error> for BridgeStanError {
-    fn from(error: libloading::Error) -> Self {
-        BridgeStanError::InvalidLibrary(format!("{}", error))
-    }
-}
-
 /// Open a compiled stan library.
 ///
 /// The library should have been compiled with bridgestan,
 /// with the same version as the rust library.
 pub fn open_library<P: AsRef<OsStr>>(path: P) -> Result<StanLibrary> {
-    let library = unsafe { libloading::Library::new(path) }?;
-    let major: libloading::Symbol<*const c_int> = unsafe { library.get(b"bs_major_version") }?;
+    let library = unsafe { libloading::Library::new(path) }.map_err(LoadingError)?;
+    let major: libloading::Symbol<*const c_int> =
+        unsafe { library.get(b"bs_major_version") }.map_err(LoadingError)?;
     let major = unsafe { **major };
-    let minor: libloading::Symbol<*const c_int> = unsafe { library.get(b"bs_minor_version") }?;
+    let minor: libloading::Symbol<*const c_int> =
+        unsafe { library.get(b"bs_minor_version") }.map_err(LoadingError)?;
     let minor = unsafe { **minor };
-    let patch: libloading::Symbol<*const c_int> = unsafe { library.get(b"bs_patch_version") }?;
+    let patch: libloading::Symbol<*const c_int> =
+        unsafe { library.get(b"bs_patch_version") }.map_err(LoadingError)?;
     let patch = unsafe { **patch };
     let self_major: c_int = env!("CARGO_PKG_VERSION_MAJOR").parse().unwrap();
     let self_minor: c_int = env!("CARGO_PKG_VERSION_MINOR").parse().unwrap();
@@ -110,7 +111,7 @@ pub fn open_library<P: AsRef<OsStr>>(path: P) -> Result<StanLibrary> {
         ));
     }
 
-    let lib = unsafe { ffi::BridgeStan::from_library(library) }?;
+    let lib = unsafe { ffi::BridgeStan::from_library(library) }.map_err(LoadingError)?;
     let lib = ManuallyDrop::new(lib);
     Ok(StanLibrary(lib))
 }
