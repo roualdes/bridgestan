@@ -66,7 +66,7 @@ impl StanLibrary {
 #[non_exhaustive]
 pub enum BridgeStanError {
     #[error("Could not load target library: {0}")]
-    InvalidLibrary(#[from] libloading::Error),
+    InvalidLibrary(String),
     #[error("Bad Stan library version: Got {0} but expected {1}")]
     BadLibraryVersion(String, String),
     #[error("The Stan library was compiled without threading support. Config was {0}")]
@@ -80,6 +80,12 @@ pub enum BridgeStanError {
 }
 
 type Result<T> = std::result::Result<T, BridgeStanError>;
+
+impl From<libloading::Error> for BridgeStanError {
+    fn from(error: libloading::Error) -> Self {
+        BridgeStanError::InvalidLibrary(format!("{}", error))
+    }
+}
 
 /// Open a compiled stan library.
 ///
