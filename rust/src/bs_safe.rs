@@ -8,8 +8,8 @@ use std::ffi::OsStr;
 #[cfg(windows)]
 use std::mem::forget;
 use std::mem::ManuallyDrop;
-use std::ptr::null;
 use std::ptr::NonNull;
+use std::ptr::{null, null_mut};
 use std::str::Utf8Error;
 
 // This is more or less equivalent to manually defining Display and From<other error types>
@@ -467,7 +467,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         include_tp: bool,
         include_gq: bool,
         out: &mut [f64],
-        rng: &mut Rng<R>,
+        rng: Option<&mut Rng<R>>,
     ) -> Result<()> {
         let n = self.param_unc_num();
         assert_eq!(
@@ -482,6 +482,13 @@ impl<T: Borrow<StanLibrary>> Model<T> {
             "Argument 'out' must be the same size as the number of parameters!"
         );
 
+        if include_gq {
+            assert!(
+                rng.is_some(),
+                "Rng was not provided even though generated quantities are requested."
+            );
+        }
+
         let mut err = ErrorMsg::new(self.lib.borrow());
         let rc = unsafe {
             self.lib.borrow().0.bs_param_constrain(
@@ -490,7 +497,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
                 include_gq as c_int,
                 theta_unc.as_ptr(),
                 out.as_mut_ptr(),
-                rng.rng.as_ptr(),
+                rng.map(|rng| rng.rng.as_ptr()).unwrap_or(null_mut()),
                 err.as_ptr(),
             )
         };
