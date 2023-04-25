@@ -39,12 +39,14 @@ pub type StanPrintCallback = extern "C" fn(*const c_char, usize);
 impl StanLibrary {
     /// Provide a callback function to be called when stan prints a message
     ///
+    /// # Safety
+    ///
     /// The provided function must never panic.
     ///
     /// Since the call is proteted by a mutex internally, it does not
     /// need to be thread safe.
     pub unsafe fn set_print_callback(&mut self, callback: StanPrintCallback) -> Result<()> {
-        let mut err = ErrorMsg::new(&self);
+        let mut err = ErrorMsg::new(self);
         let rc = unsafe { self.0.bs_set_print_callback(Some(callback), err.as_ptr()) };
 
         if rc == 0 {

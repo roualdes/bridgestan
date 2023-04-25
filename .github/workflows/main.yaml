@@ -236,6 +236,8 @@ jobs:
           LLVM_CONFIG_PATH: ${{ runner.temp }}/llvm/bin/llvm-config
         run: |
           cargo test --verbose
+          cargo clippy
+          cargo run --example=make_model
 
   # Seperate for now, weird dynamic linking issues need resolving in GHA runner
   test_clients_windows:
@@ -307,3 +309,5 @@ jobs:
           LLVM_CONFIG_PATH: ${{ runner.temp }}/llvm/bin/llvm-config
         run: |
           cargo test --verbose
+          cargo clippy
+          cargo run --example=make_model

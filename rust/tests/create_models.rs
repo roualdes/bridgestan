@@ -6,7 +6,7 @@ use std::{
     thread::spawn,
 };
 
-use approx::{abs_diff_eq, assert_abs_diff_eq, assert_ulps_eq};
+use approx::{assert_abs_diff_eq, assert_ulps_eq};
 use bridgestan::{open_library, BridgeStanError, Model, StanLibrary};
 
 fn model_dir() -> PathBuf {
@@ -86,7 +86,7 @@ fn create_all_late_drop_fwd() {
             lib
         })
         .collect();
-    handles.into_iter().for_each(|lib| drop(lib))
+    handles.into_iter().for_each(drop)
 }
 
 #[test]
