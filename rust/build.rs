@@ -10,7 +10,7 @@ fn main() {
     // to bindgen, and lets you build up options for
     // the resulting bindings.
     let bindings = bindgen::Builder::default()
-        .header("../src/bridgestan.h")
+        .header("src/bridgestan.h")
         .opaque_type("model")
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
         .dynamic_library_name("BridgeStan")
