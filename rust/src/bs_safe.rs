@@ -32,7 +32,7 @@ pub struct StanLibrary {
 #[cfg(windows)]
 impl Drop for StanLibrary {
     fn drop(&mut self) {
-        let lib = unsafe { ManuallyDrop::take(&mut self.0) };
+        let lib = unsafe { ManuallyDrop::take(&mut self.lib) };
         forget(lib.into_library());
     }
 }
