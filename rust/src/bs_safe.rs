@@ -8,7 +8,6 @@ use std::ffi::CStr;
 use std::ffi::OsStr;
 use std::hash::Hash;
 use std::hash::Hasher;
-#[cfg(windows)]
 use std::mem::forget;
 use std::mem::ManuallyDrop;
 use std::ptr::NonNull;
@@ -29,18 +28,10 @@ pub struct StanLibrary {
 // can lead to deadlocks.
 //
 // See https://github.com/roualdes/bridgestan/issues/111
-#[cfg(windows)]
 impl Drop for StanLibrary {
     fn drop(&mut self) {
         let lib = unsafe { ManuallyDrop::take(&mut self.lib) };
         forget(lib.into_library());
-    }
-}
-
-#[cfg(not(windows))]
-impl Drop for StanLibrary {
-    fn drop(&mut self) {
-        unsafe { ManuallyDrop::drop(&mut self.lib) };
     }
 }
 

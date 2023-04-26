@@ -4,7 +4,7 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    println!("cargo:rerun-if-changed=../src/bridgestan.h");
+    println!("cargo:rerun-if-changed=src/bridgestan.h");
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
