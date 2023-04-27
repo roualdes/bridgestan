@@ -57,6 +57,19 @@ impl StanLibrary {
             Err(BridgeStanError::EvaluationFailed(err.message()))
         }
     }
+
+    /// Unload the stan library.
+    ///
+    /// # Safety
+    ///
+    /// There seem to be issues around unloading libraries in threaded
+    /// code that are not fully understood:
+    /// https://github.com/roualdes/bridgestan/issues/111
+    pub unsafe fn unload_library(mut self) {
+        let lib = unsafe { ManuallyDrop::take(&mut self.lib) };
+        drop(lib.into_library());
+        forget(self);
+    }
 }
 
 #[derive(Error, Debug)]
