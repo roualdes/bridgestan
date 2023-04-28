@@ -25,7 +25,7 @@ fn get_model<S: AsRef<str>>(name: S) -> (StanLibrary, Option<CString>) {
     if !lib.exists() {
         panic!("Could not find compiled model {}", name);
     }
-    let lib = open_library(lib).unwrap_or_else(|_| panic!("Could not open library {}", name,));
+    let lib = open_library(lib).unwrap();
 
     let data_path = base.join(name).with_extension("data.json");
 
@@ -119,9 +119,6 @@ fn create_all_thread_serial() {
         .join()
         .unwrap()
     })
-    //handles
-    //.into_iter()
-    //.for_each(|handle| handle.join().unwrap())
 }
 
 #[test]
@@ -367,4 +364,60 @@ fn logp_hessian() {
     assert_ulps_eq!(logp, (2. * PI).sqrt().recip().ln() - 0.5);
     assert_ulps_eq!(grad[0], -1f64);
     assert_abs_diff_eq!(hessian[0], -1f64, epsilon = 1e-10);
+}
+
+#[test]
+fn test_params() {
+    let (lib, data) = get_model("bernoulli");
+    let model = Model::new(&lib, data, 42).unwrap();
+
+    let n = model.param_num(false, false);
+    assert!(n == 1);
+    let k = model.param_num(true, false);
+    let m = model.param_num(false, true);
+    let l = model.param_num(true, true);
+    assert!(k == 2);
+    assert!(m == 2);
+    assert!(l == 3);
+
+    assert_eq!(model.param_names(true, true), "theta,logit_theta,y_sim");
+
+    let mut theta_unc = vec![100f64];
+    let mut out1 = vec![-1f64];
+    let mut out2 = vec![-1f64; 2];
+    let mut out3 = vec![-1f64; 3];
+
+    let mut rng = model.new_rng(0).unwrap();
+
+    model
+        .param_constrain(&theta_unc[..], true, true, &mut out3, Some(&mut rng))
+        .unwrap();
+    assert!((out3[2] == 1.) | (out3[2] == 0.));
+
+    assert!(out3[0] == 1.);
+    assert_eq!(out3[1], f64::INFINITY);
+
+    model
+        .param_constrain(&theta_unc[..], true, false, &mut out2, Some(&mut rng))
+        .unwrap();
+    assert_eq!(out2, [1., f64::INFINITY]);
+
+    model
+        .param_constrain(&theta_unc[..], false, true, &mut out2, Some(&mut rng))
+        .unwrap();
+    assert_eq!(out2[0], 1.);
+    assert!((out2[0] == 1.) | (out2[0] == 0.));
+
+    model
+        .param_constrain(&theta_unc[..], false, false, &mut out1, Some(&mut rng))
+        .unwrap();
+    assert_eq!(out1[0], 1.);
+
+    model.param_unconstrain(&out1, &mut theta_unc).unwrap();
+    assert_eq!(theta_unc[0], f64::INFINITY);
+
+    model
+        .param_unconstrain_json(CString::new(r#"{"theta": 0.5}"#).unwrap(), &mut theta_unc)
+        .unwrap();
+    assert_eq!(theta_unc[0], 0.);
 }

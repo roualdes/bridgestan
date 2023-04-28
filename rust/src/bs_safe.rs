@@ -24,7 +24,7 @@ pub struct StanLibrary {
     id: u64,
 }
 
-// To work around a bug on windows where unloading a library
+// To work around a bug where unloading a library
 // can lead to deadlocks.
 //
 // See https://github.com/roualdes/bridgestan/issues/111
@@ -54,7 +54,7 @@ impl StanLibrary {
         if rc == 0 {
             Ok(())
         } else {
-            Err(BridgeStanError::EvaluationFailed(err.message()))
+            Err(BridgeStanError::SetCallbackFailed(err.message()))
         }
     }
 
@@ -92,6 +92,8 @@ pub enum BridgeStanError {
     ConstructFailed(String),
     #[error("Failed during evaluation: {0}")]
     EvaluationFailed(String),
+    #[error("Failed to set a print-callback: {0}")]
+    SetCallbackFailed(String),
 }
 
 type Result<T> = std::result::Result<T, BridgeStanError>;
@@ -549,7 +551,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// `theta`: The vector of constrained parameters
     ///
     /// `theta_unc` Vector of unconstrained parameters
-    pub fn param_unconstrain(&self, theta: &mut [f64], theta_unc: &mut [f64]) -> Result<()> {
+    pub fn param_unconstrain(&self, theta: &[f64], theta_unc: &mut [f64]) -> Result<()> {
         assert_eq!(
             theta_unc.len(),
             self.param_unc_num(),
