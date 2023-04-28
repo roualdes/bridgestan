@@ -54,8 +54,13 @@ mutable struct StanModel
                   "If the file has changed since the last time it was loaded, this load may not update the library!"
         end
 
-        if data != "" && endswith(data, ".json") && !isfile(data)
-            throw(SystemError("Data file not found"))
+        if data != "" && endswith(data, ".json")
+            if !isfile(data)
+                throw(SystemError("Data file not found"))
+            end
+            data = open(data) do f
+                read(f, String)
+            end
         end
 
         lib = Libc.Libdl.dlopen(lib)

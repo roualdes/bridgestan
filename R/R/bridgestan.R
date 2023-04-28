@@ -31,6 +31,13 @@ StanModel <- R6::R6Class("StanModel",
         )
       }
 
+      if (tools::file_ext(data) == "json") {
+        if (!file.exists(data)) {
+          stop(paste0("File '", data, "' does not exist."))
+        }
+        data <- readChar(data, file.info(data)$size)
+      }
+
       dyn.load(private$lib, PACKAGE = private$lib_name)
       ret <- .C("bs_model_construct_R",
         as.character(data), as.integer(seed),

@@ -62,12 +62,15 @@ class StanModel:
             model from C++.
         """
         validate_readable(model_lib)
-        if not model_data is None and model_data.endswith(".json"):
+        if  model_data is not None and model_data.endswith(".json"):
             validate_readable(model_data)
+            with open(model_data, "r") as f:
+                model_data = f.read()
+
         self.lib_path = model_lib
         self.stanlib = ctypes.CDLL(self.lib_path)
 
-        self.data_path = model_data or ""
+        self.data = model_data or ""
         self.seed = seed
 
         self._construct = self.stanlib.bs_model_construct
@@ -89,7 +92,7 @@ class StanModel:
             self._set_print_callback(_print_callback, None)
 
         err = ctypes.pointer(ctypes.c_char_p())
-        self.model = self._construct(str.encode(self.data_path), self.seed, err)
+        self.model = self._construct(str.encode(self.data), self.seed, err)
 
         if not self.model:
             raise self._handle_error(err.contents, "bs_model_construct")
@@ -250,7 +253,7 @@ class StanModel:
             self._destruct(self.model)
 
     def __repr__(self) -> str:
-        data = f"{self.data_path!r}, " if self.data_path else ""
+        data = f"{self.data!r}, " if self.data else ""
         return f"StanModel({self.lib_path!r}, {data}, seed={self.seed})"
 
     def name(self) -> str:
