@@ -17,6 +17,8 @@ on:
         description: 'Version of BridgeStan docs to build'
         required: true
         type: string
+  release:
+    types: [published]
 
 jobs:
   build-docs:
@@ -58,17 +60,15 @@ jobs:
         if:
         run: |
           if [[ "${{ inputs.version }}" != "" ]]; then
-            echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
+            echo "BS_DOCS_VERSION=${{ inputs.version }}" >> $GITHUB_ENV
           else
-            echo "VERSION=latest" >> $GITHUB_ENV
+            echo "BS_DOCS_VERSION=latest" >> $GITHUB_ENV
           fi
 
       - name: Build docs
         run: |
           cd docs/
-          if [[ $VERSION == "latest" ]]; then
-            export BS_DEV_DOCS=true
-          fi
+          export BS_DOCS_VERSION=$BS_DOCS_VERSION
           make html
 
       - name: Check out github
@@ -83,8 +83,8 @@ jobs:
 
           ls
 
-          rm -rf bs-docs/$VERSION
-          cp -r html bs-docs/$VERSION
+          rm -rf bs-docs/$BS_DOCS_VERSION
+          cp -r html bs-docs/$BS_DOCS_VERSION
 
           cd bs-docs/
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"

@@ -17,8 +17,8 @@ import os
 
 import bridgestan
 
-version = bridgestan.__version__
-if os.getenv("BS_DEV_DOCS"):
+version = os.getenv("BS_DOCS_VERSION", bridgestan.__version__)
+if version == "latest" :
     # don't display a version number for "latest" docs
     switcher_version = "latest"
     release = ""
