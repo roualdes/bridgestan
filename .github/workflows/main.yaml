@@ -31,18 +31,18 @@ jobs:
           path: ./stan/
           key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
-      # - name: Build C example (Unix)
-      #   if: matrix.os != 'windows-latest'
-      #   run: |
-      #     cd c-example/
-      #     make example
-      #     make example_static
-      #     rm ../src/bridgestan.o
-      #     rm ../test_models/full/full_model.a
+      - name: Build C example (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          cd c-example/
+          make example
+          make example_static
+          rm ../src/bridgestan.o
+          rm ../test_models/full/full_model.a
 
-      #     ./example
-      #     ./example_static
-      #   shell: bash
+          ./example
+          ./example_static
+        shell: bash
 
       # we use the cache here to build the Stan models once for multiple interfaces
       - name: Set up test model cache
@@ -105,15 +105,19 @@ jobs:
 
       - name: Run tests
         run: |
-          cd python/
-          pytest -v
-          pytest -v --run-type=ad_hessian
+          pytest -v python/
         env:
           BRIDGESTAN: ${{ github.workspace }}
 
+      - name: Run tests (Unix-specific)
+        run: |
+          pytest -v python/ --run-type=ad_hessian
+        env:
+          BRIDGESTAN: ${{ github.workspace }}
+
+
   julia:
     needs: [build]
-
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
