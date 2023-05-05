@@ -11,7 +11,7 @@ env:
   CACHE_VERSION: 0
 
 jobs:
-  build_test_models:
+  build:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
@@ -64,8 +64,8 @@ jobs:
           mingw32-make.exe STAN_THREADS=true O=0 test_models -j2
         shell: pwsh
 
-  test_python_client:
-    needs: [build_test_models]
+  python:
+    needs: [build]
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
@@ -110,12 +110,13 @@ jobs:
           pytest -v
           pytest -v --run-type=ad_hessian
 
-  test_julia_client:
-    needs: [build_test_models]
+  julia:
+    needs: [build]
+
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         julia-version: ["1"]
         include:
           - julia-version: "1.6"
@@ -147,11 +148,12 @@ jobs:
 
       - name: Run tests
         run: |
-          export BRIDGESTAN=$(pwd)
           julia --project=./julia -t 2 -e "using Pkg; Pkg.test()"
+        env:
+          BRIDGESTAN: ${{ github.workspace }}
 
-  test_R_client:
-    needs: [build_test_models]
+  Rlang:
+    needs: [build]
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
@@ -196,7 +198,7 @@ jobs:
 
   # Seperate for now, weird dynamic linking issues need resolving in GHA runner
   test_clients_windows:
-    needs: [build_test_models]
+    needs: [build]
     runs-on: windows-latest
     steps:
       - name: Check out github
@@ -249,11 +251,6 @@ jobs:
           $env:BRIDGESTAN = $(pwd)
           cd python/
           pytest -v
-          
-      - name: Run Julia tests
-        run: |
-          $env:BRIDGESTAN = $(pwd)
-          julia --project=./julia -t 2 -e "using Pkg; Pkg.test()"
 
       # needed for R tests until they have compilation utilities and can set this themselves.
       - name: Set up TBB
