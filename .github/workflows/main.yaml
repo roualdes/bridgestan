@@ -211,9 +211,6 @@ jobs:
           path: ./stan/
           key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
-      - name: Setup TBB
-        run: |
-          Add-Content $env:GITHUB_PATH "$(pwd)/stan/lib/stan_math/lib/tbb"
 
       - name: Restore built models
         uses: actions/cache@v3
@@ -240,6 +237,11 @@ jobs:
         run: |
           $env:BRIDGESTAN = $(pwd)
           julia --project=./julia -t 2 -e "using Pkg; Pkg.test()"
+
+      # needed for R tests until they have compilation utilities and can set this themselves.
+      - name: Set up TBB
+        run: |
+          Add-Content $env:GITHUB_PATH "$(pwd)/stan/lib/stan_math/lib/tbb"
 
       - name: Run R tests
         run: |
