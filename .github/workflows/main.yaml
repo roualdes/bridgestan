@@ -8,7 +8,7 @@ on:
   workflow_dispatch: {}
 
 env:
-  CACHE_VERSION: 4
+  CACHE_VERSION: 0
 
 jobs:
   build_test_models:
@@ -50,7 +50,7 @@ jobs:
         id: test-models
         with:
           path: ./test_models/
-          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
+          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp', 'Makefile') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
 
       - name: Build test models (Unix)
         if: matrix.os != 'windows-latest' && steps.test-models.outputs.cache-hit != 'true'
@@ -95,7 +95,7 @@ jobs:
         id: test-models
         with:
           path: ./test_models/
-          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
+          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp', 'Makefile') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
 
       - name: Install package
         run: |
@@ -143,7 +143,7 @@ jobs:
         id: test-models
         with:
           path: ./test_models/
-          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
+          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp', 'Makefile') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
 
       - name: Run tests
         run: |
@@ -164,10 +164,10 @@ jobs:
           submodules: recursive
 
       - name: Install R
-        uses: r-lib/actions/setup-r@v2.6.2
+        uses: r-lib/actions/setup-r@v2.6.3
 
       - name: Install R dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2.6.2
+        uses: r-lib/actions/setup-r-dependencies@v2.6.3
         with:
           packages: |
             any::R6
@@ -185,7 +185,7 @@ jobs:
         id: test-models
         with:
           path: ./test_models/
-          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
+          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp', 'Makefile') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
 
       - name: Run tests
         run: |
@@ -268,13 +268,13 @@ jobs:
         id: test-models
         with:
           path: ./test_models/
-          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp') }}-windows-latest-v${{ env.CACHE_VERSION }}
+          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp', 'Makefile') }}-windows-latest-v${{ env.CACHE_VERSION }}
 
       - name: Install R
-        uses: r-lib/actions/setup-r@v2.6.2
+        uses: r-lib/actions/setup-r@v2.6.3
 
       - name: Install R dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2.6.2
+        uses: r-lib/actions/setup-r-dependencies@v2.6.3
         with:
           packages: |
             any::R6
