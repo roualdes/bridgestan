@@ -218,7 +218,7 @@ jobs:
         id: test-models
         with:
           path: ./test_models/
-          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
+          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp', 'Makefile') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
 
       - name: Install LLVM and Clang  # Required for bindgen
         uses: KyleMayes/install-llvm-action@v1
@@ -309,6 +309,7 @@ jobs:
 
       - name: Run rust tests
         working-directory: ./rust
+        timeout-minutes: 60
         env:
           LIBCLANG_PATH: ${{ runner.temp }}/llvm/lib
           LLVM_CONFIG_PATH: ${{ runner.temp }}/llvm/bin/llvm-config
