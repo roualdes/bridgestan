@@ -43,4 +43,17 @@ StanModel(;
     seed = 204,
 ) = StanModel(compile_model(stan_file; stanc_args, make_args), data, seed)
 
+
+function __init__()
+    # On Windows, we may need to add TBB to %PATH%
+    if Sys.iswindows()
+        try
+            run(pipeline(`where.exe tbb.dll`, stdout=devnull, stderr=devnull))
+        catch
+            # add TBB to %PATH%
+            ENV["PATH"] = joinpath(get_bridgestan_path(), "stan", "lib", "stan_math", "lib", "tbb") * ";" * ENV["PATH"]
+        end
+    end
+end
+
 end
