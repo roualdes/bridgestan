@@ -110,6 +110,7 @@ jobs:
           BRIDGESTAN: ${{ github.workspace }}
 
       - name: Run tests (Unix-specific)
+        if: matrix.os != 'windows-latest'
         run: |
           pytest -v python/ --run-type=ad_hessian
         env:
