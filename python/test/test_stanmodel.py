@@ -710,7 +710,7 @@ def recompile_simple():
     lib.unlink(missing_ok=True)
     res = bs.compile_model(stanfile, make_args=["BRIDGESTAN_AD_HESSIAN=true"])
 
-    yield res
+    yield str(res)
 
     lib.unlink(missing_ok=True)
     bs.compile_model(stanfile, make_args=["STAN_THREADS=true"])
