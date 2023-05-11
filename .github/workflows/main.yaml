@@ -106,8 +106,8 @@ jobs:
       - name: Run tests
         run: |
           cd python/
-          python example.py
           pytest -v
+          python example.py
         env:
           BRIDGESTAN: ${{ github.workspace }}
 
@@ -158,8 +158,8 @@ jobs:
       - name: Run tests
         run: |
           cd julia/
-          julia --project=. example.jl
           julia --project=. -t 2 -e "using Pkg; Pkg.test()"
+          julia --project=. example.jl
         env:
           BRIDGESTAN: ${{ github.workspace }}
 
@@ -212,8 +212,9 @@ jobs:
           cd R/tests/testthat
           gcc -fpic -shared -o test_collisions.so test_collisions.c
           cd ../..
-          Rscript example.R
           Rscript -e "devtools::test(reporter = c(\"summary\", \"fail\"))"
+          Rscript -e "install.packages(getwd(), repos=NULL, type=\"source\")"
+          Rscript example.R
 
       - name: Run tests (windows)
         if: matrix.os == 'windows-latest'
@@ -221,5 +222,6 @@ jobs:
           cd R/tests/testthat
           gcc -fpic -shared -o test_collisions.dll test_collisions.c
           cd ../..
-          Rscript example.R
           Rscript -e 'devtools::test(reporter = c(\"summary\", \"fail\"))'
+          Rscript -e 'install.packages(getwd(), repos=NULL, type=\"source\")'
+          Rscript example.R
