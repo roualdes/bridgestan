@@ -105,7 +105,9 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest -v python/
+          cd python/
+          pytest -v
+          python example.py
         env:
           BRIDGESTAN: ${{ github.workspace }}
 
@@ -122,11 +124,14 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest]
         julia-version: ["1"]
         include:
           - julia-version: "1.6"
             os: ubuntu-latest
+          # bug in Julia 1.9: https://github.com/JuliaLang/julia/issues/49772
+          - julia-version: "1.8"
+            os: macos-latest
       fail-fast: false
     steps:
       - name: Check out github
@@ -155,7 +160,9 @@ jobs:
 
       - name: Run tests
         run: |
-          julia --project=./julia -t 2 -e "using Pkg; Pkg.test()"
+          cd julia/
+          julia --project=. -t 2 -e "using Pkg; Pkg.test()"
+          julia --project=. example.jl
         env:
           BRIDGESTAN: ${{ github.workspace }}
 
@@ -209,6 +216,8 @@ jobs:
           gcc -fpic -shared -o test_collisions.so test_collisions.c
           cd ../..
           Rscript -e "devtools::test(reporter = c(\"summary\", \"fail\"))"
+          Rscript -e "install.packages(getwd(), repos=NULL, type=\"source\")"
+          Rscript example.R
 
       - name: Run tests (windows)
         if: matrix.os == 'windows-latest'
@@ -217,6 +226,8 @@ jobs:
           gcc -fpic -shared -o test_collisions.dll test_collisions.c
           cd ../..
           Rscript -e 'devtools::test(reporter = c(\"summary\", \"fail\"))'
+          Rscript -e 'install.packages(getwd(), repos=NULL, type=\"source\")'
+          Rscript example.R
 
   rust:
     needs: [build]
