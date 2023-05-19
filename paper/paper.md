@@ -80,17 +80,18 @@ posteriors in [`posteriordb`](https://github.com/stan-dev/posteriordb)
 more consistent the models being tested and the implementations of
 those models and their underlying mathematical representations.
 
-`BridgeStan` offers a unique combination of numerical efficiency, coupled with
-direct access to the probabilistic programming language Stan. `BridgeStan` is an
-interface, written in C-compatible C++, between a Stan program and any higher
-level language which exposes a C foreign function interface. Since Julia,
-Python, and R all have C foreign function interfaces, `BridgeStan` offers
-efficient, in-memory, from memory allocated within the host language,
-computations of the log joint density function of a Stan model, itself
-implemented using highly templated C++ from the Stan math library. Using a
-memory-compatible C interface makes this possible even if the host language
-(e.g., R) was compiled with a different compiler, something no prior interface
-which exposed Stan's log density calculations could allow.
+`BridgeStan` offers a unique combination of numerical efficiency,
+coupled with direct access to the probabilistic programming language
+Stan. `BridgeStan` is an interface, written in C-compatible C++,
+between a Stan program and any higher level language which exposes a C
+foreign function interface. Julia, Python, and R each have C foreign
+function interfaces. Using memory allocated within the higher level
+language, `BridgeStan` provides computations of the log joint density
+function of a Stan model, which is itself implemented using highly
+templated C++ from the Stan math library. Using a memory-compatible C
+interface makes this possible even if the host language (e.g., R) was
+compiled with a different compiler, something no prior interface which
+exposed Stan's log density calculations could allow.
 
 Other software in the Stan ecosystem offer some overlapping features
 with `BridgeStan`.  For instance, `rstan` offers functions `log_prob`
