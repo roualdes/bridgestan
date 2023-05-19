@@ -39,13 +39,13 @@ transpiled to to a C++ class which links to the Stan math library to
 implement smooth, unconstrained posterior log densities, gradients,
 and Hessians as well as constraining/unconstraining transforms.
 Implementation is provided through automatic differentiation in the
-Stan math library [@Carpenter:2015]. `BridgeStan` provides efficient
-in-memory access to the methods of Stan models through Python, Julia,
-and R. This allows algorithm development in these languages with
-the efficiency and expressiveness of Stan models.
-Furthermore, these features are exposed through a language-agnostic C
-API, allowing foreign function interfaces in other languages with
-minimal additional development.
+Stan math library [@Carpenter:2015]. `BridgeStan` provides in-memory
+access to the methods of Stan models through Python, Julia, and
+R. This allows algorithm development in these languages with the
+numerical efficiency and expressiveness of Stan models.  Furthermore,
+these features are exposed through a language-agnostic C API, allowing
+foreign function interfaces in other languages with minimal additional
+development.
 
 
 # Statement of need
@@ -80,18 +80,17 @@ posteriors in [`posteriordb`](https://github.com/stan-dev/posteriordb)
 more consistent the models being tested and the implementations of
 those models and their underlying mathematical representations.
 
-`BridgeStan` offers a unique combination of numerical efficiency,
-coupled with direct access to the probabilistic programming language
-Stan. `BridgeStan` is an interface, written in C-compatible C++,
-between a Stan program and any higher level language which exposes a C
-foreign function interface. Julia, Python, and R each have C foreign
-function interfaces. Using memory allocated within the higher level
-language, `BridgeStan` provides computations of the log joint density
-function of a Stan model, which is itself implemented using highly
-templated C++ from the Stan math library. Using a memory-compatible C
-interface makes this possible even if the host language (e.g., R) was
-compiled with a different compiler, something no prior interface which
-exposed Stan's log density calculations could allow.
+`BridgeStan` is an interface, written in C-compatible C++, between a
+Stan program and any higher level language which exposes a C foreign
+function interface. Julia, Python, and R each have C foreign function
+interfaces. Using memory allocated within such higher level languages,
+`BridgeStan` provides computations of the log joint density function,
+and its gradient, of a Stan model, which is itself implemented using
+highly templated C++ from the Stan math library. Using a
+memory-compatible C interface makes this possible even if the host
+language (e.g., R) was compiled with a different compiler, something
+no prior interface which exposed Stan's log density calculations could
+allow.
 
 Other software in the Stan ecosystem offer some overlapping features
 with `BridgeStan`.  For instance, `rstan` offers functions `log_prob`
@@ -127,16 +126,16 @@ functions and GPU-enabled matrix operations.
 `BridgeStan` enables memory allocated in the host language (Julia,
 Python, or R), to be reused within Stan; though any language with a C
 foreign function interface could be similarly interfaced to access
-Stan methods. By avoiding unnecessary copies of vectors created in
-the host language, `BridgeStan` is a zero-cost abstraction built upon
-Stan's numerically efficient math library.
+Stan methods. By avoiding unnecessary copies of vectors created in the
+host language, `BridgeStan` is a zero-cost abstraction built upon
+Stan's math library.
 
 # Example
 
-The probabilistic programming language Stan, together with its automatic
-differentiation tools enable numerically efficient parameterizations of
-otherwise numerically challenging distributions. Consider the
-following Stan program, which encodes an isotropic multivariate Student-t
+The probabilistic programming language Stan, together with its
+automatic differentiation tools enable parameterizations of otherwise
+numerically challenging distributions. Consider the following Stan
+program, which encodes an isotropic multivariate Student-t
 distribution of dimension $D$ and degrees of freedom $df$.
 
 This parameterization[^1] of the Student-t distribution enables gradient-based
@@ -219,16 +218,17 @@ for (i, draw) in enumerate(unc_draws):
 
 # Conclusion
 
-On the [Stan Discourse forums](https://discourse.mc-stan.org/), statistical
-algorithm developers have long asked for access to the gradients and Hessians
-that underlie the statistical model of a Stan program. `BridgeStan` enables
-access to these methods, with an efficient, portable, and in-memory solution. Further,
-because statistical models are so easy to write in Stan, algorithm developers
-can write their model in common statistical notation using the Stan programming
-language and then rely on the Stan math library and its automatic
-differentiation toolset to more easily build advanced gradient based statistical
-inference algorithms. `BridgeStan` documentation and example programs are found
-at <https://roualdes.github.io/bridgestan/index.html>.
+On the [Stan Discourse forums](https://discourse.mc-stan.org/),
+statistical algorithm developers have long asked for access to the
+gradients and Hessians that underlie the statistical model of a Stan
+program. `BridgeStan` enables access to these methods, with a portable
+and in-memory solution. Further, because statistical models are so
+easy to write in Stan, algorithm developers can write their model in
+common statistical notation using the Stan programming language and
+then rely on the Stan math library and its automatic differentiation
+toolset to more easily build advanced gradient based statistical
+inference algorithms. `BridgeStan` documentation and example programs
+are found at <https://roualdes.github.io/bridgestan/index.html>.
 
 
 [^1]: See Wikipedia's page on the [Student's t-distribution](https://en.wikipedia.org/wiki/Student%27s_t-distribution#Characterization)for a brief introduction to this parameterization.
