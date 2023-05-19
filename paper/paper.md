@@ -87,17 +87,19 @@ memory-compatible C interface makes this possible even if the host language
 (e.g., R) was compiled with a different compiler, something no prior interface
 which exposed Stan's log density calculations could allow.
 
-Existing tools with similar functionalities include `JAX` [@Bradbury:2018] and
-`Turing.jl` via the `JuliaAD` ecosystem [@Ge:2018].  `BridgeStan` differs from
-these tools by providing access to the existing, well-known DSL for modeling
-and highly efficient CPU computation of the Stan ecosystem.  The Stan community
-by and large uses CPU hardware, and since Stan has been tuned for CPU
-performance, `BridgeStan` is more efficient than its competitors in implementing
-differentiable log densities on CPUs [@Carpenter:2015; @Radul:2020;
-@Tarek:2020].  Like the immutable Stan models they interface,
-`BridgeStan` functions are thread safe for parallel applications. They also
-admit all of the internal parallelization of Stan models, such as internal
-parallel map functions and GPU-enabled matrix operations.
+Existing tools with similar automatic differentiation functionality
+include `JAX` [@Bradbury:2018] and `Turing.jl` via the `JuliaAD`
+ecosystem [@Ge:2018].  `BridgeStan` differs from these tools by
+providing access to the existing, well-known DSL for modeling and
+highly efficient CPU computation of the Stan ecosystem.  The Stan
+community by and large uses CPU hardware, and since Stan has been
+tuned for CPU performance, `BridgeStan` is more efficient than its
+competitors in implementing differentiable log densities on CPUs
+[@Carpenter:2015; @Radul:2020; @Tarek:2020].  Like the immutable Stan
+models they interface, `BridgeStan` functions are thread safe for
+parallel applications. They also admit all of the internal
+parallelization of Stan models, such as internal parallel map
+functions and GPU-enabled matrix operations.
 
 `BridgeStan` enables memory allocated in the host language (Julia,
 Python, or R), to be reused within Stan; though any language with a C
