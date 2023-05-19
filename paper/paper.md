@@ -73,7 +73,10 @@ in Python, R, and Julia. `BridgeStan` answers this call, making it
 easy for algorithm developers to leverage existing Stan models in
 their evaluation, e.g., the dozens of diverse models with reference
 posteriors in [`posteriordb`](https://github.com/stan-dev/posteriordb)
-[@Magnusson:2022].
+[@Magnusson:2022].  By providing access to the method of Stan model,
+`BridgeStan` will help standardize algorithm development by making
+more consistent the models being tested and the implementations of
+those models and their underlying mathematical representations.
 
 `BridgeStan` offers a unique combination of numerical efficiency, coupled with
 direct access to the probabilistic programming language Stan. `BridgeStan` is an
