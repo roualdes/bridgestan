@@ -3,5 +3,5 @@ parameters {
 }
 transformed parameters {
   real exp_y = exp(y);
-  reject("");
+  reject("find this text: tpfails");
 }

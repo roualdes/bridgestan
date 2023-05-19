@@ -20,11 +20,13 @@ as well as constraining and unconstraining transforms.
 \item \href{#method-StanModel-new}{\code{StanModel$new()}}
 \item \href{#method-StanModel-name}{\code{StanModel$name()}}
 \item \href{#method-StanModel-model_info}{\code{StanModel$model_info()}}
+\item \href{#method-StanModel-model_version}{\code{StanModel$model_version()}}
 \item \href{#method-StanModel-param_names}{\code{StanModel$param_names()}}
 \item \href{#method-StanModel-param_unc_names}{\code{StanModel$param_unc_names()}}
 \item \href{#method-StanModel-param_num}{\code{StanModel$param_num()}}
 \item \href{#method-StanModel-param_unc_num}{\code{StanModel$param_unc_num()}}
 \item \href{#method-StanModel-param_constrain}{\code{StanModel$param_constrain()}}
+\item \href{#method-StanModel-new_rng}{\code{StanModel$new_rng()}}
 \item \href{#method-StanModel-param_unconstrain}{\code{StanModel$param_unconstrain()}}
 \item \href{#method-StanModel-param_unconstrain_json}{\code{StanModel$param_unconstrain_json()}}
 \item \href{#method-StanModel-log_density}{\code{StanModel$log_density()}}
@@ -36,9 +38,9 @@ as well as constraining and unconstraining transforms.
 \if{html}{\out{<a id="method-StanModel-new"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-new}{}}}
 \subsection{Method \code{new()}}{
-Create a Stan Model instace.
+Create a Stan Model instance.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StanModel$new(lib, data, rng_seed, chain_id)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$new(lib, data, seed)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -46,11 +48,9 @@ Create a Stan Model instace.
 \describe{
 \item{\code{lib}}{A path to a compiled BridgeStan Shared Object file.}
 
-\item{\code{data}}{Either a string representation of a JSON object or a path to a data file in JSON format ending in ".json".}
+\item{\code{data}}{Either a JSON string literal or a path to a data file in JSON format ending in ".json".}
 
-\item{\code{rng_seed}}{Seed for the RNG in the model object.}
-
-\item{\code{chain_id}}{Used to offset the RNG by a fixed amount.}
+\item{\code{seed}}{Seed for the RNG used in constructing the model.}
 }
 \if{html}{\out{</div>}}
 }
@@ -62,7 +62,7 @@ A new StanModel.
 \if{html}{\out{<a id="method-StanModel-name"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-name}{}}}
 \subsection{Method \code{name()}}{
-Get the name of this StanModel
+Get the name of this StanModel.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$name()}\if{html}{\out{</div>}}
 }
@@ -83,6 +83,15 @@ Get compile information about this Stan model.
 \subsection{Returns}{
 A character vector of the Stan version and important flags.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-StanModel-model_version"></a>}}
+\if{latex}{\out{\hypertarget{method-StanModel-model_version}{}}}
+\subsection{Method \code{model_version()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$model_version()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-StanModel-param_names"></a>}}
@@ -171,20 +180,27 @@ The number of parameters in the model.
 \if{html}{\out{<a id="method-StanModel-param_constrain"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-param_constrain}{}}}
 \subsection{Method \code{param_constrain()}}{
-Returns a vector of constrained params give the unconstrained parameters.
+Returns a vector of constrained parameters given the unconstrained parameters.
 See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StanModel$param_constrain(theta_unc, include_tp = FALSE, include_gq = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$param_constrain(
+  theta_unc,
+  include_tp = FALSE,
+  include_gq = FALSE,
+  rng
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{theta_unc}}{The vector of unconstrained parameters}
+\item{\code{theta_unc}}{The vector of unconstrained parameters.}
 
 \item{\code{include_tp}}{Whether to also output the transformed parameters of the model.}
 
 \item{\code{include_gq}}{Whether to also output the generated quantities of the model.}
+
+\item{\code{rng}}{The random number generator to use if \code{include_gq} is \code{TRUE}.  See \code{StanModel$new_rng()}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -193,10 +209,30 @@ The constrained parameters of the model.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-StanModel-new_rng"></a>}}
+\if{latex}{\out{\hypertarget{method-StanModel-new_rng}{}}}
+\subsection{Method \code{new_rng()}}{
+Create a new persistent PRNG object for use in \code{param_constrain()}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$new_rng(seed)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{seed}}{The seed for the PRNG.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A \code{StanRNG} object.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-StanModel-param_unconstrain"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-param_unconstrain}{}}}
 \subsection{Method \code{param_unconstrain()}}{
-Returns a vector of unconstrained params give the constrained parameters.
+Returns a vector of unconstrained parameters give the constrained parameters.
 
 It is assumed that these will be in the same order as internally represented by
 the model (e.g., in the same order as \code{StanModel$param_names()}).
@@ -209,7 +245,7 @@ See also \code{StanModel$param_constrain()}, the inverse of this function.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{theta}}{The vector of constrained parameters}
+\item{\code{theta}}{The vector of constrained parameters.}
 }
 \if{html}{\out{</div>}}
 }
@@ -246,13 +282,13 @@ The unconstrained parameters of the model.
 Return the log density of the specified unconstrained parameters.
 See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density(theta, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density(theta_unc, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{theta}}{The vector of unconstrained parameters}
+\item{\code{theta_unc}}{The vector of unconstrained parameters.}
 
 \item{\code{propto}}{If \code{TRUE}, drop terms which do not depend on the parameters.}
 
@@ -271,13 +307,13 @@ The log density.
 Return the log density and gradient of the specified unconstrained parameters.
 See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density_gradient(theta, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density_gradient(theta_unc, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{theta}}{The vector of unconstrained parameters}
+\item{\code{theta_unc}}{The vector of unconstrained parameters.}
 
 \item{\code{propto}}{If \code{TRUE}, drop terms which do not depend on the parameters.}
 
@@ -296,13 +332,13 @@ List containing entries \code{val} (the log density) and \code{gradient} (the gr
 Return the log density, gradient, and Hessian of the specified unconstrained parameters.
 See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density_hessian(theta, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density_hessian(theta_unc, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{theta}}{The vector of unconstrained parameters}
+\item{\code{theta_unc}}{The vector of unconstrained parameters.}
 
 \item{\code{propto}}{If \code{TRUE}, drop terms which do not depend on the parameters.}
 

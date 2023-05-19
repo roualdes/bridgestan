@@ -8,6 +8,23 @@ Python Interface
 Installation
 ------------
 
+From PyPI
+_________
+
+For convience, BridgeStan is uploaded to the Python Package Index each release.
+
+.. code-block:: shell
+
+    pip install bridgestan
+
+
+The first time you need it, the BridgeStan source code will be downloaded
+and placed in ``~/.bridgestan/``. If you prefer to use a source distribution of BridgeStan,
+consult the following section.
+
+
+From Source
+___________
 This assumes you have followed the :doc:`Getting Started guide <../getting-started>` to install
 BridgeStan's pre-requisites and downloaded a copy of the BridgeStan source code.
 
@@ -21,9 +38,14 @@ Or, since you have already downloaded the repository, you can run
 
 .. code-block:: shell
 
-    pip install python/
+    pip install -e python/
 
 from the BridgeStan folder.
+
+To use the BridgeStan source you've manually downloaded instead of
+one the package will download for you, you must use :func:`set_bridgestan_path`
+or the ``$BRIDGESTAN`` environment variable.
+
 
 Note that the Python package depends on Python 3.9+ and NumPy, and will install
 NumPy if it is not already installed.

@@ -6,6 +6,7 @@
 #include <stan/io/empty_var_context.hpp>
 #include <stan/io/var_context.hpp>
 #include <stan/model/model_base.hpp>
+#include <stan/services/util/create_rng.hpp>
 #include <stan/math.hpp>
 #include <stan/math/prim/meta.hpp>
 #include <stan/version.hpp>
@@ -23,6 +24,10 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+
+// globals for Stan model output
+std::streambuf* buf = nullptr;
+std::ostream* outstream = &std::cout;
 
 /**
  * Allocate and return a new model as a reference given the specified
@@ -57,29 +62,30 @@ char* to_csv(const std::vector<std::string>& names) {
   return strdup(s_c);
 }
 
-bs_model_rng::bs_model_rng(const char* data_file, unsigned int seed,
-                           unsigned int chain_id) {
-  std::string data(data_file);
-  if (data.empty()) {
-    auto data_context = stan::io::empty_var_context();
-    model_ = &new_model(data_context, seed, &std::cerr);
+bs_model::bs_model(const char* data, unsigned int seed) {
+  if (data == nullptr) {
+    stan::io::empty_var_context data_context;
+    model_ = &new_model(data_context, seed, outstream);
   } else {
-    if (stan::io::ends_with(".json", data)) {
-      std::ifstream in(data);
-      if (!in.good())
-        throw std::runtime_error("Cannot read input file: " + data);
-      auto data_context = stan::json::json_data(in);
-      in.close();
-      model_ = &new_model(data_context, seed, &std::cerr);
+    std::string data_str(data);
+    if (data_str.empty()) {
+      stan::io::empty_var_context data_context;
+      model_ = &new_model(data_context, seed, outstream);
     } else {
-      std::istringstream json(data);
-      auto data_context = stan::json::json_data(json);
-      model_ = &new_model(data_context, seed, &std::cerr);
+      if (stan::io::ends_with(".json", data_str)) {
+        std::ifstream in(data_str);
+        if (!in.good())
+          throw std::runtime_error("Cannot read input file: " + data_str);
+        stan::json::json_data data_context(in);
+        in.close();
+        model_ = &new_model(data_context, seed, outstream);
+      } else {
+        std::istringstream json(data_str);
+        stan::json::json_data data_context(json);
+        model_ = &new_model(data_context, seed, outstream);
+      }
     }
   }
-  boost::ecuyer1988 rng(seed);
-  rng.discard(chain_id * 1000000000000L);
-  rng_ = rng;
 
   std::string model_name = model_->model_name();
   const char* model_name_c = model_name.c_str();
@@ -157,7 +163,7 @@ bs_model_rng::bs_model_rng(const char* data_file, unsigned int seed,
   param_tp_gq_num_ = names.size();
 }
 
-bs_model_rng::~bs_model_rng() {
+bs_model::~bs_model() noexcept {
   delete (model_);
   free(name_);
   free(model_info_);
@@ -168,11 +174,11 @@ bs_model_rng::~bs_model_rng() {
   free(param_tp_gq_names_);
 }
 
-const char* bs_model_rng::name() { return name_; }
+const char* bs_model::name() const { return name_; }
 
-const char* bs_model_rng::model_info() { return model_info_; }
+const char* bs_model::model_info() const { return model_info_; }
 
-const char* bs_model_rng::param_names(bool include_tp, bool include_gq) {
+const char* bs_model::param_names(bool include_tp, bool include_gq) const {
   if (include_tp && include_gq)
     return param_tp_gq_names_;
   if (include_tp)
@@ -182,11 +188,11 @@ const char* bs_model_rng::param_names(bool include_tp, bool include_gq) {
   return param_names_;
 }
 
-const char* bs_model_rng::param_unc_names() { return param_unc_names_; }
+const char* bs_model::param_unc_names() const { return param_unc_names_; }
 
-int bs_model_rng::param_unc_num() { return param_unc_num_; }
+int bs_model::param_unc_num() const { return param_unc_num_; }
 
-int bs_model_rng::param_num(bool include_tp, bool include_gq) {
+int bs_model::param_num(bool include_tp, bool include_gq) const {
   if (include_tp && include_gq)
     return param_tp_gq_num_;
   if (include_tp)
@@ -196,58 +202,38 @@ int bs_model_rng::param_num(bool include_tp, bool include_gq) {
   return param_num_;
 }
 
-void bs_model_rng::param_unconstrain(const double* theta, double* theta_unc) {
-  using std::set;
-  using std::string;
-  using std::vector;
-  vector<vector<size_t>> base_dims;
-  model_->get_dims(base_dims);  // includes tp, gq
-  vector<string> base_names;
-  model_->get_param_names(base_names);
-  vector<string> indexed_names;
-  model_->constrained_param_names(indexed_names, false, false);
-  set<string> names_used;
-  for (const auto& name : indexed_names) {
-    size_t index = name.find('.');
-    if (index != std::string::npos)
-      names_used.emplace(name.substr(0, index));
-    else
-      names_used.emplace(name);
-  }
-  vector<string> names;
-  vector<vector<size_t>> dims;
-  for (size_t i = 0; i < base_names.size(); ++i) {
-    if (names_used.find(base_names[i]) != names_used.end()) {
-      names.emplace_back(base_names[i]);
-      dims.emplace_back(base_dims[i]);
-    }
-  }
+void bs_model::param_unconstrain(const double* theta, double* theta_unc) const {
+  std::vector<std::vector<size_t>> dims;
+  model_->get_dims(dims, false, false);
+  std::vector<std::string> names;
+  model_->get_param_names(names, false, false);
   Eigen::VectorXd params = Eigen::VectorXd::Map(theta, param_num_);
   stan::io::array_var_context avc(names, params, dims);
   Eigen::VectorXd unc_params;
-  model_->transform_inits(avc, unc_params, &std::cout);
+  model_->transform_inits(avc, unc_params, outstream);
   Eigen::VectorXd::Map(theta_unc, unc_params.size()) = unc_params;
 }
 
-void bs_model_rng::param_unconstrain_json(const char* json, double* theta_unc) {
+void bs_model::param_unconstrain_json(const char* json,
+                                      double* theta_unc) const {
   std::stringstream in(json);
   stan::json::json_data inits_context(in);
   Eigen::VectorXd params_unc;
-  model_->transform_inits(inits_context, params_unc, &std::cerr);
+  model_->transform_inits(inits_context, params_unc, outstream);
   Eigen::VectorXd::Map(theta_unc, params_unc.size()) = params_unc;
 }
 
-void bs_model_rng::param_constrain(bool include_tp, bool include_gq,
-                                   const double* theta_unc, double* theta) {
-  using Eigen::VectorXd;
-  VectorXd params_unc = VectorXd::Map(theta_unc, param_unc_num_);
+void bs_model::param_constrain(bool include_tp, bool include_gq,
+                               const double* theta_unc, double* theta,
+                               boost::ecuyer1988& rng) const {
+  Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, param_unc_num_);
   Eigen::VectorXd params;
-  model_->write_array(rng_, params_unc, params, include_tp, include_gq,
-                      &std::cerr);
+  model_->write_array(rng, params_unc, params, include_tp, include_gq,
+                      outstream);
   Eigen::VectorXd::Map(theta, params.size()) = params;
 }
 
-auto bs_model_rng::make_model_lambda(bool propto, bool jacobian) {
+auto bs_model::make_model_lambda(bool propto, bool jacobian) const {
   return [model = this->model_, propto, jacobian](auto& x) {
     // log_prob() requires non-const but doesn't modify its argument
     auto& params
@@ -255,53 +241,59 @@ auto bs_model_rng::make_model_lambda(bool propto, bool jacobian) {
             x);
     if (propto) {
       if (jacobian) {
-        return model->log_prob_propto_jacobian(params, &std::cerr);
+        return model->log_prob_propto_jacobian(params, outstream);
       } else {
-        return model->log_prob_propto(params, &std::cerr);
+        return model->log_prob_propto(params, outstream);
       }
     } else {
       if (jacobian) {
-        return model->log_prob_jacobian(params, &std::cerr);
+        return model->log_prob_jacobian(params, outstream);
       } else {
-        return model->log_prob(params, &std::cerr);
+        return model->log_prob(params, outstream);
       }
     }
   };
 }
 
-void bs_model_rng::log_density(bool propto, bool jacobian,
-                               const double* theta_unc, double* val) {
+void bs_model::log_density(bool propto, bool jacobian, const double* theta_unc,
+                           double* val) const {
   int N = param_unc_num_;
   if (propto) {
     Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
     auto logp = make_model_lambda(propto, jacobian);
+#ifdef STAN_THREADS
     static thread_local stan::math::ChainableStack thread_instance;
+#endif
     Eigen::VectorXd grad(N);
     stan::math::gradient(logp, params_unc, *val, grad);
   } else {
     Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, N);
     if (jacobian) {
-      *val = model_->log_prob_jacobian(params_unc, &std::cerr);
+      *val = model_->log_prob_jacobian(params_unc, outstream);
     } else {
-      *val = model_->log_prob(params_unc, &std::cerr);
+      *val = model_->log_prob(params_unc, outstream);
     }
   }
 }
 
-void bs_model_rng::log_density_gradient(bool propto, bool jacobian,
-                                        const double* theta_unc, double* val,
-                                        double* grad) {
+void bs_model::log_density_gradient(bool propto, bool jacobian,
+                                    const double* theta_unc, double* val,
+                                    double* grad) const {
+#ifdef STAN_THREADS
   static thread_local stan::math::ChainableStack thread_instance;
+#endif
   auto logp = make_model_lambda(propto, jacobian);
   int N = param_unc_num_;
   Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, N);
   stan::math::gradient(logp, params_unc, *val, grad, grad + N);
 }
 
-void bs_model_rng::log_density_hessian(bool propto, bool jacobian,
-                                       const double* theta_unc, double* val,
-                                       double* grad, double* hessian) {
+void bs_model::log_density_hessian(bool propto, bool jacobian,
+                                   const double* theta_unc, double* val,
+                                   double* grad, double* hessian) const {
+#ifdef STAN_THREADS
   static thread_local stan::math::ChainableStack thread_instance;
+#endif
   auto logp = make_model_lambda(propto, jacobian);
   int N = param_unc_num_;
   Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);

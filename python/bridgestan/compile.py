@@ -4,6 +4,8 @@ import subprocess
 from pathlib import Path
 from typing import List
 
+from .__version import __version__
+from .download import CURRENT_BRIDGESTAN, get_bridgestan_src
 from .util import validate_readable
 
 
@@ -30,8 +32,6 @@ MAKE = os.getenv(
     "make" if platform.system() != "Windows" else "mingw32-make",
 )
 
-BRIDGESTAN_PATH = os.getenv("BRIDGESTAN", str(PYTHON_FOLDER.parent))
-
 
 def set_bridgestan_path(path: str) -> None:
     """Set the path to BridgeStan.
@@ -43,9 +43,25 @@ def set_bridgestan_path(path: str) -> None:
     of this package (which, assuming a source installation, corresponds
     to the repository root).
     """
-    global BRIDGESTAN_PATH
     verify_bridgestan_path(path)
-    BRIDGESTAN_PATH = path
+    os.environ["BRIDGESTAN"] = path
+
+
+def get_bridgestan_path():
+    path = os.getenv("BRIDGESTAN", "")
+    if path == "":
+        try:
+            path = str(CURRENT_BRIDGESTAN)
+            verify_bridgestan_path(path)
+        except ValueError:
+            print(
+                "Bridgestan not found at location specified by $BRIDGESTAN "
+                f"environment variable, downloading version {__version__} to {path}"
+            )
+            get_bridgestan_src()
+            print("Done!")
+
+    return path
 
 
 def generate_so_name(model: Path):
@@ -75,7 +91,7 @@ def compile_model(
     :raises ValueError: If BridgeStan cannot be located.
     :raises RuntimeError: If compilation fails.
     """
-    verify_bridgestan_path(BRIDGESTAN_PATH)
+    verify_bridgestan_path(get_bridgestan_path())
 
     file_path = Path(stan_file).resolve()
     validate_readable(str(file_path))
@@ -91,7 +107,7 @@ def compile_model(
         + [str(output)]
     )
     proc = subprocess.run(
-        cmd, cwd=BRIDGESTAN_PATH, capture_output=True, text=True, check=False
+        cmd, cwd=get_bridgestan_path(), capture_output=True, text=True, check=False
     )
 
     if proc.returncode:

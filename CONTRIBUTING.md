@@ -2,7 +2,7 @@
 
 We welcome contributions to the project in any form, including bug reports, bug fixes, new features, improved documentation, or improved test coverage.
 
-Developer-specific documentation is available at https://roualdes.github.io/bridgestan/internals.html
+Developer-specific documentation is available at https://roualdes.github.io/bridgestan/latest/internals.html
 
 ## Licensing
 

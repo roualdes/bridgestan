@@ -30,20 +30,17 @@ def test_constructor():
     np.testing.assert_allclose(bool(b3), True)
 
     # test missing so file
-    with np.testing.assert_raises(FileNotFoundError):
+    with pytest.raises(FileNotFoundError):
         bs.StanModel("nope, not going to find it")
 
     # test missing data file
-    with np.testing.assert_raises(FileNotFoundError):
+    with pytest.raises(FileNotFoundError):
         bs.StanModel(bernoulli_so, "nope, not going to find it.json")
 
     # test data load exception
     throw_data_so = str(STAN_FOLDER / "throw_data" / "throw_data_model.so")
-    print("construct() EXCEPTION MSG ON NEXT LINE IS NOT AN ERROR")
-    with np.testing.assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError, match="find this text: datafails"):
         b4 = bs.StanModel(throw_data_so)
-
-    # TODO(carpenter): test get right error message on stderr
 
 
 def test_name():
@@ -56,8 +53,7 @@ def test_model_info():
     std_so = str(STAN_FOLDER / "stdnormal" / "stdnormal_model.so")
     b = bs.StanModel(std_so)
     assert "STAN_OPENCL" in b.model_info()
-    assert "BridgeStan version: 1." in b.model_info()
-
+    assert "BridgeStan version: 2." in b.model_info()
 
 
 def test_param_num():
@@ -212,13 +208,26 @@ def test_param_constrain():
 
     full_so = str(STAN_FOLDER / "full" / "full_model.so")
     bridge2 = bs.StanModel(full_so)
+    rng = bridge2.new_rng(seed=1234)
 
     np.testing.assert_equal(1, bridge2.param_constrain(a).size)
     np.testing.assert_equal(2, bridge2.param_constrain(a, include_tp=True).size)
-    np.testing.assert_equal(3, bridge2.param_constrain(a, include_gq=True).size)
     np.testing.assert_equal(
-        4, bridge2.param_constrain(a, include_tp=True, include_gq=True).size
+        3, bridge2.param_constrain(a, include_gq=True, rng=rng).size
     )
+    np.testing.assert_equal(
+        4, bridge2.param_constrain(a, include_tp=True, include_gq=True, rng=rng).size
+    )
+
+    # reproducibility test
+    np.testing.assert_equal(
+        bridge2.param_constrain(a, include_gq=True, rng=bridge2.new_rng(seed=4567)),
+        bridge2.param_constrain(a, include_gq=True, rng=bridge2.new_rng(seed=4567)),
+    )
+
+    # test error if neither seed or rng is provided
+    with pytest.raises(ValueError):
+        bridge2.param_constrain(a, include_gq=True)
 
     # out tests, matched and mismatched
     scratch = np.zeros(16)
@@ -226,7 +235,7 @@ def test_param_constrain():
     B = b.reshape(D, D)
     np.testing.assert_allclose(B_expected, B)
     scratch_wrong = np.zeros(10)
-    with np.testing.assert_raises(ValueError):
+    with pytest.raises(ValueError):
         bridge.param_constrain(a, out=scratch_wrong)
 
     # exception handling test in transformed parameters/model (compiled same way)
@@ -235,16 +244,14 @@ def test_param_constrain():
 
     y = np.array(np.random.uniform(1))
     bridge2.param_constrain(y, include_tp=False)
-    print("param_constrain() EXCEPTION MSG ON NEXT LINE IS NOT AN ERROR")
-    with np.testing.assert_raises(RuntimeError):
+    with pytest.raises(RuntimeError, match="find this text: tpfails"):
         bridge2.param_constrain(y, include_tp=True)
 
     throw_gq_so = str(STAN_FOLDER / "throw_gq" / "throw_gq_model.so")
     bridge3 = bs.StanModel(throw_gq_so)
     bridge3.param_constrain(y, include_gq=False)
-    print("param_constrain() EXCEPTION MSG ON NEXT LINE IS NOT AN ERROR")
-    with np.testing.assert_raises(RuntimeError):
-        bridge3.param_constrain(y, include_gq=True)
+    with pytest.raises(RuntimeError, match="find this text: gqfails"):
+        bridge3.param_constrain(y, include_gq=True, rng=bridge3.new_rng(seed=1))
 
 
 def test_param_unconstrain():
@@ -262,7 +269,7 @@ def test_param_unconstrain():
     c2 = bridge.param_unconstrain(b, out=scratch)
     np.testing.assert_allclose(a, c2)
     scratch_wrong = np.zeros(16)
-    with np.testing.assert_raises(ValueError):
+    with pytest.raises(ValueError):
         bridge.param_unconstrain(b, out=scratch_wrong)
 
 
@@ -282,7 +289,7 @@ def test_param_unconstrain_json():
     np.testing.assert_allclose(theta_unc, theta_unc_j_test2)
 
     scratch_bad = np.zeros(10)
-    with np.testing.assert_raises(ValueError):
+    with pytest.raises(ValueError):
         bridge.param_unconstrain_json(theta_json, out=scratch_bad)
 
 
@@ -318,8 +325,8 @@ def test_log_density():
     throw_lp_so = str(STAN_FOLDER / "throw_lp" / "throw_lp_model.so")
     bridge2 = bs.StanModel(throw_lp_so)
     y2 = np.array(np.random.uniform(1))
-    print("log_density() EXCEPTION MSG ON NEXT LINE IS NOT AN ERROR")
-    with np.testing.assert_raises(RuntimeError):
+
+    with pytest.raises(RuntimeError, match="find this text: lpfails"):
         bridge2.log_density(y2)
 
 
@@ -388,7 +395,7 @@ def test_log_density_gradient():
     np.testing.assert_allclose(_grad_logp(y_unc) + _grad_jacobian_true(y_unc), grad[0])
     #
     scratch_bad = np.zeros(bridge.param_unc_num() + 10)
-    with np.testing.assert_raises(ValueError):
+    with pytest.raises(ValueError):
         bridge.log_density_gradient(y_unc, out=scratch_bad)
 
 
@@ -494,7 +501,7 @@ def test_log_density_hessian():
     np.testing.assert_allclose(_grad_logp(y_unc) + _grad_jacobian_true(y_unc), grad[0])
     #
     scratch_bad = np.zeros(bridge.param_unc_num() + 10)
-    with np.testing.assert_raises(ValueError):
+    with pytest.raises(ValueError):
         bridge.log_density_hessian(y_unc, out_grad=scratch_bad)
 
     # test with 5 x 5 Hessian
@@ -638,6 +645,62 @@ def test_fr_gaussian():
         pos += 1
 
 
+def test_stdout_capture():
+    import contextlib, io
+
+    theta = 0.1
+
+    m = bs.StanModel(
+        str(STAN_FOLDER / "print" / "print_model.so"), capture_stan_prints=False
+    )
+
+    with contextlib.redirect_stdout(io.StringIO()) as f:
+        print("Hello from Python!")
+        m.log_density(np.array([theta]))
+
+    captured = f.getvalue()
+    assert captured.splitlines()[0] == "Hello from Python!"
+    assert "Stan" not in captured
+
+    m2 = bs.StanModel(str(STAN_FOLDER / "print" / "print_model.so"))
+
+    with contextlib.redirect_stdout(io.StringIO()) as f:
+        print("Hello from Python!")
+        m2.log_density(np.array([theta]))
+
+    lines = f.getvalue().splitlines()
+    assert lines[0] == "Hello from Python!"
+    assert lines[1] == "Hi from Stan!"
+    assert lines[2] == f"theta = {theta}"
+
+    # test re-entrancy
+    import ctypes, threading
+
+    # define a new, sillier, callback which lets us test thread safety
+    x = 0
+
+    @ctypes.CFUNCTYPE(None, ctypes.POINTER(ctypes.c_char), ctypes.c_int)
+    def callback(s, n):
+        nonlocal x
+        x += 1
+
+    m2._set_print_callback(callback, None)
+
+    # call it many times from several threads
+    def f():
+        rng = m2.new_rng(1234)
+        for _ in range(25):
+            m2.param_constrain(np.array([theta]), include_gq=True, rng=rng)
+
+    threads = [threading.Thread(target=f) for _ in range(10)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert x == 500  # 2 calls per print, 10 threads, 25 iterations
+
+
 @pytest.fixture
 def recompile_simple():
     """Recompile simple_model with autodiff hessian enable, then clean-up/restore it after test"""
@@ -647,7 +710,7 @@ def recompile_simple():
     lib.unlink(missing_ok=True)
     res = bs.compile_model(stanfile, make_args=["BRIDGESTAN_AD_HESSIAN=true"])
 
-    yield res
+    yield str(res)
 
     lib.unlink(missing_ok=True)
     bs.compile_model(stanfile, make_args=["STAN_THREADS=true"])

@@ -1,20 +1,17 @@
 
 # BridgeStan.jl - The Julia interface to BridgeStan
 
-[View the Julia interface documentation online](https://roualdes.github.io/bridgestan/languages/julia.html)
+[View the Julia interface documentation online](https://roualdes.github.io/bridgestan/latest/languages/julia.html)
 
 ## Installation
 
-**From Github**:
+**From the General Registry**:
 ```julia
-] add https://github.com/roualdes/bridgestan.git:julia
-```
-Alternatively,
-```julia
-> using Pkg; Pkg.add(url="https://github.com/roualdes/bridgestan.git", subdir="julia")
+] add BridgeStan
 ```
 
 **From the downloaded repository**:
+Assuming you have already cloned https://github.com/roualdes/bridgestan
 ```julia
 # from folder julia/
 ] dev .

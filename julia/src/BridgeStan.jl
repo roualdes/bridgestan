@@ -1,5 +1,7 @@
 module BridgeStan
 
+using LazyArtifacts
+
 export StanModel,
     name,
     model_info,
@@ -18,14 +20,16 @@ export StanModel,
     log_density,
     log_density_gradient,
     log_density_hessian,
+    get_bridgestan_path,
     set_bridgestan_path!,
-    compile_model
+    compile_model,
+    StanRNG
 
 include("model.jl")
 include("compile.jl")
 
 """
-    StanModel(;stan_file, stanc_args=[], make_args=[], data="", seed=204, chain_id=0)
+    StanModel(;stan_file, stanc_args=[], make_args=[], data="", seed=204)
 
 Construct a StanModel instance from a `.stan` file, compiling if necessary.
 
@@ -37,7 +41,19 @@ StanModel(;
     make_args::AbstractVector{String} = String[],
     data::String = "",
     seed = 204,
-    chain_id = 0,
-) = StanModel(compile_model(stan_file; stanc_args, make_args), data, seed, chain_id)
+) = StanModel(compile_model(stan_file; stanc_args, make_args), data, seed)
+
+
+function __init__()
+    # On Windows, we may need to add TBB to %PATH%
+    if Sys.iswindows()
+        try
+            run(pipeline(`where.exe tbb.dll`, stdout=devnull, stderr=devnull))
+        catch
+            # add TBB to %PATH%
+            ENV["PATH"] = joinpath(get_bridgestan_path(), "stan", "lib", "stan_math", "lib", "tbb") * ";" * ENV["PATH"]
+        end
+    end
+end
 
 end

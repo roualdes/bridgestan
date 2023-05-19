@@ -12,8 +12,10 @@ INC_FIRST ?= -I $(STAN)src -I $(RAPIDJSON)
 ## makefiles needed for math library
 -include $(BS_ROOT)/make/local
 -include $(MATH)make/compiler_flags
--include $(MATH)make/dependencies
 -include $(MATH)make/libraries
+
+## Set -fPIC globally since we're always building a shared library
+CXXFLAGS += -fPIC
 
 ## set flags for stanc compiler (math calls MIGHT? set STAN_OPENCL)
 ifdef STAN_OPENCL
@@ -35,23 +37,20 @@ else
 endif
 STAN_FLAGS=$(STAN_FLAG_THREADS)$(STAN_FLAG_OPENCL)$(STAN_FLAG_HESS)
 
-BRIDGE_DEPS = $(SRC)bridgestan.cpp $(SRC)bridgestan.h $(SRC)model_rng.cpp $(SRC)model_rng.hpp $(SRC)bridgestanR.cpp $(SRC)bridgestanR.h
+BRIDGE_DEPS = $(SRC)bridgestan.cpp $(SRC)bridgestan.h $(SRC)model_rng.cpp $(SRC)model_rng.hpp $(SRC)bridgestanR.cpp $(SRC)bridgestanR.h $(SRC)callback_stream.hpp
 BRIDGE_O = $(patsubst %.cpp,%$(STAN_FLAGS).o,$(SRC)bridgestan.cpp)
 
 $(BRIDGE_O) : $(BRIDGE_DEPS)
 	@echo ''
 	@echo '--- Compiling Stan bridge C++ code ---'
 	@mkdir -p $(dir $@)
-	$(COMPILE.cpp) -fPIC $(CXXFLAGS_THREADS) $(OUTPUT_OPTION) $(LDLIBS) $<
+	$(COMPILE.cpp) $(OUTPUT_OPTION) $(LDLIBS) $<
 
 ## generate .hpp file from .stan file using stanc
 %.hpp : %.stan $(STANC)
 	@echo ''
 	@echo '--- Translating Stan model to C++ code ---'
 	$(STANC) $(STANCFLAGS) --o=$(subst  \,/,$@) $(subst  \,/,$<)
-
-## generate list of source file dependencies for generated .hpp file
-%.d: %.hpp
 
 ## declares we want to keep .hpp even though it's an intermediate
 .PRECIOUS: %.hpp
@@ -60,9 +59,9 @@ $(BRIDGE_O) : $(BRIDGE_DEPS)
 %_model.so : %.hpp $(BRIDGE_O) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	@echo ''
 	@echo '--- Compiling C++ code ---'
-	$(COMPILE.cpp) $(CXXFLAGS_PROGRAM) -fPIC $(CXXFLAGS_THREADS) -x c++ -o $(subst  \,/,$*).o $(subst \,/,$<)
+	$(COMPILE.cpp) -x c++ -o $(subst  \,/,$*).o $(subst \,/,$<)
 	@echo '--- Linking C++ code ---'
-	$(LINK.cpp) -shared -lm -fPIC -o $(patsubst %.hpp, %_model.so, $(subst \,/,$<)) $(subst \,/,$*.o) $(BRIDGE_O) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
+	$(LINK.cpp) -shared -lm -o $(patsubst %.hpp, %_model.so, $(subst \,/,$<)) $(subst \,/,$*.o) $(BRIDGE_O) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	$(RM) $(subst  \,/,$*).o
 
 .PHONY: docs
@@ -78,7 +77,9 @@ clean:
 
 
 # build all test models at once
-TEST_MODEL_LIBS = test_models/throw_tp/throw_tp_model.so test_models/throw_gq/throw_gq_model.so test_models/throw_lp/throw_lp_model.so test_models/throw_data/throw_data_model.so test_models/jacobian/jacobian_model.so test_models/matrix/matrix_model.so test_models/simplex/simplex_model.so test_models/full/full_model.so test_models/stdnormal/stdnormal_model.so test_models/bernoulli/bernoulli_model.so test_models/gaussian/gaussian_model.so test_models/fr_gaussian/fr_gaussian_model.so test_models/simple/simple_model.so test_models/multi/multi_model.so
+TEST_MODEL_NAMES = $(patsubst $(BS_ROOT)/test_models/%/, %, $(sort $(dir $(wildcard $(BS_ROOT)/test_models/*/))))
+TEST_MODEL_NAMES := $(filter-out syntax_error, $(TEST_MODEL_NAMES))
+TEST_MODEL_LIBS = $(join $(addprefix test_models/, $(TEST_MODEL_NAMES)), $(addsuffix _model.so, $(addprefix /, $(TEST_MODEL_NAMES))))
 
 .PHONY: test_models
 test_models: $(TEST_MODEL_LIBS)
@@ -93,7 +94,7 @@ stan-update-remote:
 # print compilation command line config
 .PHONY: compile_info
 compile_info:
-	@echo '$(LINK.cpp) $(CXXFLAGS_PROGRAM) $(BRIDGE_O) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)'
+	@echo '$(LINK.cpp) $(BRIDGE_O) $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)'
 
 ## print value of makefile variable (e.g., make print-TBB_TARGETS)
 .PHONY: print-%
@@ -103,7 +104,7 @@ print-%  : ; @echo $* = $($*) ;
 STANC_DL_RETRY = 5
 STANC_DL_DELAY = 10
 STANC3_TEST_BIN_URL ?=
-STANC3_VERSION ?= v2.31.0
+STANC3_VERSION ?= v2.32.1
 
 ifeq ($(OS),Windows_NT)
  OS_TAG := windows
