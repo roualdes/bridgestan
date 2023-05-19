@@ -115,7 +115,7 @@ include `JAX` [@Bradbury:2018] and `Turing.jl` via the `JuliaAD`
 ecosystem [@Ge:2018].  `BridgeStan` differs from these tools by
 providing access to the existing, well-known DSL for modeling and
 highly efficient CPU computation of the Stan ecosystem.  The Stan
-community by and large uses CPU hardware, and since Stan has been
+community predominantly uses CPU hardware, and since Stan has been
 tuned for CPU performance, `BridgeStan` is more efficient than its
 competitors in implementing differentiable log densities on CPUs
 [@Carpenter:2015; @Radul:2020; @Tarek:2020].  Like the immutable Stan
