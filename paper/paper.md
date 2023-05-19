@@ -87,6 +87,23 @@ memory-compatible C interface makes this possible even if the host language
 (e.g., R) was compiled with a different compiler, something no prior interface
 which exposed Stan's log density calculations could allow.
 
+Other software in the Stan ecosystem offer some overlapping features
+with `BridgeStan`.  For instance, `rstan` offers functions `log_prob`
+and `grad_log_prob`, which provide access to the log joint density and
+its gradient.  Similarly, `httpstan` offers `log_prob` and
+`log_prob_grad`.  Such cases of similar functionality are
+unfortunately limited.  As of 2023-05-19, `rstan` via CRAN is still on
+Stan version 2.21.0 and the development version of `rstan`, which is
+not hosted on CRAN, is on Stan version 2.26.1, while the latest
+version of Stan at 2.32.2.  Further, `rstan` is limited to the host
+language R.  On the other hand, `httpstan` is a Python package which
+offers a REST API for access to the methods of a Stan model.  The REST
+API offers access to the methods of a Stan model to other languages
+than just Python, but by design can not take advantage of direct
+memory access of the host language.  `BridgeStan` remedies both of
+these shortcommings by providing a thin shim between any host language
+with a foreign function interface to C and the C++ of Stan.
+
 Existing tools with similar automatic differentiation functionality
 include `JAX` [@Bradbury:2018] and `Turing.jl` via the `JuliaAD`
 ecosystem [@Ge:2018].  `BridgeStan` differs from these tools by
