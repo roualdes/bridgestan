@@ -1,6 +1,6 @@
 # bridgestan.R - The R interface to BridgeStan
 
-[View the R interface documentation online](https://roualdes.github.io/bridgestan/languages/r.html)
+[View the R interface documentation online](https://roualdes.github.io/bridgestan/latest/languages/r.html)
 
 ## Installation
 

@@ -57,12 +57,12 @@ as well as constraining and unconstraining transforms.
 
 **Method** `new()`:
 
-Create a Stan Model instace.
+Create a Stan Model instance.
 
 _Usage_
 
 ```R
-StanModel$new(lib, data, rng_seed, chain_id)
+StanModel$new(lib, data, rng_seed)
 ```
 
 
@@ -70,12 +70,9 @@ _Arguments_
 
   - `lib` A path to a compiled BridgeStan Shared Object file.
 
-  - `data` Either a string representation of a JSON object or a path to a data file in JSON format ending in ".json".
+  - `data` Either a JSON string literal, a path to a data file in JSON format ending in ".json", or the empty string.
 
-  - `rng_seed` Seed for the RNG in the model object.
-
-  - `chain_id` Used to offset the RNG by a fixed amount.
-
+  - `rng_seed` Seed for the RNG used in constructing the model.
 
 _Returns_
 
@@ -84,7 +81,7 @@ _Returns_
 
 **Method** `name()`:
 
-Get the name of this StanModel
+Get the name of this StanModel.
 
 _Usage_
 
@@ -213,20 +210,19 @@ _Returns_
 
 **Method** `param_constrain()`:
 
-Returns a vector of constrained params give the unconstrained parameters.
-parameters See also `StanModel$param_unconstrain()`, the inverse
+Returns a vector of constrained parameters given the unconstrained parameters. See also `StanModel$param_unconstrain()`, the inverse
 of this function.
 
 _Usage_
 
 ```R
-StanModel$param_constrain(theta_unc, include_tp = FALSE, include_gq = FALSE)
+StanModel$param_constrain(theta_unc, include_tp = FALSE, include_gq = FALSE, rng)
 ```
 
 
 _Arguments_
 
-  - `theta_unc` The vector of unconstrained parameters
+  - `theta_unc` The vector of unconstrained parameters.
 
   - `include_tp` Whether to also output the transformed parameters
       of the model.
@@ -234,15 +230,39 @@ _Arguments_
   - `include_gq` Whether to also output the generated quantities
       of the model.
 
+  - `rng` The random number generator to use if `include_gq` is
+      `TRUE`.  See `StanModel$new_rng()`.
+
 
 _Returns_
 
   The constrained parameters of the model.
 
 
+**Method** `new_rng()`:
+
+Create a new persistent PRNG object for use in `param_constrain()`.
+
+
+_Usage_
+
+```R
+StanModel$new_rng(seed)
+```
+
+
+_Arguments_
+
+  - `seed` The seed for the PRNG.
+
+_Returns_
+
+  A `StanRNG` object.
+
+
 **Method** `param_unconstrain()`:
 
-Returns a vector of unconstrained params give the constrained parameters.
+Returns a vector of unconstrained parameters given the constrained parameters.
 
 It is assumed that these will be in the same order as internally
 represented by the model (e.g., in the same order as
@@ -259,7 +279,7 @@ StanModel$param_unconstrain(theta)
 
 _Arguments_
 
-  - `theta` The vector of constrained parameters
+  - `theta` The vector of constrained parameters.
 
 
 _Returns_
@@ -302,13 +322,13 @@ inverse of this function.
 _Usage_
 
 ```R
-StanModel$log_density(theta, propto = TRUE, jacobian = TRUE)
+StanModel$log_density(theta_unc, propto = TRUE, jacobian = TRUE)
 ```
 
 
 _Arguments_
 
-  - `theta` The vector of unconstrained parameters
+  - `theta_unc` The vector of unconstrained parameters.
 
   - `propto` If `TRUE`, drop terms which do not depend on the
       parameters.
@@ -331,13 +351,13 @@ unconstrained parameters. See also
 _Usage_
 
 ```R
-StanModel$log_density_gradient(theta, propto = TRUE, jacobian = TRUE)
+StanModel$log_density_gradient(theta_unc, propto = TRUE, jacobian = TRUE)
 ```
 
 
 _Arguments_
 
-  - `theta` The vector of unconstrained parameters
+  - `theta_unc` The vector of unconstrained parameters.
 
   - `propto` If `TRUE`, drop terms which do not depend on the
       parameters.
@@ -361,13 +381,13 @@ unconstrained parameters. See also
 _Usage_
 
 ```R
-StanModel$log_density_hessian(theta, propto = TRUE, jacobian = TRUE)
+StanModel$log_density_hessian(theta_unc, propto = TRUE, jacobian = TRUE)
 ```
 
 
 _Arguments_
 
-  - `theta` The vector of unconstrained parameters
+  - `theta_unc` The vector of unconstrained parameters.
 
   - `propto` If `TRUE`, drop terms which do not depend on the
       parameters.
@@ -380,5 +400,4 @@ _Returns_
 
   List containing entries `val` (the log density), `gradient`
   (the gradient), and `hessian` (the Hessian).
-
 

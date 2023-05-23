@@ -1,20 +1,28 @@
-name: Build github pages docs
+name: Build BridgeStan docs
 
 on:
   push:
     branches:
       - 'main'
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version of BridgeStan docs to build'
+        required: false
+        type: string
+        default: ''
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version of BridgeStan docs to build'
+        required: true
+        type: string
+  release:
+    types: [published]
 
 jobs:
   build-docs:
-    name: Publish documentation to gh-pages
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python-version: [3.9]
-      fail-fast: false
+    runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -23,15 +31,15 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python 3.9
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.9
 
       - name: Install dependencies (python)
         run: |
           python -m pip install --upgrade pip wheel
-          python -m pip install --upgrade "sphinx>5" nbsphinx ipython ipykernel ipywidgets sphinx-copybutton pydata-sphinx-theme breathe myst-parser
+          python -m pip install --upgrade -r docs/requirements.txt
 
       - name: Install os dependencies
         run: |
@@ -41,13 +49,6 @@ jobs:
       - name: Set up Julia
         uses: julia-actions/setup-julia@v1
 
-      - name: Stan submodule cacheing
-        uses: actions/cache@v3
-        id: stan-cache
-        with:
-          path: ./stan/
-          key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
-
       - name: Install package
         run: |
           cd python/
@@ -55,23 +56,47 @@ jobs:
           cd ../julia
           julia --project=./docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
 
+      - name: Calculate version
+        if:
+        run: |
+          if [[ "${{ inputs.version }}" != "" ]]; then
+            echo "BS_DOCS_VERSION=${{ inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "BS_DOCS_VERSION=latest" >> $GITHUB_ENV
+          fi
+
       - name: Build docs
         run: |
           cd docs/
+          export BS_DOCS_VERSION=$BS_DOCS_VERSION
           make html
-          cd _build/html
 
-          git init
+      - name: Check out github
+        uses: actions/checkout@v3
+        with:
+          path: docs/_build/bs-docs
+          ref: gh-pages
+
+      - name: Commit html docs
+        run: |
+          cd docs/_build/
+
+          ls
+
+          rm -rf bs-docs/$BS_DOCS_VERSION
+          cp -r html bs-docs/$BS_DOCS_VERSION
+
+          cd bs-docs/
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+
           git add .
-          git commit -m "Rebuild docs"
-          git branch -m gh-pages
+          git commit --amend -m "Rebuild docs"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           branch: gh-pages
-          directory: docs/_build/html
+          directory: docs/_build/bs-docs
           force: true
 

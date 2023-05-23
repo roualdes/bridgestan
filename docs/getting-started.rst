@@ -20,6 +20,10 @@ Downloading BridgeStan
 Installing BridgeStan is as simple as ensuring that the above requirements are installed and then downloading
 the source repository.
 
+As of version 1.0.2, the :doc:`Julia <languages/julia>` and
+:doc:`Python <languages/python>` interfaces will download
+the source for you, so this section is optional.
+
 Downloading a released archive
 ______________________________
 
@@ -115,8 +119,8 @@ will most likely lead to segmentation faults or other crashes.
 Additional flags, such as those for MPI and OpenCL, are covered in the
 `CmdStan User's Guide page on Parallelization <https://mc-stan.org/docs/cmdstan-guide/parallelization.html>`__.
 
-Faster Hessian calculations
-___________________________
+Autodiff Hessian calculations
+_____________________________
 
 By default, Hessians in BridgeStan are calculated using central finite differences.
 This is because not all Stan models support the nested autodiff required for Hessians
@@ -131,6 +135,9 @@ This value is reported by the ``model_info`` function if you would like to check
 whether Hessians are computed with nested autodiff or with finite differences. Similar to
 ``STAN_THREADS``, it is not advised to mix models which use autodiff Hessians with those that
 do not in the same program.
+
+Autodiff Hessians may be faster than finite differences depending on your model, and will
+generally be more numerically stable.
 
 Using Custom Stan Versions
 __________________________

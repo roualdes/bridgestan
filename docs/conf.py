@@ -3,12 +3,28 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+import datetime
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "BridgeStan"
-copyright = "2022, BridgeStan Developers"
+year = datetime.date.today().year
+copyright = f"{year}, BridgeStan Developers"
 author = "BridgeStan Developers"
+
+import os
+
+import bridgestan
+
+version = os.getenv("BS_DOCS_VERSION", bridgestan.__version__)
+if version == "latest" :
+    # don't display a version number for "latest" docs
+    switcher_version = "latest"
+    release = ""
+else:
+    release = version
+    switcher_version = f'v{version}'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -55,6 +71,11 @@ html_theme_options = {
         },
     ],
     "use_edit_page_button": True,
+    "switcher": {
+        "json_url": "https://roualdes.github.io/bridgestan/latest/_static/switcher.json",
+        "version_match": switcher_version,
+    },
+    "navbar_end": ["theme-switcher", "navbar-icon-links", "version-switcher"],
 }
 
 html_context = {
@@ -79,6 +100,7 @@ breathe_projects = {"bridgestan": "./_build/cppxml/"}
 breathe_projects_source = {"bridgestan": ("../src/", ["bridgestan.h", "bridgestanR.h"])}
 breathe_default_project = "bridgestan"
 
+autoclass_content = 'both'
 
 # Julia and C++ doc build
 import os
@@ -111,6 +133,6 @@ except Exception as e:
         raise e
     else:
         print("Breathe/doxygen not installed, skipping C++ Doc")
-        exclude_patterns += ["languages/cpp-api.rst"]
+        exclude_patterns += ["languages/c-api.rst"]
 else:
     extensions.append("breathe")

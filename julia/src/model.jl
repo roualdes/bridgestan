@@ -1,31 +1,47 @@
 
-mutable struct StanModelStruct end
+struct StanModelStruct end
+
+mutable struct StanRNGStruct end
+
+# utility macro to annotate a field as const only if supported
+@eval macro $(Symbol("const"))(x)
+    if VERSION >= v"1.8"
+        Expr(:const, esc(x))
+    else
+        esc(x)
+    end
+end
 
 """
-    StanModel(lib, datafile="", seed=204, chain_id=0)
+    StanModel(lib, datafile="", seed=204)
 
 A StanModel instance encapsulates a Stan model instantiated with data.
 
-The constructor a Stan model from the supplied library file path and data. Data
-should either be a string containing a JSON object or a path to a data file ending in `.json`.
-If seed or chain_id are supplied, these are used to initialize the RNG used by the model.
+Construct a Stan model from the supplied library file path and data. Data
+should either be a string containing a JSON string literal, a path to a data file ending in `.json`,
+or the empty string.
+If seed is supplied, it is used to initialize the RNG used by the model's constructor.
 
-    StanModel(;stan_file, data="", seed=204, chain_id=0)
+    StanModel(;stan_file, data="", seed=204)
 
-Construct a StanModel instance from a `.stan` file, compiling if necessary.
+Construct a `StanModel` instance from a `.stan` file, compiling if necessary.
 
-This is equivalent to calling `compile_model` and then the original constructor of StanModel.
+    StanModel(;stan_file, stanc_args=[], make_args=[], data="", seed=204)
+
+Construct a `StanModel` instance from a `.stan` file.  Compilation
+occurs if no shared object file exists for the supplied Stan file or
+if a shared object file exists and the Stan file has changed since
+last compilation.  This is equivalent to calling `compile_model` and
+then the original constructor of `StanModel`.
 """
 mutable struct StanModel
     lib::Ptr{Nothing}
     stanmodel::Ptr{StanModelStruct}
-    const data::String
-    const seed::UInt32
-    const chain_id::UInt32
+    @const data::String
+    @const seed::UInt32
 
-    function StanModel(lib::String, data::String = "", seed = 204, chain_id = 0)
+    function StanModel(lib::String, data::String = "", seed = 204)
         seed = convert(UInt32, seed)
-        chain_id = convert(UInt32, chain_id)
 
         if !isfile(lib)
             throw(SystemError("Dynamic library file not found"))
@@ -38,36 +54,88 @@ mutable struct StanModel
                   "If the file has changed since the last time it was loaded, this load may not update the library!"
         end
 
-        if data != "" && endswith(data, ".json") && !isfile(data)
-            throw(SystemError("Data file not found"))
+        if data != "" && endswith(data, ".json")
+            if !isfile(data)
+                throw(SystemError("Data file not found"))
+            end
+            data = open(data) do f
+                read(f, String)
+            end
         end
 
         lib = Libc.Libdl.dlopen(lib)
 
+        err = Ref{Cstring}()
+
         stanmodel = ccall(
-            Libc.Libdl.dlsym(lib, "bs_construct"),
+            Libc.Libdl.dlsym(lib, "bs_model_construct"),
             Ptr{StanModelStruct},
-            (Cstring, UInt32, UInt32),
+            (Cstring, UInt32, Ref{Cstring}),
             data,
             seed,
-            chain_id,
+            err,
         )
         if stanmodel == C_NULL
-            error("could not construct model RNG")
+            error(handle_error(lib, err, "bs_model_construct"))
         end
 
-        sm = new(lib, stanmodel, data, seed, chain_id)
+        sm = new(lib, stanmodel, data, seed)
 
         function f(sm)
             ccall(
-                Libc.Libdl.dlsym(sm.lib, "bs_destruct"),
-                UInt32,
+                Libc.Libdl.dlsym(sm.lib, "bs_model_destruct"),
+                Cvoid,
                 (Ptr{StanModelStruct},),
                 sm.stanmodel,
             )
         end
 
         finalizer(f, sm)
+    end
+end
+
+"""
+    StanRNG(sm::StanModel, seed)
+
+Construct a StanRNG instance from a `StanModel` instance and a seed.
+
+This can be used in the `param_constrain` and `param_constrain!` methods
+when using the generated quantities block.
+
+This object is not thread-safe, one should be created per thread.
+"""
+mutable struct StanRNG
+    lib::Ptr{Nothing}
+    ptr::Ptr{StanRNGStruct}
+    seed::UInt32
+
+    function StanRNG(sm::StanModel, seed)
+        seed = convert(UInt32, seed)
+
+        err = Ref{Cstring}()
+        ptr = ccall(
+            Libc.Libdl.dlsym(sm.lib, "bs_rng_construct"),
+            Ptr{StanModelStruct},
+            (UInt32, Ref{Cstring}),
+            seed,
+            err,
+        )
+        if ptr == C_NULL
+            error(handle_error(sm.lib, err, "bs_rng_construct"))
+        end
+
+        stanrng = new(sm.lib, ptr, seed)
+
+        function f(stanrng)
+            ccall(
+                Libc.Libdl.dlsym(stanrng.lib, "bs_rng_destruct"),
+                Cvoid,
+                (Ptr{StanModelStruct},),
+                stanrng.ptr,
+            )
+        end
+
+        finalizer(f, stanrng)
     end
 end
 
@@ -102,6 +170,18 @@ function model_info(sm::StanModel)
         sm.stanmodel,
     )
     unsafe_string(cstr)
+end
+
+"""
+    model_version(sm)
+
+Return the BridgeStan version of the compiled model `sm`.
+"""
+function model_version(sm::StanModel)
+    major = reinterpret(Ptr{Cint}, Libc.Libdl.dlsym(sm.lib, "bs_major_version"))
+    minor = reinterpret(Ptr{Cint}, Libc.Libdl.dlsym(sm.lib, "bs_minor_version"))
+    patch = reinterpret(Ptr{Cint}, Libc.Libdl.dlsym(sm.lib, "bs_patch_version"))
+    (unsafe_load(major), unsafe_load(minor), unsafe_load(patch))
 end
 
 """
@@ -187,11 +267,14 @@ function param_unc_names(sm::StanModel)
 end
 
 """
-    param_constrain!(sm, theta_unc, out; include_tp=false, include_gq=false)
+    param_constrain!(sm, theta_unc, out; include_tp=false, include_gq=false, rng=nothing)
 
 Returns a vector constrained parameters given unconstrained parameters.
 Additionally (if `include_tp` and `include_gq` are set, respectively)
 returns transformed parameters and generated quantities.
+
+If `include_gq` is `true`, then `rng` must be provided.
+See `StanRNG` for details on how to construct RNGs.
 
 The result is stored in the vector `out`, and a reference is returned. See
 `param_constrain` for a version which allocates fresh memory.
@@ -204,6 +287,7 @@ function param_constrain!(
     out::Vector{Float64};
     include_tp = false,
     include_gq = false,
+    rng::Union{StanRNG,Nothing} = nothing,
 )
     dims = param_num(sm; include_tp = include_tp, include_gq = include_gq)
     if length(out) != dims
@@ -211,28 +295,53 @@ function param_constrain!(
             DimensionMismatch("out must be same size as number of constrained parameters"),
         )
     end
+
+    if rng === nothing
+        if include_gq
+            throw(ArgumentError("Must provide an RNG when including generated quantities"))
+        end
+        rng_ptr = C_NULL
+    else
+        rng_ptr = rng.ptr
+    end
+
+    err = Ref{Cstring}()
+
     rc = ccall(
         Libc.Libdl.dlsym(sm.lib, "bs_param_constrain"),
         Cint,
-        (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}),
+        (
+            Ptr{StanModelStruct},
+            Cint,
+            Cint,
+            Ref{Cdouble},
+            Ref{Cdouble},
+            Ptr{StanRNGStruct},
+            Ref{Cstring},
+        ),
         sm.stanmodel,
         include_tp,
         include_gq,
         theta_unc,
         out,
+        rng_ptr,
+        err,
     )
     if rc != 0
-        error("param_constrain failed on C++ side; see stderr for messages")
+        error(handle_error(sm.lib, err, "param_constrain"))
     end
     out
 end
 
 """
-    param_constrain(sm, theta_unc, out; include_tp=false, include_gq=false)
+    param_constrain(sm, theta_unc, out; include_tp=false, include_gq=false, rng=nothing)
 
 Returns a vector constrained parameters given unconstrained parameters.
 Additionally (if `include_tp` and `include_gq` are set, respectively)
 returns transformed parameters and generated quantities.
+
+If `include_gq` is `true`, then `rng` must be provided.
+See `StanRNG` for details on how to construct RNGs.
 
 This allocates new memory for the output each call.
 See `param_constrain!` for a version which allows
@@ -245,9 +354,17 @@ function param_constrain(
     theta_unc::Vector{Float64};
     include_tp = false,
     include_gq = false,
+    rng::Union{StanRNG,Nothing} = nothing,
 )
     out = zeros(param_num(sm, include_tp = include_tp, include_gq = include_gq))
-    param_constrain!(sm, theta_unc, out; include_tp = include_tp, include_gq = include_gq)
+    param_constrain!(
+        sm,
+        theta_unc,
+        out;
+        include_tp = include_tp,
+        include_gq = include_gq,
+        rng = rng,
+    )
 end
 
 """
@@ -272,17 +389,18 @@ function param_unconstrain!(sm::StanModel, theta::Vector{Float64}, out::Vector{F
             ),
         )
     end
-
+    err = Ref{Cstring}()
     rc = ccall(
         Libc.Libdl.dlsym(sm.lib, "bs_param_unconstrain"),
         Cint,
-        (Ptr{StanModelStruct}, Ref{Cdouble}, Ref{Cdouble}),
+        (Ptr{StanModelStruct}, Ref{Cdouble}, Ref{Cdouble}, Ref{Cstring}),
         sm.stanmodel,
         theta,
         out,
+        err,
     )
     if rc != 0
-        error("param_unconstrain failed on C++ side; see stderr for messages")
+        error(handle_error(sm.lib, err, "param_unconstrain"))
     end
     out
 end
@@ -326,16 +444,18 @@ function param_unconstrain_json!(sm::StanModel, theta::String, out::Vector{Float
         )
     end
 
+    err = Ref{Cstring}()
     rc = ccall(
         Libc.Libdl.dlsym(sm.lib, "bs_param_unconstrain_json"),
         Cint,
-        (Ptr{StanModelStruct}, Cstring, Ref{Cdouble}),
+        (Ptr{StanModelStruct}, Cstring, Ref{Cdouble}, Ref{Cstring}),
         sm.stanmodel,
         theta,
         out,
+        err,
     )
     if rc != 0
-        error("param_unconstrain_json failed on C++ side; see stderr for messages")
+        error(handle_error(sm.lib, err, "param_unconstrain_json"))
     end
     out
 end
@@ -366,18 +486,20 @@ and includes change of variables terms for constrained parameters if `jacobian` 
 """
 function log_density(sm::StanModel, q::Vector{Float64}; propto = true, jacobian = true)
     lp = Ref(0.0)
+    err = Ref{Cstring}()
     rc = ccall(
         Libc.Libdl.dlsym(sm.lib, "bs_log_density"),
         Cint,
-        (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}),
+        (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}, Ref{Cstring}),
         sm.stanmodel,
         propto,
         jacobian,
         q,
         lp,
+        err,
     )
     if rc != 0
-        error("log_density failed on C++ side; see stderr for messages")
+        error(handle_error(sm.lib, err, "log_density"))
     end
     lp[]
 end
@@ -401,7 +523,6 @@ function log_density_gradient!(
     propto = true,
     jacobian = true,
 )
-    lp = Ref(0.0)
     dims = param_unc_num(sm)
     if length(out) != dims
         throw(
@@ -410,20 +531,30 @@ function log_density_gradient!(
             ),
         )
     end
-
+    lp = Ref(0.0)
+    err = Ref{Cstring}()
     rc = ccall(
         Libc.Libdl.dlsym(sm.lib, "bs_log_density_gradient"),
         Cint,
-        (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}, Ref{Cdouble}),
+        (
+            Ptr{StanModelStruct},
+            Cint,
+            Cint,
+            Ref{Cdouble},
+            Ref{Cdouble},
+            Ref{Cdouble},
+            Ref{Cstring},
+        ),
         sm.stanmodel,
         propto,
         jacobian,
         q,
         lp,
         out,
+        err,
     )
     if rc != 0
-        error("log_density_gradient failed on C++ side; see stderr for messages")
+        error(handle_error(sm.lib, err, "log_density_gradient"))
     end
     (lp[], out)
 end
@@ -471,7 +602,6 @@ function log_density_hessian!(
     propto = true,
     jacobian = true,
 )
-    lp = Ref(0.0)
     dims = param_unc_num(sm)
     if length(out_grad) != dims
         throw(
@@ -486,7 +616,8 @@ function log_density_hessian!(
             ),
         )
     end
-
+    lp = Ref(0.0)
+    err = Ref{Cstring}()
     rc = ccall(
         Libc.Libdl.dlsym(sm.lib, "bs_log_density_hessian"),
         Cint,
@@ -498,6 +629,7 @@ function log_density_hessian!(
             Ref{Cdouble},
             Ref{Cdouble},
             Ref{Cdouble},
+            Ref{Cstring},
         ),
         sm.stanmodel,
         propto,
@@ -506,10 +638,10 @@ function log_density_hessian!(
         lp,
         out_grad,
         out_hess,
+        err,
     )
     if rc != 0
-        error("log_density_hessian failed on C++ side; see stderr for messages")
-
+        error(handle_error(sm.lib, err, "log_density_hessian"))
     end
     (lp[], out_grad, reshape(out_hess, (dims, dims)))
 end
@@ -536,4 +668,19 @@ function log_density_hessian(
     grad = zeros(dims)
     hess = zeros(dims * dims)
     log_density_hessian!(sm, q, grad, hess; propto = propto, jacobian = jacobian)
+end
+
+"""
+    handle_error(lib::Ptr{Nothing}, err::Ref{Cstring}, method::String)
+
+Retrieves the error message allocated in C++ and frees it before returning a copy.
+"""
+function handle_error(lib::Ptr{Nothing}, err::Ref{Cstring}, method::String)
+    if err[] == C_NULL
+        return "Unknown error in $method."
+    else
+        s = string(unsafe_string(err[]))
+        ccall(Libc.Libdl.dlsym(lib, "bs_free_error_msg"), Cvoid, (Cstring,), err[])
+        return s
+    end
 end

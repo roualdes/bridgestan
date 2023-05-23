@@ -8,19 +8,19 @@
 StanModel <- R6::R6Class("StanModel",
   public = list(
     #' @description
-    #' Create a Stan Model instace.
+    #' Create a Stan Model instance.
     #' @param lib A path to a compiled BridgeStan Shared Object file.
-    #' @param data Either a string representation of a JSON object or a path to a data file in JSON format ending in ".json".
-    #' @param rng_seed Seed for the RNG in the model object.
-    #' @param chain_id Used to offset the RNG by a fixed amount.
+    #' @param data Either a JSON string literal,a path to a data file in JSON format ending in ".json", or the empty string.
+    #' @param seed Seed for the RNG used in constructing the model.
     #' @return A new StanModel.
-    initialize = function(lib, data, rng_seed, chain_id) {
+    initialize = function(lib, data, seed) {
       if (.Platform$OS.type == "windows"){
         lib_old <- lib
         lib <- paste0(tools::file_path_sans_ext(lib), ".dll")
         file.copy(from=lib_old, to=lib)
       }
 
+      private$seed <- seed
       private$lib <- tools::file_path_as_absolute(lib)
       private$lib_name <- tools::file_path_sans_ext(basename(lib))
       if (is.loaded("construct_R", PACKAGE = private$lib_name)) {
@@ -31,19 +31,34 @@ StanModel <- R6::R6Class("StanModel",
         )
       }
 
-      dyn.load(private$lib, PACKAGE = private$lib_name)
-      .C("bs_construct_R",
-        as.character(data), as.integer(rng_seed), as.integer(chain_id),
-        ptr_out = raw(8),
-        PACKAGE = private$lib_name
-      )$ptr_out -> ptr_out
-      if (all(ptr_out == 0)) {
-        stop("could not construct model RNG")
+      if (tools::file_ext(data) == "json") {
+        if (!file.exists(data)) {
+          stop(paste0("File '", data, "' does not exist."))
+        }
+        data <- readChar(data, file.info(data)$size)
       }
-      private$model <- ptr_out
+
+      dyn.load(private$lib, PACKAGE = private$lib_name)
+      ret <- .C("bs_model_construct_R",
+        as.character(data), as.integer(seed),
+        ptr_out = raw(8),
+        err_msg = as.character(""),
+        err_ptr = raw(8),
+        PACKAGE = private$lib_name
+      )
+      if (all(ret$ptr_out == 0)) {
+        stop(handle_error(private$lib_name, ret$err_msg, ret$err_ptr, "construct"))
+      }
+      private$model <- ret$ptr_out
+
+      model_version <- self$model_version()
+      if (packageVersion("bridgestan") != paste(model_version$major, model_version$minor, model_version$patch, sep = ".")) {
+        warning(paste0("The version of the compiled model does not match the version of the R library. ",
+                       "Consider recompiling the model."))
+      }
     },
     #' @description
-    #' Get the name of this StanModel
+    #' Get the name of this StanModel.
     #' @return A character vector of the name.
     name = function() {
       .C("bs_name_R", as.raw(private$model),
@@ -59,6 +74,15 @@ StanModel <- R6::R6Class("StanModel",
         info_out = as.character(""),
         PACKAGE = private$lib_name
       )$info_out
+    },
+
+    model_version= function() {
+      .C("bs_version_R",
+        major = as.integer(0),
+        minor = as.integer(0),
+        patch = as.integer(0),
+        PACKAGE = private$lib_name
+      )
     },
     #' @description
     #' Return the indexed names of the (constrained) parameters.
@@ -118,42 +142,64 @@ StanModel <- R6::R6Class("StanModel",
       )$num
     },
     #' @description
-    #' Returns a vector of constrained params give the unconstrained parameters.
+    #' Returns a vector of constrained parameters given the unconstrained parameters.
     #' See also `StanModel$param_unconstrain()`, the inverse of this function.
-    #' @param theta_unc The vector of unconstrained parameters
+    #' @param theta_unc The vector of unconstrained parameters.
     #' @param include_tp Whether to also output the transformed parameters of the model.
     #' @param include_gq Whether to also output the generated quantities of the model.
+    #' @param rng The random number generator to use if `include_gq` is `TRUE`.  See `StanModel$new_rng()`.
     #' @return The constrained parameters of the model.
-    param_constrain = function(theta_unc, include_tp = FALSE, include_gq = FALSE) {
+    param_constrain = function(theta_unc, include_tp = FALSE, include_gq = FALSE, rng) {
+      if (missing(rng)) {
+        if (include_gq){
+          stop("A rng must be provided if include_gq is True.")
+        }
+        rng_ptr <- as.integer(0)
+      } else {
+        rng_ptr <- as.raw(rng$ptr)
+      }
       vars <- .C("bs_param_constrain_R", as.raw(private$model),
-        as.logical(include_tp), as.logical(include_gq), as.numeric(theta_unc),
+        as.logical(include_tp), as.logical(include_gq), as.double(theta_unc),
         theta = double(self$param_num(include_tp = include_tp, include_gq = include_gq)),
+        rng = rng_ptr,
         return_code = as.integer(0),
+        err_msg = as.character(""),
+        err_ptr = raw(8),
         PACKAGE = private$lib_name
       )
+
       if (vars$return_code) {
-        stop("C++ exception in param_constrain(); see stderr for messages")
+        stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "param_constrain"))
       }
       vars$theta
     },
     #' @description
-    #' Returns a vector of unconstrained params give the constrained parameters.
+    #' Create a new persistent PRNG object for use in `param_constrain()`.
+    #' @param seed The seed for the PRNG.
+    #' @return A `StanRNG` object.
+    new_rng = function(seed) {
+      StanRNG$new(private$lib_name, seed)
+    },
+    #' @description
+    #' Returns a vector of unconstrained parameters give the constrained parameters.
     #'
     #' It is assumed that these will be in the same order as internally represented by
     #' the model (e.g., in the same order as `StanModel$param_names()`).
     #' If structured input is needed, use `StanModel$param_unconstrain_json()`.
     #' See also `StanModel$param_constrain()`, the inverse of this function.
-    #' @param theta The vector of constrained parameters
+    #' @param theta The vector of constrained parameters.
     #' @return The unconstrained parameters of the model.
     param_unconstrain = function(theta) {
       vars <- .C("bs_param_unconstrain_R", as.raw(private$model),
-        as.numeric(theta),
+        as.double(theta),
         theta_unc = double(self$param_unc_num()),
         return_code = as.integer(0),
+        err_msg = as.character(""),
+        err_ptr = raw(8),
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop("C++ exception in param_unconstrain(); see stderr for messages")
+        stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "param_unconstrain"))
       }
       vars$theta_unc
     },
@@ -168,69 +214,77 @@ StanModel <- R6::R6Class("StanModel",
         as.character(json),
         theta_unc = double(self$param_unc_num()),
         return_code = as.integer(0),
+        err_msg = as.character(""),
+        err_ptr = raw(8),
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop("C++ exception in param_unconstrain_json(); see stderr for messages")
+        stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "param_unconstrain_json"))
       }
       vars$theta_unc
     },
     #' @description
     #' Return the log density of the specified unconstrained parameters.
     #' See also `StanModel$param_unconstrain()`, the inverse of this function.
-    #' @param theta The vector of unconstrained parameters
+    #' @param theta_unc The vector of unconstrained parameters.
     #' @param propto If `TRUE`, drop terms which do not depend on the parameters.
     #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
     #' @return The log density.
-    log_density = function(theta, propto = TRUE, jacobian = TRUE) {
+    log_density = function(theta_unc, propto = TRUE, jacobian = TRUE) {
       vars <- .C("bs_log_density_R", as.raw(private$model),
-        as.logical(propto), as.logical(jacobian), as.numeric(theta),
+        as.logical(propto), as.logical(jacobian), as.double(theta_unc),
         val = double(1),
         return_code = as.integer(0),
+        err_msg = as.character(""),
+        err_ptr = raw(8),
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop("C++ exception in log_density(); see stderr for messages")
+        stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "log_density"))
       }
       vars$val
     },
     #' @description
     #' Return the log density and gradient of the specified unconstrained parameters.
     #' See also `StanModel$param_unconstrain()`, the inverse of this function.
-    #' @param theta The vector of unconstrained parameters
+    #' @param theta_unc The vector of unconstrained parameters.
     #' @param propto If `TRUE`, drop terms which do not depend on the parameters.
     #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
     #' @return List containing entries `val` (the log density) and `gradient` (the gradient).
-    log_density_gradient = function(theta, propto = TRUE, jacobian = TRUE) {
+    log_density_gradient = function(theta_unc, propto = TRUE, jacobian = TRUE) {
       dims <- self$param_unc_num()
       vars <- .C("bs_log_density_gradient_R", as.raw(private$model),
-        as.logical(propto), as.logical(jacobian), as.numeric(theta),
+        as.logical(propto), as.logical(jacobian), as.double(theta_unc),
         val = double(1), gradient = double(dims),
         return_code = as.integer(0),
+        err_msg = as.character(""),
+        err_ptr = raw(8),
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop("C++ exception in log_density_gradient(); see stderr for messages")
+        stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "log_density_gradient"))
       }
       list(val = vars$val, gradient = vars$gradient)
     },
     #' @description
     #' Return the log density, gradient, and Hessian of the specified unconstrained parameters.
     #' See also `StanModel$param_unconstrain()`, the inverse of this function.
-    #' @param theta The vector of unconstrained parameters
+    #' @param theta_unc The vector of unconstrained parameters.
     #' @param propto If `TRUE`, drop terms which do not depend on the parameters.
     #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
     #' @return List containing entries `val` (the log density), `gradient` (the gradient), and `hessian` (the Hessian).
-    log_density_hessian = function(theta, propto = TRUE, jacobian = TRUE) {
+    log_density_hessian = function(theta_unc, propto = TRUE, jacobian = TRUE) {
       dims <- self$param_unc_num()
       vars <- .C("bs_log_density_hessian_R", as.raw(private$model),
-        as.logical(propto), as.logical(jacobian), as.numeric(theta),
+        as.logical(propto), as.logical(jacobian), as.double(theta_unc),
         val = double(1), gradient = double(dims), hess = double(dims * dims),
         return_code = as.integer(0),
+        err_msg = as.character(""),
+        err_ptr = raw(8),
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
-        stop("C++ exception in log_density_hessian(); see stderr for messages")
+        stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "log_density_hessian"))
       }
       list(val = vars$val, gradient = vars$gradient, hessian = matrix(vars$hess, nrow = dims, byrow = TRUE))
     }
@@ -239,10 +293,63 @@ StanModel <- R6::R6Class("StanModel",
     lib = NA,
     lib_name = NA,
     model = NA,
+    seed = NA,
     finalize = function() {
-      .C("bs_destruct_R",
+      .C("bs_model_destruct_R",
         as.raw(private$model),
-        return_code = as.integer(0),
+        PACKAGE = private$lib_name
+      )
+    }
+  ),
+  cloneable=FALSE
+)
+#' Get and free the error message stored at the C++ pointer
+#' @keywords internal
+handle_error <- function(lib_name, err_msg, err_ptr, function_name) {
+  if (all(err_ptr == 0)) {
+    return(paste("Unknown error in", function_name))
+  } else {
+    .C("bs_free_error_msg_R", as.raw(err_ptr), PACKAGE = lib_name)
+    return(err_msg)
+  }
+}
+
+#' StanRNG
+#'
+#' RNG object for use with `StanModel$param_constrain()`
+#' @field rng The pointer to the RNG object.
+#' @keywords internal
+StanRNG <- R6::R6Class("StanRNG",
+  public = list(
+    #' @description
+    #' Create a StanRng
+    #' @param lib_name The name of the Stan dynamic library.
+    #' @param seed The seed for the RNG.
+    #' @return A new StanRNG.
+    initialize = function(lib_name, seed) {
+      private$lib_name <- lib_name
+
+      vars <- .C("bs_rng_construct_R",
+        as.integer(seed),
+        ptr_out = raw(8),
+        err_msg = as.character(""),
+        err_ptr = raw(8),
+        PACKAGE = private$lib_name
+      )
+
+      if (all(vars$ptr_out == 0)) {
+        stop(handle_error("construct_rng", vars$err_msg, vars$err_ptr, private$lib_name))
+      } else {
+        self$ptr <- vars$ptr_out
+      }
+    },
+    ptr = NA
+  ),
+  private = list(
+    lib_name = NA,
+    finalize = function() {
+      .C("bs_rng_destruct_R",
+        as.raw(self$ptr),
         PACKAGE = private$lib_name
       )
     }

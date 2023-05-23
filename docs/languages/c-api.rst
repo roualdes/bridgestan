@@ -40,7 +40,7 @@ These functions are implemented in C++, see :doc:`../internals` for more details
 
 .. autodoxygenfile:: bridgestan.h
     :project: bridgestan
-    :sections: func
+    :sections: func typedef var
 
 R-compatible functions
 ----------------------

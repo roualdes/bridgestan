@@ -1,6 +1,8 @@
 import bridgestan as bs
 import numpy as np
 
+bs.set_bridgestan_path("../")
+
 stan = "../test_models/bernoulli/bernoulli.stan"
 data = "../test_models/bernoulli/bernoulli.data.json"
 model = bs.StanModel.from_stan_file(stan, data)

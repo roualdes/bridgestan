@@ -2,5 +2,5 @@ parameters {
   real y;
 }
 model {
-  reject("");
+  reject("find this text: lpfails");
 }

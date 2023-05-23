@@ -1,6 +1,6 @@
 # BridgeStan from C
 
-[View the C API documentation online](https://roualdes.github.io/bridgestan/languages/c-api.html).
+[View the C API documentation online](https://roualdes.github.io/bridgestan/latest/languages/c-api.html).
 
 This shows how one could write a C program which calls BridgeStan.
 

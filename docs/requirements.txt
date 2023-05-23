@@ -1,0 +1,10 @@
+
+sphinx>5
+nbsphinx
+ipython
+ipykernel
+ipywidgets
+sphinx-copybutton
+pydata-sphinx-theme
+breathe
+myst-parser

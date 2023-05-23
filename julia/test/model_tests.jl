@@ -1,11 +1,23 @@
 using BridgeStan
 using Test
 using Printf
+using Suppressor
+
+# The ability to detect a specific message is specific to Julia 1.8 and higher
+# so we need to use a less specific test for older versions.
+macro test_throw_string(s, ex)
+    if VERSION >= v"1.8"
+        return :(Test.@test_throws $(esc(s)) $(esc(ex)))
+    else
+        return :(Test.@test_throws $(esc(ErrorException)) $(esc(ex)))
+    end
+end
 
 function load_test_model(name::String, with_data = true)
-    lib = joinpath(@__DIR__, @sprintf("../../test_models/%s/%s_model.so", name, name))
+    bridgestan = BridgeStan.get_bridgestan_path()
+    lib = joinpath(bridgestan, @sprintf("test_models/%s/%s_model.so", name, name))
     if with_data
-        data = joinpath(@__DIR__, @sprintf("../../test_models/%s/%s.data.json", name, name))
+        data = joinpath(bridgestan, @sprintf("test_models/%s/%s.data.json", name, name))
     else
         data = ""
     end
@@ -20,7 +32,7 @@ end
     # missing data
     @test_throws SystemError load_test_model("stdnormal")
     # exception in constructor
-    @test_throws ErrorException load_test_model("throw_data", false)
+    @test_throw_string "find this text: datafails" load_test_model("throw_data", false)
 end
 
 @testset "name" begin
@@ -165,22 +177,58 @@ end
 
 
     model2 = load_test_model("full", false)
+    rng = StanRNG(model2, 1234)
     @test 1 == length(BridgeStan.param_constrain(model2, a))
     @test 2 == length(BridgeStan.param_constrain(model2, a; include_tp = true))
-    @test 3 == length(BridgeStan.param_constrain(model2, a; include_gq = true))
+    @test 3 == length(BridgeStan.param_constrain(model2, a; include_gq = true, rng = rng))
     @test 4 == length(
-        BridgeStan.param_constrain(model2, a; include_tp = true, include_gq = true),
+        BridgeStan.param_constrain(
+            model2,
+            a;
+            include_tp = true,
+            include_gq = true,
+            rng = rng,
+        ),
     )
+
+    # reproducibility
+    @test isapprox(
+        BridgeStan.param_constrain(
+            model2,
+            a;
+            include_gq = true,
+            rng = StanRNG(model2, 45678),
+        ),
+        BridgeStan.param_constrain(
+            model2,
+            a;
+            include_gq = true,
+            rng = StanRNG(model2, 45678),
+        ),
+    )
+
+    # no seed or rng provided
+    @test_throws ArgumentError BridgeStan.param_constrain(model2, a; include_gq = true)
 
     # exception handling
     model3 = load_test_model("throw_tp", false)
     y = rand(1)
     BridgeStan.param_constrain(model3, y)
-    @test_throws ErrorException BridgeStan.param_constrain(model3, y; include_tp = true)
+    @test_throw_string "find this text: tpfails" BridgeStan.param_constrain(
+        model3,
+        y;
+        include_tp = true,
+    )
 
     model4 = load_test_model("throw_gq", false)
+    rng_model4 = StanRNG(model4, 1234)
     BridgeStan.param_constrain(model4, y)
-    @test_throws ErrorException BridgeStan.param_constrain(model4, y; include_gq = true)
+    @test_throw_string "find this text: gqfails" BridgeStan.param_constrain(
+        model4,
+        y;
+        include_gq = true,
+        rng = rng_model4,
+    )
 end
 
 @testset "param_unconstrain" begin
@@ -249,7 +297,7 @@ end
 
     model2 = load_test_model("throw_lp", false)
     y2 = rand(1)
-    @test_throws ErrorException BridgeStan.log_density(model2, y2)
+    @test_throw_string "find this text: lpfails" BridgeStan.log_density(model2, y2)
 end
 
 
@@ -462,8 +510,6 @@ end
 
 
 @testset "threaded model: multi" begin
-    # Multivariate Gaussian
-    # make test_models/multi/multi_model.so
 
     function gaussian(x)
         return -0.5 * x' * x
@@ -480,8 +526,8 @@ end
     ld = Vector{Bool}(undef, R)
     g = Vector{Bool}(undef, R)
 
-    @sync for it = 1:nt
-        Threads.@spawn for r = it:nt:R
+    @Threads.threads for it = 1:nt
+        for r = it:nt:R
             x = randn(BridgeStan.param_num(model))
             (lp, grad) = BridgeStan.log_density_gradient(model, x)
 
@@ -492,6 +538,41 @@ end
 
     @test all(ld)
     @test all(g)
+end
+
+
+@testset "threaded model: full" begin
+
+    model = load_test_model("full", false)
+    nt = Threads.nthreads()
+    seeds = rand(UInt32, nt)
+
+    x = [0.5] # bernoulli parameter
+
+    R = 1000
+    out_size = BridgeStan.param_num(model;include_tp=false, include_gq=true)
+
+    # to test the thread safety of our RNGs, we do two runs
+    # the first we do in parallel
+    gq1 = zeros(Float64, out_size, R)
+    @Threads.threads for it = 1:nt
+        rng = StanRNG(model,seeds[it]) # RNG is created per-thread
+        for r = it:nt:R
+            gq1[:, r] = BridgeStan.param_constrain(model, x; include_gq=true, rng=rng)
+        end
+    end
+
+    # the second we do sequentially
+    gq2 = zeros(Float64, out_size, R)
+    for it = 1:nt
+        rng = StanRNG(model,seeds[it])
+        for r = it:nt:R
+            gq2[:, r] = BridgeStan.param_constrain(model, x; include_gq=true, rng=rng)
+        end
+    end
+
+    # these should be the same if the param_constrain is thread safe
+    @test gq1 == gq2
 end
 
 
@@ -570,4 +651,20 @@ end
     using LinearAlgebra
     @test isapprox(-Matrix(1.0I, D, D), hess)
 
+end
+
+@testset "printing" begin
+    m = load_test_model("print", false)
+    theta = 0.2
+    function f()
+        println("Hello from Julia")
+        BridgeStan.log_density(m, [theta])
+    end
+
+    out = @capture_out f()
+
+    lines = split(out, "\n")
+    @test lines[1] == "Hello from Julia"
+    @test lines[2] == "Hi from Stan!"
+    @test lines[3] == "theta = $theta"
 end

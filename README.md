@@ -1,5 +1,7 @@
 # BridgeStan
 
+[![DOCS](https://img.shields.io/badge/docs-latest-blue)](https://roualdes.github.io/bridgestan/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7760173.svg)](https://doi.org/10.5281/zenodo.7760173) [![CI](https://github.com/roualdes/bridgestan/actions/workflows/main.yaml/badge.svg)](https://github.com/roualdes/bridgestan/actions/workflows/main.yaml)
+
 BridgeStan provides efficient in-memory access through Python, Julia,
 and R to the methods of a [Stan](https://mc-stan.org) model, including
 log densities, gradients, Hessians, and constraining and unconstraining
@@ -10,7 +12,7 @@ Stan is a probabilistic programming language for coding statistical
 models.  For an introduction to what can be coded in Stan, see the
 [*Stan User's Guide*](https://mc-stan.org/docs/stan-users-guide/index.html).
 
-BridgeStan is currently shipping with Stan version 2.31.0
+BridgeStan is currently shipping with Stan version 2.32.1
 
 Documentation is available at https://roualdes.github.io/bridgestan/
 
@@ -37,7 +39,7 @@ git clone --recurse-submodules https://github.com/roualdes/bridgestan.git
 ```
 
 For a full guide on installing, configuring, and using BridgeStan, consult the
-[documentation](https://roualdes.github.io/bridgestan/getting-started.html)
+[documentation](https://roualdes.github.io/bridgestan/latest/getting-started.html)
 
 ## Using BridgeStan
 
@@ -60,9 +62,9 @@ to download the appropriate Stan compiler for your platform into
 This repository includes examples of calling Stan through BridgeStan
 in Python, Julia, R, and C.
 
-* From Python: [`example.py`](julia/example.py)
+* From Python: [`example.py`](python/example.py)
 
-* From Julia: [`example.jl`](python/example.jl)
+* From Julia: [`example.jl`](julia/example.jl)
 
 * From R: [`example.r`](R/example.R)
 
