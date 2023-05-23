@@ -92,22 +92,25 @@ language (e.g., R) was compiled with a different compiler, something
 no prior interface which exposed Stan's log density calculations could
 allow.
 
-Other software in the Stan ecosystem offer some overlapping features
-with `BridgeStan`.  For instance, `rstan` offers functions `log_prob`
+Other software in the Stan ecosystem provides some overlapping features
+with `BridgeStan`.  For instance, `rstan` [@rstan] offers functions `log_prob`
 and `grad_log_prob`, which provide access to the log joint density and
-its gradient.  Similarly, `httpstan` offers `log_prob` and
+its gradient.  Similarly, `httpstan` [@httpstan] offers `log_prob` and
 `log_prob_grad`.  Such cases of similar functionality are
 unfortunately limited.  As of 2023-05-19, `rstan` via CRAN is still on
-Stan version 2.21.0 and the development version of `rstan`, which is
-not hosted on CRAN, is on Stan version 2.26.1, while the latest
-version of Stan at 2.32.2.  Further, `rstan` is limited to the host
-language R.  On the other hand, `httpstan` is a Python package which
-offers a REST API for access to the methods of a Stan model.  The REST
-API offers access to the methods of a Stan model to other languages
-than just Python, but by design can not take advantage of direct
-memory access of the host language.  `BridgeStan` remedies both of
-these shortcommings by providing a thin shim between any host language
-with a foreign function interface to C and the C++ of Stan.
+Stan version 2.21.0 (released 2019-10-18) and the development version of
+`rstan`, which is not hosted on CRAN, is on Stan version 2.26.1
+(released 2021-02-17), while the latest version of Stan at 2.32.2.
+Further, `rstan` is limited to the host language R.
+On the other hand, `httpstan` is a Python package which
+offers a REST API, primarily targetting the Stan algorithms,
+which allows some limited access to the methods of a Stan model.
+The REST API may be used by languages other than Python, but by design
+cannot take advantage of direct memory access of the host language.
+Additionally, `httpstan` is not natively supported on Windows operating systems.
+`BridgeStan` addresses these issues by providing a portable and easy to maintain
+shim between any host language with a foreign function interface to C
+and the core C++ of Stan.
 
 Existing tools with similar automatic differentiation functionality
 include `JAX` [@Bradbury:2018] and `Turing.jl` via the `JuliaAD`
@@ -119,7 +122,7 @@ tuned for CPU performance, `BridgeStan` is more efficient than its
 competitors in implementing differentiable log densities on CPUs
 [@Carpenter:2015; @Radul:2020; @Tarek:2020].  Like the immutable Stan
 models they interface, `BridgeStan` functions are thread safe for
-parallel applications. They also admit all of the internal
+parallel applications. They also support all of the internal
 parallelization of Stan models, such as internal parallel map
 functions and GPU-enabled matrix operations.
 
