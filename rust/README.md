@@ -11,7 +11,7 @@ or Python bindings.
 ## Usage:
 
 ```rust
-use std::ffi::{OsStr, CString};
+use std::ffi::CString;
 use std::path::Path;
 use bridgestan::{BridgeStanError, Model, open_library};
 

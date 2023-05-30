@@ -70,6 +70,8 @@ in Python, Julia, R, and C.
 
 * From C: [`example.c`](c-example/example.c)
 
+* From Rust: [`example.rs`](rust/examples/example.c)
+
 Examples of other functionality can be found in the `test` folder for each interface.
 
 ## Acknowledgements
@@ -81,3 +83,6 @@ API, which in turn was derived from
 
 Thanks to Sebastian Weber (GitHub [@wds15](https://github.com/wds15))
 for enabling multi-threaded calls from Julia to a single Stan model instance.
+
+Thanks to Adrian Seyboldt (GitHub [@aseyboldt](https://github.com/aseyboldt))
+for providing the Rust wrapper.
