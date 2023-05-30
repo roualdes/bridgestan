@@ -90,7 +90,7 @@ class bs_model {
    * specified unconstrained parameter array.
    *
    * @param[in] theta parameters to unconstrain
-   * @param[in,out] theta_unc unconstrained parameters
+   * @param[out] theta_unc unconstrained parameters
    */
   void param_unconstrain(const double* theta, double* theta_unc) const;
 
@@ -100,7 +100,7 @@ class bs_model {
    * CmdStan Reference Manual for details of the JSON schema.
    *
    * @param[in] json JSON string representing parameters
-   * @param[in,out] theta_unc unconstrained parameters generated
+   * @param[out] theta_unc unconstrained parameters generated
    */
   void param_unconstrain_json(const char* json, double* theta_unc) const;
 
@@ -112,7 +112,7 @@ class bs_model {
    * @param[in] include_tp `true` to include transformed parameters
    * @param[in] include_gq `true` to include generated quantities
    * @param[in] theta_unc unconstrained parameters to constrain
-   * @param[in,out] theta constrained parameters generated
+   * @param[out] theta constrained parameters generated
    */
   void param_constrain(bool include_tp, bool include_gq,
                        const double* theta_unc, double* theta,
@@ -128,7 +128,7 @@ class bs_model {
    * @param[in] jacobian `true` to include Jacobian adjustment for
    * constrained parameter transforms
    * @param[in] theta_unc unconstrained parameters
-   * @param[in,out] val log density produced
+   * @param[out] val log density produced
    */
   void log_density(bool propto, bool jacobian, const double* theta_unc,
                    double* val) const;
@@ -144,8 +144,8 @@ class bs_model {
    * @param[in] jacobian `true` to include Jacobian adjustment for
    * constrained parameter transforms
    * @param[in] theta_unc unconstrained parameters
-   * @param[in,out] val log density produced
-   * @param[in,out] grad gradient produced
+   * @param[out] val log density produced
+   * @param[out] grad gradient produced
    */
   void log_density_gradient(bool propto, bool jacobian, const double* theta_unc,
                             double* val, double* grad) const;
@@ -162,12 +162,36 @@ class bs_model {
    * @param[in] jacobian `true` to include Jacobian adjustment for
    * constrained parameter transforms
    * @param[in] theta_unc unconstrained parameters
-   * @param[in,out] val log density produced
-   * @param[in,out] grad gradient produced
-   * @param[in,out] hess Hessian produced
+   * @param[out] val log density produced
+   * @param[out] grad gradient produced
+   * @param[out] hess Hessian produced
    */
   void log_density_hessian(bool propto, bool jacobian, const double* theta_unc,
                            double* val, double* grad, double* hessian) const;
+
+  /**
+   * Calculate the log density and the product of the Hessian with the specified
+   * vector for the specified unconstrain parameters and write it into the
+   * specified value pointer and Hessian-vector product pointer, dropping
+   * constants it `propto` is `true` and including the Jacobian adjustment if
+   * `jacobian` is `true`.
+   *
+   * @note If `BRIDGESTAN_AD_HESSIAN` is not defined, the complexity of this
+   * function goes from O(N^2) to O(N^3), and the accuracy of the result is
+   * reduced.
+   *
+   * @param[in] propto `true` to drop constant terms
+   * @param[in] jacobian `true` to include Jacobian adjustment for
+   * constrained parameter transforms
+   * @param[in] theta_unc unconstrained parameters
+   * @param[in] vector vector to multiply Hessian by
+   * @param[out] val log density produced
+   * @param[out] hvp Hessian-vector product produced
+   */
+  void log_density_hessian_vector_product(bool propto, bool jacobian,
+                                          const double* theta_unc,
+                                          const double* vector, double* val,
+                                          double* hvp) const;
 
   /**
    * Returns a lambda which calls the correct version of log_prob

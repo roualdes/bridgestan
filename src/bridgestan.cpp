@@ -205,6 +205,34 @@ int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
   return -1;
 }
 
+int bs_log_density_hessian_vector_product(const bs_model* m, bool propto,
+                                          bool jacobian,
+                                          const double* theta_unc,
+                                          const double* v, double* val,
+                                          double* Hvp, char** error_msg) {
+  try {
+    m->log_density_hessian_vector_product(propto, jacobian, theta_unc, v, val,
+                                          Hvp);
+    return 0;
+  } catch (const std::exception& e) {
+    if (error_msg) {
+      std::stringstream error;
+      error << "log_density_hessian_vector_product() failed with exception: "
+            << e.what() << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
+  } catch (...) {
+    if (error_msg) {
+      std::stringstream error;
+      error << "log_density_hessian_vector_product() failed with unknown "
+               "exception"
+            << std::endl;
+      *error_msg = strdup(error.str().c_str());
+    }
+  }
+  return -1;
+}
+
 bs_rng* bs_rng_construct(unsigned int seed, char** error_msg) {
   try {
     return new bs_rng(seed);
