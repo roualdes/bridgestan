@@ -62,7 +62,7 @@ class StanModel:
             model from C++.
         """
         validate_readable(model_lib)
-        if  model_data is not None and model_data.endswith(".json"):
+        if model_data is not None and model_data.endswith(".json"):
             validate_readable(model_data)
             with open(model_data, "r") as f:
                 model_data = f.read()
@@ -194,6 +194,19 @@ class StanModel:
             double_array,
             ctypes.POINTER(ctypes.c_double),
             double_array,
+            double_array,
+            star_star_char,
+        ]
+
+        self._log_density_hvp = self.stanlib.bs_log_density_hessian_vector_product
+        self._log_density_hvp.restype = ctypes.c_int
+        self._log_density_hvp.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_int,
+            ctypes.c_int,
+            double_array,
+            double_array,
+            ctypes.POINTER(ctypes.c_double),
             double_array,
             star_star_char,
         ]
@@ -605,6 +618,47 @@ class StanModel:
             raise self._handle_error(err.contents, "log_density_hessian")
         out_hess = out_hess.reshape(dims, dims)
         return lp.contents.value, out_grad, out_hess
+
+    def log_density_hessian_vector_product(
+        self,
+        theta_unc: FloatArray,
+        v: FloatArray,
+        *,
+        propto: bool = True,
+        jacobian: bool = True,
+        out: Optional[FloatArray] = None,
+    ) -> Tuple[float, FloatArray]:
+        """
+        Return a tuple of the log density and the product of the Hessian
+        with the specified vector.
+
+        :param theta_unc: Unconstrained parameter array.
+        :param v: Vector to multiply by the Hessian.
+        :param propto: ``True`` if constant terms should be dropped from the log density.
+        :param jacobian: ``True`` if change-of-variables terms for
+            constrained parameters should be included in the log density.
+        :param out: A location into which the product is stored.  If
+            provided, it must have shape `(D, )` where ``D`` is the number
+            of parameters.  If not provided, a freshly allocated array
+            is returned.
+        :return: A tuple consisting of the log density and the product.
+        :raises ValueError: If ``out`` is specified and is not the same
+            shape as the product.
+        """
+        dims = self.param_unc_num()
+        if out is None:
+            out = np.zeros(shape=dims)
+        elif out.size != dims:
+            raise ValueError(f"out size = {out.size} != params size = {dims}")
+        lp = ctypes.pointer(ctypes.c_double())
+        err = ctypes.pointer(ctypes.c_char_p())
+        rc = self._log_density_hvp(
+            self.model, int(propto), int(jacobian), theta_unc, v, lp, out, err
+        )
+        if rc:
+            raise self._handle_error(err.contents, "log_density_hessian_vector_product")
+
+        return lp.contents.value, out
 
     def _handle_error(self, err: ctypes.c_char_p, method: str) -> Exception:
         """
