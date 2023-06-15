@@ -41,4 +41,4 @@ An example program is provided alongside the Rust crate in ``examples/example.rs
 API Reference
 -------------
 
-See docs.rs for the full API reference:
+See docs.rs for the full API reference: `<https://docs.rs/bridgestan>`__
