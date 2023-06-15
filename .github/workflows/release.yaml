@@ -112,8 +112,11 @@ jobs:
 
       - name: Publish Rust crate
         if: ${{ !inputs.dry_run }}
-        run: cargo publish --token ${CRATES_TOKEN}
+        run: |
+          cd rust/
+          cargo publish --token ${CRATES_TOKEN}
         env:
+          # clang is necessary unless we want to do --no-verify
           LIBCLANG_PATH: ${{ runner.temp }}/llvm/lib
           LLVM_CONFIG_PATH: ${{ runner.temp }}/llvm/bin/llvm-config
           CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}

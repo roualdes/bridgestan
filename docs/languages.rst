@@ -12,6 +12,7 @@ written in C.
     languages/python
     languages/julia
     languages/r
+    languages/rust
     languages/c-api
 
 
