@@ -62,7 +62,7 @@ class StanModel:
             model from C++.
         """
         validate_readable(model_lib)
-        if  model_data is not None and model_data.endswith(".json"):
+        if model_data is not None and model_data.endswith(".json"):
             validate_readable(model_data)
             with open(model_data, "r") as f:
                 model_data = f.read()

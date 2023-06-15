@@ -6,7 +6,6 @@ __all__ = ["StanModel", "set_bridgestan_path", "compile_model"]
 
 import platform as _plt
 
-
 if _plt.system() == "Windows":
 
     def _windows_path_setup():
@@ -14,10 +13,13 @@ if _plt.system() == "Windows":
         import os
         import subprocess
         import warnings
+
         from .compile import get_bridgestan_path
 
         try:
-            out = subprocess.run(["where.exe", "tbb.dll"], check=True, capture_output=True)
+            out = subprocess.run(
+                ["where.exe", "tbb.dll"], check=True, capture_output=True
+            )
             tbb_path = os.path.dirname(out.stdout.decode().splitlines()[0])
             os.add_dll_directory(tbb_path)
         except:
@@ -29,7 +31,14 @@ if _plt.system() == "Windows":
 
         try:
             out = subprocess.run(
-                ["where.exe", "libwinpthread-1.dll", "libgcc_s_seh-1.dll", "libstdc++-6.dll"], check=True, capture_output=True
+                [
+                    "where.exe",
+                    "libwinpthread-1.dll",
+                    "libgcc_s_seh-1.dll",
+                    "libstdc++-6.dll",
+                ],
+                check=True,
+                capture_output=True,
             )
             mingw_dir = os.path.dirname(out.stdout.decode().splitlines()[0])
             os.add_dll_directory(mingw_dir)

@@ -646,7 +646,8 @@ def test_fr_gaussian():
 
 
 def test_stdout_capture():
-    import contextlib, io
+    import contextlib
+    import io
 
     theta = 0.1
 
@@ -674,7 +675,8 @@ def test_stdout_capture():
     assert lines[2] == f"theta = {theta}"
 
     # test re-entrancy
-    import ctypes, threading
+    import ctypes
+    import threading
 
     # define a new, sillier, callback which lets us test thread safety
     x = 0
