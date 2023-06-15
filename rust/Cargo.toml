@@ -17,3 +17,4 @@ bindgen = "0.65.1"
 
 [dev-dependencies]
 approx = "0.5.1"
+rand = "0.8.5"

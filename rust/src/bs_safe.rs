@@ -472,6 +472,60 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         }
     }
 
+    /// Compute the log of the prior times likelihood density the product of
+    /// the Hessian and specified vector.
+    ///
+    /// Drop jacobian determinant terms if `jacobian == false` and
+    /// drop constant terms of the density if `propto == true`.
+    /// The Hessian-vector product is stored in `out`.
+    pub fn log_density_hessian_vector_product(
+        &self,
+        theta_unc: &[f64],
+        v: &[f64],
+        propto: bool,
+        jacobian: bool,
+        out: &mut [f64],
+    ) -> Result<f64> {
+        let n = self.param_unc_num();
+        assert_eq!(
+            theta_unc.len(),
+            n,
+            "Argument 'theta_unc' must be the same size as the number of parameters!"
+        );
+        assert_eq!(
+            v.len(),
+            n,
+            "Argument 'v' must be the same size as the number of parameters!"
+        );
+        assert_eq!(
+            out.len(),
+            n,
+            "Argument 'out' must be the same size as the number of parameters!"
+        );
+
+        let mut val = 0.0;
+
+        let mut err = ErrorMsg::new(self.lib.borrow());
+        let rc = unsafe {
+            self.ffi_lib().bs_log_density_hessian_vector_product(
+                self.model.as_ptr(),
+                propto,
+                jacobian,
+                theta_unc.as_ptr(),
+                v.as_ptr(),
+                &mut val,
+                out.as_mut_ptr(),
+                err.as_ptr(),
+            )
+        };
+
+        if rc == 0 {
+            Ok(val)
+        } else {
+            Err(BridgeStanError::EvaluationFailed(err.message()))
+        }
+    }
+
     /// Map a point in unconstrained parameter space to the constrained space
     ///
     /// # Arguments
