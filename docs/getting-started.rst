@@ -137,7 +137,9 @@ whether Hessians are computed with nested autodiff or with finite differences. S
 do not in the same program.
 
 Autodiff Hessians may be faster than finite differences depending on your model, and will
-generally be more numerically stable.
+generally be more numerically stable. Hessian-vector products should be faster and more
+accurate with autodiff Hessians as well, since this reduces the complexity of the calculation
+from :math:`O(n^3)` to :math:`O(n^2)`.
 
 Using Custom Stan Versions
 __________________________
