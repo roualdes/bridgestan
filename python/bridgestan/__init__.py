@@ -6,7 +6,6 @@ __all__ = ["StanModel", "set_bridgestan_path", "compile_model"]
 
 import platform as _plt
 
-
 if _plt.system() == "Windows":
 
     def _windows_path_setup():
@@ -14,6 +13,7 @@ if _plt.system() == "Windows":
         import os
         import subprocess
         import warnings
+
         from .compile import get_bridgestan_path
 
         try:
