@@ -225,7 +225,6 @@ StanModel <- R6::R6Class("StanModel",
     },
     #' @description
     #' Return the log density of the specified unconstrained parameters.
-    #' See also `StanModel$param_unconstrain()`, the inverse of this function.
     #' @param theta_unc The vector of unconstrained parameters.
     #' @param propto If `TRUE`, drop terms which do not depend on the parameters.
     #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
@@ -246,7 +245,6 @@ StanModel <- R6::R6Class("StanModel",
     },
     #' @description
     #' Return the log density and gradient of the specified unconstrained parameters.
-    #' See also `StanModel$param_unconstrain()`, the inverse of this function.
     #' @param theta_unc The vector of unconstrained parameters.
     #' @param propto If `TRUE`, drop terms which do not depend on the parameters.
     #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
@@ -268,7 +266,6 @@ StanModel <- R6::R6Class("StanModel",
     },
     #' @description
     #' Return the log density, gradient, and Hessian of the specified unconstrained parameters.
-    #' See also `StanModel$param_unconstrain()`, the inverse of this function.
     #' @param theta_unc The vector of unconstrained parameters.
     #' @param propto If `TRUE`, drop terms which do not depend on the parameters.
     #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
@@ -287,6 +284,31 @@ StanModel <- R6::R6Class("StanModel",
         stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "log_density_hessian"))
       }
       list(val = vars$val, gradient = vars$gradient, hessian = matrix(vars$hess, nrow = dims, byrow = TRUE))
+    },
+    #' @description
+    #' Return the log density and the product of the Hessian
+    #' with the specified vector.
+    #' @param theta_unc The vector of unconstrained parameters.
+    #' @param v The vector to multiply the Hessian by.
+    #' @param propto If `TRUE`, drop terms which do not depend on the parameters.
+    #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
+    #' @return List containing entries `val` (the log density) and `Hvp` (the hessian-vector product).
+    log_density_hessian_vector_product = function(theta_unc, v, propto = TRUE, jacobian = TRUE){
+      dims <- self$param_unc_num()
+      vars <- .C("bs_log_density_hessian_vector_product_R",
+        as.raw(private$model), as.logical(propto), as.logical(jacobian),
+        as.double(theta_unc),
+        as.double(v),
+        val = double(1), Hvp = double(dims),
+        return_code = as.integer(0),
+        err_msg = as.character(""),
+        err_ptr = raw(8),
+        PACKAGE = private$lib_name
+      )
+      if (vars$return_code) {
+        stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "log_density_hessian_vector_product"))
+      }
+      list(val = vars$val, Hvp = vars$Hvp)
     }
   ),
   private = list(

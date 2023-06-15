@@ -32,6 +32,7 @@ as well as constraining and unconstraining transforms.
 \item \href{#method-StanModel-log_density}{\code{StanModel$log_density()}}
 \item \href{#method-StanModel-log_density_gradient}{\code{StanModel$log_density_gradient()}}
 \item \href{#method-StanModel-log_density_hessian}{\code{StanModel$log_density_hessian()}}
+\item \href{#method-StanModel-log_density_hessian_vector_product}{\code{StanModel$log_density_hessian_vector_product()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -48,7 +49,7 @@ Create a Stan Model instance.
 \describe{
 \item{\code{lib}}{A path to a compiled BridgeStan Shared Object file.}
 
-\item{\code{data}}{Either a JSON string literal or a path to a data file in JSON format ending in ".json".}
+\item{\code{data}}{Either a JSON string literal,a path to a data file in JSON format ending in ".json", or the empty string.}
 
 \item{\code{seed}}{Seed for the RNG used in constructing the model.}
 }
@@ -280,7 +281,6 @@ The unconstrained parameters of the model.
 \if{latex}{\out{\hypertarget{method-StanModel-log_density}{}}}
 \subsection{Method \code{log_density()}}{
 Return the log density of the specified unconstrained parameters.
-See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density(theta_unc, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
 }
@@ -305,7 +305,6 @@ The log density.
 \if{latex}{\out{\hypertarget{method-StanModel-log_density_gradient}{}}}
 \subsection{Method \code{log_density_gradient()}}{
 Return the log density and gradient of the specified unconstrained parameters.
-See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density_gradient(theta_unc, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
 }
@@ -330,7 +329,6 @@ List containing entries \code{val} (the log density) and \code{gradient} (the gr
 \if{latex}{\out{\hypertarget{method-StanModel-log_density_hessian}{}}}
 \subsection{Method \code{log_density_hessian()}}{
 Return the log density, gradient, and Hessian of the specified unconstrained parameters.
-See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density_hessian(theta_unc, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
 }
@@ -348,6 +346,38 @@ See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 }
 \subsection{Returns}{
 List containing entries \code{val} (the log density), \code{gradient} (the gradient), and \code{hessian} (the Hessian).
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-StanModel-log_density_hessian_vector_product"></a>}}
+\if{latex}{\out{\hypertarget{method-StanModel-log_density_hessian_vector_product}{}}}
+\subsection{Method \code{log_density_hessian_vector_product()}}{
+Return the log density and the product of the Hessian
+with the specified vector.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density_hessian_vector_product(
+  theta_unc,
+  v,
+  propto = TRUE,
+  jacobian = TRUE
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{theta_unc}}{The vector of unconstrained parameters.}
+
+\item{\code{v}}{The vector to multiply the Hessian by.}
+
+\item{\code{propto}}{If \code{TRUE}, drop terms which do not depend on the parameters.}
+
+\item{\code{jacobian}}{If \code{TRUE}, include change of variables terms for constrained parameters.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+List containing entries \code{val} (the log density) and \code{Hvp} (the hessian-vector product).
 }
 }
 }

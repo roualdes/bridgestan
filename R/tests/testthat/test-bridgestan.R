@@ -42,6 +42,11 @@ test_that("simple_model Hessian is -I",{
     expect_equal(-diag(5), simple$log_density_hessian(x)$hessian)
 })
 
+test_that("simple_model Hvp returns -v",{
+    x <- runif(5)
+    v <- runif(5)
+    expect_equal(-v, simple$log_density_hessian_vector_product(x, v)$Hvp)
+})
 
 bernoulli <- load_model("bernoulli")
 
