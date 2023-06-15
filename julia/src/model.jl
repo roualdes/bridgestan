@@ -671,6 +671,92 @@ function log_density_hessian(
 end
 
 """
+    log_density_hessian_vector_product!(sm, q, v, out; propto=true, jacobian=true)
+
+Returns log density and the product of the Hessian of the log density with the vector `v`
+at the specified unconstrained parameters.
+
+This calculation drops constant terms that do not depend on the parameters if `propto` is `true`
+and includes change of variables terms for constrained parameters if `jacobian` is `true`.
+
+The product is stored in the vector `out` and a reference is returned. See
+`log_density_hessian_vector_product` for a version which allocates fresh memory.
+"""
+function log_density_hessian_vector_product!(
+    sm::StanModel,
+    q::Vector{Float64},
+    v::Vector{Float64},
+    out::Vector{Float64};
+    propto = true,
+    jacobian = true,
+)
+    dims = param_unc_num(sm)
+    if length(out) != dims
+        throw(
+            DimensionMismatch(
+                "out must be same size as number of unconstrained parameters",
+            ),
+        )
+    end
+    lp = Ref(0.0)
+    err = Ref{Cstring}()
+    rc = ccall(
+        Libc.Libdl.dlsym(sm.lib, "bs_log_density_hessian_vector_product"),
+        Cint,
+        (
+            Ptr{StanModelStruct},
+            Cint,
+            Cint,
+            Ref{Cdouble},
+            Ref{Cdouble},
+            Ref{Cdouble},
+            Ref{Cdouble},
+            Ref{Cstring},
+        ),
+        sm.stanmodel,
+        propto,
+        jacobian,
+        q,
+        v,
+        lp,
+        out,
+        err,
+    )
+    if rc != 0
+        error(handle_error(sm.lib, err, "log_density_hessian_vector_product"))
+    end
+    (lp[], out)
+end
+
+"""
+    log_density_hessian_vector_product(sm, q, v; propto=true, jacobian=true)
+
+Returns log density and the product of the Hessian of the log density with the vector `v`
+at the specified unconstrained parameters.
+
+This calculation drops constant terms that do not depend on the parameters if `propto` is `true`
+and includes change of variables terms for constrained parameters if `jacobian` is `true`.
+
+This allocates new memory for the output each call. See
+`log_density_hessian_vector_product!` for a version which allows re-using existing memory.
+"""
+function log_density_hessian_vector_product(
+    sm::StanModel,
+    q::Vector{Float64},
+    v::Vector{Float64};
+    propto = true,
+    jacobian = true,
+)
+    out = zeros(param_unc_num(sm))
+    log_density_hessian_vector_product!(sm, q, v, out; propto = propto, jacobian = jacobian)
+end
+
+"""
+    log_density_hessian_vector_product(sm, q, v; propto=true, jacobian=true)
+"""
+
+
+"""
     handle_error(lib::Ptr{Nothing}, err::Ref{Cstring}, method::String)
 
 Retrieves the error message allocated in C++ and frees it before returning a copy.
