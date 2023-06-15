@@ -143,14 +143,14 @@ pub struct Model<T: Borrow<StanLibrary>> {
 unsafe impl<T: Sync + Borrow<StanLibrary>> Sync for Model<T> {}
 unsafe impl<T: Send + Borrow<StanLibrary>> Send for Model<T> {}
 
-/// A random number generator for Stan
+/// A random number generator for Stan models.
+/// This is only used in the `param_contrain` method
+/// of the model when requesting values from the `generated quantities` block.
+/// Different threads should use different instances.
 pub struct Rng<T: Borrow<StanLibrary>> {
     rng: NonNull<ffi::bs_rng>,
     lib: T,
 }
-
-unsafe impl<T: Sync + Borrow<StanLibrary>> Sync for Rng<T> {}
-unsafe impl<T: Send + Borrow<StanLibrary>> Send for Rng<T> {}
 
 impl<T: Borrow<StanLibrary>> Drop for Rng<T> {
     fn drop(&mut self) {
@@ -264,6 +264,9 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         self.lib.borrow()
     }
 
+    /// Create a new `Rng` random number generator from the library underlying this model.
+    /// This can be used in `param_constrain` when values from the `generated quantities`
+    /// block are desired.
     pub fn new_rng(&self, seed: u32) -> Result<Rng<&StanLibrary>> {
         Rng::new(self.ref_library(), seed)
     }
