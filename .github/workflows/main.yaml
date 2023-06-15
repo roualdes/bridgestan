@@ -129,8 +129,6 @@ jobs:
         include:
           - julia-version: "1.6"
             os: ubuntu-latest
-          - julia-version: "nightly"
-            os: macos-latest
       fail-fast: false
     steps:
       - name: Check out github
