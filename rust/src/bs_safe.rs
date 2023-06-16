@@ -157,7 +157,6 @@ pub struct Rng<T: Borrow<StanLibrary>> {
 unsafe impl<T: Sync + Borrow<StanLibrary>> Sync for Rng<T> {}
 unsafe impl<T: Send + Borrow<StanLibrary>> Send for Rng<T> {}
 
-
 impl<T: Borrow<StanLibrary>> Drop for Rng<T> {
     fn drop(&mut self) {
         unsafe {
