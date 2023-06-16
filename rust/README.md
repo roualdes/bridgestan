@@ -2,9 +2,12 @@
 
 [*View the BridgeStan documentation on Github Pages*](https://roualdes.github.io/bridgestan/latest/languages/rust.html).
 
-This is a Rust wrapper for [BridgeStan](https://github.com/roualdes/bridgestan).
+This is a Rust wrapper for [BridgeStan](https://github.com/roualdes/bridgestan). It
+allows users to evaluate the log likelihood and related functions for Stan models
+natively from Rust.
 
-It relies on [`bindgen`](https://docs.rs/bindgen/) and [`libloading`](https://docs.rs/libloading/).
+Internally, it relies on [`bindgen`](https://docs.rs/bindgen/) and
+[`libloading`](https://docs.rs/libloading/).
 
 The Rust wrapper does not currently have any functionality to compile Stan models.
 Compiled shared libraries need to be built manually using `make` or with the Julia
