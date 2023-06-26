@@ -19,8 +19,8 @@ Downloading BridgeStan
 
 Installing BridgeStan is as simple as ensuring that the above requirements are installed and then downloading
 the source repository. All of the following ways of downloading BridgeStan will additionally download the
-`Stan <https://github.com/stan-dev/stan>`__ and `Stan Math <https://github.com/stan-dev/math>`__ libraries as submodules,
-no additional dependencies are required to be installed separately for the C++ source code.
+`Stan <https://github.com/stan-dev/stan>`__ and `Stan Math <https://github.com/stan-dev/math>`__ libraries for you,
+and no additional dependencies are required to be installed separately for the C++ source code.
 
 As of version 1.0.2, the :doc:`Julia <languages/julia>` and
 :doc:`Python <languages/python>` interfaces will download
