@@ -16,7 +16,6 @@ This assumes you have followed the [Getting Started guide](../getting-started.rs
 to install BridgeStan's pre-requisites and downloaded a copy of the BridgeStan source code.
 
 
-
 ```R
 devtools::install_github("https://github.com/roualdes/bridgestan", subdir="R")
 ```
@@ -30,6 +29,10 @@ from the BridgeStan folder.
 
 Note that the R package depends on R 3+ and R6, and will install R6 if it is not
 already installed.
+
+```{note}
+Mac users have reported issues when using a copy of R installed from [conda-forge](https://conda-forge.org/). If you encounter an issue, you may need to use R from the official [R project website](https://www.r-project.org/) or a system package manager like `brew`.
+```
 
 ## Example Program
 
