@@ -142,7 +142,7 @@ do not in the same program.
 Autodiff Hessians may be faster than finite differences depending on your model, and will
 generally be more numerically stable.
 
-Using Custom Stan Versions
+Using Older Stan Versions
 __________________________
 
 If you wish to use BridgeStan for an older released version, all you need to do is
@@ -155,7 +155,12 @@ If you wish to use BridgeStan for an older released version, all you need to do 
 To return to the version of Stan currently used by BridgeStan, you can run ``make stan-update`` from the top level directory
 and remove ``STANC3_VERSION`` from your ``make/local`` file, before running ``make clean`` again.
 
+Using Pre-Existing Stan Installations
+_____________________________________
 
-If you wish to use BridgeStan with a custom fork or branch, the best thing to do is to check out that branch in the ``stan`` submodule,
-or, if the fork is of stan-math, in ``stan/libs/stan_math``. The easiest way to use a custom stanc3 is to place the built executable at
+If you wish to use BridgeStan with a pre-existing download of the Stan repository, or with
+a custom fork or branch, you can set the ``STAN`` (and, optionally, ``MATH``) variables in calls to ``make``,
+or more permanently by setting them in a ``make/local`` file as described above.
+
+The easiest way to use a custom stanc3 is to place the built executable at
 ``bin/stanc[.exe]``.
