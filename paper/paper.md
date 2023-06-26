@@ -59,14 +59,13 @@ optimization, and autodiff variational inference (ADVI).
 
 In the statistical software environment R, Stan is heavily relied upon for
 development of applied statistics packages. Using Google's
-[PageRank](https://en.wikipedia.org/wiki/PageRank) algorithm (see also the [archived technical
-report](https://web.archive.org/web/20110818093436/http://ilpubs.stanford.edu:8090/422/1/1999-66.pdf)) on the dependency
-graph [@de-Vries:2014] amongst the 19,159 R packages listed on the Comprehensive
-R Archive Network (CRAN) as of 2022-12-31, three R packages that exist solely to
-provide access to Stan rank quite well: `rstan` ranks at number 70, `rstantools`
-179, and `rstanarm` 502. Further, two Python interfaces to Stan, `pystan` and
-`cmdstanpy`, both rank in the top 600 packages by downloads on the Python
-Package Index (PyPI).
+[PageRank](https://www.sciencedirect.com/science/article/pii/S016975529800110X)
+algorithm on the dependency graph [@de-Vries:2014] amongst the 19,159 R packages
+listed on the Comprehensive R Archive Network (CRAN) as of 2022-12-31, three R
+packages that exist solely to provide access to Stan rank quite well: `rstan`
+ranks at number 70, `rstantools` 179, and `rstanarm` 502. Further, two Python
+interfaces to Stan, `pystan` and `cmdstanpy`, both rank in the top 600 packages
+by downloads on the Python Package Index (PyPI).
 
 C++ can be cumbersome for algorithm prototyping.  As such, developers have been
 requesting ways to access Stan models for algorithm development in Python, R,
