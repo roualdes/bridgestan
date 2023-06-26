@@ -165,6 +165,7 @@ StanModel <- R6::R6Class("StanModel",
         return_code = as.integer(0),
         err_msg = as.character(""),
         err_ptr = raw(8),
+        NAOK = TRUE,
         PACKAGE = private$lib_name
       )
 
@@ -196,6 +197,7 @@ StanModel <- R6::R6Class("StanModel",
         return_code = as.integer(0),
         err_msg = as.character(""),
         err_ptr = raw(8),
+        NAOK = TRUE,
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
@@ -237,6 +239,7 @@ StanModel <- R6::R6Class("StanModel",
         return_code = as.integer(0),
         err_msg = as.character(""),
         err_ptr = raw(8),
+        NAOK = TRUE,
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
@@ -259,6 +262,7 @@ StanModel <- R6::R6Class("StanModel",
         return_code = as.integer(0),
         err_msg = as.character(""),
         err_ptr = raw(8),
+        NAOK = TRUE,
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {
@@ -281,6 +285,7 @@ StanModel <- R6::R6Class("StanModel",
         return_code = as.integer(0),
         err_msg = as.character(""),
         err_ptr = raw(8),
+        NAOK = TRUE,
         PACKAGE = private$lib_name
       )
       if (vars$return_code) {

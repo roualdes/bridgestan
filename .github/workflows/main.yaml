@@ -124,14 +124,11 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         julia-version: ["1"]
         include:
           - julia-version: "1.6"
             os: ubuntu-latest
-          # bug in Julia 1.9: https://github.com/JuliaLang/julia/issues/49772
-          - julia-version: "1.8"
-            os: macos-latest
       fail-fast: false
     steps:
       - name: Check out github
@@ -228,3 +225,52 @@ jobs:
           Rscript -e 'devtools::test(reporter = c(\"summary\", \"fail\"))'
           Rscript -e 'install.packages(getwd(), repos=NULL, type=\"source\")'
           Rscript example.R
+
+  rust:
+    needs: [build]
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+      fail-fast: false
+    steps:
+      - name: Check out github
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Restore Stan
+        uses: actions/cache@v3
+        with:
+          path: ./stan/
+          key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
+
+      - name: Restore built models
+        uses: actions/cache@v3
+        id: test-models
+        with:
+          path: ./test_models/
+          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp', 'Makefile') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
+
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "15.0"
+          directory: ${{ runner.temp }}/llvm
+
+      - name: Set up TBB
+        if: matrix.os == 'windows-latest'
+        run: |
+          Add-Content $env:GITHUB_PATH "$(pwd)/stan/lib/stan_math/lib/tbb"
+
+      - name: Run rust tests
+        working-directory: ./rust
+        timeout-minutes: 60
+        env:
+          LIBCLANG_PATH: ${{ runner.temp }}/llvm/lib
+          LLVM_CONFIG_PATH: ${{ runner.temp }}/llvm/bin/llvm-config
+        run: |
+          cargo clippy
+          cargo fmt --check
+          cargo run --example=make_model
+          cargo test --verbose

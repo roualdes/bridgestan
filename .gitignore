@@ -9,6 +9,10 @@ c-example/example
 c-example/example_static
 *.exe
 
+# Rust
+rust/target/
+rust/Cargo.lock
+
 notes.org
 
 # Python

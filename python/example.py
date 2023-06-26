@@ -1,5 +1,6 @@
-import bridgestan as bs
 import numpy as np
+
+import bridgestan as bs
 
 bs.set_bridgestan_path("../")
 
