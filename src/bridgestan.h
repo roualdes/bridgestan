@@ -1,6 +1,8 @@
 #ifndef BRIDGESTAN_H
 #define BRIDGESTAN_H
 
+/// \file bridgestan.h
+
 #ifdef __cplusplus
 #include "model_rng.hpp"
 #include "callback_stream.hpp"
