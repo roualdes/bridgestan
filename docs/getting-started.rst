@@ -159,8 +159,9 @@ Using Pre-Existing Stan Installations
 _____________________________________
 
 If you wish to use BridgeStan with a pre-existing download of the Stan repository, or with
-a custom fork or branch, you can set the ``STAN`` (and, optionally, ``MATH``) variables in calls to ``make``,
-or more permanently by setting them in a ``make/local`` file as described above.
+a custom fork or branch, you can set the ``STAN`` (and, optionally, ``MATH``) variables to the
+path to your existing copy in calls to ``make``, or more permanently by setting them in a
+``make/local`` file as described above.
 
 The easiest way to use a custom stanc3 is to place the built executable at
 ``bin/stanc[.exe]``.
