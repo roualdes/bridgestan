@@ -31,11 +31,24 @@ test_that("simple_model has 5 unconstrained parameters", {
     expect_equal(simple$param_unc_num(), 5)
 })
 
-
 test_that("simple_model grad(x) is -x",{
     x <- runif(5)
     expect_equal(-x, simple$log_density_gradient(x)$gradient)
 })
+
+
+test_that("models can be passed NAN or INF", {
+    x <- runif(5)
+    x[1] <- NaN
+    x[2] <- Inf
+    x[3] <- -Inf
+    grad <- simple$log_density_gradient(x)$gradient
+    expect_equal(-x, grad)
+    expect_true(is.nan(grad[1]))
+    expect_true(is.infinite(grad[2]))
+    expect_true(is.infinite(grad[3]))
+})
+
 
 test_that("simple_model Hessian is -I",{
     x <- runif(5)
