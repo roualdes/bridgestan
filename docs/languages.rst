@@ -2,7 +2,7 @@
 Language Interfaces
 ===================
 
-BridgeStan currently has clients in three languages, a public C API
+BridgeStan currently has clients in four languages, a public C API
 which underlies all the clients, and an example of a standalone program
 written in C.
 
