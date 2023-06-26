@@ -42,10 +42,11 @@ BridgeStan to be in and running
 
 .. code-block:: shell
 
-    git clone --recurse-submodules https://github.com/roualdes/bridgestan.git
+    git clone --recurse-submodules --shallow-submodules --depth=1 https://github.com/roualdes/bridgestan.git
 
 If you clone without the ``--recurse-submodules`` argument, you can download the required
-submodules with ``make stan-update``.
+submodules with ``make stan-update``. The arguments ``--shallow-submodules`` and ``--depth=1`` are
+to reduce the size of the download, but are not required.
 
 
 Testing the Installation
