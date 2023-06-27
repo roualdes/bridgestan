@@ -319,8 +319,7 @@ _Returns_
 **Method** `log_density()`:
 
 Return the log density of the specified unconstrained
-parameters. See also `StanModel$param_unconstrain()`, the
-inverse of this function.
+parameters.
 
 _Usage_
 
@@ -348,8 +347,7 @@ _Returns_
 **Method** `log_density_gradient()`:
 
 Return the log density and gradient of the specified
-unconstrained parameters. See also
-`StanModel$param_unconstrain()`, the inverse of this function.
+unconstrained parameters.
 
 _Usage_
 
@@ -378,8 +376,7 @@ _Returns_
 **Method** `log_density_hessian()`:
 
 Return the log density, gradient, and Hessian of the specified
-unconstrained parameters. See also
-`StanModel$param_unconstrain()`, the inverse of this function.
+unconstrained parameters.
 
 _Usage_
 
