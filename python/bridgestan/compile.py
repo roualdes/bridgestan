@@ -3,9 +3,10 @@ import platform
 import subprocess
 from pathlib import Path
 from typing import List
+import warnings
 
 from .__version import __version__
-from .download import CURRENT_BRIDGESTAN, get_bridgestan_src
+from .download import CURRENT_BRIDGESTAN, HOME_BRIDGESTAN, get_bridgestan_src
 from .util import validate_readable
 
 
@@ -59,6 +60,12 @@ def get_bridgestan_path():
                 f"environment variable, downloading version {__version__} to {path}"
             )
             get_bridgestan_src()
+            num_files = len(list(HOME_BRIDGESTAN.iterdir()))
+            if num_files >= 5:
+                warnings.warn(
+                    f"Found {num_files} different versions of Bridgestan in {HOME_BRIDGESTAN}. "
+                    "Consider deleting old versions to save space."
+                )
             print("Done!")
 
     return path
