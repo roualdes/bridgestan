@@ -18,7 +18,9 @@ Downloading BridgeStan
 ----------------------
 
 Installing BridgeStan is as simple as ensuring that the above requirements are installed and then downloading
-the source repository.
+the source repository. All of the following ways of downloading BridgeStan will additionally download the
+`Stan <https://github.com/stan-dev/stan>`__ and `Stan Math <https://github.com/stan-dev/math>`__ libraries for you,
+and no additional dependencies are required to be installed separately for the C++ source code.
 
 As of version 1.0.2, the :doc:`Julia <languages/julia>` and
 :doc:`Python <languages/python>` interfaces will download
@@ -42,10 +44,11 @@ BridgeStan to be in and running
 
 .. code-block:: shell
 
-    git clone --recurse-submodules https://github.com/roualdes/bridgestan.git
+    git clone --recurse-submodules --shallow-submodules --depth=1 https://github.com/roualdes/bridgestan.git
 
 If you clone without the ``--recurse-submodules`` argument, you can download the required
-submodules with ``make stan-update``.
+submodules with ``make stan-update``. The arguments ``--shallow-submodules`` and ``--depth=1`` are
+to reduce the size of the download, but are not required.
 
 
 Testing the Installation
@@ -139,7 +142,7 @@ do not in the same program.
 Autodiff Hessians may be faster than finite differences depending on your model, and will
 generally be more numerically stable.
 
-Using Custom Stan Versions
+Using Older Stan Versions
 __________________________
 
 If you wish to use BridgeStan for an older released version, all you need to do is
@@ -152,7 +155,13 @@ If you wish to use BridgeStan for an older released version, all you need to do 
 To return to the version of Stan currently used by BridgeStan, you can run ``make stan-update`` from the top level directory
 and remove ``STANC3_VERSION`` from your ``make/local`` file, before running ``make clean`` again.
 
+Using Pre-Existing Stan Installations
+_____________________________________
 
-If you wish to use BridgeStan with a custom fork or branch, the best thing to do is to check out that branch in the ``stan`` submodule,
-or, if the fork is of stan-math, in ``stan/libs/stan_math``. The easiest way to use a custom stanc3 is to place the built executable at
+If you wish to use BridgeStan with a pre-existing download of the Stan repository, or with
+a custom fork or branch, you can set the ``STAN`` (and, optionally, ``MATH``) variables to the
+path to your existing copy in calls to ``make``, or more permanently by setting them in a
+``make/local`` file as described above.
+
+The easiest way to use a custom stanc3 is to place the built executable at
 ``bin/stanc[.exe]``.
