@@ -49,7 +49,7 @@ Create a Stan Model instance.
 \describe{
 \item{\code{lib}}{A path to a compiled BridgeStan Shared Object file.}
 
-\item{\code{data}}{Either a JSON string literal,a path to a data file in JSON format ending in ".json", or the empty string.}
+\item{\code{data}}{Either a JSON string literal, a path to a data file in JSON format ending in ".json", or the empty string.}
 
 \item{\code{seed}}{Seed for the RNG used in constructing the model.}
 }

@@ -10,7 +10,7 @@ StanModel <- R6::R6Class("StanModel",
     #' @description
     #' Create a Stan Model instance.
     #' @param lib A path to a compiled BridgeStan Shared Object file.
-    #' @param data Either a JSON string literal,a path to a data file in JSON format ending in ".json", or the empty string.
+    #' @param data Either a JSON string literal, a path to a data file in JSON format ending in ".json", or the empty string.
     #' @param seed Seed for the RNG used in constructing the model.
     #' @return A new StanModel.
     initialize = function(lib, data, seed) {
