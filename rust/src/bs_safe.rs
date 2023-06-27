@@ -515,11 +515,9 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// parameters of the Stan model after the parameters. If `include_gq` is
     /// set, we also include the generated quantities at the very end.
     ///
-    /// The length of the provided buffer `out` must have length
-    /// `self.param_num(include_tp, include_gq)`, this function panics
-    /// if that is not the case.
-    ///
-    /// A Stan random number generator has to be provided if `include_gp`.
+    /// *Panics* if the provided buffer has incorrect shape. The length of the `out` buffer
+    /// `self.param_num(include_tp, include_gq)`.
+    /// *Panics* if `include_gq` is set but no random number generator is provided.
     pub fn param_constrain<R: Borrow<StanLibrary>>(
         &self,
         theta_unc: &[f64],
