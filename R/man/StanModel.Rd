@@ -48,7 +48,7 @@ Create a Stan Model instance.
 \describe{
 \item{\code{lib}}{A path to a compiled BridgeStan Shared Object file.}
 
-\item{\code{data}}{Either a JSON string literal or a path to a data file in JSON format ending in ".json".}
+\item{\code{data}}{Either a JSON string literal, a path to a data file in JSON format ending in ".json", or the empty string.}
 
 \item{\code{seed}}{Seed for the RNG used in constructing the model.}
 }
@@ -280,7 +280,6 @@ The unconstrained parameters of the model.
 \if{latex}{\out{\hypertarget{method-StanModel-log_density}{}}}
 \subsection{Method \code{log_density()}}{
 Return the log density of the specified unconstrained parameters.
-See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density(theta_unc, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
 }
@@ -305,7 +304,6 @@ The log density.
 \if{latex}{\out{\hypertarget{method-StanModel-log_density_gradient}{}}}
 \subsection{Method \code{log_density_gradient()}}{
 Return the log density and gradient of the specified unconstrained parameters.
-See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density_gradient(theta_unc, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
 }
@@ -330,7 +328,6 @@ List containing entries \code{val} (the log density) and \code{gradient} (the gr
 \if{latex}{\out{\hypertarget{method-StanModel-log_density_hessian}{}}}
 \subsection{Method \code{log_density_hessian()}}{
 Return the log density, gradient, and Hessian of the specified unconstrained parameters.
-See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$log_density_hessian(theta_unc, propto = TRUE, jacobian = TRUE)}\if{html}{\out{</div>}}
 }
