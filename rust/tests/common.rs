@@ -12,7 +12,7 @@ pub fn model_dir() -> PathBuf {
         .join("test_models")
 }
 
-/// Load stan library and corresponding data if available
+/// Load Stan library and corresponding data if available
 pub fn get_model<S: AsRef<str>>(name: S) -> (StanLibrary, Option<CString>) {
     let name = name.as_ref();
     let mut base = model_dir();

@@ -18,7 +18,7 @@ use std::time::Instant;
 // This is more or less equivalent to manually defining Display and From<other error types>
 use thiserror::Error;
 
-/// A loaded shared library for a stan model
+/// A loaded shared library for a Stan model
 pub struct StanLibrary {
     lib: ManuallyDrop<ffi::BridgeStan>,
     id: u64,
@@ -35,11 +35,11 @@ impl Drop for StanLibrary {
     }
 }
 
-/// A callback for print statements in stan models
+/// A callback for print statements in Stan models
 pub type StanPrintCallback = extern "C" fn(*const c_char, usize);
 
 impl StanLibrary {
-    /// Provide a callback function to be called when stan prints a message
+    /// Provide a callback function to be called when Stan prints a message
     ///
     /// # Safety
     ///
@@ -58,7 +58,7 @@ impl StanLibrary {
         }
     }
 
-    /// Unload the stan library.
+    /// Unload the Stan library.
     ///
     /// # Safety
     ///
@@ -105,7 +105,7 @@ pub enum BridgeStanError {
 
 type Result<T> = std::result::Result<T, BridgeStanError>;
 
-/// Open a compiled stan library.
+/// Open a compiled Stan library.
 ///
 /// The library should have been compiled with bridgestan,
 /// with the same version as the rust library.
@@ -271,7 +271,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         }
     }
 
-    /// Return a reference to the underlying stan library
+    /// Return a reference to the underlying Stan library
     pub fn ref_library(&self) -> &StanLibrary {
         self.lib.borrow()
     }
@@ -282,7 +282,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// block are desired.
     ///
     /// This instance can only be used with models from the same
-    /// stan library. Invalid usage will otherwise result in a
+    /// Stan library. Invalid usage will otherwise result in a
     /// panic.
     pub fn new_rng(&self, seed: u32) -> Result<Rng<&StanLibrary>> {
         Rng::new(self.ref_library(), seed)
@@ -551,7 +551,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         if let Some(rng) = &rng {
             assert!(
                 rng.lib.borrow().id == self.lib.borrow().id,
-                "Rng and model must come from the same stan library"
+                "Rng and model must come from the same Stan library"
             );
         }
 
@@ -636,7 +636,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
 }
 
 impl<T: Borrow<StanLibrary> + Clone> Model<T> {
-    /// Return a clone of the underlying stan library
+    /// Return a clone of the underlying Stan library
     pub fn clone_library_ref(&self) -> T {
         self.lib.clone()
     }

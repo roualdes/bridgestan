@@ -27,7 +27,7 @@ let path = Path::new(env!["CARGO_MANIFEST_DIR"])
     .unwrap()
     .join("test_models/simple/simple_model.so");
 
-let lib = open_library(path).expect("Could not load compiled stan model.");
+let lib = open_library(path).expect("Could not load compiled Stan model.");
 
 // The dataset as json
 let data = r#"{"N": 7}"#;
@@ -40,7 +40,7 @@ let seed = 42;
 let model = match Model::new(&lib, Some(data), seed) {
 Ok(model) => { model },
 Err(BridgeStanError::ConstructFailed(msg)) => {
-    panic!("Model initialization failed. Error message from stan was {}", msg)
+    panic!("Model initialization failed. Error message from Stan was {}", msg)
 },
 _ => { panic!("Unexpected error") },
 };
