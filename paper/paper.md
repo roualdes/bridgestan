@@ -59,15 +59,15 @@ optimization, and autodiff variational inference (ADVI).
 
 In the statistical software environment R, Stan is heavily relied upon for
 development of applied statistics packages. Using Google's
-[PageRank](https://en.wikipedia.org/wiki/PageRank) algorithm on the dependency
-graph [@de-Vries:2014] amongst the 19,159 R packages listed on the Comprehensive
-R Archive Network (CRAN) as of 2022-12-31, three R packages that exist solely to
-provide access to Stan rank quite well: `rstan` ranks at number 70, `rstantools`
-179, and `rstanarm` 502. Further, two Python interfaces to Stan, `pystan` and
-`cmdstanpy`, both rank in the top 600 packages by downloads on the Python
-Package Index (PyPI).
+[PageRank](https://www.sciencedirect.com/science/article/pii/S016975529800110X)
+algorithm on the dependency graph [@de-Vries:2014] amongst the 19,159 R packages
+listed on the Comprehensive R Archive Network (CRAN) as of 2022-12-31, three R
+packages that exist solely to provide access to Stan rank quite well: `rstan`
+ranks at number 70, `rstantools` 179, and `rstanarm` 502. Further, two Python
+interfaces to Stan, `pystan` and `cmdstanpy`, both rank in the top 600 packages
+by downloads on the Python Package Index (PyPI).
 
-C++ can be cumbersome for algorithm prototyping, so developers have been
+C++ can be cumbersome for algorithm prototyping.  As such, developers have been
 requesting ways to access Stan models for algorithm development in Python, R,
 and Julia. `BridgeStan` answers this call, making it easy for algorithm
 developers to leverage existing Stan models in their evaluation, e.g., the
@@ -215,17 +215,18 @@ for (i, draw) in enumerate(unc_draws):
 
 # Conclusion
 
-On the [Stan Discourse forums](https://discourse.mc-stan.org/),
-statistical algorithm developers have long asked for access to the
-gradients and Hessians that underlie the statistical model of a Stan
-program. `BridgeStan` enables access to these methods, with a portable
-and in-memory solution. Further, because statistical models are so
-easy to write in Stan, algorithm developers can write their model in
-common statistical notation using the Stan programming language and
-then rely on the Stan math library and its automatic differentiation
-toolset to more easily build advanced gradient based statistical
-inference algorithms. `BridgeStan` documentation and example programs
-are found at <https://roualdes.github.io/bridgestan/index.html>.
+On the [Stan Discourse forums](https://discourse.mc-stan.org/), statistical
+algorithm developers have long asked for access to the gradients and Hessians that
+underlie the statistical model of a Stan program, see for instance requests on
+the Stan Discourse forums related to the phrase [extract gradient](https://discourse.mc-stan.org/search?q=extract%20gradient) or the
+software from which `BridgeStan` is derived [Stan Model Server](https://github.com/bob-carpenter/stan-model-server/) and [ReddingStan](https://github.com/dmuck/redding-stan). `BridgeStan` enables access to
+these methods, with a portable and in-memory solution. Further, because
+statistical models are so easy to write in Stan, algorithm developers can write
+their model in common statistical notation using the Stan programming language
+and then rely on the Stan math library and its automatic differentiation toolset
+to more easily build advanced gradient based statistical inference
+algorithms. `BridgeStan` documentation and example programs are found at
+<https://roualdes.github.io/bridgestan/index.html>.
 
 
 [^1]: See Wikipedia's page on the [Student's t-distribution](https://en.wikipedia.org/wiki/Student%27s_t-distribution#Characterization)for a brief introduction to this parameterization.
