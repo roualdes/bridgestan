@@ -8,7 +8,7 @@ Rust Interface
 Installation
 ------------
 
-The BridgeStan Rust client is availble on crates.io and via ``cargo``:
+The BridgeStan Rust client is availble on `crates.io <https://crates.io/crates/bridgestan>`__ and via ``cargo``:
 
 .. code-block:: shell
 
