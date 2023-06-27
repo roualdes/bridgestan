@@ -45,7 +45,7 @@ impl StanLibrary {
     ///
     /// The provided function must never panic.
     ///
-    /// Since the call is proteted by a mutex internally, it does not
+    /// Since the call is protected by a mutex internally, it does not
     /// need to be thread safe.
     pub unsafe fn set_print_callback(&mut self, callback: StanPrintCallback) -> Result<()> {
         let mut err = ErrorMsg::new(self);
@@ -80,7 +80,7 @@ pub struct LoadingError(#[from] libloading::Error);
 #[derive(Error, Debug)]
 #[non_exhaustive]
 pub enum BridgeStanError {
-    /// The prodided library could not be loaded.
+    /// The provided library could not be loaded.
     #[error(transparent)]
     InvalidLibrary(#[from] LoadingError),
     /// The version of the Stan library does not match the version of the rust crate.
@@ -107,8 +107,8 @@ type Result<T> = std::result::Result<T, BridgeStanError>;
 
 /// Open a compiled Stan library.
 ///
-/// The library should have been compiled with bridgestan,
-/// with the same version as the rust library.
+/// The library should have been compiled with BridgeStan,
+/// with the same version as the Rust library.
 pub fn open_library<P: AsRef<OsStr>>(path: P) -> Result<StanLibrary> {
     let library = unsafe { libloading::Library::new(&path) }.map_err(LoadingError)?;
     let major: libloading::Symbol<*const c_int> =
@@ -256,7 +256,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         if let Some(model) = NonNull::new(model) {
             drop(err);
             let model = Self { model, lib };
-            // If STAN_THREADS is not true, the safty guaranties we are
+            // If STAN_THREADS is not true, the safety guaranties we are
             // making would be incorrect
             let info = model.info();
             if !info.to_string_lossy().contains("STAN_THREADS=true") {
@@ -509,7 +509,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
 
     /// Map a point in unconstrained parameter space to the constrained space.
     ///
-    /// `theta_unc` must contain the point in the unconstained parameter space.
+    /// `theta_unc` must contain the point in the unconstrained parameter space.
     ///
     /// If `include_tp` is set the output will also include the transformed
     /// parameters of the Stan model after the parameters. If `include_gq` is
