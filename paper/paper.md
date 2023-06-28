@@ -70,13 +70,15 @@ by downloads on the Python Package Index (PyPI).
 C++ can be cumbersome for algorithm prototyping.  As such, developers have been
 requesting ways to access Stan models for algorithm development in Python, R,
 and Julia. `BridgeStan` answers this call, making it easy for algorithm
-developers to leverage existing Stan models in their evaluation, e.g., the
+developers to incorporate existing Stan models in their evaluation, e.g., the
 dozens of diverse models with reference posteriors in
-[`posteriordb`](https://github.com/stan-dev/posteriordb) [@Magnusson:2022].  By
-providing access to the method of Stan model, `BridgeStan` aides algorithm
-development by making more consistent the models being tested and the
-implementations of those models and their underlying mathematical
-representations.
+[`posteriordb`](https://github.com/stan-dev/posteriordb) [@Magnusson:2022].
+`BridgeStan` further aides algorithm development by leveraging the functions in
+the Stan Math library, which are written to appropriately handle numerical
+issues such as under/over-flow and sum-to-one constraints.  Algorithm developers
+using `BridgeStan` can thus focus more on their algorithms and less on their
+implementations.  These benefits also ensure more precise and stable
+implementations of statistical algorithms allowing for more fair comparisons.
 
 `BridgeStan` is an interface, written in C-compatible C++, between a Stan
 program and any higher level language which exposes a C foreign function
