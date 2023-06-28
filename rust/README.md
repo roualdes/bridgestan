@@ -9,9 +9,28 @@ natively from Rust.
 Internally, it relies on [`bindgen`](https://docs.rs/bindgen/) and
 [`libloading`](https://docs.rs/libloading/).
 
+## Compiling the model
+
 The Rust wrapper does not currently have any functionality to compile Stan models.
 Compiled shared libraries need to be built manually using `make` or with the Julia
 or Python bindings.
+
+For safety reasons all Stan models need to be installed with `STAN_THREADS=true`.
+When compiling a model using `make`, set the environment variable:
+
+```bash
+STAN_THREADS=true make some_model
+```
+
+When compiling a Stan model in python, this has to be specified in the `make_args`
+argument:
+
+```python
+path = bridgestan.compile_model("stan_model.stan", make_args=["STAN_THREADS=true"])
+```
+
+If `STAN_THREADS` was not specified while building the model, the Rust wrapper
+will throw an error when loading the model.
 
 ## Usage:
 

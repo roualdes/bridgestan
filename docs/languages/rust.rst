@@ -19,6 +19,9 @@ is required. Please follow the :doc:`Getting Started guide <../getting-started>`
 or use the Rust client in tandem with an interface such as :doc:`Python <./python>`
 which automates this process.
 
+``STAN_THREADS=true`` needs to be specified when compiling a model, for more
+details see the `API reference <https://docs.rs/bridgestan>`__.
+
 Example Program
 ---------------
 
