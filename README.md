@@ -60,7 +60,7 @@ to download the appropriate Stan compiler for your platform into
 ### Example programs
 
 This repository includes examples of calling Stan through BridgeStan
-in Python, Julia, R, and C.
+in Python, Julia, R, Rust, and C.
 
 * From Python: [`example.py`](python/example.py)
 
@@ -68,9 +68,9 @@ in Python, Julia, R, and C.
 
 * From R: [`example.r`](R/example.R)
 
-* From C: [`example.c`](c-example/example.c)
+* From Rust: [`example.rs`](rust/examples/example.rs)
 
-* From Rust: [`example.rs`](rust/examples/example.c)
+* From C: [`example.c`](c-example/example.c)
 
 Examples of other functionality can be found in the `test` folder for each interface.
 
