@@ -23,7 +23,8 @@ export StanModel,
     get_bridgestan_path,
     set_bridgestan_path!,
     compile_model,
-    StanRNG
+    StanRNG,
+    new_rng
 
 include("model.jl")
 include("compile.jl")
