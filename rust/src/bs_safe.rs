@@ -515,9 +515,9 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// of the density that do not depend on the parameters if `propto == true`.
     ///
     /// The product of the Hessian of the log density and the provided vector
-    ///  will be stored in `Hvp`.
+    ///  will be stored in `hvp`.
     ///
-    /// *Panics* if the provided buffer has incorrect shape. The buffer `Hvp`
+    /// *Panics* if the provided buffer has incorrect shape. The buffer `hvp`
     /// must have length `self.param_unc_num()`.
     pub fn log_density_hessian_vector_product(
         &self,
@@ -525,7 +525,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         v: &[f64],
         propto: bool,
         jacobian: bool,
-        Hvp: &mut [f64],
+        hvp: &mut [f64],
     ) -> Result<f64> {
         let n = self.param_unc_num();
         assert_eq!(
@@ -539,9 +539,9 @@ impl<T: Borrow<StanLibrary>> Model<T> {
             "Argument 'v' must be the same size as the number of parameters!"
         );
         assert_eq!(
-            out.len(),
+            hvp.len(),
             n,
-            "Argument 'Hvp' must be the same size as the number of parameters!"
+            "Argument 'hvp' must be the same size as the number of parameters!"
         );
 
         let mut val = 0.0;
@@ -555,7 +555,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
                 theta_unc.as_ptr(),
                 v.as_ptr(),
                 &mut val,
-                out.as_mut_ptr(),
+                hvp.as_mut_ptr(),
                 err.as_ptr(),
             )
         };
