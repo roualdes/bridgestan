@@ -80,6 +80,10 @@ target Stan program to be compiled with `STAN_THREADS=true`, see the function
 for more details.  The Julia interface tests this feature and thus requires
 `STAN_THREADS=true` for the tests to run successfully.
 
+### Rust development
+
+* Rust development is based on `cargo`, which should handle dependencies, testing, and formatting.
+
 ## Proposing a new interface language
 
 If you would like to extend BridgeStan to a language besides Python, R, or Julia, please open a [GitHub Issue](https://github.com/roualdes/bridgestan/issues) to discuss your proposal.
