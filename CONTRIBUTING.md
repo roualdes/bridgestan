@@ -71,8 +71,14 @@ We use [Gnu make](https://www.gnu.org/software/make/) for builds.  If you have p
     * [Test](https://docs.julialang.org/en/v1/stdlib/Test/)
     * [LinearAlgebra](https://docs.julialang.org/en/v1/stdlib/LinearAlgebra/)
 
-* Julia code is formatted using [JuliaFormatter](https://github.com/domluna/JuliaFormatter.jl).
+* Julia code is formatted using[JuliaFormatter](https://github.com/domluna/JuliaFormatter.jl).
 
+* Julia's multi-threading capabilities allow different processors/threads to
+make simultaneous calls to the BridgeStan API.  Such capabilities require the
+target Stan program to be compiled with `STAN_THREADS=true`, see the function
+[compile_model](https://roualdes.github.io/bridgestan/latest/languages/julia.html#BridgeStan.compile_model)
+for more details.  The Julia interface tests this feature and thus requires
+`STAN_THREADS=true` for the tests to run successfully.
 
 ## Proposing a new interface language
 
