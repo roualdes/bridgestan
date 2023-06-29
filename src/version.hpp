@@ -12,7 +12,7 @@
 #endif
 
 #define BRIDGESTAN_MAJOR 2
-#define BRIDGESTAN_MINOR 0
+#define BRIDGESTAN_MINOR 1
 #define BRIDGESTAN_PATCH 0
 
 namespace bridgestan {
