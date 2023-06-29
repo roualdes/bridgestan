@@ -34,6 +34,8 @@ will throw an error when loading the model.
 
 ## Usage:
 
+Run this example with `cargo run --example=example`.
+
 ```rust
 use std::ffi::CString;
 use std::path::Path;
