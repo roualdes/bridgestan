@@ -1,7 +1,7 @@
 [bridgestan]
-git-tree-sha1 = "247b321809bb1a1ddd011f69648ae729ba8282c4"
+git-tree-sha1 = "3a94ac463bc4b17642863f2c90e4e1a86a23ad49"
 lazy = true
 
     [[bridgestan.download]]
-    sha256 = "8bd57926e2afb694d2d246a08efb1ab6b56027adcdbeb6ab0407ed58aba88778"
-    url = "https://github.com/roualdes/bridgestan/releases/download/v2.0.0/bridgestan-2.0.0.tar.gz"
+    sha256 = "a9125e30bdae2695652e1f254704e83015456b3d2b8da07927000dd6c4aec272"
+    url = "https://github.com/roualdes/bridgestan/releases/download/v2.1.0/bridgestan-2.1.0.tar.gz"
