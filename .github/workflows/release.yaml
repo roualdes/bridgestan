@@ -91,6 +91,7 @@ jobs:
             bridgestan-*.tar.gz
 
       - name: Create release
+        if: ${{ !inputs.is_rerun }}
         uses: ncipollo/release-action@v1
         with:
           artifacts: "bridgestan-*.tar.gz,python/dist/*"
