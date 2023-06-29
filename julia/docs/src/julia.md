@@ -66,6 +66,14 @@ An example program is provided alongside the Julia interface code in `example.jl
 </details>
 ```
 
+## Tests
+
+Julia's multi-threading capabilities allow different processors/threads to make
+simultaneous calls to the BridgeStan API.  Such capabilities require the target
+Stan program to be compiled with `STAN_THREADS=true`, see the function
+`compile_model` for more details.  The Julia interface tests this feature and
+thus requires `STAN_THREADS=true` for the tests to run successfully.
+
 ## API Reference
 
 ### StanModel interface
