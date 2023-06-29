@@ -140,6 +140,19 @@ mutable struct StanRNG
 end
 
 """
+    new_rng(sm::StanModel, seed)
+
+Construct a StanRNG instance from a `StanModel` instance and a seed.  This
+function is a wrapper around the constructor `StanRNG`.
+
+This can be used in the `param_constrain` and `param_constrain!` methods
+when using the generated quantities block.
+
+The StanRNG object created is not thread-safe, one should be created per thread.
+"""
+new_rng(sm::StanModel, seed) = StanRNG(sm, seed)
+
+"""
     name(sm)
 
 Return the name of the model `sm`

@@ -73,6 +73,9 @@ We use [Gnu make](https://www.gnu.org/software/make/) for builds.  If you have p
 
 * Julia code is formatted using [JuliaFormatter](https://github.com/domluna/JuliaFormatter.jl).
 
+### Rust development
+
+* Rust development is based on `cargo`, which should handle dependencies, testing, and formatting.
 
 ## Proposing a new interface language
 

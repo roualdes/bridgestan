@@ -92,6 +92,7 @@ param_constrain!
 param_unconstrain!
 param_unconstrain_json!
 StanRNG
+new_rng
 ```
 
 ### Compilation utilities
