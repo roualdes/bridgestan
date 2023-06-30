@@ -163,7 +163,7 @@ jobs:
         run: |
           cd julia/
           julia --project=. -e "using Pkg; Pkg.instantiate()"
-          julia --project=. -e "using Bridgestan"
+          julia --project=. -e "using BridgeStan"
 
       - name: Run tests
         run: |
