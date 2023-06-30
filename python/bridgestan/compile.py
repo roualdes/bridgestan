@@ -47,6 +47,7 @@ def set_bridgestan_path(path: str) -> None:
     of this package (which, assuming a source installation, corresponds
     to the repository root).
     """
+    path = os.path.abspath(path)
     verify_bridgestan_path(path)
     os.environ["BRIDGESTAN"] = path
 
