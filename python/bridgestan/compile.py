@@ -129,7 +129,7 @@ def compile_model(
     return output
 
 
-def _windows_path_setup():
+def windows_dll_path_setup():
     """Add tbb.dll to %PATH% on Windows."""
     global WINDOWS_PATH_SET
     if IS_WINDOWS and not WINDOWS_PATH_SET:
