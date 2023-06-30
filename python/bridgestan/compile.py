@@ -102,7 +102,6 @@ def compile_model(
     :raises RuntimeError: If compilation fails.
     """
     verify_bridgestan_path(get_bridgestan_path())
-    _windows_path_setup()
     file_path = Path(stan_file).resolve()
     validate_readable(str(file_path))
     if file_path.suffix != ".stan":
