@@ -7,7 +7,7 @@ import numpy.typing as npt
 from numpy.ctypeslib import ndpointer
 
 from .__version import __version_info__
-from .compile import compile_model
+from .compile import windows_dll_path_setup, compile_model
 from .util import validate_readable
 
 FloatArray = npt.NDArray[np.float64]
@@ -67,6 +67,7 @@ class StanModel:
             with open(model_data, "r") as f:
                 model_data = f.read()
 
+        windows_dll_path_setup()
         self.lib_path = model_lib
         self.stanlib = ctypes.CDLL(self.lib_path)
 

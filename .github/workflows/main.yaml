@@ -103,6 +103,10 @@ jobs:
           pip install pytest
           pip install .
 
+      - name: Test import
+        run: |
+          python -c "import bridgestan"
+
       - name: Run tests
         run: |
           cd python/
@@ -154,6 +158,12 @@ jobs:
         with:
           path: ./test_models/
           key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp', 'Makefile') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
+
+      - name: Check import
+        run: |
+          cd julia/
+          julia --project=. -e "using Pkg; Pkg.instantiate()"
+          julia --project=. -e "using BridgeStan"
 
       - name: Run tests
         run: |

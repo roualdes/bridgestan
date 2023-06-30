@@ -2,7 +2,7 @@ import numpy as np
 
 import bridgestan as bs
 
-bs.set_bridgestan_path("../")
+bs.set_bridgestan_path("..")
 
 stan = "../test_models/bernoulli/bernoulli.stan"
 data = "../test_models/bernoulli/bernoulli.data.json"
