@@ -141,8 +141,10 @@ def windows_dll_path_setup():
             os.add_dll_directory(tbb_path)
         except:
             try:
-                tbb_path = os.path.join(
-                    get_bridgestan_path(), "stan", "lib", "stan_math", "lib", "tbb"
+                tbb_path = os.path.abspath(
+                    os.path.join(
+                        get_bridgestan_path(), "stan", "lib", "stan_math", "lib", "tbb"
+                    )
                 )
                 os.environ["PATH"] = tbb_path + ";" + os.environ["PATH"]
                 os.add_dll_directory(tbb_path)
@@ -165,7 +167,9 @@ def windows_dll_path_setup():
                 check=True,
                 capture_output=True,
             )
-            mingw_dir = os.path.dirname(out.stdout.decode().splitlines()[0])
+            mingw_dir = os.path.abspath(
+                os.path.dirname(out.stdout.decode().splitlines()[0])
+            )
             os.add_dll_directory(mingw_dir)
             WINDOWS_PATH_SET &= True
         except:
