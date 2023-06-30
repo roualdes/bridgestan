@@ -132,8 +132,8 @@ def compile_model(
 
 def _windows_path_setup():
     """Add tbb.dll to %PATH% on Windows."""
+    global WINDOWS_PATH_SET
     if IS_WINDOWS and not WINDOWS_PATH_SET:
-        global WINDOWS_PATH_SET
         try:
             out = subprocess.run(
                 ["where.exe", "tbb.dll"], check=True, capture_output=True
