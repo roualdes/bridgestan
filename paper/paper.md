@@ -122,12 +122,14 @@ parallel applications. They also support all of the internal
 parallelization of Stan models, such as internal parallel map
 functions and GPU-enabled matrix operations.
 
-`BridgeStan` enables memory allocated in the host language (Julia,
-Python, or R), to be reused within Stan; though any language with a C
-foreign function interface could be similarly interfaced to access
-Stan methods. By avoiding unnecessary copies of vectors created in the
-host language, `BridgeStan` is a zero-cost abstraction built upon
-Stan's math library.
+`BridgeStan` enables memory allocated in the host language (Julia, Python, or
+R), to be reused within Stan; though any language with a C foreign function
+interface could be similarly interfaced to access Stan methods. For instance,
+the `BridgeStan` function `log_density_gradient` has an optional output argument, the
+array into which the gradient will be stored.  By avoiding unnecessary copies,
+`BridgeStan` is a zero-cost abstraction built upon Stan's math library.  If no
+output argument is passed to `log_density_gradient`, then at most one memory
+allocation, occuring in the host language, takes place.
 
 # Example
 
