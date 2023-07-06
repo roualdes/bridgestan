@@ -42,6 +42,9 @@ def test_constructor():
     with pytest.raises(RuntimeError, match="find this text: datafails"):
         b4 = bs.StanModel(throw_data_so)
 
+    load_sundials = str(STAN_FOLDER / "ode_sundials" / "ode_sundials_model.so")
+    bs.StanModel(load_sundials)
+
 
 def test_name():
     std_so = str(STAN_FOLDER / "stdnormal" / "stdnormal_model.so")
