@@ -8,7 +8,7 @@ Rust Interface
 Installation
 ------------
 
-The BridgeStan Rust client is available on `crates.io <https://crates.io/crates/bridgestan>`__ and via ``cargo``:
+The BridgeStan Rust client is available on `crates.io <https://crates.io/crates/bridgestan>`__ and via :command:`cargo`:
 
 .. code-block:: shell
 
@@ -25,7 +25,7 @@ details see the `API reference <https://docs.rs/bridgestan>`__.
 Example Program
 ---------------
 
-An example program is provided alongside the Rust crate in ``examples/example.rs``:
+An example program is provided alongside the Rust crate in :file:`examples/example.rs`:
 
 .. raw:: html
 

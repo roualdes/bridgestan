@@ -13,8 +13,8 @@ BridgeStan's pre-requisites and downloaded a copy of the BridgeStan source code.
 Example Program
 ---------------
 
-An example program is provided alongside the BridgeStan source in ``c-example/``.
-Details for building the example can be found in ``c-example/Makefile``.
+An example program is provided alongside the BridgeStan source in :file:`c-example/`.
+Details for building the example can be found in :file:`c-example/Makefile`.
 
 .. raw:: html
 
@@ -33,7 +33,7 @@ Details for building the example can be found in ``c-example/Makefile``.
 API Reference
 -------------
 
-The following are the C functions exposed by the BridgeStan library in ``bridgestan.h``.
+The following are the C functions exposed by the BridgeStan library in :file:`bridgestan.h`.
 These are wrapped in the various high-level interfaces.
 
 These functions are implemented in C++, see :doc:`../internals` for more details.
@@ -46,7 +46,7 @@ R-compatible functions
 ----------------------
 
 To support calling these functions from R without including R-specific headers
-into the project, the following functions are exposed in ``bridgestanR.h``.
+into the project, the following functions are exposed in :file:`bridgestanR.h`.
 
 These are small shims which call the above functions. All arguments and return values
 must be handeled via pointers.
