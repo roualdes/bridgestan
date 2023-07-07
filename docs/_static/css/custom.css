@@ -1,0 +1,7 @@
+html[data-theme="light"] {
+    --pst-color-inline-code: #83BA73;
+}
+
+html[data-theme="dark"] {
+    --pst-color-inline-code: #659157;
+}

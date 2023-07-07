@@ -259,7 +259,7 @@ int bs_log_density_gradient(const bs_model* m, bool propto, bool jacobian,
  * `jacobian` is `true`, and return a return code of 0 for success
  * and -1 if there is an exception executing the Stan program.  The
  * pointer `grad` must have enough space to hold the gradient.  The
- * pointer `Hessian` must have enough space to hold the Hessian.
+ * pointer `hessian` must have enough space to hold the Hessian.
  *
  * The gradients are computed using automatic differentiation.  the
  * Hessians are
