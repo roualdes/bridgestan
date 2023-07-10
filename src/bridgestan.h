@@ -302,7 +302,7 @@ int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
  * @param[in] theta_unc unconstrained parameters
  * @param[in] vector vector to multiply Hessian by
  * @param[out] val log density to set
- * @param[out] Hvp Hessian-vector to set
+ * @param[out] hvp Hessian-vector to set
  * @param[out] error_msg a pointer to a string that will be allocated if there
  * is an error. This must later be freed by calling `bs_free_error_msg`.
  * @return code 0 if successful and code -1 if there is an exception
@@ -312,7 +312,7 @@ int bs_log_density_hessian_vector_product(const bs_model* m, bool propto,
                                           bool jacobian,
                                           const double* theta_unc,
                                           const double* vector, double* val,
-                                          double* Hvp, char** error_msg);
+                                          double* hvp, char** error_msg);
 
 /**
  * Construct an PRNG object to be used in bs_param_constrain().
