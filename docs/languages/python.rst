@@ -19,7 +19,7 @@ For convience, BridgeStan is uploaded to the Python Package Index each release.
 
 
 The first time you need it, the BridgeStan source code will be downloaded
-and placed in ``~/.bridgestan/``. If you prefer to use a source distribution of BridgeStan,
+and placed in :file:`~/.bridgestan/`. If you prefer to use a source distribution of BridgeStan,
 consult the following section.
 
 
@@ -53,7 +53,7 @@ NumPy if it is not already installed.
 Example Program
 ---------------
 
-An example program is provided alongside the Python interface code in ``example.py``:
+An example program is provided alongside the Python interface code in :file:`example.py`:
 
 .. raw:: html
 
