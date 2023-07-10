@@ -40,7 +40,7 @@ extern int bs_patch_version;
  * This PRNG is used for RNG functions in the `transformed data`
  * block of the model, and then discarded.
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling `bs_free_error_msg`.
+ * is an error. This must later be freed by calling bs_free_error_msg().
  * @return pointer to constructed model or `nullptr` if construction
  * fails
  */
@@ -161,10 +161,10 @@ int bs_param_unc_num(const bs_model* m);
  * @param[in] theta_unc sequence of unconstrained parameters
  * @param[out] theta sequence of constrained parameters
  * @param[in] rng pointer to pseudorandom number generator, should be created
- * by `bs_rng_construct`. This is only required when `include_gq` is `true`,
+ * by bs_rng_construct(). This is only required when `include_gq` is `true`,
  * otherwise it can be null.
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling `bs_free_error_msg`.
+ * is an error. This must later be freed by calling bs_free_error_msg().
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
@@ -183,7 +183,7 @@ int bs_param_constrain(const bs_model* m, bool include_tp, bool include_gq,
  * @param[in] theta sequence of constrained parameters
  * @param[out] theta_unc sequence of unconstrained parameters
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling `bs_free_error_msg`.
+ * is an error. This must later be freed by calling bs_free_error_msg().
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
@@ -200,7 +200,7 @@ int bs_param_unconstrain(const bs_model* m, const double* theta,
  * @param[in] json JSON-encoded constrained parameters
  * @param[out] theta_unc sequence of unconstrained parameters
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling `bs_free_error_msg`.
+ * is an error. This must later be freed by calling bs_free_error_msg().
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
@@ -220,7 +220,7 @@ int bs_param_unconstrain_json(const bs_model* m, const char* json,
  * @param[in] theta_unc unconstrained parameters
  * @param[out] lp log density to be set
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling `bs_free_error_msg`.
+ * is an error. This must later be freed by calling bs_free_error_msg().
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
@@ -244,7 +244,7 @@ int bs_log_density(const bs_model* m, bool propto, bool jacobian,
  * @param[out] val log density to be set
  * @param[out] grad gradient to set
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling `bs_free_error_msg`.
+ * is an error. This must later be freed by calling bs_free_error_msg().
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
@@ -274,7 +274,7 @@ int bs_log_density_gradient(const bs_model* m, bool propto, bool jacobian,
  * @param[out] grad gradient to set
  * @param[out] hessian hessian to set
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling `bs_free_error_msg`.
+ * is an error. This must later be freed by calling bs_free_error_msg().
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
@@ -315,13 +315,13 @@ int bs_log_density_hessian_vector_product(const bs_model* m, bool propto,
                                           double* Hvp, char** error_msg);
 
 /**
- * Construct an PRNG object to be used in `bs_param_constrain`.
+ * Construct an PRNG object to be used in bs_param_constrain().
  * This object is not thread safe and should be constructed and
  * destructed for each thread.
  *
  * @param[in] seed seed for the RNG
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling `bs_free_error_msg`.
+ * is an error. This must later be freed by calling bs_free_error_msg().
  */
 bs_rng* bs_rng_construct(unsigned int seed, char** error_msg);
 
@@ -341,7 +341,7 @@ void bs_rng_destruct(bs_rng* rng);
  * never propagate an exception. Passing NULL will redirect printing back to
  * stdout.
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling `bs_free_error_msg`.
+ * is an error. This must later be freed by calling bs_free_error_msg().
  * @return code 0 if successful and code -1 if there is an exception
  */
 int bs_set_print_callback(STREAM_CALLBACK callback, char** error_msg);

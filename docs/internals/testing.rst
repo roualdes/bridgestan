@@ -3,7 +3,7 @@ Testing
 
 Testing for BridgeStan is primarily done through the higher-level :doc:`interfaces <../languages>`.
 
-All tests are based around the same set of test models (in the ``test_models/`` folder).
+All tests are based around the same set of test models (in the :file:`test_models/` folder).
 
 You can build all of the test models at once with
 
@@ -12,7 +12,7 @@ You can build all of the test models at once with
     make STAN_THREADS=true test_models -j<jobs>
 
 Note: The additional functionality provided by
-``STAN_THREADS`` is only tested by the Julia tests,
+:makevar:`STAN_THREADS` is only required by the Julia and Rust tests,
 but in order to facilitate the same built models being used in
 all tests we use it regardless of interface.
 
@@ -26,7 +26,7 @@ In Python we use `pytest <https://docs.pytest.org/en/7.2.x/>`__ to run tests. Te
 are written using basic ``assert`` statements and helper code from :py:mod:`numpy.testing`.
 
 The Python test suite has the ability to run mutually exclusive groups of code. This is to allow
-testing of features such as the ``BRIDGESTAN_AD_HESSIAN`` flag which change underlying code and
+testing of features such as the :makevar:`BRIDGESTAN_AD_HESSIAN` flag which change underlying code and
 therefore cannot be loaded at the same time as models compiled without it.
 
 Running
@@ -43,7 +43,7 @@ Will run the "default" grouping. To run the other group(s), run
     cd python/
     pytest --run-type=ad_hessian -v
 
-The set up for this can be seen in ``tests/conftest.py`` and is based on the
+The set up for this can be seen in :file:`tests/conftest.py` and is based on the
 `Pytest documentation examples <https://docs.pytest.org/en/7.1.x/example/simple.html#control-skipping-of-tests-according-to-command-line-option>`__.
 
 Julia
@@ -68,3 +68,13 @@ R tests are written using `testthat <https://testthat.r-lib.org/>`__.
     Rscript -e "devtools::test()"
 
 The R unit tests are much more basic than the Python or Julia tests.
+
+Rust
+_____
+
+The Rust tests can be run with :command:`cargo`
+
+.. code-block:: shell
+
+    cd rust/
+    cargo test

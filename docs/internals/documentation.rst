@@ -11,7 +11,7 @@ generation (powered by `Sphinx <https://www.sphinx-doc.org/en/master/>`__) autom
 combines these together into the documentation you are reading now.
 
 To build the documentation, you can run ``make docs`` in the top-level directory.
-This places the files in ``docs/_build/html``. At a minimum, the following must be installed:
+This places the files in :file:`docs/_build/html`. At a minimum, the following must be installed:
 
 * The Python interface to BridgeStan
 * `Sphinx 5.0 or above <https://www.sphinx-doc.org/en/master/>`__
@@ -28,6 +28,6 @@ If you wish to build the C++ portions of the documentation, you should also have
 * `Breathe <https://breathe.readthedocs.io/en/stable/index.html>`__
 
 Similarly, the Julia documentation will only update if Julia is installed. Julia
-documentation is written in ``julia/docs/src/julia.md``. We then build
+documentation is written in :file:`julia/docs/src/julia.md`. We then build
 this with `DocumenterMarkdown.jl <https://github.com/JuliaDocs/DocumenterMarkdown.jl>`__,
-and the output is placed in ``docs/languages/julia.md``.
+and the output is placed in :file:`docs/languages/julia.md`.

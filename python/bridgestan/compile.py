@@ -1,9 +1,9 @@
 import os
 import platform
 import subprocess
+import warnings
 from pathlib import Path
 from typing import List
-import warnings
 
 from .__version import __version__
 from .download import CURRENT_BRIDGESTAN, HOME_BRIDGESTAN, get_bridgestan_src
@@ -26,11 +26,14 @@ def verify_bridgestan_path(path: str) -> None:
         )
 
 
+IS_WINDOWS = platform.system() == "Windows"
+WINDOWS_PATH_SET = False
+
 PYTHON_FOLDER = Path(__file__).parent.parent
 
 MAKE = os.getenv(
     "MAKE",
-    "make" if platform.system() != "Windows" else "mingw32-make",
+    "make" if not IS_WINDOWS else "mingw32-make",
 )
 
 
@@ -44,6 +47,7 @@ def set_bridgestan_path(path: str) -> None:
     of this package (which, assuming a source installation, corresponds
     to the repository root).
     """
+    path = os.path.abspath(path)
     verify_bridgestan_path(path)
     os.environ["BRIDGESTAN"] = path
 
@@ -99,7 +103,6 @@ def compile_model(
     :raises RuntimeError: If compilation fails.
     """
     verify_bridgestan_path(get_bridgestan_path())
-
     file_path = Path(stan_file).resolve()
     validate_readable(str(file_path))
     if file_path.suffix != ".stan":
@@ -125,3 +128,55 @@ def compile_model(
 
         raise RuntimeError(error)
     return output
+
+
+def windows_dll_path_setup():
+    """Add tbb.dll to %PATH% on Windows."""
+    global WINDOWS_PATH_SET
+    if IS_WINDOWS and not WINDOWS_PATH_SET:
+        try:
+            out = subprocess.run(
+                ["where.exe", "tbb.dll"], check=True, capture_output=True
+            )
+            tbb_path = os.path.dirname(out.stdout.decode().splitlines()[0])
+            os.add_dll_directory(tbb_path)
+        except:
+            try:
+                tbb_path = os.path.abspath(
+                    os.path.join(
+                        get_bridgestan_path(), "stan", "lib", "stan_math", "lib", "tbb"
+                    )
+                )
+                os.environ["PATH"] = tbb_path + ";" + os.environ["PATH"]
+                os.add_dll_directory(tbb_path)
+                WINDOWS_PATH_SET = True
+            except:
+                warnings.warn(
+                    "Unable to set path to TBB's DLL. Loading BridgeStan models may fail. "
+                    f"Tried path '{tbb_path}'",
+                    RuntimeWarning,
+                )
+                WINDOWS_PATH_SET = False
+        try:
+            out = subprocess.run(
+                [
+                    "where.exe",
+                    "libwinpthread-1.dll",
+                    "libgcc_s_seh-1.dll",
+                    "libstdc++-6.dll",
+                ],
+                check=True,
+                capture_output=True,
+            )
+            mingw_dir = os.path.abspath(
+                os.path.dirname(out.stdout.decode().splitlines()[0])
+            )
+            os.add_dll_directory(mingw_dir)
+            WINDOWS_PATH_SET &= True
+        except:
+            # no default location
+            warnings.warn(
+                "Unable to find MinGW's DLL location. Loading BridgeStan models may fail.",
+                RuntimeWarning,
+            )
+            WINDOWS_PATH_SET = False

@@ -124,7 +124,7 @@ pub fn open_library<P: AsRef<OsStr>>(path: P) -> Result<StanLibrary> {
     let self_minor: c_int = env!("CARGO_PKG_VERSION_MINOR").parse().unwrap();
     let self_patch: c_int = env!("CARGO_PKG_VERSION_PATCH").parse().unwrap();
 
-    if (self_major != major) | (self_minor != minor) {
+    if !((self_major == major) & (self_minor <= minor)) {
         return Err(BridgeStanError::BadLibraryVersion(
             format!("{}.{}.{}", major, minor, patch),
             format!("{}.{}.{}", self_major, self_minor, self_patch),

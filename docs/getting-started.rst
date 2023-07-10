@@ -8,7 +8,7 @@ Requirement: C++ toolchain
 Stan requires a C++ tool chain consisting of
 
 * A C++14 compiler. On Windows, MSCV is *not* supported, so something like MinGW GCC is required.
-* The Gnu ``make`` utility for \*nix *or* ``mingw32-make`` for Windows
+* The Gnu :command:`make` utility for \*nix *or* :command:`mingw32-make` for Windows
 
 Here are complete instructions by platform for installing both, from the CmdStan installation instructions.
 
@@ -36,10 +36,10 @@ To use these, simply download the file associated with the version you wish to u
 and unzip its contents into the folder you would like BridgeStan to be in.
 
 
-Installing the latest version with ``git``
-__________________________________________
+Installing the latest version with :command:`git`
+_________________________________________________
 
-If you have ``git`` installed, you may download BridgeStan by navigating to the folder you'd like
+If you have :command:`git` installed, you may download BridgeStan by navigating to the folder you'd like
 BridgeStan to be in and running
 
 .. code-block:: shell
@@ -64,10 +64,10 @@ a terminal in your BridgeStan folder and running
     # Windows
     mingw32-make.exe test_models/multi/multi_model.so
 
-This will compile the file ``test_models/multi/multi.stan`` into a shared library object for use with BridgeStan.
+This will compile the file :file:`test_models/multi/multi.stan` into a shared library object for use with BridgeStan.
 This will require internet access the first time you run it in order
 to download the appropriate Stan compiler for your platform into
-``<bridgestan-dir>/bin/stanc[.exe]``
+:file:`{<bridgestan-dir>}/bin/stanc{[.exe]}`
 
 Installing an Interface
 -----------------------
@@ -81,10 +81,10 @@ Optional: Customizing BridgeStan
 BridgeStan has many compiler flags and options set by default. Many of these defaults
 are the same as those used by the CmdStan interface to Stan.
 You can override the defaults or add new flags
-on the command line when invoking ``make``, or make them persistent by
-creating or editing the file ``<bridgestan dir>/make/local``.
+on the command line when invoking :command:`make`, or make them persistent by
+creating or editing the file :file:`{<bridgestan dir>}/make/local`.
 
-For example, setting the contents of ``make/local`` to the following
+For example, setting the contents of :file:`make/local` to the following
 includes compiler flags for optimization level and architecture.
 
 .. code-block:: Makefile
@@ -94,7 +94,7 @@ includes compiler flags for optimization level and architecture.
     # Adding other arbitrary C++ compiler flags
     CXXFLAGS+= -march=native
 
-Flags for ``stanc3`` can also be set here
+Flags for :command:`stanc3` can also be set here
 
 .. code-block:: Makefile
 
@@ -106,7 +106,7 @@ ________________________________________
 
 In order for Python or Julia to be able to call a single Stan model
 concurrently from multiple threads or for a Stan model to execute its
-own code in parallel, the following flag must be set in ``make/local``
+own code in parallel, the following flag must be set in :file:`make/local`
 or on the command line.
 
 .. code-block:: Makefile
@@ -116,7 +116,7 @@ or on the command line.
 
 Note that this flag changes a lot of the internals of the Stan library
 and as such, **all models used in the same process should have the same
-setting**. Mixing models which have ``STAN_THREADS`` enabled with those that do not
+setting**. Mixing models which have :makevar:`STAN_THREADS` enabled with those that do not
 will most likely lead to segmentation faults or other crashes.
 
 Additional flags, such as those for MPI and OpenCL, are covered in the
@@ -131,12 +131,12 @@ to be computed directly, particularly models which use implicit functions like t
 or ODE integrators.
 
 If your Stan model does not use these features, you can enable autodiff Hessians by
-setting the compile-time flag ``BRIDGESTAN_AD_HESSIAN=true`` in the invocation to ``make``.
-This can be set in ``make/local`` if you wish to use it by default.
+setting the compile-time flag ``BRIDGESTAN_AD_HESSIAN=true`` in the invocation to :command:`make`.
+This can be set in :file:`make/local` if you wish to use it by default.
 
 This value is reported by the ``model_info`` function if you would like to check at run time
 whether Hessians are computed with nested autodiff or with finite differences. Similar to
-``STAN_THREADS``, it is not advised to mix models which use autodiff Hessians with those that
+:makevar:`STAN_THREADS`, it is not advised to mix models which use autodiff Hessians with those that
 do not in the same program.
 
 Autodiff Hessians may be faster than finite differences depending on your model, and will
@@ -149,21 +149,21 @@ __________________________
 
 If you wish to use BridgeStan for an older released version, all you need to do is
 
-1. Set ``STANC3_VERSION`` in ``make/local`` to your desired version, e.g. ``v2.26.0``
+1. Set :makevar:`STANC3_VERSION` in :file:`make/local` to your desired version, e.g. ``v2.26.0``
 2. Go into the ``stan`` submodule and run ``git checkout release/VERSION``, e.g. ``release/v2.26.0``
 3. Also in the ``stan`` submodule, run ``make math-update``
 4. In the top level BridgeStan directory, run ``make clean``
 
 To return to the version of Stan currently used by BridgeStan, you can run ``make stan-update`` from the top level directory
-and remove ``STANC3_VERSION`` from your ``make/local`` file, before running ``make clean`` again.
+and remove :makevar:`STANC3_VERSION` from your ``make/local`` file, before running ``make clean`` again.
 
 Using Pre-Existing Stan Installations
 _____________________________________
 
 If you wish to use BridgeStan with a pre-existing download of the Stan repository, or with
-a custom fork or branch, you can set the ``STAN`` (and, optionally, ``MATH``) variables to the
-path to your existing copy in calls to ``make``, or more permanently by setting them in a
-``make/local`` file as described above.
+a custom fork or branch, you can set the :makevar:`STAN` (and, optionally, :makevar:`MATH`) variables to the
+path to your existing copy in calls to :command:`make`, or more permanently by setting them in a
+:file:`make/local` file as described above.
 
 The easiest way to use a custom stanc3 is to place the built executable at
-``bin/stanc[.exe]``.
+:file:`bin/stanc{[.exe]}`.

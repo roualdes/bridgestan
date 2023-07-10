@@ -93,10 +93,10 @@ library in order to be freed.
 Output Streams
 ______________
 
-Printed output from the C++ code cannot easily be captured in the higher-level language.
-This is particularly relevant for error messaging, which is printed to the standard
-error output ``stderr`` from C++. This does *not*, for example, correspond to the
-``sys.stderr`` stream available from Python.
+Printed output from the C++ code cannot always be easily captured in the higher-level language.
+This is particularly relevant for print statements in Stan, which are printed to the standard
+output ``stdout`` from C++. This does *not*, for example, correspond to the
+:py:data:`sys.stdout` stream available from Python by default.
 
 We tackle this problem through the use of an interface-provided callback function
-when necessary.
+when necessary. See :cpp:func:`bs_set_print_callback()` for more details.
