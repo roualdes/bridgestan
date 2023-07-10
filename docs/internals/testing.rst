@@ -72,7 +72,7 @@ The R unit tests are much more basic than the Python or Julia tests.
 Rust
 _____
 
-The R tests can be run with :command:`cargo`
+The Rust tests can be run with :command:`cargo`
 
 .. code-block:: shell
 
