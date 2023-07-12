@@ -2,6 +2,10 @@ using BridgeStan
 
 const BS = BridgeStan
 
+# These paths are what they are because this example lives in a subfolder
+# of the BridgeStan repository. If you're running this on your own, you
+# will most likely want to delete the next line (to have BridgeStan
+# download its sources for you) and change the paths on the following two
 BS.set_bridgestan_path!("../")
 
 bernoulli_stan = joinpath(@__DIR__, "../test_models/bernoulli/bernoulli.stan")
