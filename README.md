@@ -3,7 +3,7 @@
 [![DOCS](https://img.shields.io/badge/docs-latest-blue)](https://roualdes.github.io/bridgestan/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7760173.svg)](https://doi.org/10.5281/zenodo.7760173) [![CI](https://github.com/roualdes/bridgestan/actions/workflows/main.yaml/badge.svg)](https://github.com/roualdes/bridgestan/actions/workflows/main.yaml)
 
 BridgeStan provides efficient in-memory access through Python, Julia,
-and R to the methods of a [Stan](https://mc-stan.org) model, including
+Rust, and R to the methods of a [Stan](https://mc-stan.org) model, including
 log densities, gradients, Hessians, and constraining and unconstraining
 transforms.  The motivation was developing inference algorithms in
 higher-level languages for arbitrary Stan models.
@@ -60,13 +60,15 @@ to download the appropriate Stan compiler for your platform into
 ### Example programs
 
 This repository includes examples of calling Stan through BridgeStan
-in Python, Julia, R, and C.
+in Python, Julia, R, Rust, and C.
 
 * From Python: [`example.py`](python/example.py)
 
 * From Julia: [`example.jl`](julia/example.jl)
 
 * From R: [`example.r`](R/example.R)
+
+* From Rust: [`example.rs`](rust/examples/example.rs)
 
 * From C: [`example.c`](c-example/example.c)
 
@@ -81,3 +83,6 @@ API, which in turn was derived from
 
 Thanks to Sebastian Weber (GitHub [@wds15](https://github.com/wds15))
 for enabling multi-threaded calls from Julia to a single Stan model instance.
+
+Thanks to Adrian Seyboldt (GitHub [@aseyboldt](https://github.com/aseyboldt))
+for providing the Rust wrapper.

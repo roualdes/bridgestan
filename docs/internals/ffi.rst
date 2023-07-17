@@ -63,6 +63,18 @@ as well as an extended
 Note: One quirk of the ``.C`` interface is the requirement that all inputs and
 return values are passed by pointers. This is the reason for the ``bridgestan_R`` files in the source.
 
+Rust
+____
+
+The Rust interface uses two crates in addition to the built-in
+`FFI types <https://doc.rust-lang.org/core/ffi/index.html>`__.
+Some general guidance on Rust FFI can be found in the
+`Rust Book <https://doc.rust-lang.org/book/ch19-01-unsafe-rust.html#using-extern-functions-to-call-external-code>`__.
+
+These are `bindgen <https://docs.rs/bindgen>`__, which generates the Rust bindings from the C headers,
+and `libloading <https://docs.rs/libloading>`__, which provides easy dynamic library loading functionality.
+
+Care is taken to provide "safe" Rust wrappers so that users of the crate do not need to use the `unsafe` keyword.
 
 General Problems
 ----------------
@@ -75,13 +87,16 @@ must also be freed on that side. This means special consideration is
 needed to pass strings back and forth between the languages,
 and inspired some of the design decisions behind ideas like returning
 the parameter names as a comma separated list, rather than the more "natural"
-array of strings.
+array of strings, and this is why error messages must be passed back to the
+library in order to be freed.
 
 Output Streams
 ______________
 
-Printed output from the C++ code cannot easily be captured in the higher-level language.
-This is particularly relevant for error messaging, which is printed to the standard
-error output ``stderr`` from C++. This does *not*, for example, correspond to the
-``sys.stderr`` stream available from Python.
+Printed output from the C++ code cannot always be easily captured in the higher-level language.
+This is particularly relevant for print statements in Stan, which are printed to the standard
+output ``stdout`` from C++. This does *not*, for example, correspond to the
+:py:data:`sys.stdout` stream available from Python by default.
 
+We tackle this problem through the use of an interface-provided callback function
+when necessary. See :cpp:func:`bs_set_print_callback()` for more details.

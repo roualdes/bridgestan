@@ -33,12 +33,19 @@ jobs:
       - name: Set up Julia
         uses: julia-actions/setup-julia@v1
 
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "15.0"
+          directory: ${{ runner.temp }}/llvm
+
       - name: Update version numbers
         if: ${{ !inputs.is_rerun }}
         run: |
           sed -i 's/Version:.*/Version: ${{ inputs.new_version }}/' R/DESCRIPTION
           sed -i 's/version = .*/version = "${{ inputs.new_version }}"/' julia/Project.toml
           sed -i 's/__version__ = .*/__version__ = "${{ inputs.new_version }}"/' python/bridgestan/__version.py
+          sed -i 's/^version = .*/version = "${{ inputs.new_version }}"/' rust/Cargo.toml
 
           sed -i 's/#define BRIDGESTAN_MAJOR .*/#define BRIDGESTAN_MAJOR '"$(echo ${{ inputs.new_version }} | cut -d. -f1)"'/' src/version.hpp
           sed -i 's/#define BRIDGESTAN_MINOR .*/#define BRIDGESTAN_MINOR '"$(echo ${{ inputs.new_version }} | cut -d. -f2)"'/' src/version.hpp
@@ -80,10 +87,11 @@ jobs:
         with:
           name: release-artifacts
           path: |
-            python/dist/
+            python/dist/*.whl
             bridgestan-*.tar.gz
 
       - name: Create release
+        if: ${{ !inputs.is_rerun }}
         uses: ncipollo/release-action@v1
         with:
           artifacts: "bridgestan-*.tar.gz,python/dist/*"
@@ -97,11 +105,22 @@ jobs:
 
       - name: Upload PyPI wheels
         if: ${{ !inputs.dry_run }}
-        uses: pypa/gh-action-pypi-publish@v1.8.6
+        uses: pypa/gh-action-pypi-publish@v1.8.7
         with:
           password: ${{ secrets.PYPI_TOKEN }}
           packages_dir: python/dist/
           skip_existing: true
+
+      - name: Publish Rust crate
+        if: ${{ !inputs.dry_run }}
+        run: |
+          cd rust/
+          cargo publish --token ${CRATES_TOKEN}
+        env:
+          # clang is necessary unless we want to do --no-verify
+          LIBCLANG_PATH: ${{ runner.temp }}/llvm/lib
+          LLVM_CONFIG_PATH: ${{ runner.temp }}/llvm/bin/llvm-config
+          CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
 
       - name: Create JuliaRegistration comment
         if: ${{ !inputs.dry_run }}

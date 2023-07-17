@@ -10,7 +10,7 @@ fn main() {
         .unwrap()
         .join("test_models/simple/simple_model.so");
 
-    let lib = open_library(path).expect("Could not load compiled stan model.");
+    let lib = open_library(path).expect("Could not load compiled Stan model.");
 
     // The dataset as json
     let data = r#"{"N": 7}"#;
@@ -24,7 +24,7 @@ fn main() {
         Ok(model) => model,
         Err(BridgeStanError::ConstructFailed(msg)) => {
             panic!(
-                "Model initialization failed. Error message from stan was {}",
+                "Model initialization failed. Error message from Stan was {}",
                 msg
             )
         }

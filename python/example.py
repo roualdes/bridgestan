@@ -2,7 +2,11 @@ import numpy as np
 
 import bridgestan as bs
 
-bs.set_bridgestan_path("../")
+# These paths are what they are because this example lives in a subfolder
+# of the BridgeStan repository. If you're running this on your own, you
+# will most likely want to delete the next line (to have BridgeStan
+# download its sources for you) and change the paths on the following two
+bs.set_bridgestan_path("..")
 
 stan = "../test_models/bernoulli/bernoulli.stan"
 data = "../test_models/bernoulli/bernoulli.data.json"
