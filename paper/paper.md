@@ -35,7 +35,7 @@ bibliography: paper.bib
 
 Stan provides a probabilistic programming language in which users can code
 Bayesian models [@Carpenter:2017; @Stan:2022]. A Stan program is transpiled to
-to a C++ class which links to the Stan math library to implement smooth,
+to a C++ class that links to the Stan math library to implement smooth,
 unconstrained posterior log densities, gradients, and Hessians as well as
 constraining/unconstraining transforms.  Implementation is provided through
 automatic differentiation in the Stan math library
@@ -49,13 +49,13 @@ with minimal additional development.
 
 # Statement of need
 
-Stan was developed for applied statisticians working on real world
+Stan was developed for applied statisticians working on real-world
 problems and has been used by hundreds of thousands of researchers and
-practitioners across the social, biological, and physical sciences,
+practitioners across the social, biological, and physical sciences, as well as
 engineering, education, sports, and finance. Stan provides several
 state-of-the-art, gradient-based algorithms: full Bayesian inference
 with Hamiltonian Monte Carlo, Laplace approximation based on L-BFGS
-optimization, and autodiff variational inference (ADVI).
+optimization, and automatic differentiation variational inference (ADVI).
 
 In the statistical software environment R, Stan is heavily relied upon for
 development of applied statistics packages. Using Google's
@@ -78,31 +78,31 @@ the Stan Math library, which are written to appropriately handle numerical
 issues such as under/over-flow and sum-to-one constraints.  Algorithm developers
 using `BridgeStan` can thus focus more on their algorithms and less on their
 implementations.  These benefits also ensure more precise and stable
-implementations of statistical algorithms allowing for more fair comparisons.
+implementations of statistical algorithms, allowing for more fair comparisons.
 
 `BridgeStan` is an interface, written in C-compatible C++, between a Stan
-program and any higher level language which exposes a C foreign function
+program and any higher level language that exposes a C foreign function
 interface. Julia, Python, and R each have C foreign function interfaces. Using
 memory allocated within such higher level languages, `BridgeStan` provides
-computations of the log joint density function, and its gradient, of a Stan
+computations of the log joint density function and corresponding gradient of a Stan
 model, which is itself implemented using highly templated C++ from the Stan math
 library. Using a memory-compatible C interface makes this possible even if the
 host language (e.g., R) was compiled with a different compiler, something no
-prior interface which exposed Stan's log density calculations could allow.
+prior interface that exposed Stan's log density calculations could allow.
 
 Other software in the Stan ecosystem provides some overlapping features with
 `BridgeStan`.  For instance, `rstan` [@rstan] provides functions `log_prob` and
 `grad_log_prob`, which provide access to the log joint density and its gradient.
 Similarly, `httpstan` [@httpstan] offers `log_prob` and `log_prob_grad`.  Such
 cases of similar functionality are unfortunately limited.  As of 2023-05-19,
-`rstan` via CRAN is still on Stan version 2.21.0 (released 2019-10-18) and the
+`rstan` via CRAN is still on Stan version 2.21.0 (released 2019-10-18), and the
 development version of `rstan`, which is not hosted on CRAN, is on Stan version
 2.26.1 (released 2021-02-17), while the latest version of Stan is on 2.32.2
 (released 2023-05-15).  Further, `rstan` is limited to the host language R.  On
-the other hand, `httpstan` is a Python package which offers a REST API,
+the other hand, `httpstan` is a Python package that offers a REST API,
 primarily targeting the Stan algorithms, which allows some limited access to the
 methods of a Stan model.  The REST API may be used by languages other than
-Python, but by design cannot take advantage of direct memory access of the host
+Python but by design cannot take advantage of direct memory access of the host
 language.  Additionally, `httpstan` is not natively supported on Windows
 operating systems.  `BridgeStan` addresses these issues by providing a portable
 and easy to maintain shim between any host language with a foreign function
@@ -117,15 +117,15 @@ community predominantly uses CPU hardware, and since Stan has been
 tuned for CPU performance, `BridgeStan` is more efficient than its
 competitors in implementing differentiable log densities on CPUs
 [@Carpenter:2015; @Radul:2020; @Tarek:2020].  Like the immutable Stan
-models they interface, `BridgeStan` functions are thread safe for
+models they interface, `BridgeStan` functions are thread-safe for
 parallel applications. They also support all of the internal
 parallelization of Stan models, such as internal parallel map
 functions and GPU-enabled matrix operations.
 
 `BridgeStan` enables memory allocated in the host language (Julia, Python, or
-R), to be reused within Stan; though any language with a C foreign function
+R), to be reused within Stan, though any language with a C foreign function
 interface could be similarly interfaced to access Stan methods. For instance,
-the `BridgeStan` function `log_density_gradient` has an optional output argument, the
+the `BridgeStan` function `log_density_gradient` has as an optional output argument the
 array into which the gradient will be stored.  By avoiding unnecessary copies,
 `BridgeStan` is a zero-cost abstraction built upon Stan's math library.  If no
 output argument is passed to `log_density_gradient`, then at most one memory
@@ -134,16 +134,16 @@ allocation, occuring in the host language, takes place.
 # Example
 
 The probabilistic programming language Stan, together with its
-automatic differentiation tools enable parameterizations of otherwise
+automatic differentiation tools, enables parameterizations of otherwise
 numerically challenging distributions. Consider the following Stan
 program, which encodes an isotropic multivariate Student-t
 distribution of dimension $D$ and degrees of freedom $df$.
 
 This parameterization[^1] of the Student-t distribution enables gradient-based
 Markov chain Monte Carlo algorithms to capture the heaviness of the tails when
-$df$ is less than say $30$. Calculating the gradient of the joint log density
+$df$ is less than $\sim 30$. Calculating the gradient of the joint log density
 of this parameterization of the Student-t distribution is not difficult, but it
-is cumbersome and time consuming to encode in software. Since `BridgeStan` uses
+is cumbersome and time-consuming to encode in software. Since `BridgeStan` uses
 Stan, users of `BridgeStan` can trust that their bespoke parameterizations of
 numerically challenging distributions will be differentiated with
 thoroughly tested tools from Stan.
@@ -221,14 +221,14 @@ for (i, draw) in enumerate(unc_draws):
 
 On the [Stan Discourse forums](https://discourse.mc-stan.org/), statistical
 algorithm developers have long asked for access to the gradients and Hessians that
-underlie the statistical model of a Stan program, see for instance requests on
+underlie the statistical model of a Stan program. Examples include requests on
 the Stan Discourse forums related to the phrase [extract gradient](https://discourse.mc-stan.org/search?q=extract%20gradient) or the
-software from which `BridgeStan` is derived [Stan Model Server](https://github.com/bob-carpenter/stan-model-server/) and [ReddingStan](https://github.com/dmuck/redding-stan). `BridgeStan` enables access to
-these methods, with a portable and in-memory solution. Further, because
+software from which `BridgeStan` is derived: [Stan Model Server](https://github.com/bob-carpenter/stan-model-server/) and [ReddingStan](https://github.com/dmuck/redding-stan). `BridgeStan` enables access to
+these methods with a portable and in-memory solution. Further, because
 statistical models are so easy to write in Stan, algorithm developers can write
 their model in common statistical notation using the Stan programming language
 and then rely on the Stan math library and its automatic differentiation toolset
-to more easily build advanced gradient based statistical inference
+to more easily build advanced gradient-based statistical inference
 algorithms. `BridgeStan` documentation and example programs are found at
 <https://roualdes.github.io/bridgestan/index.html>.
 
