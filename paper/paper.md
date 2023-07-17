@@ -244,5 +244,7 @@ algorithms. `BridgeStan` documentation and example programs are found at
 
 Edward A. Roualdes received support from Flatiron Institute during the beginning
 of this project.
+Seth D. Axen is funded by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation)
+under Germany’s Excellence Strategy – EXC number 2064/1 – Project number 390727645.
 
 # References
