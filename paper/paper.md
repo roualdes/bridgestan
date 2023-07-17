@@ -43,8 +43,8 @@ automatic differentiation in the Stan math library
 models through Python, Julia, and R. This allows algorithm development in these
 languages with the numerical efficiency and expressiveness of Stan models.
 Furthermore, these features are exposed through a language-agnostic C API,
-allowing foreign function interfaces in other languages with minimal additional
-development.
+allowing foreign function interfaces in other languages to utilize `BridgeStan`
+with minimal additional development.
 
 
 # Statement of need
@@ -73,7 +73,7 @@ and Julia. `BridgeStan` answers this call, making it easy for algorithm
 developers to incorporate existing Stan models in their evaluation, e.g., the
 dozens of diverse models with reference posteriors in
 [`posteriordb`](https://github.com/stan-dev/posteriordb) [@Magnusson:2022].
-`BridgeStan` further aides algorithm development by leveraging the functions in
+`BridgeStan` further aids algorithm development by leveraging the functions in
 the Stan Math library, which are written to appropriately handle numerical
 issues such as under/over-flow and sum-to-one constraints.  Algorithm developers
 using `BridgeStan` can thus focus more on their algorithms and less on their
