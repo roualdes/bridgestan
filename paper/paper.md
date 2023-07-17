@@ -22,11 +22,16 @@ authors:
     orcid: 0000-0002-2433-9688
     equal-contrib: true
     affiliation: 2
+  - name: Seth D. Axen
+    orcid: 0000-0003-3933-8247
+    affiliation: 3
 affiliations:
  - name: California State University, Chico
    index: 1
  - name: Center for Computational Mathematics, Flatiron Institute
    index: 2
+ - name: "Cluster of Excellence Machine Learning: New Perspectives for Science, University of Tübingen"
+   index: 3
 date: 5 January 2022
 bibliography: paper.bib
 ---
