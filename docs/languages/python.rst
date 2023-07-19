@@ -11,7 +11,7 @@ Installation
 From PyPI
 _________
 
-For convience, BridgeStan is uploaded to the Python Package Index each release.
+For convenience, BridgeStan is uploaded to the Python Package Index each release.
 
 .. code-block:: shell
 

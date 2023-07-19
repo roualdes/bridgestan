@@ -24,8 +24,8 @@ end
     not_stanfile = joinpath(models, "multi", "multi.data.json")
     @test_throws ErrorException BridgeStan.compile_model(not_stanfile)
 
-    nonexistant = joinpath(models, "multi", "multi-notthere.stan")
-    @test_throws SystemError BridgeStan.compile_model(nonexistant)
+    nonexistent = joinpath(models, "multi", "multi-notthere.stan")
+    @test_throws SystemError BridgeStan.compile_model(nonexistent)
 
     syntax_error = joinpath(models, "syntax_error", "syntax_error.stan")
     @test_throws ErrorException BridgeStan.compile_model(syntax_error)

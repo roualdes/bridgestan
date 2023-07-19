@@ -32,7 +32,7 @@ def pytest_configure(config):
     for type in types[1:]:
         config.addinivalue_line(
             "markers",
-            f"{type}: mark test as needing a seperate process in group {type}",
+            f"{type}: mark test as needing a separate process in group {type}",
         )
 
 

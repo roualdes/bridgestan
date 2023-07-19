@@ -49,7 +49,7 @@ To support calling these functions from R without including R-specific headers
 into the project, the following functions are exposed in :file:`bridgestanR.h`.
 
 These are small shims which call the above functions. All arguments and return values
-must be handeled via pointers.
+must be handled via pointers.
 
 .. autodoxygenfile:: bridgestanR.h
     :project: bridgestan
