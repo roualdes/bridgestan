@@ -25,6 +25,8 @@ authors:
   - name: Seth D. Axen
     orcid: 0000-0003-3933-8247
     affiliation: 3
+  - name: Adrian Seyboldt
+    orcid: 0000-0002-4239-4541
 affiliations:
  - name: California State University, Chico
    index: 1
