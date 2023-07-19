@@ -28,6 +28,7 @@ authors:
     affiliation: 3
   - name: Adrian Seyboldt
     orcid: 0000-0002-4239-4541
+    affiliation: 4
 affiliations:
  - name: California State University, Chico
    index: 1
@@ -35,6 +36,8 @@ affiliations:
    index: 2
  - name: "Cluster of Excellence Machine Learning: New Perspectives for Science, University of Tübingen"
    index: 3
+ - name: PyMC Labs
+   index: 4
 date: 5 January 2022
 bibliography: paper.bib
 ---
