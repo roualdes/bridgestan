@@ -5,6 +5,7 @@ tags:
   - Python
   - Julia
   - R
+  - Rust
   - C
   - C++
   - automatic differentiation
@@ -47,7 +48,7 @@ unconstrained posterior log densities, gradients, and Hessians as well as
 constraining/unconstraining transforms.  Implementation is provided through
 automatic differentiation in the Stan math library
 [@Carpenter:2015]. `BridgeStan` provides in-memory access to the methods of Stan
-models through Python, Julia, and R. This allows algorithm development in these
+models through Python, Julia, R and Rust. This allows algorithm development in these
 languages with the numerical efficiency and expressiveness of Stan models.
 Furthermore, these features are exposed through a language-agnostic C API,
 allowing foreign function interfaces in other languages to utilize `BridgeStan`
@@ -89,7 +90,7 @@ implementations of statistical algorithms, allowing for more fair comparisons.
 
 `BridgeStan` is an interface, written in C-compatible C++, between a Stan
 program and any higher level language that exposes a C foreign function
-interface. Julia, Python, and R each have C foreign function interfaces. Using
+interface. Julia, Python, R and Rust each have C foreign function interfaces. Using
 memory allocated within such higher level languages, `BridgeStan` provides
 computations of the log joint density function and corresponding gradient of a Stan
 model, which is itself implemented using highly templated C++ from the Stan math
@@ -129,8 +130,8 @@ parallel applications. They also support all of the internal
 parallelization of Stan models, such as internal parallel map
 functions and GPU-enabled matrix operations.
 
-`BridgeStan` enables memory allocated in the host language (Julia, Python, or
-R), to be reused within Stan, though any language with a C foreign function
+`BridgeStan` enables memory allocated in the host language (Julia, Python, R or Rust),
+to be reused within Stan, though any language with a C foreign function
 interface could be similarly interfaced to access Stan methods. For instance,
 the `BridgeStan` function `log_density_gradient` has as an optional output argument the
 array into which the gradient will be stored.  By avoiding unnecessary copies,
