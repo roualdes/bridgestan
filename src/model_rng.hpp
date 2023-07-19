@@ -49,7 +49,7 @@ class bs_model {
 
   /**
    * Return the parameter names as a comma-separated list.  Indexes
-   * are separted with periods. This class manages the memory, so
+   * are separated with periods. This class manages the memory, so
    * the returned string should not be freed.
    *
    * @param[in] include_tp `true` to include transformed parameters
