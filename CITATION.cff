@@ -1,19 +1,56 @@
-cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
+cff-version: "1.2.0"
 authors:
-- family-names: "Roualdes"
-  given-names: "Edward"
+- family-names: Roualdes
+  given-names: Edward A.
   orcid: "https://orcid.org/0000-0002-8757-3463"
-- family-names: "Ward"
-  given-names: "Brian"
+- family-names: Ward
+  given-names: Brian
   orcid: "https://orcid.org/0000-0002-9841-3342"
-- family-names: "Axen"
-  given-names: "Seth"
-- family-names: "Carpenter"
-  given-names: "Bob"
+- family-names: Carpenter
+  given-names: Bob
   orcid: "https://orcid.org/0000-0002-2433-9688"
-title: "BridgeStan: Efficient in-memory access to Stan programs through Python, Julia, and R"
-version: 1.0.2
+- family-names: Seyboldt
+  given-names: Adrian
+  orcid: "https://orcid.org/0000-0002-4239-4541"
+- family-names: Axen
+  given-names: Seth D.
+  orcid: "https://orcid.org/0000-0003-3933-8247"
+contact:
+- family-names: Roualdes
+  given-names: Edward A.
+  orcid: "https://orcid.org/0000-0002-8757-3463"
 doi: 10.5281/zenodo.7760173
-date-released: 2023-03-22
-url: "https://github.com/roualdes/bridgestan"
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
+  - family-names: Roualdes
+    given-names: Edward A.
+    orcid: "https://orcid.org/0000-0002-8757-3463"
+  - family-names: Ward
+    given-names: Brian
+    orcid: "https://orcid.org/0000-0002-9841-3342"
+  - family-names: Carpenter
+    given-names: Bob
+    orcid: "https://orcid.org/0000-0002-2433-9688"
+  - family-names: Seyboldt
+    given-names: Adrian
+    orcid: "https://orcid.org/0000-0002-4239-4541"
+  - family-names: Axen
+    given-names: Seth D.
+    orcid: "https://orcid.org/0000-0003-3933-8247"
+  date-published: 2023-07-22
+  doi: 10.21105/joss.05236
+  issn: 2475-9066
+  issue: 87
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 5236
+  title: "BridgeStan: Efficient in-memory access to the methods of a
+    Stan model"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.05236"
+  volume: 8
+title: "`BridgeStan`: Efficient in-memory access to the methods of a
+  Stan model"
