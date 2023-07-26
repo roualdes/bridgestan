@@ -304,7 +304,7 @@ int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
  * @param[out] val log density to set
  * @param[out] hvp Hessian-vector to set
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling `bs_free_error_msg`.
+ * is an error. This must later be freed by calling bs_free_error_msg().
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
