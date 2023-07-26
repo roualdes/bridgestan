@@ -92,7 +92,7 @@ pub enum BridgeStanError {
     /// Stan returned a string that couldn't be decoded using UTF8.
     #[error("Failed to decode string to UTF8")]
     InvalidString(#[from] Utf8Error),
-    /// The model could not be instanciated, possibly because if incorrect data.
+    /// The model could not be instantiated, possibly because if incorrect data.
     #[error("Failed to construct model: {0}")]
     ConstructFailed(String),
     /// Stan returned an error while computing the density.

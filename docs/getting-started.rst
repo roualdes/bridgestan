@@ -24,7 +24,8 @@ and no additional dependencies are required to be installed separately for the C
 
 As of version 1.0.2, the :doc:`Julia <languages/julia>` and
 :doc:`Python <languages/python>` interfaces will download
-the source for you, so this section is optional.
+the source for you the first time you compile a model, so
+this section is optional.
 
 Downloading a released archive
 ______________________________

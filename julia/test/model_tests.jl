@@ -577,7 +577,7 @@ end
 
 
 @testset "gaussian" begin
-    # Guassian with positive constrained standard deviation
+    # Gaussian with positive constrained standard deviation
     # make test_models/gaussian/gaussian_model.so
 
     model = load_test_model("gaussian")

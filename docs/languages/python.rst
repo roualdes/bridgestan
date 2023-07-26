@@ -11,14 +11,14 @@ Installation
 From PyPI
 _________
 
-For convience, BridgeStan is uploaded to the Python Package Index each release.
+For convenience, BridgeStan is uploaded to the Python Package Index each release.
 
 .. code-block:: shell
 
     pip install bridgestan
 
 
-The first time you need it, the BridgeStan source code will be downloaded
+The first time you compile a model, the BridgeStan source code will be downloaded
 and placed in :file:`~/.bridgestan/`. If you prefer to use a source distribution of BridgeStan,
 consult the following section.
 
