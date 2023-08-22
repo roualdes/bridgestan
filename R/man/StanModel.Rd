@@ -89,6 +89,7 @@ A character vector of the Stan version and important flags.
 \if{html}{\out{<a id="method-StanModel-model_version"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-model_version}{}}}
 \subsection{Method \code{model_version()}}{
+Get the version of BridgeStan used in the compiled model.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$model_version()}\if{html}{\out{</div>}}
 }

@@ -15,6 +15,7 @@ StanModel <- R6::R6Class("StanModel",
     #' @return A new StanModel.
     initialize = function(lib, data, seed) {
       if (.Platform$OS.type == "windows"){
+        windows_path_setup()
         lib_old <- lib
         lib <- paste0(tools::file_path_sans_ext(lib), ".dll")
         file.copy(from=lib_old, to=lib)
@@ -75,7 +76,8 @@ StanModel <- R6::R6Class("StanModel",
         PACKAGE = private$lib_name
       )$info_out
     },
-
+    #' @description
+    #' Get the version of BridgeStan used in the compiled model.
     model_version= function() {
       .C("bs_version_R",
         major = as.integer(0),
@@ -345,7 +347,7 @@ handle_error <- function(lib_name, err_msg, err_ptr, function_name) {
 #' StanRNG
 #'
 #' RNG object for use with `StanModel$param_constrain()`
-#' @field rng The pointer to the RNG object.
+#' @field ptr The pointer to the RNG object.
 #' @keywords internal
 StanRNG <- R6::R6Class("StanRNG",
   public = list(

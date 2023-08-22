@@ -29,8 +29,6 @@ def verify_bridgestan_path(path: str) -> None:
 IS_WINDOWS = platform.system() == "Windows"
 WINDOWS_PATH_SET = False
 
-PYTHON_FOLDER = Path(__file__).parent.parent
-
 MAKE = os.getenv(
     "MAKE",
     "make" if not IS_WINDOWS else "mingw32-make",
