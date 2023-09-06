@@ -156,7 +156,7 @@ function will throw an error.
 
 This tolerance is set in the Stan Math library, but can be overridden by defining the
 ``STAN_MATH_CONSTRAINT_TOLERANCE`` during compilation. One way to do this in BridgeStan is
-to set `CPPFLAGS` in :file:`make/local`:
+to set :makevar:`CPPFLAGS` in :file:`make/local`:
 
 .. code-block:: Makefile
 
