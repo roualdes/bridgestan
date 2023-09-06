@@ -105,7 +105,7 @@ print-%  : ; @echo $* = $($*) ;
 STANC_DL_RETRY = 5
 STANC_DL_DELAY = 10
 STANC3_TEST_BIN_URL ?=
-STANC3_VERSION ?= v2.32.2
+STANC3_VERSION ?= v2.33.0
 
 ifeq ($(OS),Windows_NT)
  OS_TAG := windows

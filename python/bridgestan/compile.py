@@ -38,14 +38,10 @@ MAKE = os.getenv(
 
 
 def set_bridgestan_path(path: str) -> None:
-    """Set the path to BridgeStan.
+    """
+    Set the path to BridgeStan.
 
     This should point to the top-level folder of the repository.
-
-    By default this is set to the value of the environment
-    variable ``BRIDGESTAN``, or to the folder above the location
-    of this package (which, assuming a source installation, corresponds
-    to the repository root).
     """
     path = os.path.abspath(path)
     verify_bridgestan_path(path)
@@ -53,6 +49,18 @@ def set_bridgestan_path(path: str) -> None:
 
 
 def get_bridgestan_path():
+    """
+    Get the path to BridgeStan.
+
+    By default this is set to the value of the environment
+    variable ``BRIDGESTAN``.
+
+    If there is no path set, this function will download
+    a matching version of BridgeStan to a folder called
+    ``.bridgestan`` in the user's home directory.
+
+    See also :func:`set_bridgestan_path`
+    """
     path = os.getenv("BRIDGESTAN", "")
     if path == "":
         try:
@@ -108,7 +116,6 @@ def compile_model(
     if file_path.suffix != ".stan":
         raise ValueError(f"File '{stan_file}' does not end in .stan")
 
-    stanc_args
     output = generate_so_name(file_path)
     cmd = (
         [MAKE]

@@ -143,6 +143,25 @@ do not in the same program.
 Autodiff Hessians may be faster than finite differences depending on your model, and will
 generally be more numerically stable.
 
+Constraint tolerances
+_____________________
+
+The ``param_unconstrain`` family of functions check their inputs to ensure that they
+are in the support of the unconstraining transform. For example, if the model has a ``simplex``
+parameter, it will verify that all of the elements sum to 1.0.
+
+When unconstraining outputs from e.g. CmdStan, it is not uncommon that these constraints are
+violated by a small amount due to numerical error. If this amount is larger than `1e-8`, the
+function will throw an error.
+
+This tolerance is set in the Stan Math library, but can be overridden by defining the
+``STAN_MATH_CONSTRAINT_TOLERANCE`` during compilation. One way to do this in BridgeStan is
+to set `CPPFLAGS` in :file:`make/local`:
+
+.. code-block:: Makefile
+
+    CPPFLAGS+=-DSTAN_MATH_CONSTRAINT_TOLERANCE=1e-5
+
 Using Older Stan Versions
 __________________________
 
