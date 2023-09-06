@@ -50,7 +50,7 @@ fn create_all_late_drop_fwd() {
             let Ok(model) = Model::new(&lib, data.as_ref(), 42) else {
                 // Only those two models should fail to create.
                 assert!((name == "ode") | (name == "throw_data"));
-                return lib
+                return lib;
             };
             assert!(model.name().unwrap().contains(&name));
             drop(model);
@@ -81,10 +81,10 @@ fn create_all_thread_serial() {
             let (lib, data) = get_model(&name);
             // Create the model with a reference
             let Ok(model) = Model::new(&lib, data.as_ref(), 42) else {
-                    // Only those two models should fail to create.
-                    assert!((name == "ode") | (name == "throw_data"));
-                    return;
-                };
+                // Only those two models should fail to create.
+                assert!((name == "ode") | (name == "throw_data"));
+                return;
+            };
             assert!(model.name().unwrap().contains(&name));
         })
         .join()

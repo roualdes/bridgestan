@@ -2,7 +2,6 @@
 #include "version.hpp"
 #include <stan/io/ends_with.hpp>
 #include <stan/io/json/json_data.hpp>
-#include <stan/io/array_var_context.hpp>
 #include <stan/io/empty_var_context.hpp>
 #include <stan/io/var_context.hpp>
 #include <stan/model/model_base.hpp>
@@ -203,14 +202,9 @@ int bs_model::param_num(bool include_tp, bool include_gq) const {
 }
 
 void bs_model::param_unconstrain(const double* theta, double* theta_unc) const {
-  std::vector<std::vector<size_t>> dims;
-  model_->get_dims(dims, false, false);
-  std::vector<std::string> names;
-  model_->get_param_names(names, false, false);
   Eigen::VectorXd params = Eigen::VectorXd::Map(theta, param_num_);
-  stan::io::array_var_context avc(names, params, dims);
   Eigen::VectorXd unc_params;
-  model_->transform_inits(avc, unc_params, outstream);
+  model_->unconstrain_array(params, unc_params, outstream);
   Eigen::VectorXd::Map(theta_unc, unc_params.size()) = unc_params;
 }
 
@@ -257,17 +251,19 @@ auto bs_model::make_model_lambda(bool propto, bool jacobian) const {
 
 void bs_model::log_density(bool propto, bool jacobian, const double* theta_unc,
                            double* val) const {
-  int N = param_unc_num_;
+  Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, param_unc_num_);
+
   if (propto) {
-    Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
-    auto logp = make_model_lambda(propto, jacobian);
-#ifdef STAN_THREADS
-    static thread_local stan::math::ChainableStack thread_instance;
-#endif
-    Eigen::VectorXd grad(N);
-    stan::math::gradient(logp, params_unc, *val, grad);
+    // need to have vars, otherwise the result is 0 since everything is
+    // treated as a constant
+    Eigen::Matrix<stan::math::var, Eigen::Dynamic, 1> params_unc_var(
+        params_unc);
+    if (jacobian) {
+      *val = model_->log_prob_propto_jacobian(params_unc_var, outstream).val();
+    } else {
+      *val = model_->log_prob_propto(params_unc_var, outstream).val();
+    }
   } else {
-    Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, N);
     if (jacobian) {
       *val = model_->log_prob_jacobian(params_unc, outstream);
     } else {

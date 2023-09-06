@@ -37,9 +37,6 @@ end
     set_bridgestan_path!(path)
 
 Set the path BridgeStan.
-
-By default this is set to the value of the environment variable
-`BRIDGESTAN`.
 """
 function set_bridgestan_path!(path::AbstractString)
     validate_stan_dir(path)
