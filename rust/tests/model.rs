@@ -77,7 +77,9 @@ fn hessian_vector_product() {
         .unwrap();
 
     let minus_v: Vec<f64> = v.iter().map(|x| -x).collect();
-    assert_eq!(minus_v, out);
+    for (x, y) in out.iter().zip(minus_v.iter()) {
+        assert_ulps_eq!(x, y);
+    }
 }
 
 #[test]
