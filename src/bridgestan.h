@@ -291,9 +291,9 @@ int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
  * and -1 if there is an exception executing the Stan program. The
  * pointer `hvp` must have enough space to hold the product.
  *
- * @note If `BRIDGESTAN_AD_HESSIAN` is not defined, the complexity of this
- * function goes from O(N^2) to O(N^3), and the accuracy of the result is
- * reduced due to the use of finite differences internally.
+ * Hessian-vector-products are computed using nested automatic
+ * differentiation if BRIDGESTAN_AD_HESSIAN is defined, otherwise
+ * they are computed using central finite differences.
  *
  * @param[in] m pointer to model structure
  * @param[in] propto `true` to drop constant terms
