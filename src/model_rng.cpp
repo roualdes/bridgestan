@@ -2,7 +2,6 @@
 #include "version.hpp"
 #include <stan/io/ends_with.hpp>
 #include <stan/io/json/json_data.hpp>
-#include <stan/io/array_var_context.hpp>
 #include <stan/io/empty_var_context.hpp>
 #include <stan/io/var_context.hpp>
 #include <stan/model/model_base.hpp>
@@ -203,14 +202,9 @@ int bs_model::param_num(bool include_tp, bool include_gq) const {
 }
 
 void bs_model::param_unconstrain(const double* theta, double* theta_unc) const {
-  std::vector<std::vector<size_t>> dims;
-  model_->get_dims(dims, false, false);
-  std::vector<std::string> names;
-  model_->get_param_names(names, false, false);
   Eigen::VectorXd params = Eigen::VectorXd::Map(theta, param_num_);
-  stan::io::array_var_context avc(names, params, dims);
   Eigen::VectorXd unc_params;
-  model_->transform_inits(avc, unc_params, outstream);
+  model_->unconstrain_array(params, unc_params, outstream);
   Eigen::VectorXd::Map(theta_unc, unc_params.size()) = unc_params;
 }
 
