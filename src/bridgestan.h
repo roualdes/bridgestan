@@ -295,7 +295,7 @@ int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
  * Hessian-vector-products are computed using nested automatic
  * differentiation if `BRIDGESTAN_AD_HESSIAN` is defined, otherwise
  * they are computed using central finite differences of the gradient
- * of `theta_unc` perterbed in the direction of `vector`. This
+ * of `theta_unc` perturbed in the direction of `vector`. This
  * approximates the Hessian-vector product using two gradient
  * evaluations, but at a lower accuracy than the nested automatic
  * differentiation.
