@@ -261,10 +261,11 @@ int bs_log_density_gradient(const bs_model* m, bool propto, bool jacobian,
  * pointer `grad` must have enough space to hold the gradient.  The
  * pointer `hessian` must have enough space to hold the Hessian.
  *
- * The gradients are computed using automatic differentiation.  the
+ * The gradients are computed using automatic differentiation.
  * Hessians are computed using nested automatic differentiation if
- * BRIDGESTAN_AD_HESSIAN is defined, otherwise they are computed
- * using central finite differences.
+ * `BRIDGESTAN_AD_HESSIAN` is defined, otherwise they are computed
+ * using central finite differences of `size(theta_unc)` calculations
+ * of gradient.
  *
  * @param[in] m pointer to model structure
  * @param[in] propto `true` to discard constant terms
@@ -284,7 +285,7 @@ int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
 
 /**
  * Calculate the log density and the product of the Hessian with the specified
- * vector for the specified unconstrain parameters and write it into the
+ * vector for the specified unconstrained parameters and write it into the
  * specified value pointer and Hessian-vector product pointer, dropping
  * constants it `propto` is `true` and including the Jacobian adjustment if
  * `jacobian` is `true`. Returns a return code of 0 for success
@@ -292,8 +293,12 @@ int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
  * pointer `hvp` must have enough space to hold the product.
  *
  * Hessian-vector-products are computed using nested automatic
- * differentiation if BRIDGESTAN_AD_HESSIAN is defined, otherwise
- * they are computed using central finite differences.
+ * differentiation if `BRIDGESTAN_AD_HESSIAN` is defined, otherwise
+ * they are computed using central finite differences of the gradient
+ * of `theta_unc` perterbed in the direction of `vector`. This
+ * approximates the Hessian-vector product using two gradient
+ * evaluations, but at a lower accuracy than the nested automatic
+ * differentiation.
  *
  * @param[in] m pointer to model structure
  * @param[in] propto `true` to drop constant terms

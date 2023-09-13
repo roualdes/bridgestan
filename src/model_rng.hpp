@@ -176,10 +176,6 @@ class bs_model {
    * constants it `propto` is `true` and including the Jacobian adjustment if
    * `jacobian` is `true`.
    *
-   * @note If `BRIDGESTAN_AD_HESSIAN` is not defined, the complexity of this
-   * function goes from O(N^2) to O(N^3), and the accuracy of the result is
-   * reduced.
-   *
    * @param[in] propto `true` to drop constant terms
    * @param[in] jacobian `true` to include Jacobian adjustment for
    * constrained parameter transforms
