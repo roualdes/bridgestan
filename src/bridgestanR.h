@@ -84,6 +84,14 @@ void bs_log_density_hessian_R(bs_model** model, int* propto, int* jacobian,
                               double* grad, double* hess, int* return_code,
                               char** err_msg, void** err_ptr);
 
+/// See \link bs_log_density_hessian_vector_product() \endlink for more details.
+void bs_log_density_hessian_vector_product_R(bs_model** model, int* propto,
+                                             int* jacobian,
+                                             const double* theta_unc,
+                                             const double* vector, double* val,
+                                             double* Hvp, int* return_code,
+                                             char** err_msg, void** err_ptr);
+
 /// See \link bs_rng_construct() \endlink for more details.
 void bs_rng_construct_R(int* seed, bs_rng** ptr_out, char** err_msg,
                         void** err_ptr);

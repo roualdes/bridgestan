@@ -709,7 +709,7 @@ def test_stdout_capture():
     assert x == 500  # 2 calls per print, 10 threads, 25 iterations
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def recompile_simple():
     """Recompile simple_model with autodiff hessian enable, then clean-up/restore it after test"""
 
@@ -734,3 +734,15 @@ def test_hessian_autodiff(recompile_simple):
     lp, grad, hess = model.log_density_hessian(y)
     np.testing.assert_allclose(-y, grad)
     np.testing.assert_allclose(-np.identity(D), hess)
+
+
+@pytest.mark.ad_hessian
+def test_hvp_autodiff(recompile_simple):
+    simple_data = str(STAN_FOLDER / "simple" / "simple.data.json")
+    model = bs.StanModel(recompile_simple, simple_data)
+    assert "BRIDGESTAN_AD_HESSIAN=true" in model.model_info()
+    D = 5
+    y = np.random.uniform(size=D)
+    x = np.random.uniform(size=D)
+    lp, hvp = model.log_density_hessian_vector_product(y, x)
+    np.testing.assert_allclose(-x, hvp)

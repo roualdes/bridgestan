@@ -14,12 +14,14 @@ export StanModel,
     param_unconstrain_json!,
     log_density_gradient!,
     log_density_hessian!,
+    log_density_hessian_vector_product!,
     param_constrain,
     param_unconstrain,
     param_unconstrain_json,
     log_density,
     log_density_gradient,
     log_density_hessian,
+    log_density_hessian_vector_product,
     get_bridgestan_path,
     set_bridgestan_path!,
     compile_model,
@@ -49,10 +51,13 @@ function __init__()
     # On Windows, we may need to add TBB to %PATH%
     if Sys.iswindows()
         try
-            run(pipeline(`where.exe tbb.dll`, stdout=devnull, stderr=devnull))
+            run(pipeline(`where.exe tbb.dll`, stdout = devnull, stderr = devnull))
         catch
             # add TBB to %PATH%
-            ENV["PATH"] = joinpath(get_bridgestan_path(), "stan", "lib", "stan_math", "lib", "tbb") * ";" * ENV["PATH"]
+            ENV["PATH"] =
+                joinpath(get_bridgestan_path(), "stan", "lib", "stan_math", "lib", "tbb") *
+                ";" *
+                ENV["PATH"]
         end
     end
 end

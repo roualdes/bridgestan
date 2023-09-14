@@ -59,6 +59,30 @@ fn logp_hessian() {
 }
 
 #[test]
+fn hessian_vector_product() {
+    let (lib, data) = get_model("simple");
+    let model = Model::new(&lib, data, 42).unwrap();
+
+    let n = model.param_unc_num();
+    use rand::Rng;
+
+    let mut rng = rand::thread_rng();
+
+    let theta = vec![0.0; n];
+    let v: Vec<f64> = (0..n).map(|_| rng.gen()).collect();
+
+    let mut out = vec![0.0; n];
+    let _logp = model
+        .log_density_hessian_vector_product(&theta, &v, false, true, &mut out)
+        .unwrap();
+
+    let minus_v: Vec<f64> = v.iter().map(|x| -x).collect();
+    for (x, y) in out.iter().zip(minus_v.iter()) {
+        assert_ulps_eq!(x, y);
+    }
+}
+
+#[test]
 #[should_panic(expected = "must come from the same")]
 fn bad_rng() {
     let (lib1, data1) = get_model("stdnormal");

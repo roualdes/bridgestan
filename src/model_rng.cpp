@@ -306,3 +306,28 @@ void bs_model::log_density_hessian(bool propto, bool jacobian,
   Eigen::VectorXd::Map(grad, N) = grad_vec;
   Eigen::MatrixXd::Map(hessian, N, N) = hess_mat;
 }
+
+void bs_model::log_density_hessian_vector_product(bool propto, bool jacobian,
+                                                  const double* theta_unc,
+                                                  const double* vector,
+                                                  double* val,
+                                                  double* hvp) const {
+#ifdef STAN_THREADS
+  static thread_local stan::math::ChainableStack thread_instance;
+#endif
+  auto logp = make_model_lambda(propto, jacobian);
+
+  int N = param_unc_num_;
+  Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
+  Eigen::Map<const Eigen::VectorXd> v(vector, N);
+  Eigen::VectorXd hvp_vec(N);
+
+#ifdef BRIDGESTAN_AD_HESSIAN
+  stan::math::hessian_times_vector(logp, params_unc, v, *val, hvp_vec);
+#else
+  stan::math::internal::finite_diff_hessian_times_vector_auto(logp, params_unc,
+                                                              v, *val, hvp_vec);
+#endif
+
+  Eigen::VectorXd::Map(hvp, N) = hvp_vec;
+}

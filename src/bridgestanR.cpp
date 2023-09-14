@@ -77,6 +77,16 @@ void bs_log_density_hessian_R(bs_model** model, int* propto, int* jacobian,
                                         val, grad, hess, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
+void bs_log_density_hessian_vector_product_R(bs_model** model, int* propto,
+                                             int* jacobian,
+                                             const double* theta_unc,
+                                             const double* vector, double* val,
+                                             double* Hvp, int* return_code,
+                                             char** err_msg, void** err_ptr) {
+  *return_code = bs_log_density_hessian_vector_product(
+      *model, *propto, *jacobian, theta_unc, vector, val, Hvp, err_msg);
+  *err_ptr = static_cast<void*>(*err_msg);
+}
 void bs_rng_construct_R(int* seed, bs_rng** ptr_out, char** err_msg,
                         void** err_ptr) {
   *ptr_out = bs_rng_construct(*seed, err_msg);

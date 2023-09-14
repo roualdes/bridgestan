@@ -190,6 +190,24 @@ This allocates new memory for the gradient and Hessian output each call. See `lo
 
 <a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L662-L673' class='documenter-source'>source</a><br>
 
+<a id='BridgeStan.log_density_hessian_vector_product' href='#BridgeStan.log_density_hessian_vector_product'>#</a>
+**`BridgeStan.log_density_hessian_vector_product`** &mdash; *Function*.
+
+
+
+```julia
+log_density_hessian_vector_product(sm, q, v; propto=true, jacobian=true)
+```
+
+Returns log density and the product of the Hessian of the log density with the vector `v` at the specified unconstrained parameters.
+
+This calculation drops constant terms that do not depend on the parameters if `propto` is `true` and includes change of variables terms for constrained parameters if `jacobian` is `true`.
+
+This allocates new memory for the output each call. See `log_density_hessian_vector_product!` for a version which allows re-using existing memory.
+
+
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L731-L742' class='documenter-source'>source</a><br>
+
 <a id='BridgeStan.param_constrain' href='#BridgeStan.param_constrain'>#</a>
 **`BridgeStan.param_constrain`** &mdash; *Function*.
 
@@ -379,6 +397,24 @@ The gradient is stored in the vector `out_grad` and the Hessian is stored in `ou
 
 
 <a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L598-L609' class='documenter-source'>source</a><br>
+
+<a id='BridgeStan.log_density_hessian_vector_product!' href='#BridgeStan.log_density_hessian_vector_product!'>#</a>
+**`BridgeStan.log_density_hessian_vector_product!`** &mdash; *Function*.
+
+
+
+```julia
+log_density_hessian_vector_product!(sm, q, v, out; propto=true, jacobian=true)
+```
+
+Returns log density and the product of the Hessian of the log density with the vector `v` at the specified unconstrained parameters.
+
+This calculation drops constant terms that do not depend on the parameters if `propto` is `true` and includes change of variables terms for constrained parameters if `jacobian` is `true`.
+
+The product is stored in the vector `out` and a reference is returned. See `log_density_hessian_vector_product` for a version which allocates fresh memory.
+
+
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L673-L684' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.param_constrain!' href='#BridgeStan.param_constrain!'>#</a>
 **`BridgeStan.param_constrain!`** &mdash; *Function*.

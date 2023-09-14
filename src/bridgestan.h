@@ -261,8 +261,11 @@ int bs_log_density_gradient(const bs_model* m, bool propto, bool jacobian,
  * pointer `grad` must have enough space to hold the gradient.  The
  * pointer `hessian` must have enough space to hold the Hessian.
  *
- * The gradients are computed using automatic differentiation.  the
- * Hessians are
+ * The gradients are computed using automatic differentiation.
+ * Hessians are computed using nested automatic differentiation if
+ * `BRIDGESTAN_AD_HESSIAN` is defined, otherwise they are computed
+ * using central finite differences of `size(theta_unc)` calculations
+ * of gradient.
  *
  * @param[in] m pointer to model structure
  * @param[in] propto `true` to discard constant terms
@@ -279,6 +282,42 @@ int bs_log_density_gradient(const bs_model* m, bool propto, bool jacobian,
 int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
                            const double* theta_unc, double* val, double* grad,
                            double* hessian, char** error_msg);
+
+/**
+ * Calculate the log density and the product of the Hessian with the specified
+ * vector for the specified unconstrained parameters and write it into the
+ * specified value pointer and Hessian-vector product pointer, dropping
+ * constants it `propto` is `true` and including the Jacobian adjustment if
+ * `jacobian` is `true`. Returns a return code of 0 for success
+ * and -1 if there is an exception executing the Stan program. The
+ * pointer `hvp` must have enough space to hold the product.
+ *
+ * Hessian-vector-products are computed using nested automatic
+ * differentiation if `BRIDGESTAN_AD_HESSIAN` is defined, otherwise
+ * they are computed using central finite differences of the gradient
+ * of `theta_unc` perturbed in the direction of `vector`. This
+ * approximates the Hessian-vector product using two gradient
+ * evaluations, but at a lower accuracy than the nested automatic
+ * differentiation.
+ *
+ * @param[in] m pointer to model structure
+ * @param[in] propto `true` to drop constant terms
+ * @param[in] jacobian `true` to include Jacobian adjustment for
+ * constrained parameter transforms
+ * @param[in] theta_unc unconstrained parameters
+ * @param[in] vector vector to multiply Hessian by
+ * @param[out] val log density to set
+ * @param[out] hvp Hessian-vector to set
+ * @param[out] error_msg a pointer to a string that will be allocated if there
+ * is an error. This must later be freed by calling bs_free_error_msg().
+ * @return code 0 if successful and code -1 if there is an exception
+ * in the underlying Stan code
+ */
+int bs_log_density_hessian_vector_product(const bs_model* m, bool propto,
+                                          bool jacobian,
+                                          const double* theta_unc,
+                                          const double* vector, double* val,
+                                          double* hvp, char** error_msg);
 
 /**
  * Construct an PRNG object to be used in bs_param_constrain().

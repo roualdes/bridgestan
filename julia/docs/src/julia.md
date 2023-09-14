@@ -75,6 +75,7 @@ StanModel
 log_density
 log_density_gradient
 log_density_hessian
+log_density_hessian_vector_product
 param_constrain
 param_unconstrain
 param_unconstrain_json
@@ -86,6 +87,7 @@ param_names
 param_unc_names
 log_density_gradient!
 log_density_hessian!
+log_density_hessian_vector_product!
 param_constrain!
 param_unconstrain!
 param_unconstrain_json!

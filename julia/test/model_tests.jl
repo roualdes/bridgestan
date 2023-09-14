@@ -526,7 +526,7 @@ end
     ld = Vector{Bool}(undef, R)
     g = Vector{Bool}(undef, R)
 
-    @Threads.threads for it = 1:nt
+    Threads.@threads for it = 1:nt
         for r = it:nt:R
             x = randn(BridgeStan.param_num(model))
             (lp, grad) = BridgeStan.log_density_gradient(model, x)
@@ -550,24 +550,24 @@ end
     x = [0.5] # bernoulli parameter
 
     R = 1000
-    out_size = BridgeStan.param_num(model;include_tp=false, include_gq=true)
+    out_size = BridgeStan.param_num(model; include_tp = false, include_gq = true)
 
     # to test the thread safety of our RNGs, we do two runs
     # the first we do in parallel
     gq1 = zeros(Float64, out_size, R)
-    @Threads.threads for it = 1:nt
-        rng = StanRNG(model,seeds[it]) # RNG is created per-thread
+    Threads.@threads for it = 1:nt
+        rng = StanRNG(model, seeds[it]) # RNG is created per-thread
         for r = it:nt:R
-            gq1[:, r] = BridgeStan.param_constrain(model, x; include_gq=true, rng=rng)
+            gq1[:, r] = BridgeStan.param_constrain(model, x; include_gq = true, rng = rng)
         end
     end
 
     # the second we do sequentially
     gq2 = zeros(Float64, out_size, R)
     for it = 1:nt
-        rng = StanRNG(model,seeds[it])
+        rng = StanRNG(model, seeds[it])
         for r = it:nt:R
-            gq2[:, r] = BridgeStan.param_constrain(model, x; include_gq=true, rng=rng)
+            gq2[:, r] = BridgeStan.param_constrain(model, x; include_gq = true, rng = rng)
         end
     end
 
@@ -651,6 +651,9 @@ end
     using LinearAlgebra
     @test isapprox(-Matrix(1.0I, D, D), hess)
 
+    v = rand(D)
+    lp, Hvp = BridgeStan.log_density_hessian_vector_product(model, y, v)
+    @test isapprox(-v, Hvp)
 end
 
 @testset "printing" begin

@@ -507,6 +507,66 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         }
     }
 
+    /// Compute the log of the prior times likelihood density the product of
+    /// the Hessian and specified vector.
+    ///
+    /// Drop jacobian determinant terms of the transformation from unconstrained
+    /// to the constrained space if `jacobian == false` and drop terms
+    /// of the density that do not depend on the parameters if `propto == true`.
+    ///
+    /// The product of the Hessian of the log density and the provided vector
+    ///  will be stored in `hvp`.
+    ///
+    /// *Panics* if the provided buffer has incorrect shape. The buffer `hvp`
+    /// must have length `self.param_unc_num()`.
+    pub fn log_density_hessian_vector_product(
+        &self,
+        theta_unc: &[f64],
+        v: &[f64],
+        propto: bool,
+        jacobian: bool,
+        hvp: &mut [f64],
+    ) -> Result<f64> {
+        let n = self.param_unc_num();
+        assert_eq!(
+            theta_unc.len(),
+            n,
+            "Argument 'theta_unc' must be the same size as the number of parameters!"
+        );
+        assert_eq!(
+            v.len(),
+            n,
+            "Argument 'v' must be the same size as the number of parameters!"
+        );
+        assert_eq!(
+            hvp.len(),
+            n,
+            "Argument 'hvp' must be the same size as the number of parameters!"
+        );
+
+        let mut val = 0.0;
+
+        let mut err = ErrorMsg::new(self.lib.borrow());
+        let rc = unsafe {
+            self.ffi_lib().bs_log_density_hessian_vector_product(
+                self.model.as_ptr(),
+                propto,
+                jacobian,
+                theta_unc.as_ptr(),
+                v.as_ptr(),
+                &mut val,
+                hvp.as_mut_ptr(),
+                err.as_ptr(),
+            )
+        };
+
+        if rc == 0 {
+            Ok(val)
+        } else {
+            Err(BridgeStanError::EvaluationFailed(err.message()))
+        }
+    }
+
     /// Map a point in unconstrained parameter space to the constrained space.
     ///
     /// `theta_unc` must contain the point in the unconstrained parameter space.

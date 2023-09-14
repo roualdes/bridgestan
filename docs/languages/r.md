@@ -401,3 +401,33 @@ _Returns_
   List containing entries `val` (the log density), `gradient`
   (the gradient), and `hessian` (the Hessian).
 
+
+**Method** `log_density_hessian_vector_product()`:
+
+Return the log density and the product of the Hessian
+with the specified vector.
+
+_Usage_
+
+```R
+StanModel$log_density_hessian_vector_product(theta_unc, v, propto = TRUE, jacobian = TRUE)
+```
+
+
+_Arguments_
+
+  - `theta_unc` The vector of unconstrained parameters.
+
+  - `v` The vector to multiply the Hessian by.
+
+  - `propto` If `TRUE`, drop terms which do not depend on the
+      parameters.
+
+  - `jacobian` If `TRUE`, include change of variables terms for
+      constrained parameters.
+
+
+_Returns_
+
+  List containing entries `val` (the log density) and `Hvp`
+  (the hessian-vector product).

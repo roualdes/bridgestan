@@ -23,7 +23,7 @@ StanModel <- R6::R6Class("StanModel",
       private$seed <- seed
       private$lib <- tools::file_path_as_absolute(lib)
       private$lib_name <- tools::file_path_sans_ext(basename(lib))
-      if (is.loaded("construct_R", PACKAGE = private$lib_name)) {
+      if (is.loaded("bs_model_construct_R", PACKAGE = private$lib_name)) {
         warning(
           paste0("Loading a shared object '", lib, "' which is already loaded.\n",
                   "If the file has changed since the last time it was loaded, this load may not update the library!"
@@ -289,6 +289,32 @@ StanModel <- R6::R6Class("StanModel",
         stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "log_density_hessian"))
       }
       list(val = vars$val, gradient = vars$gradient, hessian = matrix(vars$hess, nrow = dims, byrow = TRUE))
+    },
+    #' @description
+    #' Return the log density and the product of the Hessian
+    #' with the specified vector.
+    #' @param theta_unc The vector of unconstrained parameters.
+    #' @param v The vector to multiply the Hessian by.
+    #' @param propto If `TRUE`, drop terms which do not depend on the parameters.
+    #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
+    #' @return List containing entries `val` (the log density) and `Hvp` (the hessian-vector product).
+    log_density_hessian_vector_product = function(theta_unc, v, propto = TRUE, jacobian = TRUE){
+      dims <- self$param_unc_num()
+      vars <- .C("bs_log_density_hessian_vector_product_R",
+        as.raw(private$model), as.logical(propto), as.logical(jacobian),
+        as.double(theta_unc),
+        as.double(v),
+        val = double(1), Hvp = double(dims),
+        return_code = as.integer(0),
+        err_msg = as.character(""),
+        err_ptr = raw(8),
+        NAOK = TRUE,
+        PACKAGE = private$lib_name
+      )
+      if (vars$return_code) {
+        stop(handle_error(private$lib_name, vars$err_msg, vars$err_ptr, "log_density_hessian_vector_product"))
+      }
+      list(val = vars$val, Hvp = vars$Hvp)
     }
   ),
   private = list(
