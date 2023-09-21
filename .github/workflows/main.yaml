@@ -10,6 +10,11 @@ on:
 env:
   CACHE_VERSION: 0
 
+# only run one copy per PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ${{matrix.os}}
