@@ -53,16 +53,15 @@ $(BRIDGE_O) : $(BRIDGE_DEPS)
 	@echo '--- Translating Stan model to C++ code ---'
 	$(STANC) $(STANCFLAGS) --o=$(subst  \,/,$@) $(subst  \,/,$<)
 
-## declares we want to keep .hpp even though it's an intermediate
-.PRECIOUS: %.hpp
-
-## builds executable (suffix depends on platform)
-%_model.so : %.hpp $(BRIDGE_O) $(SUNDIALS_TARGETS) $(MPI_TARGETS) $(TBB_TARGETS)
+%.o : %.hpp
 	@echo ''
 	@echo '--- Compiling C++ code ---'
 	$(COMPILE.cpp) -x c++ -o $(subst  \,/,$*).o $(subst \,/,$<)
+
+%_model.so : %.o $(BRIDGE_O) $(SUNDIALS_TARGETS) $(MPI_TARGETS) $(TBB_TARGETS)
+	@echo ''
 	@echo '--- Linking C++ code ---'
-	$(LINK.cpp) -shared -lm -o $(patsubst %.hpp, %_model.so, $(subst \,/,$<)) $(subst \,/,$*.o) $(BRIDGE_O) $(LDLIBS) $(SUNDIALS_TARGETS) $(MPI_TARGETS) $(TBB_TARGETS)
+	$(LINK.cpp) -shared -lm -o $(patsubst %.o, %_model.so, $(subst \,/,$<)) $(subst \,/,$*.o) $(BRIDGE_O) $(LDLIBS) $(SUNDIALS_TARGETS) $(MPI_TARGETS) $(TBB_TARGETS)
 	$(RM) $(subst  \,/,$*).o
 
 .PHONY: docs
@@ -131,6 +130,8 @@ else ifeq ($(OS),Linux)
 endif
 
 ifeq ($(OS_TAG),windows)
+# needed for newer mingw, seems to not break older ones
+TBB_CXXFLAGS+=-D_UCRT
 $(STANC):
 	@mkdir -p $(dir $@)
 	$(shell echo "curl -L https://github.com/stan-dev/stanc3/releases/download/$(STANC3_VERSION)/$(OS_TAG)-stanc -o $(STANC) --retry $(STANC_DL_RETRY) --retry-delay $(STANC_DL_DELAY)")
