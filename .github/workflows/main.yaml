@@ -26,7 +26,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Check out github
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -80,7 +80,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Check out github
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -142,7 +142,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Check out github
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -188,7 +188,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Check out github
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -251,7 +251,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Check out github
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 

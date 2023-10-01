@@ -27,7 +27,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Check out github
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -72,7 +72,7 @@ jobs:
           make html
 
       - name: Check out github
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: docs/_build/bs-docs
           ref: gh-pages
