@@ -124,7 +124,7 @@ jobs:
 
       - name: Create JuliaRegistration comment
         if: ${{ !inputs.dry_run }}
-        uses: peter-evans/commit-comment@v2
+        uses: peter-evans/commit-comment@v3
         with:
           sha: ${{ steps.commit.outputs.sha }}
           body: |
