@@ -1,3 +1,34 @@
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "bridgestan"
+readme = "README.md"
+license = { text = "BSD-3-Clause" }
+authors = [
+    { name = "Brian Ward", email = "bward@flatironinstitute.org" },
+    { name = "Bob Carpenter", email = "bcarpenter@flatironinstitute.org" },
+    { name = "Edward Roualdes", email = "eroualdes@csuchico.edu" },
+]
+requires-python = ">=3.9"
+dependencies = ["numpy"]
+dynamic = ["version"]
+
+[tool.setuptools.dynamic]
+version = { attr = "bridgestan.__version.__version__" }
+
+[tool.setuptools]
+packages = ["bridgestan"]
+
+[tool.setuptools.package-data]
+"bridgestan" = ["py.typed"]
+
+[project.optional-dependencies]
+test = ["pandas", "pytest", "pytest-cov"]
+
+[tool.isort]
+profile = "black"
+
+[tool.coverage.run]
+source = ["stanio"]
