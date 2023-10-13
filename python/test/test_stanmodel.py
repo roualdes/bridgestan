@@ -9,7 +9,6 @@ STAN_FOLDER = Path(__file__).parent.parent.parent / "test_models"
 
 
 def test_constructor():
-
     # implicit destructor tests in success and fail cases
 
     # test empty data
@@ -595,7 +594,6 @@ def test_multi():
 
 
 def test_gaussian():
-
     lib = str(STAN_FOLDER / "gaussian" / "gaussian_model.so")
     data = str(STAN_FOLDER / "gaussian" / "gaussian.data.json")
 
@@ -616,7 +614,6 @@ def test_gaussian():
 
 
 def test_fr_gaussian():
-
     lib = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian_model.so")
     data = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian.data.json")
     model = bs.StanModel(lib, data)
@@ -708,6 +705,17 @@ def test_stdout_capture():
 
     assert x == 500  # 2 calls per print, 10 threads, 25 iterations
 
+
+def test_reload_warning():
+    lib = STAN_FOLDER / "fr_gaussian" / "fr_gaussian_model.so"
+    data = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian.data.json")
+    model = bs.StanModel(str(lib), data)
+
+
+    relative_lib = lib.relative_to(STAN_FOLDER.parent)
+    assert not relative_lib.is_absolute()
+    with pytest.warns(UserWarning, match="may not update the library"):
+        model2 = bs.StanModel(str(relative_lib), data)
 
 @pytest.fixture(scope="module")
 def recompile_simple():
