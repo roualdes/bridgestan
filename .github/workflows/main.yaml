@@ -115,8 +115,8 @@ jobs:
 
       - name: Run tests
         run: |
+          pytest -v python/
           cd python/
-          pytest -v
           python example.py
         env:
           BRIDGESTAN: ${{ github.workspace }}

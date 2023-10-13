@@ -1,13 +1,15 @@
 import ctypes
 import warnings
+from pathlib import Path
 from typing import List, Optional, Tuple
 
 import numpy as np
 import numpy.typing as npt
+from dllist import dllist
 from numpy.ctypeslib import ndpointer
 
 from .__version import __version_info__
-from .compile import windows_dll_path_setup, compile_model
+from .compile import compile_model, windows_dll_path_setup
 from .util import validate_readable
 
 FloatArray = npt.NDArray[np.float64]
@@ -68,7 +70,12 @@ class StanModel:
                 model_data = f.read()
 
         windows_dll_path_setup()
-        self.lib_path = model_lib
+        self.lib_path = str(Path(model_lib).absolute().resolve())
+        if self.lib_path in dllist():
+            warnings.warn(
+                f"Loading a shared object {self.lib_path} that has already been loaded.\n"
+                "If the file has changed since the last time it was loaded, this load may not update the library!"
+            )
         self.stanlib = ctypes.CDLL(self.lib_path)
 
         self.data = model_data or ""

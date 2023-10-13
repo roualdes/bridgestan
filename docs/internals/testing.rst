@@ -33,15 +33,13 @@ Running
 
 .. code-block:: shell
 
-    cd python/
-    pytest -v
+    pytest -v python/
 
 Will run the "default" grouping. To run the other group(s), run
 
 .. code-block:: shell
 
-    cd python/
-    pytest --run-type=ad_hessian -v
+    pytest --run-type=ad_hessian -v python/
 
 The set up for this can be seen in :file:`tests/conftest.py` and is based on the
 `Pytest documentation examples <https://docs.pytest.org/en/7.1.x/example/simple.html#control-skipping-of-tests-according-to-command-line-option>`__.
