@@ -15,6 +15,10 @@ requires-python = ">=3.9"
 dependencies = ["numpy", "dllist"]
 dynamic = ["version"]
 
+[project.urls]
+"Homepage" = "https://github.com/roualdes/bridgestan"
+"Bug Tracker" = "https://github.com/roualdes/bridgestan/issues"
+
 [tool.setuptools.dynamic]
 version = { attr = "bridgestan.__version.__version__" }
 
@@ -31,4 +35,4 @@ test = ["pandas", "pytest", "pytest-cov"]
 profile = "black"
 
 [tool.coverage.run]
-source = ["stanio"]
+source = ["bridgestan"]
