@@ -263,6 +263,7 @@ void bs_model::log_density(bool propto, bool jacobian, const double* theta_unc,
     } else {
       *val = model_->log_prob_propto(params_unc_var, outstream).val();
     }
+    stan::math::recover_memory();
   } else {
     if (jacobian) {
       *val = model_->log_prob_jacobian(params_unc, outstream);
