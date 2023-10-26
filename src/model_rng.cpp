@@ -256,13 +256,22 @@ void bs_model::log_density(bool propto, bool jacobian, const double* theta_unc,
   if (propto) {
     // need to have vars, otherwise the result is 0 since everything is
     // treated as a constant
-    Eigen::Matrix<stan::math::var, Eigen::Dynamic, 1> params_unc_var(
-        params_unc);
-    if (jacobian) {
-      *val = model_->log_prob_propto_jacobian(params_unc_var, outstream).val();
-    } else {
-      *val = model_->log_prob_propto(params_unc_var, outstream).val();
+    try {
+      Eigen::Matrix<stan::math::var, Eigen::Dynamic, 1> params_unc_var(
+          params_unc);
+      if (jacobian) {
+        *val
+            = model_->log_prob_propto_jacobian(params_unc_var, outstream).val();
+      } else {
+        *val = model_->log_prob_propto(params_unc_var, outstream).val();
+      }
+    } catch (...) {
+      // because we created vars on the stack, we need to recover memory
+      stan::math::recover_memory();
+      throw;  // re-caught by top level exception logic
     }
+    // also recover memory if no exception was thrown
+    stan::math::recover_memory();
   } else {
     if (jacobian) {
       *val = model_->log_prob_jacobian(params_unc, outstream);
