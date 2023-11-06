@@ -3,11 +3,11 @@
 # A comma-separated list of package or module names from where C extensions may
 # be loaded. Extensions are loading into the active Python interpreter and may
 # run arbitrary code.
-extension-pkg-whitelist=ujson
+extension-pkg-whitelist=
 
 # Add files or directories to the blacklist. They should be base names, not
 # paths.
-ignore=docsrc/
+ignore=
 
 # Add files or directories matching the regex patterns to the blacklist. The
 # regex matches against base names, not paths.
@@ -60,22 +60,10 @@ confidence=
 # --enable=similarities". If you want to run only the classes checker, but have
 # no Warning level messages displayed, use "--disable=all --enable=classes
 # --disable=W".
-disable=consider-using-in,
-    cyclic-import,
-    fixme,
-    import-outside-toplevel,
-    no-else-break,
-    no-else-return,
-    protected-access,
-    redefined-builtin,
-    redundant-unittest-assert,
-    too-many-branches,
-    too-many-locals,
-    unsubscriptable-object,
-    consider-using-with,
-    consider-using-dict-items,
-    unspecified-encoding,
-    consider-using-f-string,
+disable=missing-module-docstring,
+    global-statement,
+    bare-except,
+    too-many-instance-attributes
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -355,7 +343,9 @@ good-names=i,
            xs,
            y,
            Run,
-           _
+           _,
+           lp,
+           rc
 
 # Include a hint for the correct naming format with invalid-name.
 include-naming-hint=no

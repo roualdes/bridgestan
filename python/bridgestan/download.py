@@ -36,14 +36,12 @@ def get_bridgestan_src():
             print(err_text)
             if i == RETRIES:
                 raise ValueError(err_text) from e
-            else:
-                print("Retrying ({i+1}/{RETRIES})...")
-                sleep(1)
+
+            print("Retrying ({i+1}/{RETRIES})...")
+            sleep(1)
 
     try:
-        tar = tarfile.open(file_tmp)
-        tar.extractall(path=HOME_BRIDGESTAN)
+        with tarfile.open(file_tmp) as tar:
+            tar.extractall(path=HOME_BRIDGESTAN)
     except Exception as e:
         raise ValueError(f"Failed to unpack {file_tmp} during installation") from e
-    finally:
-        tar.close()
