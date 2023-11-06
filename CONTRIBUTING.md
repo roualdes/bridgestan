@@ -2,7 +2,7 @@
 
 We welcome contributions to the project in any form, including bug reports, bug fixes, new features, improved documentation, or improved test coverage.
 
-**Developer-specific documentation is available at [as part of our online documentation](https://roualdes.github.io/bridgestan/latest/internals.html)**. Information on building BridgeStan, running tests, and developing with the project is available there.
+**Developer-specific documentation is available [as part of our online documentation](https://roualdes.github.io/bridgestan/latest/internals.html)**. Information on building BridgeStan, running tests, and developing with the project is available there.
 
 This document houses additional information about licensing and procedures for contributing to the project.
 
