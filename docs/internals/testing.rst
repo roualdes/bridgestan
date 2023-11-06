@@ -16,9 +16,6 @@ Note: The additional functionality provided by
 but in order to facilitate the same built models being used in
 all tests we use it regardless of interface.
 
-Tooling
--------
-
 Python
 ______
 
