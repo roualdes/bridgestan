@@ -12,7 +12,7 @@ fn main() {
     let bindings = bindgen::Builder::default()
         .header("src/bridgestan.h")
         .opaque_type("model")
-        .parse_callbacks(Box::new(bindgen::CargoCallbacks))
+        .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         .dynamic_library_name("BridgeStan")
         .dynamic_link_require_all(true)
         .generate()
