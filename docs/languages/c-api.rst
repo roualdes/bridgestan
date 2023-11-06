@@ -42,6 +42,8 @@ These functions are implemented in C++, see :doc:`../internals` for more details
     :project: bridgestan
     :sections: func typedef var
 
+.. _R-compat:
+
 R-compatible functions
 ----------------------
 

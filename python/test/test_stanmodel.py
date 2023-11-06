@@ -711,11 +711,11 @@ def test_reload_warning():
     data = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian.data.json")
     model = bs.StanModel(str(lib), data)
 
-
     relative_lib = lib.relative_to(STAN_FOLDER.parent)
     assert not relative_lib.is_absolute()
     with pytest.warns(UserWarning, match="may not update the library"):
         model2 = bs.StanModel(str(relative_lib), data)
+
 
 @pytest.fixture(scope="module")
 def recompile_simple():

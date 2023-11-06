@@ -66,15 +66,16 @@ class StanModel:
         validate_readable(model_lib)
         if model_data is not None and model_data.endswith(".json"):
             validate_readable(model_data)
-            with open(model_data, "r") as f:
-                model_data = f.read()
+            with open(model_data, "r", encoding="utf-8") as file:
+                model_data = file.read()
 
         windows_dll_path_setup()
         self.lib_path = str(Path(model_lib).absolute().resolve())
         if self.lib_path in dllist():
             warnings.warn(
                 f"Loading a shared object {self.lib_path} that has already been loaded.\n"
-                "If the file has changed since the last time it was loaded, this load may not update the library!"
+                "If the file has changed since the last time it was loaded, this load may "
+                "not update the library!"
             )
         self.stanlib = ctypes.CDLL(self.lib_path)
 
@@ -681,8 +682,8 @@ class StanModel:
             string = ctypes.string_at(err).decode("utf-8")
             self._free_error(err)
             return RuntimeError(string)
-        else:
-            return RuntimeError(f"Unknown error in {method}. ")
+
+        return RuntimeError(f"Unknown error in {method}. ")
 
 
 class StanRNG:

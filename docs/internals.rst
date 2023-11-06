@@ -12,6 +12,7 @@ going on "behind the scenes".
     :caption: Contents:
 
     internals/ffi
+    internals/development
     internals/testing
     internals/documentation
 

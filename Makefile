@@ -1,5 +1,9 @@
 ## include paths
 BS_ROOT ?= .
+
+# user config
+-include $(BS_ROOT)/make/local
+
 SRC ?= $(BS_ROOT)/src/
 STAN ?= $(BS_ROOT)/stan/
 STANC ?= $(BS_ROOT)/bin/stanc$(EXE)
@@ -10,9 +14,8 @@ RAPIDJSON ?= $(STAN)lib/rapidjson_1.1.0/
 INC_FIRST ?= -I $(STAN)src -I $(RAPIDJSON)
 
 ## makefiles needed for math library
--include $(BS_ROOT)/make/local
--include $(MATH)make/compiler_flags
--include $(MATH)make/libraries
+include $(MATH)make/compiler_flags
+include $(MATH)make/libraries
 
 ## Set -fPIC globally since we're always building a shared library
 CXXFLAGS += -fPIC
@@ -96,6 +99,19 @@ stan-update-remote:
 compile_info:
 	@echo '$(LINK.cpp) $(BRIDGE_O) $(LDLIBS) $(SUNDIALS_TARGETS) $(MPI_TARGETS) $(TBB_TARGETS)'
 
+# set to false if you want to fail on formatting errors
+# e.g., in continuous integration
+BS_FORMAT_IGNOREABLE ?= true
+
+.PHONY: format
+format:
+	clang-format -i src/*.cpp src/*.hpp src/*.h || $(BS_FORMAT_IGNOREABLE)
+	isort python || $(BS_FORMAT_IGNOREABLE)
+	black python || $(BS_FORMAT_IGNOREABLE)
+	julia --project=julia -e 'using JuliaFormatter; format("julia/")' || $(BS_FORMAT_IGNOREABLE)
+#    R seems to have no good formatter that doesn't choke on doc comments
+#    Rscript -e 'formatR::tidy_dir("R/", recursive=TRUE)' || $(BS_FORMAT_IGNOREABLE)
+
 ## print value of makefile variable (e.g., make print-TBB_TARGETS)
 .PHONY: print-%
 print-%  : ; @echo $* = $($*) ;
@@ -141,3 +157,19 @@ $(STANC):
 	curl -L https://github.com/stan-dev/stanc3/releases/download/$(STANC3_VERSION)/$(OS_TAG)$(ARCH_TAG)-stanc -o $(STANC) --retry $(STANC_DL_RETRY) --retry-delay $(STANC_DL_DELAY)
 	chmod +x $(STANC)
 endif
+
+##
+# This is only run if the `include` statements earlier fail to find a file.
+# We assume that means the submodule is missing
+##
+$(MATH)make/% :
+	@echo 'ERROR: Missing Stan submodules.'
+	@echo 'We tried to find the Stan Math submodule at:'
+	@echo '  $(MATH)'
+	@echo ''
+	@echo 'The most likely source of the problem is BridgeStan was cloned without'
+	@echo 'the --recursive flag.  To fix this, run the following command:'
+	@echo '  git submodule update --init --recursive'
+	@echo ''
+	@echo 'And try building again'
+	@exit 1
