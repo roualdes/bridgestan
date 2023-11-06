@@ -167,7 +167,7 @@ $(MATH)make/% :
 	@echo 'We tried to find the Stan Math submodule at:'
 	@echo '  $(MATH)'
 	@echo ''
-	@echo 'The most likely source of the problem is BrtidgeStan was cloned without'
+	@echo 'The most likely source of the problem is BridgeStan was cloned without'
 	@echo 'the --recursive flag.  To fix this, run the following command:'
 	@echo '  git submodule update --init --recursive'
 	@echo ''
