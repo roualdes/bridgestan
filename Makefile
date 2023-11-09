@@ -18,8 +18,9 @@ include $(MATH)make/compiler_flags
 include $(MATH)make/libraries
 
 ## Set -fPIC globally since we're always building a shared library
-CXXFLAGS += -fPIC
+CXXFLAGS += -fPIC -fvisibility=hidden -fvisibility-inlines-hidden
 CXXFLAGS_SUNDIALS += -fPIC
+CPPFLAGS += -DBRIDGESTAN_EXPORT
 
 ## set flags for stanc compiler (math calls MIGHT? set STAN_OPENCL)
 ifdef STAN_OPENCL
@@ -34,7 +35,7 @@ else
 	STAN_FLAG_THREADS=
 endif
 ifdef BRIDGESTAN_AD_HESSIAN
-	CXXFLAGS+=-DSTAN_MODEL_FVAR_VAR -DBRIDGESTAN_AD_HESSIAN
+	CPPFLAGS += -DSTAN_MODEL_FVAR_VAR -DBRIDGESTAN_AD_HESSIAN
 	STAN_FLAG_HESS=_adhessian
 else
 	STAN_FLAG_HESS=
@@ -65,7 +66,6 @@ $(BRIDGE_O) : $(BRIDGE_DEPS)
 	@echo ''
 	@echo '--- Linking C++ code ---'
 	$(LINK.cpp) -shared -lm -o $(patsubst %.o, %_model.so, $(subst \,/,$<)) $(subst \,/,$*.o) $(BRIDGE_O) $(LDLIBS) $(SUNDIALS_TARGETS) $(MPI_TARGETS) $(TBB_TARGETS)
-	$(RM) $(subst  \,/,$*).o
 
 .PHONY: docs
 docs:

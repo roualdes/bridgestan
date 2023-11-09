@@ -18,13 +18,13 @@ import os
 import bridgestan
 
 version = os.getenv("BS_DOCS_VERSION", bridgestan.__version__)
-if version == "latest" :
+if version == "latest":
     # don't display a version number for "latest" docs
     switcher_version = "latest"
     release = ""
 else:
     release = version
-    switcher_version = f'v{version}'
+    switcher_version = f"v{version}"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -100,8 +100,16 @@ intersphinx_mapping = {
 breathe_projects = {"bridgestan": "./_build/cppxml/"}
 breathe_projects_source = {"bridgestan": ("../src/", ["bridgestan.h", "bridgestanR.h"])}
 breathe_default_project = "bridgestan"
+# doxygen doesn't like  __attribute and __declspec
+# https://www.doxygen.nl/manual/preprocessing.html
+breathe_doxygen_config_options = {
+    "ENABLE_PREPROCESSING": "YES",
+    "MACRO_EXPANSION": "YES",
+    "EXPAND_ONLY_PREDEF": "YES",
+    "PREDEFINED": "BS_PUBLIC=",
+}
 
-autoclass_content = 'both'
+autoclass_content = "both"
 
 # Julia and C++ doc build
 import os
