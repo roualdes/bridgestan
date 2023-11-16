@@ -17,15 +17,26 @@ typedef struct bs_rng bs_rng;      ///< Opaque type for RNG
 typedef void (*STREAM_CALLBACK)(const char* data, size_t size);
 #endif
 
+// Macros to control visibility of symbols in the shared library.
+#if defined _WIN32 || defined __MINGW32__
+#ifdef BRIDGESTAN_EXPORT
+#define BS_PUBLIC __declspec(dllexport)
+#else
+#define BS_PUBLIC __declspec(dllimport)
+#endif
+#else
+#define BS_PUBLIC __attribute__((visibility("default")))
+#endif
+
 /**
  * Version information for the BridgeStan library.
  * @note These are *not* the version of the wrapped Stan library.
  * @note These were not available pre-2.0.0, so their absence
  * implies the library is in the 1.0.x series
  */
-extern int bs_major_version;
-extern int bs_minor_version;
-extern int bs_patch_version;
+BS_PUBLIC extern int bs_major_version;
+BS_PUBLIC extern int bs_minor_version;
+BS_PUBLIC extern int bs_patch_version;
 
 /**
  * Construct an instance of a model wrapper.
@@ -44,22 +55,22 @@ extern int bs_patch_version;
  * @return pointer to constructed model or `nullptr` if construction
  * fails
  */
-bs_model* bs_model_construct(const char* data, unsigned int seed,
-                             char** error_msg);
+BS_PUBLIC bs_model* bs_model_construct(const char* data, unsigned int seed,
+                                       char** error_msg);
 
 /**
  * Destroy the model.
  *
  * @param[in] m pointer to model structure
  */
-void bs_model_destruct(bs_model* m);
+BS_PUBLIC void bs_model_destruct(bs_model* m);
 
 /**
  * Free the error messages created by other methods.
  *
  * @param[in] error_msg pointer to error message
  */
-void bs_free_error_msg(char* error_msg);
+BS_PUBLIC void bs_free_error_msg(char* error_msg);
 
 /**
  * Return the name of the specified model as a C-style string.
@@ -70,7 +81,7 @@ void bs_free_error_msg(char* error_msg);
  * @param[in] m pointer to model and RNG structure
  * @return name of model
  */
-const char* bs_name(const bs_model* m);
+BS_PUBLIC const char* bs_name(const bs_model* m);
 
 /**
  * Return information about the compiled model as a C-style string.
@@ -82,7 +93,7 @@ const char* bs_name(const bs_model* m);
  * @return Information about the model including Stan version, Stan defines, and
  * compiler flags.
  */
-const char* bs_model_info(const bs_model* m);
+BS_PUBLIC const char* bs_model_info(const bs_model* m);
 
 /**
  * Return a comma-separated sequence of indexed parameter names,
@@ -103,7 +114,8 @@ const char* bs_model_info(const bs_model* m);
  * @param[in] include_gq `true` to include generated quantities
  * @return CSV-separated, indexed, parameter names
  */
-const char* bs_param_names(const bs_model* m, bool include_tp, bool include_gq);
+BS_PUBLIC const char* bs_param_names(const bs_model* m, bool include_tp,
+                                     bool include_gq);
 
 /**
  * Return a comma-separated sequence of unconstrained parameters.
@@ -122,7 +134,7 @@ const char* bs_param_names(const bs_model* m, bool include_tp, bool include_gq);
  * @param[in] m pointer to model structure
  * @return CSV-separated, indexed, unconstrained parameter names
  */
-const char* bs_param_unc_names(const bs_model* m);
+BS_PUBLIC const char* bs_param_unc_names(const bs_model* m);
 
 /**
  * Return the number of scalar parameters, optionally including the
@@ -134,7 +146,7 @@ const char* bs_param_unc_names(const bs_model* m);
  * @param[in] include_gq `true` to include generated quantities
  * @return number of parameters
  */
-int bs_param_num(const bs_model* m, bool include_tp, bool include_gq);
+BS_PUBLIC int bs_param_num(const bs_model* m, bool include_tp, bool include_gq);
 
 /**
  * Return the number of unconstrained parameters.  The number of
@@ -145,7 +157,7 @@ int bs_param_num(const bs_model* m, bool include_tp, bool include_gq);
  * @param[in] m pointer to model structure
  * @return number of unconstrained parameters
  */
-int bs_param_unc_num(const bs_model* m);
+BS_PUBLIC int bs_param_unc_num(const bs_model* m);
 
 /**
  * Set the sequence of constrained parameters based on the specified
@@ -168,9 +180,9 @@ int bs_param_unc_num(const bs_model* m);
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int bs_param_constrain(const bs_model* m, bool include_tp, bool include_gq,
-                       const double* theta_unc, double* theta, bs_rng* rng,
-                       char** error_msg);
+BS_PUBLIC int bs_param_constrain(const bs_model* m, bool include_tp,
+                                 bool include_gq, const double* theta_unc,
+                                 double* theta, bs_rng* rng, char** error_msg);
 
 /**
  * Set the sequence of unconstrained parameters based on the
@@ -187,8 +199,8 @@ int bs_param_constrain(const bs_model* m, bool include_tp, bool include_gq,
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int bs_param_unconstrain(const bs_model* m, const double* theta,
-                         double* theta_unc, char** error_msg);
+BS_PUBLIC int bs_param_unconstrain(const bs_model* m, const double* theta,
+                                   double* theta_unc, char** error_msg);
 
 /**
  * Set the sequence of unconstrained parameters based on the JSON
@@ -204,8 +216,8 @@ int bs_param_unconstrain(const bs_model* m, const double* theta,
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int bs_param_unconstrain_json(const bs_model* m, const char* json,
-                              double* theta_unc, char** error_msg);
+BS_PUBLIC int bs_param_unconstrain_json(const bs_model* m, const char* json,
+                                        double* theta_unc, char** error_msg);
 
 /**
  * Set the log density of the specified parameters, dropping
@@ -224,8 +236,9 @@ int bs_param_unconstrain_json(const bs_model* m, const char* json,
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int bs_log_density(const bs_model* m, bool propto, bool jacobian,
-                   const double* theta_unc, double* lp, char** error_msg);
+BS_PUBLIC int bs_log_density(const bs_model* m, bool propto, bool jacobian,
+                             const double* theta_unc, double* lp,
+                             char** error_msg);
 
 /**
  * Set the log density and gradient of the specified parameters,
@@ -248,9 +261,10 @@ int bs_log_density(const bs_model* m, bool propto, bool jacobian,
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int bs_log_density_gradient(const bs_model* m, bool propto, bool jacobian,
-                            const double* theta_unc, double* val, double* grad,
-                            char** error_msg);
+BS_PUBLIC int bs_log_density_gradient(const bs_model* m, bool propto,
+                                      bool jacobian, const double* theta_unc,
+                                      double* val, double* grad,
+                                      char** error_msg);
 
 /**
  * Set the log density, gradient, and Hessian of the specified parameters,
@@ -279,9 +293,10 @@ int bs_log_density_gradient(const bs_model* m, bool propto, bool jacobian,
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
-                           const double* theta_unc, double* val, double* grad,
-                           double* hessian, char** error_msg);
+BS_PUBLIC int bs_log_density_hessian(const bs_model* m, bool propto,
+                                     bool jacobian, const double* theta_unc,
+                                     double* val, double* grad, double* hessian,
+                                     char** error_msg);
 
 /**
  * Calculate the log density and the product of the Hessian with the specified
@@ -313,11 +328,9 @@ int bs_log_density_hessian(const bs_model* m, bool propto, bool jacobian,
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
-int bs_log_density_hessian_vector_product(const bs_model* m, bool propto,
-                                          bool jacobian,
-                                          const double* theta_unc,
-                                          const double* vector, double* val,
-                                          double* hvp, char** error_msg);
+BS_PUBLIC int bs_log_density_hessian_vector_product(
+    const bs_model* m, bool propto, bool jacobian, const double* theta_unc,
+    const double* vector, double* val, double* hvp, char** error_msg);
 
 /**
  * Construct an PRNG object to be used in bs_param_constrain().
@@ -328,14 +341,14 @@ int bs_log_density_hessian_vector_product(const bs_model* m, bool propto,
  * @param[out] error_msg a pointer to a string that will be allocated if there
  * is an error. This must later be freed by calling bs_free_error_msg().
  */
-bs_rng* bs_rng_construct(unsigned int seed, char** error_msg);
+BS_PUBLIC bs_rng* bs_rng_construct(unsigned int seed, char** error_msg);
 
 /**
  * Destruct an RNG object.
  *
  * @param[in] rng pointer to RNG object
  */
-void bs_rng_destruct(bs_rng* rng);
+BS_PUBLIC void bs_rng_destruct(bs_rng* rng);
 
 /**
  * Provide a function for printing. This will be called when the Stan
@@ -349,7 +362,7 @@ void bs_rng_destruct(bs_rng* rng);
  * is an error. This must later be freed by calling bs_free_error_msg().
  * @return code 0 if successful and code -1 if there is an exception
  */
-int bs_set_print_callback(STREAM_CALLBACK callback, char** error_msg);
+BS_PUBLIC int bs_set_print_callback(STREAM_CALLBACK callback, char** error_msg);
 
 #ifdef __cplusplus
 }
