@@ -74,9 +74,9 @@ in Python, Julia, R, Rust, and C.
 
 Examples of other functionality can be found in the `test` folder for each interface.
 
-## Software Using BridgeStan
+## Software using BridgeStan
 
-The following are some projects we are aware of that use BridgeStan. If you know of others, please let us know!
+We are aware of the following projects using BridgeStan.
 
 ### Julia
 
@@ -90,9 +90,9 @@ The following are some projects we are aware of that use BridgeStan. If you know
 - https://github.com/UoL-SignalProcessingGroup/retrospectr
 
 
-## Research Using BridgeStan
+## Research using BridgeStan
 
-If you use BridgeStan in your research, please consider citing our paper [on JOSS](https://joss.theoj.org/papers/10.21105/joss.05236).
+If you use BridgeStan in your research, please consider citing [our JOSS paper](https://joss.theoj.org/papers/10.21105/joss.05236).
 
 - *Verified Density Compilation for a Probabilistic Programming Language* https://doi.org/10.1145/3591245
 
