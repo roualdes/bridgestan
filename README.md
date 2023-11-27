@@ -92,10 +92,12 @@ We are aware of the following projects using BridgeStan.
 
 ## Research using BridgeStan
 
-If you use BridgeStan in your research, please consider citing [our JOSS paper](https://joss.theoj.org/papers/10.21105/joss.05236).
+If you use BridgeStan in your research, please consider citing [our JOSS paper](https://joss.theoj.org/papers/10.21105/joss.05236)
+and letting us know so we list your project here.
 
-- *Verified Density Compilation for a Probabilistic Programming Language* https://doi.org/10.1145/3591245
-
+- [*Verified Density Compilation for a Probabilistic Programming Language*](https://doi.org/10.1145/3591245)
+- [*Variational Inference with Gaussian Score Matching*](https://arxiv.org/pdf/2307.07849.pdf)
+- [*Stein Π-Importance Sampling*](https://arxiv.org/pdf/2305.10068.pdf)
 
 ## Acknowledgements
 
