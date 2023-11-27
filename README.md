@@ -74,6 +74,31 @@ in Python, Julia, R, Rust, and C.
 
 Examples of other functionality can be found in the `test` folder for each interface.
 
+## Software using BridgeStan
+
+We are aware of the following projects using BridgeStan.
+
+### Julia
+
+- https://github.com/sethaxen/StanLogDensityProblems.jl
+- https://github.com/Julia-Tempering/Pigeons.jl
+- https://github.com/TuringLang/TuringBenchmarking.jl
+
+### Python
+
+- https://github.com/pymc-devs/nutpie
+- https://github.com/UoL-SignalProcessingGroup/retrospectr
+
+
+## Research using BridgeStan
+
+If you use BridgeStan in your research, please consider citing [our JOSS paper](https://joss.theoj.org/papers/10.21105/joss.05236)
+and letting us know so we list your project here.
+
+- [*Verified Density Compilation for a Probabilistic Programming Language*](https://doi.org/10.1145/3591245)
+- [*Variational Inference with Gaussian Score Matching*](https://arxiv.org/pdf/2307.07849.pdf)
+- [*Stein Π-Importance Sampling*](https://arxiv.org/pdf/2305.10068.pdf)
+
 ## Acknowledgements
 
 The Julia and Python APIs were derived from the
