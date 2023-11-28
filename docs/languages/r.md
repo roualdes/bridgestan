@@ -71,11 +71,15 @@ StanModel$new(lib, data, rng_seed)
 
 _Arguments_
 
-  - `lib` A path to a compiled BridgeStan Shared Object file.
+  - `lib` A path to a compiled BridgeStan Shared Object file or a .stan file (will be compiled).
 
   - `data` Either a JSON string literal, a path to a data file in JSON format ending in ".json", or the empty string.
 
   - `rng_seed` Seed for the RNG used in constructing the model.
+
+  - `stan_args` A list of arguments to pass to stanc3 if the model is not already compiled.
+
+  - `make_args` A list of additional arguments to pass to Make if the model is not already compiled.
 
 _Returns_
 

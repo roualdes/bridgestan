@@ -9,11 +9,17 @@ StanModel <- R6::R6Class("StanModel",
   public = list(
     #' @description
     #' Create a Stan Model instance.
-    #' @param lib A path to a compiled BridgeStan Shared Object file.
+    #' @param lib A path to a compiled BridgeStan Shared Object file or a .stan file (will be compiled).
     #' @param data Either a JSON string literal, a path to a data file in JSON format ending in ".json", or the empty string.
     #' @param seed Seed for the RNG used in constructing the model.
+    #' @param stanc_args A list of arguments to pass to stanc3 if the model is not already compiled.
+    #' @param make_args A list of additional arguments to pass to Make if the model is not already compiled.
     #' @return A new StanModel.
-    initialize = function(lib, data, seed) {
+    initialize = function(lib, data, seed, stanc_args = NULL, make_args = NULL) {
+      if (tools::file_ext(lib) == "stan") {
+        lib <- compile_model(lib, stanc_args, make_args)
+      }
+
       if (.Platform$OS.type == "windows"){
         windows_path_setup()
         lib_old <- lib

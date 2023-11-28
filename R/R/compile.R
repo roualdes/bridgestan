@@ -37,7 +37,7 @@ set_bridgestan_path <- function(path) {
 
 get_bridgestan_path <- function() {
     # try to get from environment
-    path <- Sys.getenv("BRIDGESTAN")
+    path <- Sys.getenv("BRIDGESTAN", unset = "")
     if (path == "") {
         path <- CURRENT_BRIDGESTAN
         tryCatch({
