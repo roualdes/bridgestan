@@ -71,11 +71,15 @@ StanModel$new(lib, data, rng_seed)
 
 _Arguments_
 
-  - `lib` A path to a compiled BridgeStan Shared Object file.
+  - `lib` A path to a compiled BridgeStan Shared Object file or a .stan file (will be compiled).
 
   - `data` Either a JSON string literal, a path to a data file in JSON format ending in ".json", or the empty string.
 
   - `rng_seed` Seed for the RNG used in constructing the model.
+
+  - `stan_args` A list of arguments to pass to stanc3 if the model is not already compiled.
+
+  - `make_args` A list of additional arguments to pass to Make if the model is not already compiled.
 
 _Returns_
 
@@ -431,3 +435,41 @@ _Returns_
 
   List containing entries `val` (the log density) and `Hvp`
   (the hessian-vector product).
+
+### Compilation utilities
+
+**Function** `compile_model()`:
+
+Run BridgeStan's Makefile on a `.stan` file, creating the `.so` used by
+the StanModel class. This function checks that the path to BridgeStan
+is valid and will error if not. This can be set with `set_bridgestan_path()`.
+
+_Usage_
+```R
+compile_model(stan_file, stanc_args = NULL, make_args = NULL)
+```
+
+_Arguments_
+
+  - `stan_file` A path to a Stan model file.
+
+  - `stanc_arg` A vector of arguments to pass to stanc3. For example,
+      `c("--O1")` will enable compiler optimization level 1.
+
+  - `make_args` A vector of additional arguments to pass to Make. For example,
+      `c("STAN_THREADS=True")` will enable threading for the
+      compiled model. If the same flags are defined in
+      `make/local`, the versions passed here will take precedent.
+
+_Returns_
+
+  Path to the compiled `.so` file.
+
+**Function** `set_bridgestan_path()`:
+
+Set the path to BridgeStan. This should point to the top-level folder of the repository.
+
+_Usage_
+```R
+set_bridgestan_path(path)
+```

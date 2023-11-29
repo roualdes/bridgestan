@@ -41,17 +41,21 @@ as well as constraining and unconstraining transforms.
 \subsection{Method \code{new()}}{
 Create a Stan Model instance.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StanModel$new(lib, data, seed)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$new(lib, data, seed, stanc_args = NULL, make_args = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{lib}}{A path to a compiled BridgeStan Shared Object file.}
+\item{\code{lib}}{A path to a compiled BridgeStan Shared Object file or a .stan file (will be compiled).}
 
 \item{\code{data}}{Either a JSON string literal, a path to a data file in JSON format ending in ".json", or the empty string.}
 
 \item{\code{seed}}{Seed for the RNG used in constructing the model.}
+
+\item{\code{stanc_args}}{A list of arguments to pass to stanc3 if the model is not already compiled.}
+
+\item{\code{make_args}}{A list of additional arguments to pass to Make if the model is not already compiled.}
 }
 \if{html}{\out{</div>}}
 }
@@ -89,6 +93,7 @@ A character vector of the Stan version and important flags.
 \if{html}{\out{<a id="method-StanModel-model_version"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-model_version}{}}}
 \subsection{Method \code{model_version()}}{
+Get the version of BridgeStan used in the compiled model.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$model_version()}\if{html}{\out{</div>}}
 }

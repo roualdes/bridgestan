@@ -55,7 +55,7 @@ Additional arguments to `make` can be passed as a vector, for example `["STAN_TH
 enables the model's threading capabilities. If the same flags are defined in `make/local`,
 the versions passed here will take precedent.
 
-This function assumes that the path to BridgeStan is valid.
+This function checks that the path to BridgeStan is valid and will error if it is not.
 This can be set with `set_bridgestan_path!()`.
 """
 function compile_model(

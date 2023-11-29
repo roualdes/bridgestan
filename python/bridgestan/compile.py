@@ -29,8 +29,6 @@ def verify_bridgestan_path(path: str) -> None:
 IS_WINDOWS = platform.system() == "Windows"
 WINDOWS_PATH_SET = False
 
-PYTHON_FOLDER = Path(__file__).parent.parent
-
 MAKE = os.getenv(
     "MAKE",
     "make" if not IS_WINDOWS else "mingw32-make",
@@ -95,8 +93,8 @@ def compile_model(
     Run BridgeStan's Makefile on a ``.stan`` file, creating the ``.so``
     used by the StanModel class.
 
-    This function assumes that the path to BridgeStan is valid.
-    This can be set with :func:`set_bridgestan_path`.
+    This function checks that the path to BridgeStan is valid and will
+    error if not. This can be set with :func:`set_bridgestan_path`.
 
     :param stan_file: A path to a Stan model file.
     :param stanc_args: A list of arguments to pass to stanc3.
