@@ -1,10 +1,8 @@
-# Before running this:
-#  - In the terminal, run `make test_models/bernoulli/bernoulli_model.so` from inside the bridgestan folder
-#  - In R, make sure you are in the directory bridgestan/R
+# Before running this, make sure you are in the directory bridgestan/R
 
 library(bridgestan)
 
-model <- StanModel$new("../test_models/bernoulli/bernoulli_model.so", "../test_models/bernoulli/bernoulli.data.json", 1234)
+model <- StanModel$new("../test_models/bernoulli/bernoulli.stan", "../test_models/bernoulli/bernoulli.data.json", 1234)
 
 print(paste0("This model's name is ", model$name(), "."))
 print(paste0("This model has ", model$param_num(), " parameters."))
