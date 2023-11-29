@@ -206,7 +206,7 @@ This calculation drops constant terms that do not depend on the parameters if `p
 This allocates new memory for the output each call. See `log_density_hessian_vector_product!` for a version which allows re-using existing memory.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L731-L742' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L744-L755' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.param_constrain' href='#BridgeStan.param_constrain'>#</a>
 **`BridgeStan.param_constrain`** &mdash; *Function*.
@@ -414,7 +414,7 @@ This calculation drops constant terms that do not depend on the parameters if `p
 The product is stored in the vector `out` and a reference is returned. See `log_density_hessian_vector_product` for a version which allocates fresh memory.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L673-L684' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L686-L697' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.param_constrain!' href='#BridgeStan.param_constrain!'>#</a>
 **`BridgeStan.param_constrain!`** &mdash; *Function*.
@@ -528,10 +528,10 @@ compile_model(stan_file; stanc_args=[], make_args=[])
 
 Run BridgeStan’s Makefile on a `.stan` file, creating the `.so` used by StanModel and return a path to the compiled library. Arguments to `stanc3` can be passed as a vector, for example `["--O1"]` enables level 1 compiler optimizations. Additional arguments to `make` can be passed as a vector, for example `["STAN_THREADS=true"]` enables the model's threading capabilities. If the same flags are defined in `make/local`, the versions passed here will take precedent.
 
-This function assumes that the path to BridgeStan is valid. This can be set with `set_bridgestan_path!()`.
+This function checks that the path to BridgeStan is valid and will error if it is not. This can be set with `set_bridgestan_path!()`.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L50-L63' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L47-L60' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.get_bridgestan_path' href='#BridgeStan.get_bridgestan_path'>#</a>
 **`BridgeStan.get_bridgestan_path`** &mdash; *Function*.
@@ -560,8 +560,6 @@ set_bridgestan_path!(path)
 
 Set the path BridgeStan.
 
-By default this is set to the value of the environment variable `BRIDGESTAN`.
 
-
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L36-L43' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L36-L40' class='documenter-source'>source</a><br>
 

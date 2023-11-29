@@ -4,20 +4,20 @@
 \alias{compile_model}
 \title{Run BridgeStan's Makefile on a \code{.stan} file, creating the \code{.so}
 used by the StanModel class.
-This function assumes that the path to BridgeStan is valid.
-This can be set with \code{set_bridgestan_path}.}
+This function checks that the path to BridgeStan is valid
+and will error if not. This can be set with \code{set_bridgestan_path}.}
 \usage{
 compile_model(stan_file, stanc_args = NULL, make_args = NULL)
 }
 \arguments{
 \item{stan_file}{A path to a Stan model file.}
 
-\item{make_args}{A list of additional arguments to pass to Make.
+\item{make_args}{A vector of additional arguments to pass to Make.
 For example, \code{c('STAN_THREADS=True')} will enable
 threading for the compiled model. If the same flags are defined
 in \code{make/local}, the versions passed here will take precedent.}
 
-\item{stanc_arg}{A list of arguments to pass to stanc3.
+\item{stanc_arg}{A vector of arguments to pass to stanc3.
 For example, \code{c('--O1')} will enable compiler optimization level 1.}
 }
 \value{
@@ -26,6 +26,6 @@ Path to the compiled model.
 \description{
 Run BridgeStan's Makefile on a \code{.stan} file, creating the \code{.so}
 used by the StanModel class.
-This function assumes that the path to BridgeStan is valid.
-This can be set with \code{set_bridgestan_path}.
+This function checks that the path to BridgeStan is valid
+and will error if not. This can be set with \code{set_bridgestan_path}.
 }

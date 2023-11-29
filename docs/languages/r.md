@@ -441,8 +441,8 @@ _Returns_
 **Function** `compile_model()`:
 
 Run BridgeStan's Makefile on a `.stan` file, creating the `.so` used by
-the StanModel class. This function assumes that the path to BridgeStan
-is valid. This can be set with `set_bridgestan_path()`.
+the StanModel class. This function checks that the path to BridgeStan
+is valid and will error if not. This can be set with `set_bridgestan_path()`.
 
 _Usage_
 ```R
@@ -453,10 +453,10 @@ _Arguments_
 
   - `stan_file` A path to a Stan model file.
 
-  - `stanc_arg` A list of arguments to pass to stanc3. For example,
+  - `stanc_arg` A vector of arguments to pass to stanc3. For example,
       `c("--O1")` will enable compiler optimization level 1.
 
-  - `make_args` A list of additional arguments to pass to Make. For example,
+  - `make_args` A vector of additional arguments to pass to Make. For example,
       `c("STAN_THREADS=True")` will enable threading for the
       compiled model. If the same flags are defined in
       `make/local`, the versions passed here will take precedent.
