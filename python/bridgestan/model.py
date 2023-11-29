@@ -1,7 +1,8 @@
 import ctypes
 import warnings
+from os import PathLike, fspath
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -32,22 +33,33 @@ class StanModel:
 
     def __init__(
         self,
-        model_lib: str,
-        model_data: Optional[str] = None,
+        model_lib: Union[str, PathLike],
+        data: Union[str, PathLike, None] = None,
         *,
         seed: int = 1234,
+        stanc_args: List[str] = [],
+        make_args: List[str] = [],
         capture_stan_prints: bool = True,
+        model_data: Optional[str] = None,
     ) -> None:
         """
         Construct a StanModel object for a compiled Stan model and data given
         constructor arguments.
 
-        :param model_lib: A system path to compiled shared object.
-        :param model_data: Either a JSON string literal, a
+        :param model_lib: A system path to compiled shared object or a ``.stan``
+            file to be compiled.
+        :param data: Either a JSON string literal, a
             system path to a data file in JSON format ending in ``.json``,
             or the empty string.
         :param seed: A pseudo random number generator seed, used for RNG functions
             in the ``transformed data`` block.
+        :param stanc_args: A list of arguments to pass to stanc3 if the
+            model is not compiled. For example, ``["--O1"]`` will enable compiler
+            optimization level 1.
+        :param make_args: A list of additional arguments to pass to Make if the
+            model is not compiled. For example, ``["STAN_THREADS=True"]`` will enable
+            threading for the compiled model. If the same flags are defined
+            in ``make/local``, the versions passed here will take precedent.
         :param capture_stan_prints: If ``True``, capture all ``print`` statements
             from the Stan model and print them from Python. This has no effect if
             the model does not contain any ``print`` statements, but may have
@@ -59,18 +71,38 @@ class StanModel:
             from the *same shared library* will also have the callback set, even
             if they were created *before* this model.
         :raises FileNotFoundError or PermissionError: If ``model_lib`` is not readable or
-            ``model_data`` is specified and not a path to a readable file.
+            ``data`` is specified and not a path to a readable file.
         :raises RuntimeError: If there is an error instantiating the
             model from C++.
         """
         validate_readable(model_lib)
-        if model_data is not None and model_data.endswith(".json"):
-            validate_readable(model_data)
-            with open(model_data, "r", encoding="utf-8") as file:
-                model_data = file.read()
+        if model_data is not None:
+            if data is not None:
+                raise ValueError(
+                    "Cannot specify both model_data and data arguments. "
+                    "Please use only the data argument."
+                )
+            warnings.warn(
+                "The model_data argument is deprecated and will be removed in a future "
+                "release. Please use the data argument instead.",
+                DeprecationWarning,
+            )
+            data = model_data
+        if data is not None:
+            data = fspath(data)
+            if data.endswith(".json"):
+                validate_readable(data)
+                with open(data, "r", encoding="utf-8") as file:
+                    data = file.read()
 
         windows_dll_path_setup()
-        self.lib_path = str(Path(model_lib).absolute().resolve())
+
+        if str(model_lib).endswith(".stan"):
+            model_lib = compile_model(
+                model_lib, make_args=make_args, stanc_args=stanc_args
+            )
+
+        self.lib_path = fspath(Path(model_lib).absolute().resolve())
         if self.lib_path in dllist():
             warnings.warn(
                 f"Loading a shared object {self.lib_path} that has already been loaded.\n"
@@ -79,7 +111,7 @@ class StanModel:
             )
         self.stanlib = ctypes.CDLL(self.lib_path)
 
-        self.data = model_data or ""
+        self.data = data or ""
         self.seed = seed
 
         self._construct = self.stanlib.bs_model_construct
@@ -223,49 +255,6 @@ class StanModel:
         self._destruct = self.stanlib.bs_model_destruct
         self._destruct.restype = None
         self._destruct.argtypes = [ctypes.c_void_p]
-
-    @classmethod
-    def from_stan_file(
-        cls,
-        stan_file: str,
-        model_data: Optional[str] = None,
-        *,
-        stanc_args: List[str] = [],
-        make_args: List[str] = [],
-        seed: int = 1234,
-        capture_stan_prints: bool = True,
-    ):
-        """
-        Construct a StanModel instance from a ``.stan`` file, compiling if necessary.
-
-        This is equivalent to calling :func:`bridgestan.compile_model`` and then the
-        constructor of this class.
-
-        :param stan_file: A path to a Stan model file.
-        :param model_data: A path to data in JSON format.
-        :param stanc_args: A list of arguments to pass to stanc3.
-            For example, ``["--O1"]`` will enable compiler optimization level 1.
-        :param make_args: A list of additional arguments to pass to Make.
-            For example, ``["STAN_THREADS=True"]`` will enable
-            threading for the compiled model. If the same flags are defined
-            in ``make/local``, the versions passed here will take precedent.
-        :param seed: A pseudo random number generator seed, used for RNG functions
-            in the ``transformed data`` block.
-        :param capture_stan_prints: If ``True``, capture all ``print`` statements
-            from the Stan model and print them from Python. This has no effect if
-            the model does not contain any ``print`` statements, but may have
-            a performance impact if it does. If ``False``, ``print`` statements
-            from the Stan model will be sent to ``cout`` and will not be seen in
-            Jupyter or capturable with ``contextlib.redirect_stdout``.
-        :raises FileNotFoundError or PermissionError: If ``stan_file`` does not exist
-            or is not readable.
-        :raises ValueError: If BridgeStan cannot be located.
-        :raises RuntimeError: If compilation fails.
-        """
-        result = compile_model(stan_file, stanc_args=stanc_args, make_args=make_args)
-        return cls(
-            str(result), model_data, seed=seed, capture_stan_prints=capture_stan_prints
-        )
 
     def __del__(self) -> None:
         """
@@ -684,6 +673,58 @@ class StanModel:
             return RuntimeError(string)
 
         return RuntimeError(f"Unknown error in {method}. ")
+
+    @classmethod
+    def from_stan_file(
+        cls,
+        stan_file: str,
+        model_data: Optional[str] = None,
+        *,
+        stanc_args: List[str] = [],
+        make_args: List[str] = [],
+        seed: int = 1234,
+        capture_stan_prints: bool = True,
+    ):
+        """
+        Construct a StanModel instance from a ``.stan`` file, compiling if necessary.
+
+        This is equivalent to calling :func:`bridgestan.compile_model`` and then the
+        constructor of this class.
+
+        :param stan_file: A path to a Stan model file.
+        :param model_data: A path to data in JSON format.
+        :param stanc_args: A list of arguments to pass to stanc3.
+            For example, ``["--O1"]`` will enable compiler optimization level 1.
+        :param make_args: A list of additional arguments to pass to Make.
+            For example, ``["STAN_THREADS=True"]`` will enable
+            threading for the compiled model. If the same flags are defined
+            in ``make/local``, the versions passed here will take precedent.
+        :param seed: A pseudo random number generator seed, used for RNG functions
+            in the ``transformed data`` block.
+        :param capture_stan_prints: If ``True``, capture all ``print`` statements
+            from the Stan model and print them from Python. This has no effect if
+            the model does not contain any ``print`` statements, but may have
+            a performance impact if it does. If ``False``, ``print`` statements
+            from the Stan model will be sent to ``cout`` and will not be seen in
+            Jupyter or capturable with ``contextlib.redirect_stdout``.
+        :raises FileNotFoundError or PermissionError: If ``stan_file`` does not exist
+            or is not readable.
+        :raises ValueError: If BridgeStan cannot be located.
+        :raises RuntimeError: If compilation fails.
+        """
+        warnings.warn(
+            "The from_stan_file method is deprecated and will be removed in a future "
+            "release. The constructor can be used instead.",
+            DeprecationWarning,
+        )
+        return cls(
+            stan_file,
+            model_data,
+            seed=seed,
+            stanc_args=stanc_args,
+            make_args=make_args,
+            capture_stan_prints=capture_stan_prints,
+        )
 
 
 class StanRNG:

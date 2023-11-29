@@ -14,6 +14,11 @@ def test_compile_good():
     res = bs.compile_model(stanfile, stanc_args=["--O1"])
     assert lib.samefile(res)
     lib.unlink()
+
+    model = bs.StanModel(stanfile, data=STAN_FOLDER / "multi" / "multi.data.json")
+    assert lib.exists()
+    lib.unlink()
+
     res = bs.compile_model(stanfile, make_args=["STAN_THREADS=true"])
     assert lib.samefile(res)
 
@@ -40,4 +45,4 @@ def test_compile_bad_bridgestan():
     with pytest.raises(ValueError, match=r"does not exist"):
         bs.compile.set_bridgestan_path("dummy")
     with pytest.raises(ValueError, match=r"does not contain file 'Makefile'"):
-        bs.compile.set_bridgestan_path(str(STAN_FOLDER))
+        bs.compile.set_bridgestan_path(STAN_FOLDER)

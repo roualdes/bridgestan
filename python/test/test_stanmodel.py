@@ -12,13 +12,13 @@ def test_constructor():
     # implicit destructor tests in success and fail cases
 
     # test empty data
-    std_so = str(STAN_FOLDER / "stdnormal" / "stdnormal_model.so")
+    std_so = STAN_FOLDER / "stdnormal" / "stdnormal_model.so"
     b1 = bs.StanModel(std_so)
     np.testing.assert_allclose(bool(b1), True)
 
     # test load data
-    bernoulli_so = str(STAN_FOLDER / "bernoulli" / "bernoulli_model.so")
-    bernoulli_data = str(STAN_FOLDER / "bernoulli" / "bernoulli.data.json")
+    bernoulli_so = STAN_FOLDER / "bernoulli" / "bernoulli_model.so"
+    bernoulli_data = STAN_FOLDER / "bernoulli" / "bernoulli.data.json"
     b2 = bs.StanModel(bernoulli_so, bernoulli_data)
     np.testing.assert_allclose(bool(b2), True)
 
@@ -37,11 +37,11 @@ def test_constructor():
         bs.StanModel(bernoulli_so, "nope, not going to find it.json")
 
     # test data load exception
-    throw_data_so = str(STAN_FOLDER / "throw_data" / "throw_data_model.so")
+    throw_data_so = STAN_FOLDER / "throw_data" / "throw_data_model.so"
     with pytest.raises(RuntimeError, match="find this text: datafails"):
         b4 = bs.StanModel(throw_data_so)
 
-    load_sundials = str(STAN_FOLDER / "ode_sundials" / "ode_sundials_model.so")
+    load_sundials = STAN_FOLDER / "ode_sundials" / "ode_sundials_model.so"
     ode_sundials_data = (
         STAN_FOLDER / "ode_sundials" / "ode_sundials.data.json"
     ).read_text()
@@ -49,20 +49,20 @@ def test_constructor():
 
 
 def test_name():
-    std_so = str(STAN_FOLDER / "stdnormal" / "stdnormal_model.so")
+    std_so = STAN_FOLDER / "stdnormal" / "stdnormal_model.so"
     b = bs.StanModel(std_so)
     np.testing.assert_equal("stdnormal_model", b.name())
 
 
 def test_model_info():
-    std_so = str(STAN_FOLDER / "stdnormal" / "stdnormal_model.so")
+    std_so = STAN_FOLDER / "stdnormal" / "stdnormal_model.so"
     b = bs.StanModel(std_so)
     assert "STAN_OPENCL" in b.model_info()
     assert "BridgeStan version: 2." in b.model_info()
 
 
 def test_param_num():
-    full_so = str(STAN_FOLDER / "full" / "full_model.so")
+    full_so = STAN_FOLDER / "full" / "full_model.so"
     b = bs.StanModel(full_so)
     np.testing.assert_equal(1, b.param_num())
     np.testing.assert_equal(1, b.param_num(include_tp=False))
@@ -76,14 +76,14 @@ def test_param_num():
 
 
 def test_param_unc_num():
-    simplex_so = str(STAN_FOLDER / "simplex" / "simplex_model.so")
+    simplex_so = STAN_FOLDER / "simplex" / "simplex_model.so"
     b = bs.StanModel(simplex_so)
     np.testing.assert_equal(5, b.param_num())
     np.testing.assert_equal(4, b.param_unc_num())
 
 
 def test_param_names():
-    matrix_so = str(STAN_FOLDER / "matrix" / "matrix_model.so")
+    matrix_so = STAN_FOLDER / "matrix" / "matrix_model.so"
     b = bs.StanModel(matrix_so)
     np.testing.assert_array_equal(
         ["A.1.1", "A.2.1", "A.3.1", "A.1.2", "A.2.2", "A.3.2"], b.param_names()
@@ -163,13 +163,13 @@ def test_param_names():
 
 
 def test_param_unc_names():
-    matrix_so = str(STAN_FOLDER / "matrix" / "matrix_model.so")
+    matrix_so = STAN_FOLDER / "matrix" / "matrix_model.so"
     b1 = bs.StanModel(matrix_so)
     np.testing.assert_array_equal(
         ["A.1.1", "A.2.1", "A.3.1", "A.1.2", "A.2.2", "A.3.2"], b1.param_unc_names()
     )
 
-    simplex_so = str(STAN_FOLDER / "simplex" / "simplex_model.so")
+    simplex_so = STAN_FOLDER / "simplex" / "simplex_model.so"
     b2 = bs.StanModel(simplex_so)
     np.testing.assert_array_equal(
         ["theta.1", "theta.2", "theta.3", "theta.4"], b2.param_unc_names()
@@ -186,8 +186,8 @@ def cov_constrain(v, D):
 
 
 def test_param_constrain():
-    fr_gaussian_so = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian_model.so")
-    fr_gaussian_data = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian.data.json")
+    fr_gaussian_so = STAN_FOLDER / "fr_gaussian" / "fr_gaussian_model.so"
+    fr_gaussian_data = STAN_FOLDER / "fr_gaussian" / "fr_gaussian.data.json"
     bridge = bs.StanModel(fr_gaussian_so, fr_gaussian_data)
 
     D = 4
@@ -211,7 +211,7 @@ def test_param_constrain():
     B = b.reshape(D, D)
     np.testing.assert_allclose(B_expected, B)
 
-    full_so = str(STAN_FOLDER / "full" / "full_model.so")
+    full_so = STAN_FOLDER / "full" / "full_model.so"
     bridge2 = bs.StanModel(full_so)
     rng = bridge2.new_rng(seed=1234)
 
@@ -244,7 +244,7 @@ def test_param_constrain():
         bridge.param_constrain(a, out=scratch_wrong)
 
     # exception handling test in transformed parameters/model (compiled same way)
-    throw_tp_so = str(STAN_FOLDER / "throw_tp" / "throw_tp_model.so")
+    throw_tp_so = STAN_FOLDER / "throw_tp" / "throw_tp_model.so"
     bridge2 = bs.StanModel(throw_tp_so)
 
     y = np.array(np.random.uniform(1))
@@ -252,7 +252,7 @@ def test_param_constrain():
     with pytest.raises(RuntimeError, match="find this text: tpfails"):
         bridge2.param_constrain(y, include_tp=True)
 
-    throw_gq_so = str(STAN_FOLDER / "throw_gq" / "throw_gq_model.so")
+    throw_gq_so = STAN_FOLDER / "throw_gq" / "throw_gq_model.so"
     bridge3 = bs.StanModel(throw_gq_so)
     bridge3.param_constrain(y, include_gq=False)
     with pytest.raises(RuntimeError, match="find this text: gqfails"):
@@ -260,8 +260,8 @@ def test_param_constrain():
 
 
 def test_param_unconstrain():
-    fr_gaussian_so = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian_model.so")
-    fr_gaussian_data = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian.data.json")
+    fr_gaussian_so = STAN_FOLDER / "fr_gaussian" / "fr_gaussian_model.so"
+    fr_gaussian_data = STAN_FOLDER / "fr_gaussian" / "fr_gaussian.data.json"
     bridge = bs.StanModel(fr_gaussian_so, fr_gaussian_data)
 
     unc_size = 10
@@ -279,8 +279,8 @@ def test_param_unconstrain():
 
 
 def test_param_unconstrain_json():
-    gaussian_so = str(STAN_FOLDER / "gaussian" / "gaussian_model.so")
-    gaussian_data = str(STAN_FOLDER / "gaussian" / "gaussian.data.json")
+    gaussian_so = STAN_FOLDER / "gaussian" / "gaussian_model.so"
+    gaussian_data = STAN_FOLDER / "gaussian" / "gaussian.data.json"
     bridge = bs.StanModel(gaussian_so, gaussian_data)
 
     # theta = np.array([0.2, 1.9])
@@ -311,8 +311,8 @@ def _bernoulli_jacobian(y, p):
 
 
 def test_log_density():
-    bernoulli_so = str(STAN_FOLDER / "bernoulli" / "bernoulli_model.so")
-    bernoulli_data = str(STAN_FOLDER / "bernoulli" / "bernoulli.data.json")
+    bernoulli_so = STAN_FOLDER / "bernoulli" / "bernoulli_model.so"
+    bernoulli_data = STAN_FOLDER / "bernoulli" / "bernoulli.data.json"
     bridge = bs.StanModel(bernoulli_so, bernoulli_data)
     y = np.asarray([0, 1, 0, 0, 0, 0, 0, 0, 0, 1])
     for _ in range(2):
@@ -327,7 +327,7 @@ def test_log_density():
         lp4 = bridge.log_density(np.array([x_unc]), propto=True, jacobian=False)
         np.testing.assert_allclose(lp4, _bernoulli(y, x))
 
-    throw_lp_so = str(STAN_FOLDER / "throw_lp" / "throw_lp_model.so")
+    throw_lp_so = STAN_FOLDER / "throw_lp" / "throw_lp_model.so"
     bridge2 = bs.StanModel(throw_lp_so)
     y2 = np.array(np.random.uniform(1))
 
@@ -356,7 +356,7 @@ def test_log_density_gradient():
     def _grad_jacobian_true(y_unc):
         return 1
 
-    jacobian_so = str(STAN_FOLDER / "jacobian" / "jacobian_model.so")
+    jacobian_so = STAN_FOLDER / "jacobian" / "jacobian_model.so"
     bridge = bs.StanModel(jacobian_so)
 
     y = np.abs(np.random.normal(1))
@@ -435,7 +435,7 @@ def test_log_density_hessian():
     def _hess_jacobian_true(y_unc):
         return 0
 
-    jacobian_so = str(STAN_FOLDER / "jacobian" / "jacobian_model.so")
+    jacobian_so = STAN_FOLDER / "jacobian" / "jacobian_model.so"
     bridge = bs.StanModel(jacobian_so)
 
     # test value, gradient, hessian, all combos +/- propto, +/- jacobian
@@ -510,8 +510,8 @@ def test_log_density_hessian():
         bridge.log_density_hessian(y_unc, out_grad=scratch_bad)
 
     # test with 5 x 5 Hessian
-    simple_so = str(STAN_FOLDER / "simple" / "simple_model.so")
-    simple_data = str(STAN_FOLDER / "simple" / "simple.data.json")
+    simple_so = STAN_FOLDER / "simple" / "simple_model.so"
+    simple_data = STAN_FOLDER / "simple" / "simple.data.json"
     bridge2 = bs.StanModel(simple_so, simple_data)
 
     D = 5
@@ -522,8 +522,8 @@ def test_log_density_hessian():
 
 
 def test_out_behavior():
-    bernoulli_so = str(STAN_FOLDER / "bernoulli" / "bernoulli_model.so")
-    bernoulli_data = str(STAN_FOLDER / "bernoulli" / "bernoulli.data.json")
+    bernoulli_so = STAN_FOLDER / "bernoulli" / "bernoulli_model.so"
+    bernoulli_data = STAN_FOLDER / "bernoulli" / "bernoulli.data.json"
     smb = bs.StanModel(bernoulli_so, bernoulli_data)
 
     grads = []
@@ -558,8 +558,8 @@ def test_bernoulli():
     def _bernoulli(y, p):
         return np.sum(y * np.log(p) + (1 - y) * np.log(1 - p))
 
-    bernoulli_so = str(STAN_FOLDER / "bernoulli" / "bernoulli_model.so")
-    bernoulli_data = str(STAN_FOLDER / "bernoulli" / "bernoulli.data.json")
+    bernoulli_so = STAN_FOLDER / "bernoulli" / "bernoulli_model.so"
+    bernoulli_data = STAN_FOLDER / "bernoulli" / "bernoulli.data.json"
     smb = bs.StanModel(bernoulli_so, bernoulli_data)
     np.testing.assert_string_equal(smb.name(), "bernoulli_model")
     np.testing.assert_allclose(smb.param_unc_num(), 1)
@@ -583,8 +583,8 @@ def test_multi():
     def _grad_multi(x):
         return -x
 
-    multi_so = str(STAN_FOLDER / "multi" / "multi_model.so")
-    multi_data = str(STAN_FOLDER / "multi" / "multi.data.json")
+    multi_so = STAN_FOLDER / "multi" / "multi_model.so"
+    multi_data = STAN_FOLDER / "multi" / "multi.data.json"
 
     smm = bs.StanModel(multi_so, multi_data)
     x = np.random.normal(size=smm.param_unc_num())
@@ -594,8 +594,8 @@ def test_multi():
 
 
 def test_gaussian():
-    lib = str(STAN_FOLDER / "gaussian" / "gaussian_model.so")
-    data = str(STAN_FOLDER / "gaussian" / "gaussian.data.json")
+    lib = STAN_FOLDER / "gaussian" / "gaussian_model.so"
+    data = STAN_FOLDER / "gaussian" / "gaussian.data.json"
 
     model = bs.StanModel(lib, data)
 
@@ -614,8 +614,8 @@ def test_gaussian():
 
 
 def test_fr_gaussian():
-    lib = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian_model.so")
-    data = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian.data.json")
+    lib = STAN_FOLDER / "fr_gaussian" / "fr_gaussian_model.so"
+    data = STAN_FOLDER / "fr_gaussian" / "fr_gaussian.data.json"
     model = bs.StanModel(lib, data)
 
     size = 16
@@ -655,7 +655,7 @@ def test_stdout_capture():
     theta = 0.1
 
     m = bs.StanModel(
-        str(STAN_FOLDER / "print" / "print_model.so"), capture_stan_prints=False
+        STAN_FOLDER / "print" / "print_model.so", capture_stan_prints=False
     )
 
     with contextlib.redirect_stdout(io.StringIO()) as f:
@@ -666,7 +666,7 @@ def test_stdout_capture():
     assert captured.splitlines()[0] == "Hello from Python!"
     assert "Stan" not in captured
 
-    m2 = bs.StanModel(str(STAN_FOLDER / "print" / "print_model.so"))
+    m2 = bs.StanModel(STAN_FOLDER / "print" / "print_model.so")
 
     with contextlib.redirect_stdout(io.StringIO()) as f:
         print("Hello from Python!")
@@ -708,13 +708,13 @@ def test_stdout_capture():
 
 def test_reload_warning():
     lib = STAN_FOLDER / "fr_gaussian" / "fr_gaussian_model.so"
-    data = str(STAN_FOLDER / "fr_gaussian" / "fr_gaussian.data.json")
-    model = bs.StanModel(str(lib), data)
+    data = STAN_FOLDER / "fr_gaussian" / "fr_gaussian.data.json"
+    model = bs.StanModel(lib, data)
 
     relative_lib = lib.relative_to(STAN_FOLDER.parent)
     assert not relative_lib.is_absolute()
     with pytest.warns(UserWarning, match="may not update the library"):
-        model2 = bs.StanModel(str(relative_lib), data)
+        model2 = bs.StanModel(relative_lib, data)
 
 
 @pytest.fixture(scope="module")
@@ -726,7 +726,7 @@ def recompile_simple():
     lib.unlink(missing_ok=True)
     res = bs.compile_model(stanfile, make_args=["BRIDGESTAN_AD_HESSIAN=true"])
 
-    yield str(res)
+    yield res
 
     lib.unlink(missing_ok=True)
     bs.compile_model(stanfile, make_args=["STAN_THREADS=true"])
@@ -734,7 +734,7 @@ def recompile_simple():
 
 @pytest.mark.ad_hessian
 def test_hessian_autodiff(recompile_simple):
-    simple_data = str(STAN_FOLDER / "simple" / "simple.data.json")
+    simple_data = STAN_FOLDER / "simple" / "simple.data.json"
     model = bs.StanModel(recompile_simple, simple_data)
     assert "BRIDGESTAN_AD_HESSIAN=true" in model.model_info()
     D = 5
@@ -746,7 +746,7 @@ def test_hessian_autodiff(recompile_simple):
 
 @pytest.mark.ad_hessian
 def test_hvp_autodiff(recompile_simple):
-    simple_data = str(STAN_FOLDER / "simple" / "simple.data.json")
+    simple_data = STAN_FOLDER / "simple" / "simple.data.json"
     model = bs.StanModel(recompile_simple, simple_data)
     assert "BRIDGESTAN_AD_HESSIAN=true" in model.model_info()
     D = 5

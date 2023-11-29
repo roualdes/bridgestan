@@ -10,7 +10,7 @@ bs.set_bridgestan_path("..")
 
 stan = "../test_models/bernoulli/bernoulli.stan"
 data = "../test_models/bernoulli/bernoulli.data.json"
-model = bs.StanModel.from_stan_file(stan, data)
+model = bs.StanModel(stan, data)
 
 print(f"This model's name is {model.name()}.")
 print(f"It has {model.param_num()} parameters.")
