@@ -34,7 +34,7 @@ include("compile.jl")
 """
     StanModel(;stan_file, stanc_args=[], make_args=[], data="", seed=204)
 
-Deprecated; use the normal constructor, StanModel(...) instead.
+Deprecated; use the normal constructor, StanModel(...), with a path to a `.stan` file, instead.
 
 Construct a StanModel instance from a `.stan` file, compiling if necessary.
 This is equivalent to calling `compile_model` and then the original constructor of StanModel.

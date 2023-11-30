@@ -48,9 +48,10 @@ class StanModel:
 
         :param model_lib: A system path to compiled shared object or a ``.stan``
             file to be compiled.
-        :param data: Either a JSON string literal, a
-            system path to a data file in JSON format ending in ``.json``,
-            or the empty string.
+        :param data: Data for the model. Either a JSON string literal or a
+            system path to a data file in JSON format ending in ``.json``.
+            If the model does not require data, this can be either the
+            empty string or ``None`` (the default).
         :param seed: A pseudo random number generator seed, used for RNG functions
             in the ``transformed data`` block.
         :param stanc_args: A list of arguments to pass to stanc3 if the
@@ -70,6 +71,7 @@ class StanModel:
             **Note:** If this is set for a model, any other models instantiated
             from the *same shared library* will also have the callback set, even
             if they were created *before* this model.
+        :param model_data: Deprecated former name for ``data``.
         :raises FileNotFoundError or PermissionError: If ``model_lib`` is not readable or
             ``data`` is specified and not a path to a readable file.
         :raises RuntimeError: If there is an error instantiating the
@@ -688,8 +690,7 @@ class StanModel:
         """
         Construct a StanModel instance from a ``.stan`` file, compiling if necessary.
 
-        This is equivalent to calling :func:`bridgestan.compile_model`` and then the
-        constructor of this class.
+        DEPRECATED: You should use the constructor on a ``.stan`` file instead.
 
         :param stan_file: A path to a Stan model file.
         :param model_data: A path to data in JSON format.

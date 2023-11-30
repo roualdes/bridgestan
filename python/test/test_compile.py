@@ -15,7 +15,11 @@ def test_compile_good():
     assert lib.samefile(res)
     lib.unlink()
 
-    model = bs.StanModel(stanfile, data=STAN_FOLDER / "multi" / "multi.data.json", make_args=["STAN_THREADS=true"])
+    model = bs.StanModel(
+        stanfile,
+        data=STAN_FOLDER / "multi" / "multi.data.json",
+        make_args=["STAN_THREADS=true"],
+    )
     assert lib.exists()
     assert "STAN_THREADS=true" in model.model_info()
 
