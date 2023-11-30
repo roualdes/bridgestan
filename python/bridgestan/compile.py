@@ -3,14 +3,14 @@ import platform
 import subprocess
 import warnings
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
 from .__version import __version__
 from .download import CURRENT_BRIDGESTAN, HOME_BRIDGESTAN, get_bridgestan_src
 from .util import validate_readable
 
 
-def verify_bridgestan_path(path: str) -> None:
+def verify_bridgestan_path(path: Union[str, os.PathLike]) -> None:
     folder = Path(path).resolve()
     if not folder.exists():
         raise ValueError(
@@ -35,7 +35,7 @@ MAKE = os.getenv(
 )
 
 
-def set_bridgestan_path(path: str) -> None:
+def set_bridgestan_path(path: Union[str, os.PathLike]) -> None:
     """
     Set the path to BridgeStan.
 
@@ -62,7 +62,7 @@ def get_bridgestan_path():
     path = os.getenv("BRIDGESTAN", "")
     if path == "":
         try:
-            path = str(CURRENT_BRIDGESTAN)
+            path = os.fspath(CURRENT_BRIDGESTAN)
             verify_bridgestan_path(path)
         except ValueError:
             print(
@@ -87,7 +87,10 @@ def generate_so_name(model: Path):
 
 
 def compile_model(
-    stan_file: str, *, stanc_args: List[str] = [], make_args: List[str] = []
+    stan_file: Union[str, os.PathLike],
+    *,
+    stanc_args: List[str] = [],
+    make_args: List[str] = [],
 ) -> Path:
     """
     Run BridgeStan's Makefile on a ``.stan`` file, creating the ``.so``
@@ -110,7 +113,7 @@ def compile_model(
     """
     verify_bridgestan_path(get_bridgestan_path())
     file_path = Path(stan_file).resolve()
-    validate_readable(str(file_path))
+    validate_readable(file_path)
     if file_path.suffix != ".stan":
         raise ValueError(f"File '{stan_file}' does not end in .stan")
 
@@ -119,7 +122,7 @@ def compile_model(
         [MAKE]
         + make_args
         + ["STANCFLAGS=" + " ".join(["--include-paths=."] + stanc_args)]
-        + [str(output)]
+        + [os.fspath(output)]
     )
     proc = subprocess.run(
         cmd, cwd=get_bridgestan_path(), capture_output=True, text=True, check=False

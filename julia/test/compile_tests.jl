@@ -12,10 +12,16 @@ models = joinpath(BridgeStan.get_bridgestan_path(), "test_models/")
     rm(lib, force = true)
     res = BridgeStan.compile_model(stanfile; stanc_args = ["--O1"])
     @test Base.samefile(lib, res)
-
     rm(lib)
-    res = BridgeStan.compile_model(stanfile; make_args = ["STAN_THREADS=true"])
-    @test Base.samefile(lib, res)
+
+    # test constructor triggered compilation
+    model = BridgeStan.StanModel(
+        stanfile,
+        joinpath(models, "multi", "multi.data.json");
+        make_args = ["STAN_THREADS=true"],
+    )
+    @test isfile(lib)
+    @test contains(BridgeStan.model_info(model), "STAN_THREADS=true")
 end
 
 

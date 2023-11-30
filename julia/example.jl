@@ -11,7 +11,7 @@ BS.set_bridgestan_path!("../")
 bernoulli_stan = joinpath(@__DIR__, "../test_models/bernoulli/bernoulli.stan")
 bernoulli_data = joinpath(@__DIR__, "../test_models/bernoulli/bernoulli.data.json")
 
-smb = BS.StanModel(stan_file = bernoulli_stan, data = bernoulli_data);
+smb = BS.StanModel(bernoulli_stan, bernoulli_data);
 
 println("This model's name is $(BS.name(smb)).")
 println("It has $(BS.param_num(smb)) parameters.")

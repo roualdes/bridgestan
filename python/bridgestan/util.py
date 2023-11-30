@@ -1,7 +1,8 @@
 import os
+from typing import Union
 
 
-def validate_readable(f: str) -> None:
+def validate_readable(f: Union[str, os.PathLike]) -> None:
     """
     Raise an error if the specified file is not readable.
 

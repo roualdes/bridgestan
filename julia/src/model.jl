@@ -13,26 +13,21 @@ mutable struct StanRNGStruct end
 end
 
 """
-    StanModel(lib, datafile="", seed=204)
+    StanModel(lib, data="", seed=204; stanc_args=[], make_args=[])
 
 A StanModel instance encapsulates a Stan model instantiated with data.
 
-Construct a Stan model from the supplied library file path and data. Data
-should either be a string containing a JSON string literal, a path to a data file ending in `.json`,
-or the empty string.
+Construct a Stan model from the supplied library file path and data.
+If lib is a path to a file ending in `.stan`, this will first compile
+the model.  Compilation occurs if no shared object file exists for the
+supplied Stan file or if a shared object file exists and the Stan file
+has changed since last compilation.  This is equivalent to calling
+`compile_model` and then the constructor of `StanModel`.
+
+Data should either be a string containing a JSON string literal, a
+path to a data file ending in `.json`, or the empty string.
+
 If seed is supplied, it is used to initialize the RNG used by the model's constructor.
-
-    StanModel(;stan_file, data="", seed=204)
-
-Construct a `StanModel` instance from a `.stan` file, compiling if necessary.
-
-    StanModel(;stan_file, stanc_args=[], make_args=[], data="", seed=204)
-
-Construct a `StanModel` instance from a `.stan` file.  Compilation
-occurs if no shared object file exists for the supplied Stan file or
-if a shared object file exists and the Stan file has changed since
-last compilation.  This is equivalent to calling `compile_model` and
-then the original constructor of `StanModel`.
 """
 mutable struct StanModel
     lib::Ptr{Nothing}
@@ -40,11 +35,21 @@ mutable struct StanModel
     @const data::String
     @const seed::UInt32
 
-    function StanModel(lib::String, data::String = "", seed = 204)
+    function StanModel(
+        lib::String,
+        data::String = "",
+        seed = 204;
+        stanc_args::AbstractVector{String} = String[],
+        make_args::AbstractVector{String} = String[],
+    )
         seed = convert(UInt32, seed)
 
         if !isfile(lib)
-            throw(SystemError("Dynamic library file not found"))
+            throw(SystemError("File not found: $lib"))
+        end
+
+        if endswith(lib, ".stan")
+            lib = compile_model(lib; stanc_args, make_args)
         end
 
         if in(abspath(lib), Libc.Libdl.dllist())

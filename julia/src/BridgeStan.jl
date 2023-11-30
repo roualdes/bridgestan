@@ -34,17 +34,24 @@ include("compile.jl")
 """
     StanModel(;stan_file, stanc_args=[], make_args=[], data="", seed=204)
 
-Construct a StanModel instance from a `.stan` file, compiling if necessary.
+Deprecated; use the normal constructor, StanModel(...), with a path to a `.stan` file, instead.
 
+Construct a StanModel instance from a `.stan` file, compiling if necessary.
 This is equivalent to calling `compile_model` and then the original constructor of StanModel.
 """
-StanModel(;
+function StanModel(;
     stan_file::String,
     stanc_args::AbstractVector{String} = String[],
     make_args::AbstractVector{String} = String[],
     data::String = "",
     seed = 204,
-) = StanModel(compile_model(stan_file; stanc_args, make_args), data, seed)
+)
+    Base.depwarn(
+        "StanModel(;stan_file,... ) is deprecated. Use the normal constructor, StanModel(...) instead.",
+        :StanModel,
+    )
+    StanModel(stan_file, data, seed; stanc_args, make_args)
+end
 
 
 function __init__()
