@@ -105,7 +105,7 @@ jobs:
 
       - name: Upload PyPI wheels
         if: ${{ !inputs.dry_run }}
-        uses: pypa/gh-action-pypi-publish@v1.8.10
+        uses: pypa/gh-action-pypi-publish@v1.8.11
         with:
           password: ${{ secrets.PYPI_TOKEN }}
           packages_dir: python/dist/
