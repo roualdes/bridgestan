@@ -1,3 +1,4 @@
+import ctypes
 from pathlib import Path
 
 import numpy as np
@@ -274,7 +275,7 @@ def test_param_unconstrain():
     c2 = bridge.param_unconstrain(b, out=scratch)
     np.testing.assert_allclose(a, c2)
     scratch_wrong = np.zeros(16)
-    with pytest.raises(ValueError):
+    with pytest.raises(ctypes.ArgumentError):
         bridge.param_unconstrain(b, out=scratch_wrong)
 
 
@@ -294,7 +295,7 @@ def test_param_unconstrain_json():
     np.testing.assert_allclose(theta_unc, theta_unc_j_test2)
 
     scratch_bad = np.zeros(10)
-    with pytest.raises(ValueError):
+    with pytest.raises(ctypes.ArgumentError):
         bridge.param_unconstrain_json(theta_json, out=scratch_bad)
 
 
@@ -400,7 +401,7 @@ def test_log_density_gradient():
     np.testing.assert_allclose(_grad_logp(y_unc) + _grad_jacobian_true(y_unc), grad[0])
     #
     scratch_bad = np.zeros(bridge.param_unc_num() + 10)
-    with pytest.raises(ValueError):
+    with pytest.raises(ctypes.ArgumentError):
         bridge.log_density_gradient(y_unc, out=scratch_bad)
 
 
@@ -506,7 +507,7 @@ def test_log_density_hessian():
     np.testing.assert_allclose(_grad_logp(y_unc) + _grad_jacobian_true(y_unc), grad[0])
     #
     scratch_bad = np.zeros(bridge.param_unc_num() + 10)
-    with pytest.raises(ValueError):
+    with pytest.raises(ctypes.ArgumentError):
         bridge.log_density_hessian(y_unc, out_grad=scratch_bad)
 
     # test with 5 x 5 Hessian
