@@ -14,24 +14,24 @@ from .compile import compile_model, windows_dll_path_setup
 from .util import validate_readable
 
 
-def wrapped_ndptr(*args, **kwargs):
+def array_ptr(*args, **kwargs):
     """
     A version of np.ctypeslib.ndpointer
-    which allows None (passed as NULL)
+    which allows raw ctypes pointers
     """
-    base = ndpointer(*args, **kwargs)
+    np_type = ndpointer(*args, **kwargs)
     ctypes_type = ctypes.POINTER(ctypes.c_double)
 
     def from_param(cls, obj):
         if isinstance(obj, ctypes_type):
             return ctypes_type.from_param(obj)
-        return base.from_param(obj)
+        return np_type.from_param(obj)
 
-    return type(base.__name__, (base,), {"from_param": classmethod(from_param)})
+    return type(np_type.__name__, (np_type,), {"from_param": classmethod(from_param)})
 
 
 FloatArray = npt.NDArray[np.float64]
-generic_double_array = wrapped_ndptr(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
+generic_double_array = array_ptr(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
 star_star_char = ctypes.POINTER(ctypes.c_char_p)
 c_print_callback = ctypes.CFUNCTYPE(None, ctypes.POINTER(ctypes.c_char), ctypes.c_int)
 
@@ -183,10 +183,10 @@ class StanModel:
         self._param_unc_num.argtypes = [ctypes.c_void_p]
 
         num_params = self._param_unc_num(self.model)
-        unc_p_double_array = wrapped_ndptr(
+        unc_p_double_array = array_ptr(
             dtype=ctypes.c_double, flags=("C_CONTIGUOUS"), shape=(num_params,)
         )
-        unc_p2_double_array = wrapped_ndptr(
+        unc_p2_double_array = array_ptr(
             dtype=ctypes.c_double,
             flags=("C_CONTIGUOUS"),
             shape=(num_params, num_params),
