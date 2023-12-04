@@ -534,7 +534,6 @@ class StanModel:
             propto: bool = True,
             jacobian: bool = True
     ) -> float:
-        dims = self.param_unc_num()
         lp = ctypes.pointer(ctypes.c_double())
         err = ctypes.pointer(ctypes.c_char_p())
         rc = self._ldg(
@@ -561,7 +560,6 @@ class StanModel:
                              as_ctypes(out),
                              propto = propto,
                              jacobian = jacobian)
-
         return lp, out
 
     def log_density_gradient(
