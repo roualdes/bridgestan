@@ -7,7 +7,7 @@ from typing import List, Optional, Tuple, Union
 import numpy as np
 import numpy.typing as npt
 from dllist import dllist
-from numpy.ctypeslib import ndpointer
+from numpy.ctypeslib import ndpointer, as_ctypes
 
 from .__version import __version_info__
 from .compile import compile_model, windows_dll_path_setup
@@ -225,6 +225,18 @@ class StanModel:
             double_array,
             ctypes.POINTER(ctypes.c_double),
             double_array,
+            star_star_char,
+        ]
+
+        self._ldg = self.stanlib["bs_log_density_gradient"]
+        self._ldg.restype = ctypes.c_int
+        self._ldg.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_int,
+            ctypes.c_int,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
             star_star_char,
         ]
 
@@ -513,6 +525,44 @@ class StanModel:
         if rc:
             raise self._handle_error(err.contents, "log_density")
         return lp.contents.value
+
+    def ldg_ctypes(
+            self,
+            theta_unc,          # ctypes.POINTER(ctypes.c_double())
+            out,                # ctypes.POINTER(ctypes.c_double())
+            *,
+            propto: bool = True,
+            jacobian: bool = True
+    ) -> float:
+        dims = self.param_unc_num()
+        lp = ctypes.pointer(ctypes.c_double())
+        err = ctypes.pointer(ctypes.c_char_p())
+        rc = self._ldg(
+            self.model, int(propto), int(jacobian), theta_unc, lp, out, err
+        )
+        if rc:
+            raise self._handle_error(err.contents, "log_density_gradient")
+        return lp.contents.value
+
+    def ldg(
+        self,
+        theta_unc: FloatArray,
+        *,
+        propto: bool = True,
+        jacobian: bool = True,
+        out: Optional[FloatArray] = None,
+    ) -> Tuple[float, FloatArray]:
+        dims = self.param_unc_num()
+        if out is None:
+            out = np.zeros(shape=dims)
+        elif out.size != dims:
+            raise ValueError(f"out size = {out.size} != params size = {dims}")
+        lp = self.ldg_ctypes(as_ctypes(theta_unc),
+                             as_ctypes(out),
+                             propto = propto,
+                             jacobian = jacobian)
+
+        return lp, out
 
     def log_density_gradient(
         self,

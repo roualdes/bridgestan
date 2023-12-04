@@ -362,19 +362,19 @@ def test_log_density_gradient():
     y = np.abs(np.random.normal(1))
     y_unc = np.log(y)
     y_unc_arr = np.array(y_unc)
-    logdensity, grad = bridge.log_density_gradient(
+    logdensity, grad = bridge.ldg(
         y_unc_arr, propto=True, jacobian=True
     )
     np.testing.assert_allclose(_logp(y_unc) + _jacobian_true(y_unc), logdensity)
     np.testing.assert_allclose(_grad_logp(y_unc) + _grad_jacobian_true(y_unc), grad[0])
     #
-    logdensity, grad = bridge.log_density_gradient(
+    logdensity, grad = bridge.ldg(
         y_unc_arr, propto=True, jacobian=False
     )
     np.testing.assert_allclose(_logp(y_unc), logdensity)
     np.testing.assert_allclose(_grad_logp(y_unc), grad[0])
     #
-    logdensity, grad = bridge.log_density_gradient(
+    logdensity, grad = bridge.ldg(
         y_unc_arr, propto=False, jacobian=True
     )
     np.testing.assert_allclose(
@@ -385,7 +385,7 @@ def test_log_density_gradient():
         grad[0],
     )
     #
-    logdensity, grad = bridge.log_density_gradient(
+    logdensity, grad = bridge.ldg(
         y_unc_arr, propto=False, jacobian=False
     )
     np.testing.assert_allclose(_logp(y_unc) + _propto_false(y_unc), logdensity)
@@ -393,7 +393,7 @@ def test_log_density_gradient():
 
     # test use of scratch
     scratch = np.zeros(bridge.param_unc_num())
-    logdensity, grad = bridge.log_density_gradient(
+    logdensity, grad = bridge.ldg(
         y_unc_arr, propto=True, jacobian=True, out=scratch
     )
     np.testing.assert_allclose(_logp(y_unc) + _jacobian_true(y_unc), logdensity)
