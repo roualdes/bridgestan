@@ -568,14 +568,14 @@ class StanModel:
             propto: bool = True,
             jacobian: bool = True
     ) -> float:
-        lp = ctypes.pointer(ctypes.c_double())
-        err = ctypes.pointer(ctypes.c_char_p())
+        lp = ctypes.c_double()
+        err = ctypes.c_char_p()
         rc = self._log_density_gradient_alternative(
-            self.model, int(propto), int(jacobian), theta_unc, lp, out, err
+            self.model, int(propto), int(jacobian), theta_unc, ctypes.byref(lp), out, ctypes.byref(err)
         )
         if rc:
-            raise self._handle_error(err.contents, "log_density_gradient")
-        return lp.contents.value
+            raise self._handle_error(err, "log_density_gradient")
+        return lp.value
 
     def log_density_gradient_alternative(
         self,
@@ -629,14 +629,14 @@ class StanModel:
         if out is None:
             out = np.zeros(shape=dims)
 
-        lp = ctypes.pointer(ctypes.c_double())
-        err = ctypes.pointer(ctypes.c_char_p())
+        lp = ctypes.c_double()
+        err = ctypes.c_char_p()
         rc = self._log_density_gradient(
-            self.model, int(propto), int(jacobian), theta_unc, lp, out, err
+            self.model, int(propto), int(jacobian), theta_unc, ctypes.byref(lp), out, ctypes.byref(err)
         )
         if rc:
-            raise self._handle_error(err.contents, "log_density_gradient")
-        return lp.contents.value, out
+            raise self._handle_error(err, "log_density_gradient")
+        return lp.value, out
 
     def log_density_gradient_proposed(
         self,
@@ -670,14 +670,14 @@ class StanModel:
         if out is None:
             out = np.zeros(shape=dims)
 
-        lp = ctypes.pointer(ctypes.c_double())
-        err = ctypes.pointer(ctypes.c_char_p())
+        lp = ctypes.c_double()
+        err = ctypes.c_char_p()
         rc = self._log_density_gradient_proposed(
-            self.model, int(propto), int(jacobian), theta_unc, lp, out, err
+            self.model, int(propto), int(jacobian), theta_unc, ctypes.byref(lp), out, ctypes.byref(err)
         )
         if rc:
-            raise self._handle_error(err.contents, "log_density_gradient")
-        return lp.contents.value, out
+            raise self._handle_error(err, "log_density_gradient")
+        return lp.value, out
 
     def log_density_hessian(
         self,
