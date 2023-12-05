@@ -7,7 +7,7 @@ from typing import List, Optional, Tuple, Union
 import numpy as np
 import numpy.typing as npt
 from dllist import dllist
-from numpy.ctypeslib import ndpointer
+from numpy.ctypeslib import ndpointer, as_ctypes
 
 from .__version import __version_info__
 from .compile import compile_model, windows_dll_path_setup
