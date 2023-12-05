@@ -7,14 +7,32 @@ from typing import List, Optional, Tuple, Union
 import numpy as np
 import numpy.typing as npt
 from dllist import dllist
-from numpy.ctypeslib import ndpointer, as_ctypes
+from numpy.ctypeslib import ndpointer
 
 from .__version import __version_info__
 from .compile import compile_model, windows_dll_path_setup
 from .util import validate_readable
 
+
+def array_ptr(*args, **kwargs):
+    """
+    A version of np.ctypeslib.ndpointer
+    which allows raw ctypes pointers
+    """
+    np_type = ndpointer(*args, **kwargs)
+    ctypes_type = ctypes.POINTER(ctypes.c_double)
+
+    def from_param(cls, obj):
+        if isinstance(obj, ctypes_type):
+            return ctypes_type.from_param(obj)
+        return np_type.from_param(obj)
+
+    return type(np_type.__name__, (np_type,), {"from_param": classmethod(from_param)})
+
+
 FloatArray = npt.NDArray[np.float64]
-double_array = ndpointer(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
+generic_double_array = array_ptr(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
+double_array = ndpointer()
 star_star_char = ctypes.POINTER(ctypes.c_char_p)
 c_print_callback = ctypes.CFUNCTYPE(None, ctypes.POINTER(ctypes.c_char), ctypes.c_int)
 
@@ -163,6 +181,16 @@ class StanModel:
         self._param_unc_num.restype = ctypes.c_int
         self._param_unc_num.argtypes = [ctypes.c_void_p]
 
+        num_params = self._param_unc_num(self.model)
+        unc_p_double_array = array_ptr(
+            dtype=ctypes.c_double, flags=("C_CONTIGUOUS"), shape=(num_params,)
+        )
+        unc_p2_double_array = array_ptr(
+            dtype=ctypes.c_double,
+            flags=("C_CONTIGUOUS"),
+            shape=(num_params, num_params),
+        )
+
         self._param_names = self.stanlib.bs_param_names
         self._param_names.restype = ctypes.c_char_p
         self._param_names.argtypes = [
@@ -181,8 +209,8 @@ class StanModel:
             ctypes.c_void_p,
             ctypes.c_int,
             ctypes.c_int,
-            double_array,
-            double_array,
+            generic_double_array,
+            generic_double_array,
             ctypes.c_void_p,
             star_star_char,
         ]
@@ -191,8 +219,8 @@ class StanModel:
         self._param_unconstrain.restype = ctypes.c_int
         self._param_unconstrain.argtypes = [
             ctypes.c_void_p,
-            double_array,
-            double_array,
+            generic_double_array,
+            unc_p_double_array,
             star_star_char,
         ]
 
@@ -201,7 +229,7 @@ class StanModel:
         self._param_unconstrain_json.argtypes = [
             ctypes.c_void_p,
             ctypes.c_char_p,
-            double_array,
+            unc_p_double_array,
             star_star_char,
         ]
 
@@ -211,26 +239,38 @@ class StanModel:
             ctypes.c_void_p,
             ctypes.c_int,
             ctypes.c_int,
-            double_array,
+            generic_double_array,
             ctypes.POINTER(ctypes.c_double),
             star_star_char,
         ]
 
-        self._log_density_gradient = self.stanlib.bs_log_density_gradient
+        self._log_density_gradient = self.stanlib["bs_log_density_gradient"]
         self._log_density_gradient.restype = ctypes.c_int
         self._log_density_gradient.argtypes = [
             ctypes.c_void_p,
             ctypes.c_int,
             ctypes.c_int,
-            double_array,
+            generic_double_array,
             ctypes.POINTER(ctypes.c_double),
-            double_array,
+            unc_p_double_array,
             star_star_char,
         ]
 
-        self._ldg = self.stanlib["bs_log_density_gradient"]
-        self._ldg.restype = ctypes.c_int
-        self._ldg.argtypes = [
+        self._log_density_gradient_proposed = self.stanlib["bs_log_density_gradient"]
+        self._log_density_gradient_proposed.restype = ctypes.c_int
+        self._log_density_gradient_proposed.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_int,
+            ctypes.c_int,
+            generic_double_array,
+            ctypes.POINTER(ctypes.c_double),
+            unc_p_double_array,
+            star_star_char,
+        ]
+
+        self._log_density_gradient_alternative = self.stanlib["bs_log_density_gradient"]
+        self._log_density_gradient_alternative.restype = ctypes.c_int
+        self._log_density_gradient_alternative.argtypes = [
             ctypes.c_void_p,
             ctypes.c_int,
             ctypes.c_int,
@@ -246,10 +286,10 @@ class StanModel:
             ctypes.c_void_p,
             ctypes.c_int,
             ctypes.c_int,
-            double_array,
+            generic_double_array,
             ctypes.POINTER(ctypes.c_double),
-            double_array,
-            double_array,
+            unc_p_double_array,
+            unc_p2_double_array,
             star_star_char,
         ]
 
@@ -259,10 +299,10 @@ class StanModel:
             ctypes.c_void_p,
             ctypes.c_int,
             ctypes.c_int,
-            double_array,
-            double_array,
+            generic_double_array,
+            generic_double_array,
             ctypes.POINTER(ctypes.c_double),
-            double_array,
+            unc_p_double_array,
             star_star_char,
         ]
 
@@ -405,7 +445,7 @@ class StanModel:
         dims = self.param_num(include_tp=include_tp, include_gq=include_gq)
         if out is None:
             out = np.zeros(dims)
-        elif out.size != dims:
+        elif hasattr(out, "shape") and out.shape != (dims,):
             raise ValueError(
                 "Error: out must be same size as number of constrained parameters"
             )
@@ -455,10 +495,7 @@ class StanModel:
         dims = self.param_unc_num()
         if out is None:
             out = np.zeros(shape=dims)
-        elif out.size != dims:
-            raise ValueError(
-                f"out size = {out.size} != unconstrained params size = {dims}"
-            )
+
         err = ctypes.pointer(ctypes.c_char_p())
         rc = self._param_unconstrain(self.model, theta, out, err)
         if rc:
@@ -486,10 +523,7 @@ class StanModel:
         dims = self.param_unc_num()
         if out is None:
             out = np.zeros(shape=dims)
-        elif out.size != dims:
-            raise ValueError(
-                f"out size = {out.size} != unconstrained params size = {dims}"
-            )
+
         chars = theta_json.encode("UTF-8")
         err = ctypes.pointer(ctypes.c_char_p())
         rc = self._param_unconstrain_json(self.model, chars, out, err)
@@ -526,7 +560,7 @@ class StanModel:
             raise self._handle_error(err.contents, "log_density")
         return lp.contents.value
 
-    def ldg_ctypes(
+    def log_density_gradient_ctypes(
             self,
             theta_unc,          # ctypes.POINTER(ctypes.c_double())
             out,                # ctypes.POINTER(ctypes.c_double())
@@ -536,14 +570,14 @@ class StanModel:
     ) -> float:
         lp = ctypes.pointer(ctypes.c_double())
         err = ctypes.pointer(ctypes.c_char_p())
-        rc = self._ldg(
+        rc = self._log_density_gradient_alternative(
             self.model, int(propto), int(jacobian), theta_unc, lp, out, err
         )
         if rc:
             raise self._handle_error(err.contents, "log_density_gradient")
         return lp.contents.value
 
-    def ldg(
+    def log_density_gradient_alternative(
         self,
         theta_unc: FloatArray,
         *,
@@ -556,11 +590,12 @@ class StanModel:
             out = np.zeros(shape=dims)
         elif out.size != dims:
             raise ValueError(f"out size = {out.size} != params size = {dims}")
-        lp = self.ldg_ctypes(as_ctypes(theta_unc),
-                             as_ctypes(out),
-                             propto = propto,
-                             jacobian = jacobian)
+        lp = self.log_density_gradient_ctypes(as_ctypes(theta_unc),
+                                              as_ctypes(out),
+                                              propto = propto,
+                                              jacobian = jacobian)
         return lp, out
+
 
     def log_density_gradient(
         self,
@@ -593,11 +628,51 @@ class StanModel:
         dims = self.param_unc_num()
         if out is None:
             out = np.zeros(shape=dims)
-        elif out.size != dims:
-            raise ValueError(f"out size = {out.size} != params size = {dims}")
+
         lp = ctypes.pointer(ctypes.c_double())
         err = ctypes.pointer(ctypes.c_char_p())
         rc = self._log_density_gradient(
+            self.model, int(propto), int(jacobian), theta_unc, lp, out, err
+        )
+        if rc:
+            raise self._handle_error(err.contents, "log_density_gradient")
+        return lp.contents.value, out
+
+    def log_density_gradient_proposed(
+        self,
+        theta_unc: FloatArray,
+        *,
+        propto: bool = True,
+        jacobian: bool = True,
+        out: Optional[FloatArray] = None,
+    ) -> Tuple[float, FloatArray]:
+        """
+        Return a tuple of the log density and gradient of the specified
+        unconstrained parameters, dropping constant terms that do not depend
+        on the parameters if ``propto`` is ``True`` and including change of
+        variables terms for constrained parameters if ``jacobian``
+        is ``True``.
+
+        :param theta_unc: Unconstrained parameter array.
+        :param propto: ``True`` if constant terms should be dropped from the log density.
+        :param jacobian: ``True`` if change-of-variables terms for
+            constrained parameters should be included in the log density.
+        :param out: A location into which the gradient is stored.  If
+            provided, it must have shape `(D, )` where ``D`` is the number
+            of parameters.  If not provided, a freshly allocated array
+            is returned.
+        :return: A tuple consisting of log density and gradient.
+        :raises ValueError: If ``out`` is specified and is not the same
+            shape as the gradient.
+        :raises RuntimeError: If the C++ Stan model throws an exception.
+        """
+        dims = self.param_unc_num()
+        if out is None:
+            out = np.zeros(shape=dims)
+
+        lp = ctypes.pointer(ctypes.c_double())
+        err = ctypes.pointer(ctypes.c_char_p())
+        rc = self._log_density_gradient_proposed(
             self.model, int(propto), int(jacobian), theta_unc, lp, out, err
         )
         if rc:
@@ -641,15 +716,10 @@ class StanModel:
         dims = self.param_unc_num()
         if out_grad is None:
             out_grad = np.zeros(shape=dims)
-        elif out_grad.shape != (dims,):
-            raise ValueError(f"out_grad size = {out_grad.size} != params size = {dims}")
-        hess_size = dims * dims
+
         if out_hess is None:
-            out_hess = np.zeros(shape=hess_size)
-        elif out_hess.shape != (dims, dims):
-            raise ValueError(
-                f"out_hess size = {out_hess.size} != params size^2 = {hess_size}"
-            )
+            out_hess = np.zeros(shape=(dims, dims))
+
         lp = ctypes.pointer(ctypes.c_double())
         err = ctypes.pointer(ctypes.c_char_p())
         rc = self._log_density_hessian(
@@ -696,8 +766,7 @@ class StanModel:
         dims = self.param_unc_num()
         if out is None:
             out = np.zeros(shape=dims)
-        elif out.size != dims:
-            raise ValueError(f"out size = {out.size} != params size = {dims}")
+
         lp = ctypes.pointer(ctypes.c_double())
         err = ctypes.pointer(ctypes.c_char_p())
         rc = self._log_density_hvp(
