@@ -12,7 +12,7 @@ CURRENT_BRIDGESTAN = HOME_BRIDGESTAN / f"bridgestan-{__version__}"
 RETRIES = 5
 
 
-def get_bridgestan_src():
+def get_bridgestan_src() -> None:
     """
     Download and unzip the BridgeStan source distribution for this version
 
@@ -24,7 +24,7 @@ def get_bridgestan_src():
     )
     HOME_BRIDGESTAN.mkdir(exist_ok=True)
 
-    err_text = f"Failed to download Bridgestan {__version__} from github.com."
+    err_text = f"Failed to download BridgeStan {__version__} from github.com."
     for i in range(1, 1 + RETRIES):
         try:
             file_tmp, _ = urllib.request.urlretrieve(url, filename=None)
