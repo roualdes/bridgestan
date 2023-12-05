@@ -10,7 +10,7 @@ get_bridgestan_src <- function() {
 
     dir.create(HOME_BRIDGESTAN, showWarnings = FALSE, recursive = TRUE)
     temp <- tempfile()
-    err_text <- paste("Failed to download Bridgestan", current_version, "from github.com.")
+    err_text <- paste("Failed to download BridgeStan", current_version, "from github.com.")
     for (i in 1:RETRIES) {
         tryCatch({
             download.file(url, destfile = temp, mode = "wb", quiet = TRUE, method = "auto")

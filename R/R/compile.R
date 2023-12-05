@@ -43,7 +43,7 @@ get_bridgestan_path <- function() {
         tryCatch({
             verify_bridgestan_path(path)
         }, error = function(e) {
-            print(paste0("Bridgestan not found at location specified by $BRIDGESTAN ",
+            print(paste0("BridgeStan not found at location specified by $BRIDGESTAN ",
                 "environment variable, downloading version ", packageVersion("bridgestan"),
                 " to ", path))
             get_bridgestan_src()

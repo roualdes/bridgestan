@@ -46,7 +46,7 @@ def set_bridgestan_path(path: Union[str, os.PathLike]) -> None:
     os.environ["BRIDGESTAN"] = path
 
 
-def get_bridgestan_path():
+def get_bridgestan_path() -> str:
     """
     Get the path to BridgeStan.
 
@@ -66,14 +66,14 @@ def get_bridgestan_path():
             verify_bridgestan_path(path)
         except ValueError:
             print(
-                "Bridgestan not found at location specified by $BRIDGESTAN "
+                "BridgeStan not found at location specified by $BRIDGESTAN "
                 f"environment variable, downloading version {__version__} to {path}"
             )
             get_bridgestan_src()
             num_files = len(list(HOME_BRIDGESTAN.iterdir()))
             if num_files >= 5:
                 warnings.warn(
-                    f"Found {num_files} different versions of Bridgestan in {HOME_BRIDGESTAN}. "
+                    f"Found {num_files} different versions of BridgeStan in {HOME_BRIDGESTAN}. "
                     "Consider deleting old versions to save space."
                 )
             print("Done!")
@@ -81,7 +81,7 @@ def get_bridgestan_path():
     return path
 
 
-def generate_so_name(model: Path):
+def generate_so_name(model: Path) -> Path:
     name = model.stem
     return model.with_stem(f"{name}_model").with_suffix(".so")
 
@@ -138,7 +138,7 @@ def compile_model(
     return output
 
 
-def windows_dll_path_setup():
+def windows_dll_path_setup() -> None:
     """Add tbb.dll to %PATH% on Windows."""
     global WINDOWS_PATH_SET
     if IS_WINDOWS and not WINDOWS_PATH_SET:
@@ -180,7 +180,6 @@ def windows_dll_path_setup():
                 os.path.dirname(out.stdout.decode().splitlines()[0])
             )
             os.add_dll_directory(mingw_dir)
-            WINDOWS_PATH_SET &= True
         except:
             # no default location
             warnings.warn(

@@ -134,11 +134,13 @@ class StanModel:
         if capture_stan_prints:
             self._set_print_callback(_print_callback, None)
 
-        err = ctypes.pointer(ctypes.c_char_p())
-        self.model = self._construct(str.encode(self.data), self.seed, err)
+        err = ctypes.c_char_p()
+        self.model = self._construct(
+            str.encode(self.data), self.seed, ctypes.byref(err)
+        )
 
         if not self.model:
-            raise self._handle_error(err.contents, "bs_model_construct")
+            raise self._handle_error(err, "bs_model_construct")
 
         if self.model_version() != __version_info__:
             warnings.warn(
@@ -398,7 +400,7 @@ class StanModel:
                 "Error: out must be same size as number of constrained parameters"
             )
 
-        err = ctypes.pointer(ctypes.c_char_p())
+        err = ctypes.c_char_p()
 
         rc = self._param_constrain(
             self.model,
@@ -407,11 +409,11 @@ class StanModel:
             theta_unc,
             out,
             rng_ptr,
-            err,
+            ctypes.byref(err),
         )
 
         if rc:
-            raise self._handle_error(err.contents, "param_constrain")
+            raise self._handle_error(err, "param_constrain")
         return out
 
     def new_rng(self, seed) -> "StanRNG":
@@ -447,10 +449,10 @@ class StanModel:
             raise ValueError(
                 f"out size = {out.size} != unconstrained params size = {dims}"
             )
-        err = ctypes.pointer(ctypes.c_char_p())
-        rc = self._param_unconstrain(self.model, theta, out, err)
+        err = ctypes.c_char_p()
+        rc = self._param_unconstrain(self.model, theta, out, ctypes.byref(err))
         if rc:
-            raise self._handle_error(err.contents, "param_unconstrain")
+            raise self._handle_error(err, "param_unconstrain")
         return out
 
     def param_unconstrain_json(
@@ -479,10 +481,10 @@ class StanModel:
                 f"out size = {out.size} != unconstrained params size = {dims}"
             )
         chars = theta_json.encode("UTF-8")
-        err = ctypes.pointer(ctypes.c_char_p())
-        rc = self._param_unconstrain_json(self.model, chars, out, err)
+        err = ctypes.c_char_p()
+        rc = self._param_unconstrain_json(self.model, chars, out, ctypes.byref(err))
         if rc:
-            raise self._handle_error(err.contents, "param_unconstrain_json")
+            raise self._handle_error(err, "param_unconstrain_json")
         return out
 
     def log_density(
@@ -505,14 +507,19 @@ class StanModel:
         :return: The log density.
         :raises RuntimeError: If the C++ Stan model throws an exception.
         """
-        lp = ctypes.pointer(ctypes.c_double())
-        err = ctypes.pointer(ctypes.c_char_p())
+        lp = ctypes.c_double()
+        err = ctypes.c_char_p()
         rc = self._log_density(
-            self.model, int(propto), int(jacobian), theta_unc, lp, err
+            self.model,
+            int(propto),
+            int(jacobian),
+            theta_unc,
+            ctypes.byref(lp),
+            ctypes.byref(err),
         )
         if rc:
-            raise self._handle_error(err.contents, "log_density")
-        return lp.contents.value
+            raise self._handle_error(err, "log_density")
+        return lp.value
 
     def log_density_gradient(
         self,
@@ -547,14 +554,20 @@ class StanModel:
             out = np.zeros(shape=dims)
         elif out.size != dims:
             raise ValueError(f"out size = {out.size} != params size = {dims}")
-        lp = ctypes.pointer(ctypes.c_double())
-        err = ctypes.pointer(ctypes.c_char_p())
+        lp = ctypes.c_double()
+        err = ctypes.c_char_p()
         rc = self._log_density_gradient(
-            self.model, int(propto), int(jacobian), theta_unc, lp, out, err
+            self.model,
+            int(propto),
+            int(jacobian),
+            theta_unc,
+            ctypes.byref(lp),
+            out,
+            ctypes.byref(err),
         )
         if rc:
-            raise self._handle_error(err.contents, "log_density_gradient")
-        return lp.contents.value, out
+            raise self._handle_error(err, "log_density_gradient")
+        return lp.value, out
 
     def log_density_hessian(
         self,
@@ -602,22 +615,22 @@ class StanModel:
             raise ValueError(
                 f"out_hess size = {out_hess.size} != params size^2 = {hess_size}"
             )
-        lp = ctypes.pointer(ctypes.c_double())
-        err = ctypes.pointer(ctypes.c_char_p())
+        lp = ctypes.c_double()
+        err = ctypes.c_char_p()
         rc = self._log_density_hessian(
             self.model,
             int(propto),
             int(jacobian),
             theta_unc,
-            lp,
+            ctypes.byref(lp),
             out_grad,
             out_hess,
-            err,
+            ctypes.byref(err),
         )
         if rc:
-            raise self._handle_error(err.contents, "log_density_hessian")
+            raise self._handle_error(err, "log_density_hessian")
         out_hess = out_hess.reshape(dims, dims)
-        return lp.contents.value, out_grad, out_hess
+        return lp.value, out_grad, out_hess
 
     def log_density_hessian_vector_product(
         self,
@@ -650,15 +663,22 @@ class StanModel:
             out = np.zeros(shape=dims)
         elif out.size != dims:
             raise ValueError(f"out size = {out.size} != params size = {dims}")
-        lp = ctypes.pointer(ctypes.c_double())
-        err = ctypes.pointer(ctypes.c_char_p())
+        lp = ctypes.c_double()
+        err = ctypes.c_char_p()
         rc = self._log_density_hvp(
-            self.model, int(propto), int(jacobian), theta_unc, v, lp, out, err
+            self.model,
+            int(propto),
+            int(jacobian),
+            theta_unc,
+            v,
+            ctypes.byref(lp),
+            out,
+            ctypes.byref(err),
         )
         if rc:
-            raise self._handle_error(err.contents, "log_density_hessian_vector_product")
+            raise self._handle_error(err, "log_density_hessian_vector_product")
 
-        return lp.contents.value, out
+        return lp.value, out
 
     def _handle_error(self, err: ctypes.c_char_p, method: str) -> Exception:
         """
