@@ -16,11 +16,15 @@ from .util import validate_readable
 
 def array_ptr(*args, **kwargs):
     """
-    A version of np.ctypeslib.ndpointer
-    which allows raw ctypes pointers
+    Return a new class which can be used in a ctypes signature
+    to accept either a numpy array or a compatible
+    ``ctypes.POINTER`` instance.
+
+    All arguments are forwarded to :func:`np.ctypeslib.ndpointer`.
     """
     np_type = ndpointer(*args, **kwargs)
-    ctypes_type = ctypes.POINTER(ctypes.c_double)
+    base = np.ctypeslib.as_ctypes_type(np_type._dtype_)
+    ctypes_type = ctypes.POINTER(base)
 
     def from_param(cls, obj):
         if isinstance(obj, (ctypes_type, ctypes.Array)):
