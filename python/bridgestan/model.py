@@ -23,14 +23,14 @@ def array_ptr(*args, **kwargs):
     ctypes_type = ctypes.POINTER(ctypes.c_double)
 
     def from_param(cls, obj):
-        if isinstance(obj, ctypes_type):
+        if isinstance(obj, (ctypes_type, ctypes.Array)):
             return ctypes_type.from_param(obj)
         return np_type.from_param(obj)
 
     return type(np_type.__name__, (np_type,), {"from_param": classmethod(from_param)})
 
 
-FloatArray = npt.NDArray[np.float64]
+FloatArray = Union[npt.NDArray[np.float64], ctypes.POINTER(ctypes.c_double), ctypes.Array[ctypes.c_double]]
 generic_double_array = array_ptr(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
 star_star_char = ctypes.POINTER(ctypes.c_char_p)
 c_print_callback = ctypes.CFUNCTYPE(None, ctypes.POINTER(ctypes.c_char), ctypes.c_int)
@@ -184,11 +184,13 @@ class StanModel:
 
         num_params = self._param_unc_num(self.model)
         unc_p_double_array = array_ptr(
-            dtype=ctypes.c_double, flags=("C_CONTIGUOUS"), shape=(num_params,)
+            dtype=ctypes.c_double,
+            flags=("C_CONTIGUOUS", "WRITEABLE"),
+            shape=(num_params,),
         )
         unc_p2_double_array = array_ptr(
             dtype=ctypes.c_double,
-            flags=("C_CONTIGUOUS"),
+            flags=("C_CONTIGUOUS", "WRITEABLE"),
             shape=(num_params, num_params),
         )
 
@@ -630,7 +632,7 @@ class StanModel:
             out_grad = np.zeros(shape=dims)
 
         if out_hess is None:
-            out_hess = np.zeros(shape=(dims,dims))
+            out_hess = np.zeros(shape=(dims, dims))
 
         lp = ctypes.c_double()
         err = ctypes.c_char_p()

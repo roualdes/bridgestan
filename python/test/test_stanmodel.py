@@ -552,9 +552,6 @@ def test_out_behavior():
     np.testing.assert_allclose(grads[0], grads[1])
 
 
-# BONUS TESTS
-
-
 def test_bernoulli():
     def _bernoulli(y, p):
         return np.sum(y * np.log(p) + (1 - y) * np.log(1 - p))
@@ -716,6 +713,39 @@ def test_reload_warning():
     assert not relative_lib.is_absolute()
     with pytest.warns(UserWarning, match="may not update the library"):
         model2 = bs.StanModel(relative_lib, data)
+
+
+def test_ctypes_pointers():
+    lib = STAN_FOLDER / "simple" / "simple_model.so"
+    data = STAN_FOLDER / "simple" / "simple.data.json"
+    model = bs.StanModel(lib, data)
+
+    N = 5
+    ParamType = ctypes.c_double * N
+    params = ParamType(*list(range(N)))
+
+    lp = model.log_density(
+        ctypes.cast(params, ctypes.POINTER(ctypes.c_double)), propto=False
+    )  # basic input
+    assert lp == -15.0
+    lp = model.log_density(params, propto=False)
+    assert lp == -15.0
+
+    grad_out = ParamType()
+    lp, _ = model.log_density_gradient(params, out=grad_out)
+    for i in range(N):
+        assert grad_out[i] == -1.0 * i
+    grad_out2 = ParamType()
+    lp, _ = model.log_density_gradient(
+        params, out=ctypes.cast(grad_out2, ctypes.POINTER(ctypes.c_double))
+    )
+    for i in range(N):
+        assert grad_out[i] == -1.0 * i
+
+    # test bad type
+    with pytest.raises(ctypes.ArgumentError):
+        params = (ctypes.c_int * N)(*list(range(N)))
+        model.log_density(params)
 
 
 @pytest.fixture(scope="module")
