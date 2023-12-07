@@ -15,4 +15,4 @@ going on "behind the scenes".
     internals/development
     internals/testing
     internals/documentation
-
+    internals/details
