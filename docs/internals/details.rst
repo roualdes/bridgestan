@@ -1,5 +1,5 @@
-Implementation Details
-======================
+Stan Implementation Details
+===========================
 
 
 .. _log_density_propto:
@@ -8,7 +8,7 @@ Speed of the ``propto`` argument
 --------------------------------
 
 The log density function provided by a Stan model has
-the ability drop additive constants from the calculation.
+the ability to drop additive constants from the calculation.
 This is indicated by the ``propto`` ("``prop``\ortional  ``to``")
 argument to function.
 
