@@ -1,6 +1,6 @@
 import ctypes
 import warnings
-from os import PathLike, fspath, write
+from os import PathLike, fspath
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
