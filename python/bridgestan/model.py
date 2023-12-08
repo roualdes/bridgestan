@@ -1,6 +1,6 @@
 import ctypes
 import warnings
-from os import PathLike, fspath
+from os import PathLike, fspath, write
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
@@ -34,8 +34,15 @@ def array_ptr(*args, **kwargs):
     return type(np_type.__name__, (np_type,), {"from_param": classmethod(from_param)})
 
 
-FloatArray = Union[npt.NDArray[np.float64], ctypes.POINTER(ctypes.c_double), ctypes.Array[ctypes.c_double]]
-generic_double_array = array_ptr(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
+FloatArray = Union[
+    npt.NDArray[np.float64],
+    ctypes.POINTER(ctypes.c_double),
+    ctypes.Array[ctypes.c_double],
+]
+double_array = array_ptr(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
+writeable_double_array = array_ptr(
+    dtype=ctypes.c_double, flags=("C_CONTIGUOUS", "WRITEABLE")
+)
 star_star_char = ctypes.POINTER(ctypes.c_char_p)
 c_print_callback = ctypes.CFUNCTYPE(None, ctypes.POINTER(ctypes.c_char), ctypes.c_int)
 
@@ -187,12 +194,13 @@ class StanModel:
         self._param_unc_num.argtypes = [ctypes.c_void_p]
 
         num_params = self._param_unc_num(self.model)
-        unc_p_double_array = array_ptr(
+
+        param_sized_out_array = array_ptr(
             dtype=ctypes.c_double,
             flags=("C_CONTIGUOUS", "WRITEABLE"),
             shape=(num_params,),
         )
-        unc_p2_double_array = array_ptr(
+        param_sqrd_sized_out_array = array_ptr(
             dtype=ctypes.c_double,
             flags=("C_CONTIGUOUS", "WRITEABLE"),
             shape=(num_params, num_params),
@@ -216,8 +224,8 @@ class StanModel:
             ctypes.c_void_p,
             ctypes.c_int,
             ctypes.c_int,
-            generic_double_array,
-            generic_double_array,
+            double_array,
+            writeable_double_array,
             ctypes.c_void_p,
             star_star_char,
         ]
@@ -226,8 +234,8 @@ class StanModel:
         self._param_unconstrain.restype = ctypes.c_int
         self._param_unconstrain.argtypes = [
             ctypes.c_void_p,
-            generic_double_array,
-            unc_p_double_array,
+            double_array,
+            param_sized_out_array,
             star_star_char,
         ]
 
@@ -236,7 +244,7 @@ class StanModel:
         self._param_unconstrain_json.argtypes = [
             ctypes.c_void_p,
             ctypes.c_char_p,
-            unc_p_double_array,
+            param_sized_out_array,
             star_star_char,
         ]
 
@@ -246,7 +254,7 @@ class StanModel:
             ctypes.c_void_p,
             ctypes.c_int,
             ctypes.c_int,
-            generic_double_array,
+            double_array,
             ctypes.POINTER(ctypes.c_double),
             star_star_char,
         ]
@@ -257,9 +265,9 @@ class StanModel:
             ctypes.c_void_p,
             ctypes.c_int,
             ctypes.c_int,
-            generic_double_array,
+            double_array,
             ctypes.POINTER(ctypes.c_double),
-            unc_p_double_array,
+            param_sized_out_array,
             star_star_char,
         ]
 
@@ -269,10 +277,10 @@ class StanModel:
             ctypes.c_void_p,
             ctypes.c_int,
             ctypes.c_int,
-            generic_double_array,
+            double_array,
             ctypes.POINTER(ctypes.c_double),
-            unc_p_double_array,
-            unc_p2_double_array,
+            param_sized_out_array,
+            param_sqrd_sized_out_array,
             star_star_char,
         ]
 
@@ -282,10 +290,10 @@ class StanModel:
             ctypes.c_void_p,
             ctypes.c_int,
             ctypes.c_int,
-            generic_double_array,
-            generic_double_array,
+            double_array,
+            double_array,
             ctypes.POINTER(ctypes.c_double),
-            unc_p_double_array,
+            param_sized_out_array,
             star_star_char,
         ]
 
