@@ -4,6 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bridgestan"
+description = "Access the methods of a Stan model in Python."
 readme = "README.md"
 license = { text = "BSD-3-Clause" }
 authors = [
