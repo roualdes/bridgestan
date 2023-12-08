@@ -1,3 +1,4 @@
+import ctypes
 from pathlib import Path
 
 import numpy as np
@@ -274,7 +275,7 @@ def test_param_unconstrain():
     c2 = bridge.param_unconstrain(b, out=scratch)
     np.testing.assert_allclose(a, c2)
     scratch_wrong = np.zeros(16)
-    with pytest.raises(ValueError):
+    with pytest.raises(ctypes.ArgumentError):
         bridge.param_unconstrain(b, out=scratch_wrong)
 
 
@@ -294,7 +295,7 @@ def test_param_unconstrain_json():
     np.testing.assert_allclose(theta_unc, theta_unc_j_test2)
 
     scratch_bad = np.zeros(10)
-    with pytest.raises(ValueError):
+    with pytest.raises(ctypes.ArgumentError):
         bridge.param_unconstrain_json(theta_json, out=scratch_bad)
 
 
@@ -400,7 +401,7 @@ def test_log_density_gradient():
     np.testing.assert_allclose(_grad_logp(y_unc) + _grad_jacobian_true(y_unc), grad[0])
     #
     scratch_bad = np.zeros(bridge.param_unc_num() + 10)
-    with pytest.raises(ValueError):
+    with pytest.raises(ctypes.ArgumentError):
         bridge.log_density_gradient(y_unc, out=scratch_bad)
 
 
@@ -506,7 +507,7 @@ def test_log_density_hessian():
     np.testing.assert_allclose(_grad_logp(y_unc) + _grad_jacobian_true(y_unc), grad[0])
     #
     scratch_bad = np.zeros(bridge.param_unc_num() + 10)
-    with pytest.raises(ValueError):
+    with pytest.raises(ctypes.ArgumentError):
         bridge.log_density_hessian(y_unc, out_grad=scratch_bad)
 
     # test with 5 x 5 Hessian
@@ -549,9 +550,6 @@ def test_out_behavior():
     assert grads[0] is out_grad
     assert grads[1] is out_grad
     np.testing.assert_allclose(grads[0], grads[1])
-
-
-# BONUS TESTS
 
 
 def test_bernoulli():
@@ -715,6 +713,39 @@ def test_reload_warning():
     assert not relative_lib.is_absolute()
     with pytest.warns(UserWarning, match="may not update the library"):
         model2 = bs.StanModel(relative_lib, data)
+
+
+def test_ctypes_pointers():
+    lib = STAN_FOLDER / "simple" / "simple_model.so"
+    data = STAN_FOLDER / "simple" / "simple.data.json"
+    model = bs.StanModel(lib, data)
+
+    N = 5
+    ParamType = ctypes.c_double * N
+    params = ParamType(*list(range(N)))
+
+    lp = model.log_density(
+        ctypes.cast(params, ctypes.POINTER(ctypes.c_double)), propto=False
+    )  # basic input
+    assert lp == -15.0
+    lp = model.log_density(params, propto=False)
+    assert lp == -15.0
+
+    grad_out = ParamType()
+    lp, _ = model.log_density_gradient(params, out=grad_out)
+    for i in range(N):
+        assert grad_out[i] == -1.0 * i
+    grad_out2 = ParamType()
+    lp, _ = model.log_density_gradient(
+        params, out=ctypes.cast(grad_out2, ctypes.POINTER(ctypes.c_double))
+    )
+    for i in range(N):
+        assert grad_out[i] == -1.0 * i
+
+    # test bad type
+    with pytest.raises(ctypes.ArgumentError):
+        params = (ctypes.c_int * N)(*list(range(N)))
+        model.log_density(params)
 
 
 @pytest.fixture(scope="module")

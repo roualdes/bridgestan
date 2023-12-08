@@ -13,8 +13,36 @@ from .__version import __version_info__
 from .compile import compile_model, windows_dll_path_setup
 from .util import validate_readable
 
-FloatArray = npt.NDArray[np.float64]
-double_array = ndpointer(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
+
+def array_ptr(*args, **kwargs):
+    """
+    Return a new class which can be used in a ctypes signature
+    to accept either a numpy array or a compatible
+    ``ctypes.POINTER`` instance.
+
+    All arguments are forwarded to :func:`np.ctypeslib.ndpointer`.
+    """
+    np_type = ndpointer(*args, **kwargs)
+    base = np.ctypeslib.as_ctypes_type(np_type._dtype_)
+    ctypes_type = ctypes.POINTER(base)
+
+    def from_param(cls, obj):
+        if isinstance(obj, (ctypes_type, ctypes.Array)):
+            return ctypes_type.from_param(obj)
+        return np_type.from_param(obj)
+
+    return type(np_type.__name__, (np_type,), {"from_param": classmethod(from_param)})
+
+
+FloatArray = Union[
+    npt.NDArray[np.float64],
+    ctypes.POINTER(ctypes.c_double),
+    ctypes.Array[ctypes.c_double],
+]
+double_array = array_ptr(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
+writeable_double_array = array_ptr(
+    dtype=ctypes.c_double, flags=("C_CONTIGUOUS", "WRITEABLE")
+)
 star_star_char = ctypes.POINTER(ctypes.c_char_p)
 c_print_callback = ctypes.CFUNCTYPE(None, ctypes.POINTER(ctypes.c_char), ctypes.c_int)
 
@@ -165,6 +193,19 @@ class StanModel:
         self._param_unc_num.restype = ctypes.c_int
         self._param_unc_num.argtypes = [ctypes.c_void_p]
 
+        num_params = self._param_unc_num(self.model)
+
+        param_sized_out_array = array_ptr(
+            dtype=ctypes.c_double,
+            flags=("C_CONTIGUOUS", "WRITEABLE"),
+            shape=(num_params,),
+        )
+        param_sqrd_sized_out_array = array_ptr(
+            dtype=ctypes.c_double,
+            flags=("C_CONTIGUOUS", "WRITEABLE"),
+            shape=(num_params, num_params),
+        )
+
         self._param_names = self.stanlib.bs_param_names
         self._param_names.restype = ctypes.c_char_p
         self._param_names.argtypes = [
@@ -184,7 +225,7 @@ class StanModel:
             ctypes.c_int,
             ctypes.c_int,
             double_array,
-            double_array,
+            writeable_double_array,
             ctypes.c_void_p,
             star_star_char,
         ]
@@ -194,7 +235,7 @@ class StanModel:
         self._param_unconstrain.argtypes = [
             ctypes.c_void_p,
             double_array,
-            double_array,
+            param_sized_out_array,
             star_star_char,
         ]
 
@@ -203,7 +244,7 @@ class StanModel:
         self._param_unconstrain_json.argtypes = [
             ctypes.c_void_p,
             ctypes.c_char_p,
-            double_array,
+            param_sized_out_array,
             star_star_char,
         ]
 
@@ -226,7 +267,7 @@ class StanModel:
             ctypes.c_int,
             double_array,
             ctypes.POINTER(ctypes.c_double),
-            double_array,
+            param_sized_out_array,
             star_star_char,
         ]
 
@@ -238,8 +279,8 @@ class StanModel:
             ctypes.c_int,
             double_array,
             ctypes.POINTER(ctypes.c_double),
-            double_array,
-            double_array,
+            param_sized_out_array,
+            param_sqrd_sized_out_array,
             star_star_char,
         ]
 
@@ -252,7 +293,7 @@ class StanModel:
             double_array,
             double_array,
             ctypes.POINTER(ctypes.c_double),
-            double_array,
+            param_sized_out_array,
             star_star_char,
         ]
 
@@ -395,7 +436,7 @@ class StanModel:
         dims = self.param_num(include_tp=include_tp, include_gq=include_gq)
         if out is None:
             out = np.zeros(dims)
-        elif out.size != dims:
+        elif hasattr(out, "shape") and out.shape != (dims,):
             raise ValueError(
                 "Error: out must be same size as number of constrained parameters"
             )
@@ -445,12 +486,10 @@ class StanModel:
         dims = self.param_unc_num()
         if out is None:
             out = np.zeros(shape=dims)
-        elif out.size != dims:
-            raise ValueError(
-                f"out size = {out.size} != unconstrained params size = {dims}"
-            )
+
         err = ctypes.c_char_p()
         rc = self._param_unconstrain(self.model, theta, out, ctypes.byref(err))
+
         if rc:
             raise self._handle_error(err, "param_unconstrain")
         return out
@@ -476,10 +515,7 @@ class StanModel:
         dims = self.param_unc_num()
         if out is None:
             out = np.zeros(shape=dims)
-        elif out.size != dims:
-            raise ValueError(
-                f"out size = {out.size} != unconstrained params size = {dims}"
-            )
+
         chars = theta_json.encode("UTF-8")
         err = ctypes.c_char_p()
         rc = self._param_unconstrain_json(self.model, chars, out, ctypes.byref(err))
@@ -552,10 +588,10 @@ class StanModel:
         dims = self.param_unc_num()
         if out is None:
             out = np.zeros(shape=dims)
-        elif out.size != dims:
-            raise ValueError(f"out size = {out.size} != params size = {dims}")
+
         lp = ctypes.c_double()
         err = ctypes.c_char_p()
+
         rc = self._log_density_gradient(
             self.model,
             int(propto),
@@ -606,17 +642,13 @@ class StanModel:
         dims = self.param_unc_num()
         if out_grad is None:
             out_grad = np.zeros(shape=dims)
-        elif out_grad.shape != (dims,):
-            raise ValueError(f"out_grad size = {out_grad.size} != params size = {dims}")
-        hess_size = dims * dims
+
         if out_hess is None:
-            out_hess = np.zeros(shape=hess_size)
-        elif out_hess.shape != (dims, dims):
-            raise ValueError(
-                f"out_hess size = {out_hess.size} != params size^2 = {hess_size}"
-            )
+            out_hess = np.zeros(shape=(dims, dims))
+
         lp = ctypes.c_double()
         err = ctypes.c_char_p()
+
         rc = self._log_density_hessian(
             self.model,
             int(propto),
@@ -661,10 +693,9 @@ class StanModel:
         dims = self.param_unc_num()
         if out is None:
             out = np.zeros(shape=dims)
-        elif out.size != dims:
-            raise ValueError(f"out size = {out.size} != params size = {dims}")
         lp = ctypes.c_double()
         err = ctypes.c_char_p()
+
         rc = self._log_density_hvp(
             self.model,
             int(propto),
