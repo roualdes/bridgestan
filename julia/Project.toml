@@ -1,7 +1,7 @@
 name = "BridgeStan"
 uuid = "c88b6f0a-829e-4b0b-94b7-f06ab5908f5a"
 authors = ["Brian Ward <bward@flatironinstitute.org>", "Bob Carpenter <bcarpenter@flatironinstitute.org>", "Edward Roualdes <eroualdes@csuchico.edu>"]
-version = "2.2.2"
+version = "2.3.0"
 
 [deps]
 LazyArtifacts = "4af54fe1-eca0-43a8-85a7-787d91b784e3"
