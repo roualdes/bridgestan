@@ -78,7 +78,7 @@ html_theme_options = {
         "version_match": switcher_version,
     },
     "logo": {
-        "text": "BridgeStan v" + release if release else "Bridgestan",
+        "text": "BridgeStan v" + release if release else "BridgeStan",
         "image_light": "_static/image/logo.png",
         "image_dark": "_static/image/logo_w.png",
         "alt_text": "BridgeStan - Home",

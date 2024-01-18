@@ -1,6 +1,6 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./docs/_static/image/logo_w.png">
-  <img alt="The BridgeStan logo." src="./docs/_static/image/logo.png" align="right" width=25%>
+  <img alt="The BridgeStan logo" src="./docs/_static/image/logo.png" align="right" width=25%>
 </picture>
 
 # BridgeStan
