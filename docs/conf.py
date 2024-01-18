@@ -55,6 +55,7 @@ html_css_files = [
     "css/Documenter.css",
     "css/custom.css",
 ]
+html_favicon = "_static/image/favicon.ico"
 
 html_show_sphinx = False
 
@@ -76,6 +77,12 @@ html_theme_options = {
         "json_url": "https://roualdes.github.io/bridgestan/latest/_static/switcher.json",
         "version_match": switcher_version,
     },
+    "logo": {
+        "text": "BridgeStan v" + release if release else "Bridgestan",
+        "image_light": "_static/image/logo.png",
+        "image_dark": "_static/image/logo_w.png",
+        "alt_text": "BridgeStan - Home",
+    },
     "navbar_end": ["theme-switcher", "navbar-icon-links", "version-switcher"],
 }
 
@@ -86,6 +93,7 @@ html_context = {
     "doc_path": "docs",
 }
 
+latex_logo = "_static/image/logo.pdf"
 
 intersphinx_mapping = {
     "python": (
