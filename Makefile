@@ -120,7 +120,7 @@ print-%  : ; @echo $* = $($*) ;
 STANC_DL_RETRY = 5
 STANC_DL_DELAY = 10
 STANC3_TEST_BIN_URL ?=
-STANC3_VERSION ?= v2.33.1
+STANC3_VERSION ?= v2.34.0
 
 ifeq ($(OS),Windows_NT)
  OS_TAG := windows
@@ -146,8 +146,6 @@ else ifeq ($(OS),Linux)
 endif
 
 ifeq ($(OS_TAG),windows)
-# needed for newer mingw, seems to not break older ones
-TBB_CXXFLAGS+=-D_UCRT
 $(STANC):
 	@mkdir -p $(dir $@)
 	$(shell echo "curl -L https://github.com/stan-dev/stanc3/releases/download/$(STANC3_VERSION)/$(OS_TAG)-stanc -o $(STANC) --retry $(STANC_DL_RETRY) --retry-delay $(STANC_DL_DELAY)")

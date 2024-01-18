@@ -12,7 +12,7 @@ Stan is a probabilistic programming language for coding statistical
 models.  For an introduction to what can be coded in Stan, see the
 [*Stan User's Guide*](https://mc-stan.org/docs/stan-users-guide/index.html).
 
-BridgeStan is currently shipping with Stan version 2.33.1
+BridgeStan is currently shipping with Stan version 2.34.0
 
 Documentation is available at https://roualdes.github.io/bridgestan/
 
