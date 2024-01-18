@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./docs/_static/image/logo_w.png">
+  <img alt="The BridgeStan logo" src="./docs/_static/image/logo.png" align="right" width=25%>
+</picture>
+
 # BridgeStan
 
 [![DOCS](https://img.shields.io/badge/docs-latest-blue)](https://roualdes.github.io/bridgestan/) [![DOI](https://joss.theoj.org/papers/10.21105/joss.05236/status.svg)](https://doi.org/10.21105/joss.05236) [![CI](https://github.com/roualdes/bridgestan/actions/workflows/main.yaml/badge.svg)](https://github.com/roualdes/bridgestan/actions/workflows/main.yaml)
