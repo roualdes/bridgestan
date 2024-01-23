@@ -79,8 +79,8 @@ html_theme_options = {
     },
     "logo": {
         "text": "BridgeStan v" + release if release else "BridgeStan",
-        "image_light": "_static/image/logo.png",
-        "image_dark": "_static/image/logo_w.png",
+        "image_light": "_static/image/icon.png",
+        "image_dark": "_static/image/icon_w.png",
         "alt_text": "BridgeStan - Home",
     },
     "navbar_end": ["theme-switcher", "navbar-icon-links", "version-switcher"],
