@@ -4,6 +4,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 import datetime
+import re
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -155,6 +156,12 @@ try:
     end = text.find("### Method `")
     text = text[:start] + text[end:]
     StanModel.write_text(text)
+
+    # replaces the headers with more appropriate levels for embedding
+    for f in (pathlib.Path(__file__).parent / "languages" / "_r" ).iterdir():
+        text = f.read_text()
+        text = re.sub(r"(#+) ", r"##\1 ", text)
+        f.write_text(text)
 
 except Exception as e:
     # fail loudly in Github Actions
