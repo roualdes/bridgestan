@@ -2,16 +2,6 @@ IS_WINDOWS <- isTRUE(.Platform$OS.type == "windows")
 MAKE <- Sys.getenv("MAKE", ifelse(IS_WINDOWS, "mingw32-make", "make"))
 
 
-#' Get the path to BridgeStan.
-#'
-#' By default this is set to the value of the environment
-#' variable `BRIDGESTAN`.
-#'
-#' If there is no path set, this function will download
-#' a matching version of BridgeStan to a folder called
-#' `.bridgestan` in the user's home directory.
-#'
-#' See also `set_bridgestan_path`
 verify_bridgestan_path <- function(path) {
     suppressWarnings({
         folder <- normalizePath(path)
@@ -26,15 +16,25 @@ verify_bridgestan_path <- function(path) {
     }
 }
 
-#' Set the path to BridgeStan.
-#'
-#' This should point to the top-level folder of the repository.
+#' @title Function `set_bridgestan_path()`
+#' @description Set the path to BridgeStan.
+#' @details This should point to the top-level folder of the repository.
 #' @export
 set_bridgestan_path <- function(path) {
     verify_bridgestan_path(path)
     Sys.setenv(BRIDGESTAN = normalizePath(path))
 }
 
+#' Get the path to BridgeStan.
+#'
+#' By default this is set to the value of the environment
+#' variable `BRIDGESTAN`.
+#'
+#' If there is no path set, this function will download
+#' a matching version of BridgeStan to a folder called
+#' `.bridgestan` in the user's home directory.
+#'
+#' @seealso [set_bridgestan_path]
 get_bridgestan_path <- function() {
     # try to get from environment
     path <- Sys.getenv("BRIDGESTAN", unset = "")
@@ -54,8 +54,10 @@ get_bridgestan_path <- function() {
 }
 
 
-#' Run BridgeStan's Makefile on a `.stan` file, creating the `.so`
-#' used by the StanModel class.
+#' @title Function `compile_model()`
+#' @description Compiles a Stan model.
+#' @details Run BridgeStan's Makefile on a `.stan` file, creating
+#' the `.so` used by the StanModel class.
 #' This function checks that the path to BridgeStan is valid
 #' and will error if not. This can be set with `set_bridgestan_path`.
 #'
@@ -67,6 +69,8 @@ get_bridgestan_path <- function() {
 #' threading for the compiled model. If the same flags are defined
 #' in `make/local`, the versions passed here will take precedent.
 #' @return Path to the compiled model.
+#'
+#' @seealso [bridgestan::set_bridgestan_path()]
 #' @export
 compile_model <- function(stan_file, stanc_args = NULL, make_args = NULL) {
     verify_bridgestan_path(get_bridgestan_path())

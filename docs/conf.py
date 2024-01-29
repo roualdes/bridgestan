@@ -141,6 +141,30 @@ except Exception as e:
         print("Failed to build julia docs!\n", e)
 
 try:
+    print("Building R doc")
+    subprocess.run(
+        ["Rscript", "convert_docs.R"],
+        cwd=pathlib.Path(__file__).parent.parent / "R",
+        check=True,
+    )
+
+    # delete some broken links in the generated R docs
+    StanModel = (pathlib.Path(__file__).parent / "languages" / "_r" / "StanModel.md")
+    text = StanModel.read_text()
+    start = text.find("### Public methods")
+    end = text.find("### Method `")
+    text = text[:start] + text[end:]
+    StanModel.write_text(text)
+
+except Exception as e:
+    # fail loudly in Github Actions
+    if RUNNING_IN_CI:
+        raise e
+    else:
+        print("Failed to build R docs!\n", e)
+
+
+try:
     print("Checking C++ doc availability")
     import breathe
 

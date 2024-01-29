@@ -1,6 +1,6 @@
 #' StanModel
 #'
-#' R6 Class representing a compiled BridgeStan model.
+#' @description R6 Class representing a compiled BridgeStan model.
 #'
 #' This model exposes log density, gradient, and Hessian information
 #' as well as constraining and unconstraining transforms.
