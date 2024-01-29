@@ -2,10 +2,13 @@
 % Please edit documentation in R/compile.R
 \name{set_bridgestan_path}
 \alias{set_bridgestan_path}
-\title{Set the path to BridgeStan.}
+\title{Function \code{set_bridgestan_path()}}
 \usage{
 set_bridgestan_path(path)
 }
 \description{
+Set the path to BridgeStan.
+}
+\details{
 This should point to the top-level folder of the repository.
 }

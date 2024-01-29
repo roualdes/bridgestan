@@ -2,10 +2,7 @@
 % Please edit documentation in R/compile.R
 \name{compile_model}
 \alias{compile_model}
-\title{Run BridgeStan's Makefile on a \code{.stan} file, creating the \code{.so}
-used by the StanModel class.
-This function checks that the path to BridgeStan is valid
-and will error if not. This can be set with \code{set_bridgestan_path}.}
+\title{Function \code{compile_model()}}
 \usage{
 compile_model(stan_file, stanc_args = NULL, make_args = NULL)
 }
@@ -24,8 +21,14 @@ For example, \code{c('--O1')} will enable compiler optimization level 1.}
 Path to the compiled model.
 }
 \description{
-Run BridgeStan's Makefile on a \code{.stan} file, creating the \code{.so}
-used by the StanModel class.
+Compiles a Stan model.
+}
+\details{
+Run BridgeStan's Makefile on a \code{.stan} file, creating
+the \code{.so} used by the StanModel class.
 This function checks that the path to BridgeStan is valid
 and will error if not. This can be set with \code{set_bridgestan_path}.
+}
+\seealso{
+\code{\link[=set_bridgestan_path]{set_bridgestan_path()}}
 }

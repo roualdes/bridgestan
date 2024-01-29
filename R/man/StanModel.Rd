@@ -4,11 +4,6 @@
 \alias{StanModel}
 \title{StanModel}
 \description{
-StanModel
-
-StanModel
-}
-\details{
 R6 Class representing a compiled BridgeStan model.
 
 This model exposes log density, gradient, and Hessian information
