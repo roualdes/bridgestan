@@ -1,3 +1,6 @@
+# Converts R documentation (.Rd) files to markdown (.md) files
+# for use in Sphinx.
+
 library(rd2markdown)
 library(roxygen2)
 
@@ -13,7 +16,7 @@ for (f in files){
     name <- substr(f, 1, nchar(f)-3)
 
     if (!grepl(name, namespace, fixed=TRUE)){
-        print(paste0("Skipping unexported", name))
+        print(paste0("Skipping unexported ", name))
         next
     }
 
