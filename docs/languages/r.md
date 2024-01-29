@@ -65,7 +65,7 @@ Create a Stan Model instance.
 _Usage_
 
 ```R
-StanModel$new(lib, data, rng_seed)
+StanModel$new(lib, data, seed)
 ```
 
 
@@ -75,7 +75,7 @@ _Arguments_
 
   - `data` Either a JSON string literal, a path to a data file in JSON format ending in ".json", or the empty string.
 
-  - `rng_seed` Seed for the RNG used in constructing the model.
+  - `seed` Seed for the RNG used in constructing the model.
 
   - `stan_args` A list of arguments to pass to stanc3 if the model is not already compiled.
 
