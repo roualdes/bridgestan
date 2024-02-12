@@ -234,12 +234,10 @@ jobs:
           cd R/tests/testthat
           gcc -fpic -shared -o test_collisions.dll test_collisions.c
           if (!$LASTEXITCODE.Equals(0)) {exit $LASTEXITCODE}
-          ls
           cd ../..
-          ls
-          Rscript -e 'devtools::test(reporter = c(\"summary\", \"fail\"))'
+          Rscript -e 'devtools::test(reporter = c("summary", "fail"))'
           if (!$LASTEXITCODE.Equals(0)) {exit $LASTEXITCODE}
-          Rscript -e 'install.packages(getwd(), repos=NULL, type=\"source\")'
+          Rscript -e 'install.packages(getwd(), repos=NULL, type="source")'
           if (!$LASTEXITCODE.Equals(0)) {exit $LASTEXITCODE}
           Rscript example.R
           if (!$LASTEXITCODE.Equals(0)) {exit $LASTEXITCODE}
