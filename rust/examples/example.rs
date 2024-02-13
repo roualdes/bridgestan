@@ -23,13 +23,10 @@ fn main() {
     let model = match Model::new(&lib, Some(data), seed) {
         Ok(model) => model,
         Err(BridgeStanError::ConstructFailed(msg)) => {
-            panic!(
-                "Model initialization failed. Error message from Stan was {}",
-                msg
-            )
+            panic!("Model initialization failed. Error message from Stan was {msg}")
         }
-        _ => {
-            panic!("Unexpected error")
+        Err(e) => {
+            panic!("Unexpected error:\n{e}")
         }
     };
 
