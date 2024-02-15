@@ -1,4 +1,4 @@
-use bridgestan::{open_library, BridgeStanError, Model};
+use bridgestan::{compile_model, open_library, BridgeStanError, Model};
 use std::ffi::CString;
 use std::path::Path;
 
@@ -8,7 +8,10 @@ fn main() {
     let path = Path::new(env!["CARGO_MANIFEST_DIR"])
         .parent()
         .unwrap()
-        .join("test_models/simple/simple_model.so");
+        .join("test_models/simple/simple.stan");
+
+    let path = compile_model(path, None).expect("Could not compile Stan model.");
+    println!("Compiled model: {:?}", path);
 
     let lib = open_library(path).expect("Could not load compiled Stan model.");
 

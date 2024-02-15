@@ -25,8 +25,8 @@ fn throw_data() {
 fn bad_arglength() {
     let (lib, data) = get_model("stdnormal");
     let model = Model::new(&lib, data, 42).unwrap();
-    let theta = vec![];
-    let mut grad = vec![];
+    let theta = [];
+    let mut grad = [];
     let _ = model.log_density_gradient(&theta[..], true, true, &mut grad[..]);
 }
 
@@ -34,8 +34,8 @@ fn bad_arglength() {
 fn logp_gradient() {
     let (lib, data) = get_model("stdnormal");
     let model = Model::new(&lib, data, 42).unwrap();
-    let theta = vec![1f64];
-    let mut grad = vec![0f64];
+    let theta = [1f64];
+    let mut grad = [0f64];
     let logp = model
         .log_density_gradient(&theta[..], false, true, &mut grad[..])
         .unwrap();
@@ -47,8 +47,8 @@ fn logp_gradient() {
 fn logp_hessian() {
     let (lib, data) = get_model("stdnormal");
     let model = Model::new(&lib, data, 42).unwrap();
-    let theta = vec![1f64];
-    let mut grad = vec![0f64];
+    let theta = [1f64];
+    let mut grad = [0f64];
     let mut hessian = vec![0f64];
     let logp = model
         .log_density_hessian(&theta[..], false, true, &mut grad[..], &mut hessian)

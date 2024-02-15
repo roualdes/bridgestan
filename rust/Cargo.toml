@@ -11,6 +11,10 @@ homepage = "https://roualdes.github.io/bridgestan/latest/"
 [dependencies]
 libloading = "0.8.0"
 thiserror = "1.0.40"
+ureq = "2.7"
+tar = "0.4"
+flate2 = "1.0"
+dirs = "5.0"
 
 [build-dependencies]
 bindgen = "0.69.1"

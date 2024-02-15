@@ -1,3 +1,4 @@
+use crate::download_compile::VERSION;
 use crate::ffi;
 use std::borrow::Borrow;
 use std::collections::hash_map::DefaultHasher;
@@ -101,9 +102,15 @@ pub enum BridgeStanError {
     /// Setting a print-callback failed.
     #[error("Failed to set a print-callback: {0}")]
     SetCallbackFailed(String),
+    /// Setting a compile Stan model failed.
+    #[error("Failed to compile Stan model: {0}")]
+    ModelCompilingFailed(String),
+    /// Setting a download BridgeStan failed.
+    #[error("Failed to download BridgeStan {VERSION} from github.com: {0}")]
+    DownloadFailed(String),
 }
 
-type Result<T> = std::result::Result<T, BridgeStanError>;
+pub(crate) type Result<T> = std::result::Result<T, BridgeStanError>;
 
 /// Open a compiled Stan library.
 ///
