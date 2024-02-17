@@ -10,7 +10,7 @@ fn main() {
         .unwrap()
         .join("test_models/simple/simple.stan");
 
-    let path = compile_model(path, None).expect("Could not compile Stan model.");
+    let path = compile_model(path, vec![], vec![], None).expect("Could not compile Stan model.");
     println!("Compiled model: {:?}", path);
 
     let lib = open_library(path).expect("Could not load compiled Stan model.");

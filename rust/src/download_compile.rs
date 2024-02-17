@@ -1,6 +1,10 @@
 use crate::bs_safe::{BridgeStanError, Result};
 use flate2::read::GzDecoder;
-use std::{env::temp_dir, fs, path::PathBuf};
+use std::{
+    env::temp_dir,
+    fs,
+    path::{Path, PathBuf},
+};
 use tar::Archive;
 
 pub(crate) const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -63,9 +67,17 @@ pub fn get_bridgestan_src() -> Result<PathBuf> {
 
 /// Compile a Stan Model given a stan_file and the path to BridgeStan
 /// if None, then calls get_bridgestan_src() to download BridgeStan
-pub fn compile_model(stan_file: PathBuf, bs_path: Option<PathBuf>) -> Result<PathBuf> {
+pub fn compile_model<P>(
+    stan_file: P,
+    stanc_args: Vec<&str>,
+    make_args: Vec<&str>,
+    bs_path: Option<P>,
+) -> Result<PathBuf>
+where
+    P: AsRef<Path>,
+{
     let bs_path = match bs_path {
-        Some(path) => path,
+        Some(path) => path.as_ref().to_owned(),
         None => get_bridgestan_src()?,
     };
 
@@ -86,7 +98,17 @@ pub fn compile_model(stan_file: PathBuf, bs_path: Option<PathBuf>) -> Result<Pat
     ));
     let output = output.with_extension("so");
 
-    let mut cmd = vec![output.to_str().unwrap_or_default().to_owned()];
+    let stanc_args = [["--include-paths=."].as_slice(), stanc_args.as_slice()].concat();
+    let stanc_args = stanc_args.join(" ");
+    let stanc_args = format!("STANCFLAGS={}", stanc_args);
+    let stanc_args = [stanc_args.as_str()];
+
+    let cmd = [
+        &[output.to_str().unwrap_or_default()],
+        make_args.as_slice(),
+        stanc_args.as_slice(),
+    ]
+    .concat();
 
     println!("Compiling model");
     let proc = std::process::Command::new("make")
