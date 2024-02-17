@@ -1,11 +1,11 @@
 mod common;
-use std::{f64::consts::PI, ffi::CString};
+use std::{f64::consts::PI, ffi::CString, fs::remove_file};
 
-use common::get_model;
+use common::{get_model, model_dir};
 
 use approx::{assert_abs_diff_eq, assert_ulps_eq};
 
-use bridgestan::{BridgeStanError, Model};
+use bridgestan::{compile_model, BridgeStanError, Model};
 
 #[test]
 fn throw_data() {
@@ -33,6 +33,27 @@ fn bad_arglength() {
 #[test]
 fn logp_gradient() {
     let (lib, data) = get_model("stdnormal");
+    let model = Model::new(&lib, data, 42).unwrap();
+    let theta = [1f64];
+    let mut grad = [0f64];
+    let logp = model
+        .log_density_gradient(&theta[..], false, true, &mut grad[..])
+        .unwrap();
+    assert_ulps_eq!(logp, (2. * PI).sqrt().recip().ln() - 0.5);
+    assert_ulps_eq!(grad[0], -1f64);
+}
+
+#[test]
+fn model_compiling() {
+    let name = "stdnormal";
+    let mut base = model_dir();
+    base.push(name);
+    let lib_path = base.join(format!("{}_model.so", name));
+    let stan_path = base.join(format!("{}.stan", name));
+    remove_file(lib_path).unwrap();
+    compile_model(stan_path, vec![], vec![], None).unwrap();
+
+    let (lib, data) = get_model(name);
     let model = Model::new(&lib, data, 42).unwrap();
     let theta = [1f64];
     let mut grad = [0f64];
