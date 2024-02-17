@@ -14,13 +14,9 @@ The BridgeStan Rust client is available on `crates.io <https://crates.io/crates/
 
     cargo add bridgestan
 
-To build and use BridgeStan models, a copy of the BridgeStan C++ source code
-is required. Please follow the :doc:`Getting Started guide <../getting-started>`
-or use the Rust client in tandem with an interface such as :doc:`Python <./python>`
-which automates this process.
+The first time you compile a model, the BridgeStan source code will be downloaded to `~/.bridgestan`. If you prefer to use a source distribution of BridgeStan, you can pass its path as the `bs_path` argument to `compile_model`.
 
-``STAN_THREADS=true`` needs to be specified when compiling a model, for more
-details see the `API reference <https://docs.rs/bridgestan>`__.
+Note that the system pre-requisites from the [Getting Started Guide](../getting-started.rst) are still required and will not be automatically installed by this method.
 
 Example Program
 ---------------
