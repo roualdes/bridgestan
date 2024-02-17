@@ -86,7 +86,7 @@ pub fn compile_model(stan_file: PathBuf, bs_path: Option<PathBuf>) -> Result<Pat
     ));
     let output = output.with_extension("so");
 
-    let cmd = vec![output.to_str().unwrap_or_default().to_owned()];
+    let mut cmd = vec![output.to_str().unwrap_or_default().to_owned()];
 
     println!("Compiling model");
     let proc = std::process::Command::new("make")
