@@ -3,13 +3,13 @@ use std::ffi::CString;
 use std::path::Path;
 
 fn main() {
-    // The path to the compiled model.
-    // Get for instance from python `bridgestan.compile_model`
+    // The path to the Stan model
     let path = Path::new(env!["CARGO_MANIFEST_DIR"])
         .parent()
         .unwrap()
         .join("test_models/simple/simple.stan");
 
+    // The path to the compiled model
     let path = compile_model(path, vec![], vec![], None).expect("Could not compile Stan model.");
     println!("Compiled model: {:?}", path);
 
