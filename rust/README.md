@@ -16,7 +16,7 @@ Run this example with `cargo run --example=example`.
 ```rust
 use std::ffi::CString;
 use std::path::Path;
-use bridgestan::{BridgeStanError, Model, open_library};
+use bridgestan::{BridgeStanError, Model, open_library, compile_model};
 
 // The path to the Stan model
 let path = Path::new(env!["CARGO_MANIFEST_DIR"])
