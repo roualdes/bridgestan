@@ -43,6 +43,7 @@ fn logp_gradient() {
     assert_ulps_eq!(grad[0], -1f64);
 }
 
+#[cfg(target_family = "unix")]
 #[test]
 fn model_compiling() {
     let name = "stdnormal";
