@@ -290,4 +290,4 @@ jobs:
           cargo clippy
           cargo fmt --check
           cargo run --example=example --features compile-stan-model
-          cargo test --verbose --features compile-stan-model
+          cargo test --verbose --features compile-stan-model -- --test-threads=1
