@@ -7,7 +7,9 @@ fn main() {
     let path = Path::new(env!["CARGO_MANIFEST_DIR"])
         .parent()
         .unwrap()
-        .join("test_models/simple/simple.stan");
+        .join("test_models")
+        .join("simple")
+        .join("simple.stan");
 
     // The path to the compiled model
     let path = compile_model(path, vec![], vec![], None).expect("Could not compile Stan model.");
