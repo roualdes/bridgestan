@@ -1,5 +1,6 @@
 use crate::bs_safe::{BridgeStanError, Result};
 use flate2::read::GzDecoder;
+use path_absolutize::Absolutize;
 use std::{
     env::temp_dir,
     fs,
@@ -81,7 +82,9 @@ where
         None => get_bridgestan_src()?,
     };
 
-    let stan_file = fs::canonicalize(stan_file)
+    let stan_file = stan_file
+        .as_ref()
+        .absolutize()
         .map_err(|e| BridgeStanError::ModelCompilingFailed(e.to_string()))?;
 
     if stan_file.extension().unwrap_or_default() != "stan" {

@@ -15,9 +15,10 @@ ureq = { version = "2.7", optional = true }
 tar = { version = "0.4", optional = true }
 flate2 = { version = "1.0", optional = true }
 dirs = { version = "5.0", optional = true }
+path-absolutize = { version = "3.1", optional = true }
 
 [features]
-compile-stan-model = ["ureq", "tar", "flate2", "dirs"]
+compile-stan-model = ["ureq", "tar", "flate2", "dirs", "path-absolutize"]
 
 [build-dependencies]
 bindgen = "0.69.1"
