@@ -68,6 +68,8 @@ mutable struct StanModel
             end
         end
 
+        windows_dll_path_setup()
+
         lib = Libc.Libdl.dlopen(lib)
 
         err = Ref{Cstring}()
