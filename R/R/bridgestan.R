@@ -21,7 +21,7 @@ StanModel <- R6::R6Class("StanModel",
       }
 
       if (.Platform$OS.type == "windows"){
-        windows_path_setup()
+        windows_dll_path_setup()
         lib_old <- lib
         lib <- paste0(tools::file_path_sans_ext(lib), ".dll")
         file.copy(from=lib_old, to=lib)
