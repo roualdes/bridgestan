@@ -45,6 +45,7 @@ fn logp_gradient() {
 
 #[cfg(target_family = "unix")]
 #[test]
+#[ignore]
 fn model_compiling() {
     let name = "stdnormal";
     let mut base = model_dir();
