@@ -114,7 +114,12 @@ where
     .concat();
 
     println!("Compiling model");
-    let proc = std::process::Command::new("make")
+    let make = if cfg!(target_os = "windows") {
+        "mingw32-make"
+    } else {
+        "make"
+    };
+    let proc = std::process::Command::new(make)
         .args(cmd)
         .current_dir(bs_path)
         .env("STAN_THREADS", "true")
