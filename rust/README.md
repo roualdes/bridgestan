@@ -11,7 +11,7 @@ Internally, it relies on [`bindgen`](https://docs.rs/bindgen/) and
 
 ## Usage
 
-Run this example with `cargo run --example=example`.
+Run this example with `RUST_LOG=info cargo run --example=example --features compile-stan-model`.
 
 ```rust
 use std::ffi::CString;

@@ -1,5 +1,6 @@
 use crate::bs_safe::{BridgeStanError, Result};
 use flate2::read::GzDecoder;
+use log::info;
 use path_absolutize::Absolutize;
 use std::{
     env::temp_dir,
@@ -23,7 +24,7 @@ pub fn get_bridgestan_src() -> Result<PathBuf> {
     let bs_path_download_join_version = bs_path_download.join(format!("bridgestan-{VERSION}"));
 
     if !bs_path_download_join_version.exists() {
-        println!("Downloading BridgeStan");
+        info!("Downloading BridgeStan");
 
         fs::remove_dir_all(&bs_path_download_temp).unwrap_or_default();
         fs::create_dir(&bs_path_download_temp).unwrap_or_default();
@@ -60,7 +61,7 @@ pub fn get_bridgestan_src() -> Result<PathBuf> {
 
         fs::remove_dir(bs_path_download_temp).unwrap_or_default();
 
-        println!("Finished downloading BridgeStan");
+        info!("Finished downloading BridgeStan");
     }
 
     Ok(bs_path_download_join_version)
@@ -113,7 +114,7 @@ where
     ]
     .concat();
 
-    println!("Compiling model");
+    info!("Compiling model");
     let make = if cfg!(target_os = "windows") {
         "mingw32-make"
     } else {
@@ -125,7 +126,7 @@ where
         .env("STAN_THREADS", "true")
         .output()
         .map_err(|e| BridgeStanError::ModelCompilingFailed(e.to_string()))?;
-    println!("Finished compiling model");
+    info!("Finished compiling model");
 
     if !proc.status.success() {
         return Err(BridgeStanError::ModelCompilingFailed(format!(

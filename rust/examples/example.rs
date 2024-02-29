@@ -3,6 +3,8 @@ use std::ffi::CString;
 use std::path::Path;
 
 fn main() {
+    env_logger::init();
+
     // The path to the Stan model
     let path = Path::new(env!["CARGO_MANIFEST_DIR"])
         .parent()
