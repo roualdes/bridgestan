@@ -5,7 +5,7 @@ use common::{get_model, model_dir};
 
 use approx::{assert_abs_diff_eq, assert_ulps_eq};
 
-use bridgestan::{compile_model, BridgeStanError, Model};
+use bridgestan::{BridgeStanError, Model};
 
 #[test]
 fn throw_data() {
@@ -43,6 +43,7 @@ fn logp_gradient() {
     assert_ulps_eq!(grad[0], -1f64);
 }
 
+#[cfg(feature = "compile-stan-model")]
 #[cfg(target_family = "unix")]
 #[test]
 #[ignore]
@@ -53,7 +54,7 @@ fn model_compiling() {
     let lib_path = base.join(format!("{}_model.so", name));
     let stan_path = base.join(format!("{}.stan", name));
     remove_file(lib_path).unwrap();
-    compile_model(stan_path, vec![], vec![], None).unwrap();
+    bridgestan::compile_model(stan_path, vec![], vec![], None).unwrap();
 
     let (lib, data) = get_model(name);
     let model = Model::new(&lib, data, 42).unwrap();

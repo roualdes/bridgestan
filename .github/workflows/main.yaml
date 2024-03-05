@@ -292,3 +292,4 @@ jobs:
           cargo run --example=example --features compile-stan-model
           cargo test --verbose --features compile-stan-model
           cargo test --verbose --features compile-stan-model model_compiling -- --ignored
+          cargo test --verbose --all-targets
