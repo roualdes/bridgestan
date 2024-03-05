@@ -120,20 +120,25 @@ where
     } else {
         "make"
     };
-    let proc = std::process::Command::new(make)
+    std::process::Command::new(make)
         .args(cmd)
         .current_dir(bs_path)
         .env("STAN_THREADS", "true")
         .output()
+        .map_err(|e| e.to_string())
+        .and_then(|proc| {
+            if !proc.status.success() {
+                Err(format!(
+                    "{} {}",
+                    String::from_utf8_lossy(proc.stdout.as_slice()).into_owned(),
+                    String::from_utf8_lossy(proc.stderr.as_slice()).into_owned(),
+                ))
+            } else {
+                Ok(())
+            }
+        })
         .map_err(|e| BridgeStanError::ModelCompilingFailed(e.to_string()))?;
     info!("Finished compiling model");
 
-    if !proc.status.success() {
-        return Err(BridgeStanError::ModelCompilingFailed(format!(
-            "{} {}",
-            String::from_utf8_lossy(proc.stdout.as_slice()).into_owned(),
-            String::from_utf8_lossy(proc.stderr.as_slice()).into_owned(),
-        )));
-    }
     Ok(output)
 }
