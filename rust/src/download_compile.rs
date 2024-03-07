@@ -83,6 +83,10 @@ where
         None => get_bridgestan_src()?,
     };
 
+    // using path_absolutize crate for now since
+    // std::fs::canonicalize doesn't behave well on windows
+    // we may switch to std::path::absolute once it stabilizes, see
+    // https://github.com/roualdes/bridgestan/pull/212#discussion_r1513375667
     let stan_file = stan_file
         .as_ref()
         .absolutize()
