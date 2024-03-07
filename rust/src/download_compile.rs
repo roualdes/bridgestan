@@ -92,6 +92,18 @@ where
         .absolutize()
         .map_err(|e| BridgeStanError::ModelCompilingFailed(e.to_string()))?;
 
+    // get --include-paths=model_dir
+    let includir_stan_file_dir = stan_file
+        .parent()
+        .and_then(Path::to_str)
+        .map(|x| format!("--include-paths={x}"))
+        .map(|x| vec![x])
+        .unwrap_or_default();
+    let includir_stan_file_dir = includir_stan_file_dir
+        .iter()
+        .map(String::as_str)
+        .collect::<Vec<&str>>();
+
     if stan_file.extension().unwrap_or_default() != "stan" {
         return Err(BridgeStanError::ModelCompilingFailed(
             "File must be a .stan file".to_owned(),
@@ -106,7 +118,7 @@ where
     ));
     let output = output.with_extension("so");
 
-    let stanc_args = [["--include-paths=."].as_slice(), stanc_args.as_slice()].concat();
+    let stanc_args = [includir_stan_file_dir.as_slice(), stanc_args.as_slice()].concat();
     let stanc_args = stanc_args.join(" ");
     let stanc_args = format!("STANCFLAGS={}", stanc_args);
     let stanc_args = [stanc_args.as_str()];
@@ -118,12 +130,16 @@ where
     ]
     .concat();
 
-    info!("Compiling model");
     let make = if cfg!(target_os = "windows") {
         "mingw32-make"
     } else {
         "make"
     };
+    info!(
+        "Compiling model with command: {} \"{}\"",
+        make,
+        cmd.join("\" \"")
+    );
     std::process::Command::new(make)
         .args(cmd)
         .current_dir(bs_path)
