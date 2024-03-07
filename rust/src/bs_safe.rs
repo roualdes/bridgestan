@@ -1,6 +1,5 @@
-#[cfg(feature = "compile-stan-model")]
-use crate::download_compile::VERSION;
 use crate::ffi;
+use crate::VERSION;
 use std::borrow::Borrow;
 use std::collections::hash_map::DefaultHasher;
 use std::ffi::c_char;
@@ -103,11 +102,9 @@ pub enum BridgeStanError {
     /// Setting a print-callback failed.
     #[error("Failed to set a print-callback: {0}")]
     SetCallbackFailed(String),
-    #[cfg(feature = "compile-stan-model")]
     /// Setting a compile Stan model failed.
     #[error("Failed to compile Stan model: {0}")]
     ModelCompilingFailed(String),
-    #[cfg(feature = "compile-stan-model")]
     /// Setting a download BridgeStan failed.
     #[error("Failed to download BridgeStan {VERSION} from github.com: {0}")]
     DownloadFailed(String),

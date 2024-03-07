@@ -1,4 +1,5 @@
 use crate::bs_safe::{BridgeStanError, Result};
+use crate::VERSION;
 use flate2::read::GzDecoder;
 use log::info;
 use path_absolutize::Absolutize;
@@ -8,8 +9,6 @@ use std::{
     path::{Path, PathBuf},
 };
 use tar::Archive;
-
-pub(crate) const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Download and unzip the BridgeStan source distribution for this version
 /// to ~/.bridgestan/bridgestan-version

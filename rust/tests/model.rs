@@ -1,7 +1,7 @@
 mod common;
-use std::{f64::consts::PI, ffi::CString, fs::remove_file};
+use std::{f64::consts::PI, ffi::CString};
 
-use common::{get_model, model_dir};
+use common::get_model;
 
 use approx::{assert_abs_diff_eq, assert_ulps_eq};
 
@@ -48,13 +48,17 @@ fn logp_gradient() {
 #[test]
 #[ignore]
 fn model_compiling() {
+    use bridgestan::compile_model;
+    use common::model_dir;
+    use std::fs::remove_file;
+
     let name = "stdnormal";
     let mut base = model_dir();
     base.push(name);
     let lib_path = base.join(format!("{}_model.so", name));
     let stan_path = base.join(format!("{}.stan", name));
     remove_file(lib_path).unwrap();
-    bridgestan::compile_model(stan_path, vec![], vec![], None).unwrap();
+    compile_model(stan_path, vec![], vec![], None).unwrap();
 
     let (lib, data) = get_model(name);
     let model = Model::new(&lib, data, 42).unwrap();
