@@ -48,7 +48,7 @@ fn logp_gradient() {
 #[test]
 #[ignore]
 fn model_compiling() {
-    use bridgestan::compile_model;
+    use bridgestan::{compile_model, download_bridgestan_src};
     use common::model_dir;
     use std::fs::remove_file;
 
@@ -58,7 +58,8 @@ fn model_compiling() {
     let lib_path = base.join(format!("{}_model.so", name));
     let stan_path = base.join(format!("{}.stan", name));
     remove_file(lib_path).unwrap();
-    compile_model(stan_path, vec![], vec![], None).unwrap();
+    let bs_path = download_bridgestan_src().unwrap();
+    compile_model(bs_path, stan_path, vec![], vec![]).unwrap();
 
     let (lib, data) = get_model(name);
     let model = Model::new(&lib, data, 42).unwrap();

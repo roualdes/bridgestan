@@ -12,7 +12,7 @@ use tar::Archive;
 
 /// Download and unzip the BridgeStan source distribution for this version
 /// to ~/.bridgestan/bridgestan-version
-pub fn get_bridgestan_src() -> Result<PathBuf> {
+pub fn download_bridgestan_src() -> Result<PathBuf> {
     let homedir = dirs::home_dir().unwrap_or(temp_dir());
 
     let bs_path_download_temp = homedir.join(".bridgestan_tmp_dir");
@@ -66,22 +66,16 @@ pub fn get_bridgestan_src() -> Result<PathBuf> {
     Ok(bs_path_download_join_version)
 }
 
-/// Compile a Stan Model given a stan_file and the path to BridgeStan
-/// if None, then calls get_bridgestan_src() to download BridgeStan
+/// Compile a Stan Model given the path to BridgeStan and to a stan_file
 pub fn compile_model<P>(
+    bs_path: P,
     stan_file: P,
     stanc_args: Vec<&str>,
     make_args: Vec<&str>,
-    bs_path: Option<P>,
 ) -> Result<PathBuf>
 where
     P: AsRef<Path>,
 {
-    let bs_path = match bs_path {
-        Some(path) => path.as_ref().to_owned(),
-        None => get_bridgestan_src()?,
-    };
-
     // using path_absolutize crate for now since
     // std::fs::canonicalize doesn't behave well on windows
     // we may switch to std::path::absolute once it stabilizes, see
