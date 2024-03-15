@@ -13,7 +13,14 @@ Create a Stan Model instance.
 ###### Usage
 
 ```
-StanModel$new(lib, data, seed, stanc_args = NULL, make_args = NULL)
+StanModel$new(
+  lib,
+  data,
+  seed,
+  stanc_args = NULL,
+  make_args = NULL,
+  warn = TRUE
+)
 ```
 
  
@@ -25,6 +32,7 @@ StanModel$new(lib, data, seed, stanc_args = NULL, make_args = NULL)
 - **`seed`**: Seed for the RNG used in constructing the model.
 - **`stanc_args`**: A list of arguments to pass to stanc3 if the model is not already compiled.
 - **`make_args`**: A list of additional arguments to pass to Make if the model is not already compiled.
+- **`warn`**: If false, the warning about re-loading the same shared object is suppressed.
 
  
 

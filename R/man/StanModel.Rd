@@ -36,7 +36,14 @@ as well as constraining and unconstraining transforms.
 \subsection{Method \code{new()}}{
 Create a Stan Model instance.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StanModel$new(lib, data, seed, stanc_args = NULL, make_args = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{StanModel$new(
+  lib,
+  data,
+  seed,
+  stanc_args = NULL,
+  make_args = NULL,
+  warn = TRUE
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -51,6 +58,8 @@ Create a Stan Model instance.
 \item{\code{stanc_args}}{A list of arguments to pass to stanc3 if the model is not already compiled.}
 
 \item{\code{make_args}}{A list of additional arguments to pass to Make if the model is not already compiled.}
+
+\item{\code{warn}}{If false, the warning about re-loading the same shared object is suppressed.}
 }
 \if{html}{\out{</div>}}
 }

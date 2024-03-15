@@ -1,4 +1,5 @@
 import ctypes
+import warnings
 from pathlib import Path
 
 import numpy as np
@@ -713,6 +714,10 @@ def test_reload_warning():
     assert not relative_lib.is_absolute()
     with pytest.warns(UserWarning, match="may not update the library"):
         model2 = bs.StanModel(relative_lib, data)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")  # fail if warning is raised
+        model2 = bs.StanModel(lib, data, warn=False)
 
 
 def test_ctypes_pointers():
