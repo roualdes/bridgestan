@@ -43,11 +43,48 @@ fn logp_gradient() {
     assert_ulps_eq!(grad[0], -1f64);
 }
 
-#[cfg(feature = "compile-stan-model")]
+// Note: this test does not require download-bridgestan-src feature
+// but it assumes that bridgestan_src is on the home folder
+// one way to have that assumption met is by running the example or
+// the model_downloading_and_compiling test before running this test
 #[cfg(target_family = "unix")]
 #[test]
 #[ignore]
 fn model_compiling() {
+    use bridgestan::compile_model;
+    use common::model_dir;
+    use std::fs::remove_file;
+
+    let name = "stdnormal";
+    let mut base = model_dir();
+    base.push(name);
+    let lib_path = base.join(format!("{}_model.so", name));
+    let stan_path = base.join(format!("{}.stan", name));
+    remove_file(lib_path).unwrap();
+
+    let homedir = dirs::home_dir().unwrap();
+    let bs_path_download = homedir.join(".bridgestan");
+    let bs_path_download_join_version =
+        bs_path_download.join(format!("bridgestan-{}", bridgestan::VERSION));
+
+    compile_model(bs_path_download_join_version, stan_path, vec![], vec![]).unwrap();
+
+    let (lib, data) = get_model(name);
+    let model = Model::new(&lib, data, 42).unwrap();
+    let theta = [1f64];
+    let mut grad = [0f64];
+    let logp = model
+        .log_density_gradient(&theta[..], false, true, &mut grad[..])
+        .unwrap();
+    assert_ulps_eq!(logp, (2. * PI).sqrt().recip().ln() - 0.5);
+    assert_ulps_eq!(grad[0], -1f64);
+}
+
+#[cfg(feature = "download-bridgestan-src")]
+#[cfg(target_family = "unix")]
+#[test]
+#[ignore]
+fn model_downloading_and_compiling() {
     use bridgestan::{compile_model, download_bridgestan_src};
     use common::model_dir;
     use std::fs::remove_file;

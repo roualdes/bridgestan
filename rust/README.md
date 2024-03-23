@@ -11,7 +11,7 @@ Internally, it relies on [`bindgen`](https://docs.rs/bindgen/) and
 
 ## Compiling the model
 
-The Rust wrapper currently have a builtin functionality to compile Stan models (function `compile_model` under the feature flag `compile-stan-model`). For safety reasons all Stan models need to be installed with `STAN_THREADS=true`. However, if you use the Rust wrapper builtin functionality to compile Stan models, this will automatically be set for you.
+The Rust wrapper currently have a builtin functionality to compile Stan models (function `compile_model` under the feature flag `download-bridgestan-src`). For safety reasons all Stan models need to be installed with `STAN_THREADS=true`. However, if you use the Rust wrapper builtin functionality to compile Stan models, this will automatically be set for you.
 
 When compiling a model using `make`, set the environment variable:
 
@@ -31,7 +31,7 @@ will throw an error when loading the model.
 
 ## Usage
 
-Run this example with `RUST_LOG=info cargo run --example=example --features compile-stan-model`.
+Run this example with `RUST_LOG=info cargo run --example=example --features download-bridgestan-src`.
 
 ```rust
 use std::ffi::CString;

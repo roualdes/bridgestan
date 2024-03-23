@@ -1,14 +1,17 @@
 #![doc = include_str!("../README.md")]
 
 mod bs_safe;
+mod compile;
 
-#[cfg(feature = "compile-stan-model")]
-mod download_compile;
+#[cfg(feature = "download-bridgestan-src")]
+mod download;
 
 pub(crate) mod ffi;
 pub use bs_safe::{open_library, BridgeStanError, Model, Rng, StanLibrary};
 
-#[cfg(feature = "compile-stan-model")]
-pub use download_compile::{compile_model, download_bridgestan_src};
+#[cfg(feature = "download-bridgestan-src")]
+pub use download::download_bridgestan_src;
 
-pub(crate) const VERSION: &str = env!("CARGO_PKG_VERSION");
+pub use compile::compile_model;
+
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
