@@ -11,11 +11,8 @@ Internally, it relies on [`bindgen`](https://docs.rs/bindgen/) and
 
 ## Compiling the model
 
-The Rust wrapper does not currently have any functionality to compile Stan models.
-Compiled shared libraries need to be built manually using `make` or with the Julia
-or Python bindings.
+The Rust wrapper currently have a builtin functionality to compile Stan models (function `compile_model` under the feature flag `download-bridgestan-src`). For safety reasons all Stan models need to be installed with `STAN_THREADS=true`. However, if you use the Rust wrapper builtin functionality to compile Stan models, this will automatically be set for you.
 
-For safety reasons all Stan models need to be installed with `STAN_THREADS=true`.
 When compiling a model using `make`, set the environment variable:
 
 ```bash
@@ -32,21 +29,25 @@ path = bridgestan.compile_model("stan_model.stan", make_args=["STAN_THREADS=true
 If `STAN_THREADS` was not specified while building the model, the Rust wrapper
 will throw an error when loading the model.
 
-## Usage:
+## Usage
 
-Run this example with `cargo run --example=example`.
+Run this example with `RUST_LOG=info cargo run --example=example --features download-bridgestan-src`.
 
 ```rust
 use std::ffi::CString;
 use std::path::Path;
-use bridgestan::{BridgeStanError, Model, open_library};
+use bridgestan::{BridgeStanError, Model, open_library, compile_model, download_bridgestan_src};
 
-// The path to the compiled model.
-// Get for instance from python `bridgestan.compile_model`
+// The path to the Stan model
 let path = Path::new(env!["CARGO_MANIFEST_DIR"])
     .parent()
     .unwrap()
-    .join("test_models/simple/simple_model.so");
+    .join("test_models/simple/simple.stan");
+
+let bs_path = download_bridgestan_src().unwrap();
+// The path to the compiled model
+let path = compile_model(bs_path, path, vec![], vec![]).expect("Could not compile Stan model.");
+println!("Compiled model: {:?}", path);
 
 let lib = open_library(path).expect("Could not load compiled Stan model.");
 

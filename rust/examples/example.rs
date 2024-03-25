@@ -1,14 +1,25 @@
-use bridgestan::{open_library, BridgeStanError, Model};
+use bridgestan::{compile_model, download_bridgestan_src, open_library, BridgeStanError, Model};
 use std::ffi::CString;
 use std::path::Path;
 
 fn main() {
-    // The path to the compiled model.
-    // Get for instance from python `bridgestan.compile_model`
+    if std::env::var("RUST_LOG").is_err() {
+        std::env::set_var("RUST_LOG", "bridgestan=info");
+    }
+    env_logger::init();
+
+    // The path to the Stan model
     let path = Path::new(env!["CARGO_MANIFEST_DIR"])
         .parent()
         .unwrap()
-        .join("test_models/simple/simple_model.so");
+        .join("test_models")
+        .join("simple")
+        .join("simple.stan");
+
+    let bs_path = download_bridgestan_src().unwrap();
+    // The path to the compiled model
+    let path = compile_model(bs_path, path, vec![], vec![]).expect("Could not compile Stan model.");
+    println!("Compiled model: {:?}", path);
 
     let lib = open_library(path).expect("Could not load compiled Stan model.");
 

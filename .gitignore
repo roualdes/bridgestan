@@ -12,6 +12,7 @@ c-example/example_static
 # Rust
 rust/target/
 rust/Cargo.lock
+rust/.vscode
 
 notes.org
 
