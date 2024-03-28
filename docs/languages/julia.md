@@ -37,7 +37,7 @@ BridgeStan is registered on JuliaRegistries each release.
 ```
 
 
-The first time you compile a model, the BridgeStan source code will be downloaded as an [Artifact](https://pkgdocs.julialang.org/v1/artifacts/). If you prefer to use a source distribution of BridgeStan, consult the following section.
+The first time you compile a model, the BridgeStan source code for your current version will be downloaded as an [Artifact](https://pkgdocs.julialang.org/v1/artifacts/). If you prefer to use a source distribution of BridgeStan, consult the following section.
 
 
 Note that the system pre-requisites from the [Getting Started Guide](../getting-started.rst) are still required and will not be automatically installed by this method.

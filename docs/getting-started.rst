@@ -17,15 +17,17 @@ Here are complete instructions by platform for installing both, from the CmdStan
 Downloading BridgeStan
 ----------------------
 
+.. note::
+    The :doc:`Julia <languages/julia>`, :doc:`Python <languages/python>`, and :doc:`R <languages/r>`
+    interfaces will download the source for you the first time you compile a model.
+    This section is optional for users primarily interested in those interfaces.
+
+
 Installing BridgeStan is as simple as ensuring that the above requirements are installed and then downloading
 the source repository. All of the following ways of downloading BridgeStan will additionally download the
 `Stan <https://github.com/stan-dev/stan>`__ and `Stan Math <https://github.com/stan-dev/math>`__ libraries for you,
 and no additional dependencies are required to be installed separately for the C++ source code.
 
-As of version 1.0.2, the :doc:`Julia <languages/julia>` and
-:doc:`Python <languages/python>` interfaces will download
-the source for you the first time you compile a model, so
-this section is optional.
 
 Downloading a released archive
 ______________________________
