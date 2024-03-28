@@ -12,7 +12,7 @@ Stan requires a C++ tool chain consisting of
 
 Here are complete instructions by platform for installing both, from the CmdStan installation instructions.
 
-* `C++ tool chain installation - CmdStan User's Guide <https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html#cpp-toolchain>`__
+* `C++ tool chain installation - CmdStan User's Guide <https://mc-stan.org/docs/cmdstan-guide/installation.html#cpp-toolchain>`__
 
 Downloading BridgeStan
 ----------------------
