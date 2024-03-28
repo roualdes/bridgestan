@@ -6,7 +6,7 @@
 
 **From Github**:
 ```R
-devtools::install_github("https://github.com/roualdes/bridgestan", subdir="R")
+remotes::install_github("https://github.com/roualdes/bridgestan", subdir="R")
 ```
 
 **From the downloaded repository**:

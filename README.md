@@ -35,7 +35,7 @@ compiler combinations.
 ## Installing BridgeStan
 
 Installing the core of BridgeStan is as simple as
-[installing a C++ toolchain](https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html#cpp-toolchain)
+[installing a C++ toolchain](https://mc-stan.org/docs/cmdstan-guide/installation.html#cpp-toolchain)
 (libraries, compiler, and the `make` command), and downloading this
 repository. To download the latest development version, you can run
 
