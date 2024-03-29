@@ -16,6 +16,11 @@ Note: The additional functionality provided by
 but in order to facilitate the same built models being used in
 all tests we use it regardless of interface.
 
+Tests for the compilation utilities in the various interfaces also rely on being
+able to find the BridgeStan source. This is best done with the environment variable
+``BRIDGESTAN``. On Linux and macOS, this can be set with ``export BRIDGESTAN=\`pwd\```.
+On Windows, use ``$env:BRIDGESTAN=$pwd``.
+
 Python
 ______
 
