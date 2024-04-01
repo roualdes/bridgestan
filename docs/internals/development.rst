@@ -31,6 +31,7 @@ Python
 ------
 
 * Python dependencies:
+
   * `NumPy <https://numpy.org/>`_
 
 * We autoformat code with `black <https://black.readthedocs.io/en/stable/>`_.
@@ -39,6 +40,7 @@ Julia
 -----
 
 * Julia dependencies:
+
   * `LazyArtifacts <https://docs.julialang.org/en/v1/stdlib/LazyArtifacts/>`_
 
 * Julia code is formatted using `JuliaFormatter <https://github.com/domluna/JuliaFormatter.jl>`_.
@@ -47,6 +49,7 @@ R
 -
 
 * R dependencies:
+
   * `R6 <https://cran.r-project.org/web/packages/R6/index.html>`_
 
 Rust

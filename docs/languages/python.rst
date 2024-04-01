@@ -18,10 +18,12 @@ For convenience, BridgeStan is uploaded to the Python Package Index each release
     pip install bridgestan
 
 
-The first time you compile a model, the BridgeStan source code will be downloaded
-and placed in :file:`~/.bridgestan/`. If you prefer to use a source distribution of BridgeStan,
-consult the following section.
+The first time you compile a model, the BridgeStan source code for your current version
+will be downloaded and placed in :file:`~/.bridgestan/`.
+If you prefer to use a source distribution of BridgeStan, consult the following section.
 
+Note that the system pre-requisites from the :doc:`Getting Started guide <../getting-started>` 
+are still required and will not be automatically installed by this method.
 
 From Source
 ___________
