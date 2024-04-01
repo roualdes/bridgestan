@@ -24,6 +24,9 @@ The first time you compile a model, the BridgeStan source code for your current 
 will be downloaded and placed in :file:`~/.bridgestan/`.
 If you prefer to use a source distribution of BridgeStan, consult the following section.
 
+Note that the system pre-requisites from the [Getting Started guide](../getting-started.rst)
+are still required and will not be automatically installed by this method.
+
 ### From Source
 
 This assumes you have followed the [Getting Started guide](../getting-started.rst)
