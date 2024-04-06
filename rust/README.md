@@ -45,7 +45,8 @@ let path = Path::new(env!["CARGO_MANIFEST_DIR"])
     .join("test_models/simple/simple.stan");
 
 // You can manually set the BridgeStan src path or
-// automatically download it
+// automatically download it (but remember to
+// enable the download-bridgestan-src feature first)
 let bs_path: PathBuf = "..".into();
 // let bs_path = bridgestan::download_bridgestan_src().unwrap();
 

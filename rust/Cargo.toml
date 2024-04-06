@@ -32,4 +32,3 @@ dirs = { version = "5.0" }
 
 [[example]]
 name = "example"
-required-features = ["download-bridgestan-src"]

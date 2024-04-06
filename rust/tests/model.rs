@@ -54,6 +54,7 @@ fn model_compiling() {
     use bridgestan::compile_model;
     use common::model_dir;
     use std::fs::remove_file;
+    use std::path::PathBuf;
 
     let name = "stdnormal";
     let mut base = model_dir();
@@ -62,13 +63,9 @@ fn model_compiling() {
     let stan_path = base.join(format!("{}.stan", name));
     remove_file(lib_path).unwrap_or_default();
 
-    let homedir = dirs::home_dir().unwrap();
-    let bs_path_download_join_version = std::env::var("BRIDGESTAN")
-        .map(|x| x.into())
-        .unwrap_or_else(|_| {
-            let bs_path_download = homedir.join(".bridgestan");
-            bs_path_download.join(format!("bridgestan-{}", bridgestan::VERSION))
-        });
+    let bs_path_download_join_version: PathBuf = std::env::var("BRIDGESTAN")
+        .unwrap_or("..".to_string())
+        .into();
 
     compile_model(&bs_path_download_join_version, &stan_path, vec![], vec![]).unwrap();
 
