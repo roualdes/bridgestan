@@ -43,6 +43,10 @@ extensions = [
     "myst_parser",
 ]
 
+myst_enable_extensions = [
+    "substitution"
+]
+
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "README.md"]
 

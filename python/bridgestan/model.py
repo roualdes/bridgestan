@@ -68,6 +68,7 @@ class StanModel:
         stanc_args: List[str] = [],
         make_args: List[str] = [],
         capture_stan_prints: bool = True,
+        warn: bool = True,
         model_data: Optional[str] = None,
     ) -> None:
         """
@@ -99,6 +100,8 @@ class StanModel:
             **Note:** If this is set for a model, any other models instantiated
             from the *same shared library* will also have the callback set, even
             if they were created *before* this model.
+        :param warn: If ``False``, the warning about re-loading the same shared object
+            is suppressed.
         :param model_data: Deprecated former name for ``data``.
         :raises FileNotFoundError or PermissionError: If ``model_lib`` is not readable or
             ``data`` is specified and not a path to a readable file.
@@ -133,7 +136,7 @@ class StanModel:
             )
 
         self.lib_path = fspath(Path(model_lib).absolute().resolve())
-        if self.lib_path in dllist():
+        if warn and self.lib_path in dllist():
             warnings.warn(
                 f"Loading a shared object {self.lib_path} that has already been loaded.\n"
                 "If the file has changed since the last time it was loaded, this load may "

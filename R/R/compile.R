@@ -102,13 +102,23 @@ compile_model <- function(stan_file, stanc_args = NULL, make_args = NULL) {
     return(output)
 }
 
-windows_path_setup <- function() {
-    if (.Platform$OS.type == "windows") {
-        suppressWarnings(out <- system2("where.exe", "tbb.dll", stdout = NULL, stderr = NULL))
-        if (out != 0) {
+tbb_found <- function() {
+    suppressWarnings(out <- system2("where.exe", "tbb.dll", stdout = NULL, stderr = NULL))
+    return(out == 0)
+}
+
+WINDOWS_PATH_SET <- FALSE
+
+windows_dll_path_setup <- function() {
+    if (.Platform$OS.type == "windows" && !WINDOWS_PATH_SET) {
+
+        if (tbb_found()) {
+            assign("WINDOWS_PATH_SET", TRUE, envir = .GlobalEnv)
+        } else {
             tbb_path <- file.path(get_bridgestan_path(), "stan", "lib", "stan_math",
                 "lib", "tbb")
             Sys.setenv(PATH = paste(tbb_path, Sys.getenv("PATH"), sep = ";"))
+            assign("WINDOWS_PATH_SET", tbb_found(), envir = .GlobalEnv)
         }
     }
 }

@@ -14,14 +14,15 @@ StanModel <- R6::R6Class("StanModel",
     #' @param seed Seed for the RNG used in constructing the model.
     #' @param stanc_args A list of arguments to pass to stanc3 if the model is not already compiled.
     #' @param make_args A list of additional arguments to pass to Make if the model is not already compiled.
+    #' @param warn If false, the warning about re-loading the same shared object is suppressed.
     #' @return A new StanModel.
-    initialize = function(lib, data, seed, stanc_args = NULL, make_args = NULL) {
+    initialize = function(lib, data, seed, stanc_args = NULL, make_args = NULL, warn = TRUE) {
       if (tools::file_ext(lib) == "stan") {
         lib <- compile_model(lib, stanc_args, make_args)
       }
 
       if (.Platform$OS.type == "windows"){
-        windows_path_setup()
+        windows_dll_path_setup()
         lib_old <- lib
         lib <- paste0(tools::file_path_sans_ext(lib), ".dll")
         file.copy(from=lib_old, to=lib)
@@ -30,7 +31,7 @@ StanModel <- R6::R6Class("StanModel",
       private$seed <- seed
       private$lib <- tools::file_path_as_absolute(lib)
       private$lib_name <- tools::file_path_sans_ext(basename(lib))
-      if (is.loaded("bs_model_construct_R", PACKAGE = private$lib_name)) {
+      if (warn && is.loaded("bs_model_construct_R", PACKAGE = private$lib_name)) {
         warning(
           paste0("Loading a shared object '", lib, "' which is already loaded.\n",
                   "If the file has changed since the last time it was loaded, this load may not update the library!"

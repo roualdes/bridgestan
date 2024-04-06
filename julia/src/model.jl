@@ -13,7 +13,7 @@ mutable struct StanRNGStruct end
 end
 
 """
-    StanModel(lib, data="", seed=204; stanc_args=[], make_args=[])
+    StanModel(lib, data="", seed=204; stanc_args=[], make_args=[], warn=true)
 
 A StanModel instance encapsulates a Stan model instantiated with data.
 
@@ -22,7 +22,8 @@ If lib is a path to a file ending in `.stan`, this will first compile
 the model.  Compilation occurs if no shared object file exists for the
 supplied Stan file or if a shared object file exists and the Stan file
 has changed since last compilation.  This is equivalent to calling
-`compile_model` and then the constructor of `StanModel`.
+`compile_model` and then the constructor of `StanModel`. If `warn` is
+false, the warning about re-loading the same shared objects is suppressed.
 
 Data should either be a string containing a JSON string literal, a
 path to a data file ending in `.json`, or the empty string.
@@ -41,6 +42,7 @@ mutable struct StanModel
         seed = 204;
         stanc_args::AbstractVector{String} = String[],
         make_args::AbstractVector{String} = String[],
+        warn::Bool = true,
     )
         seed = convert(UInt32, seed)
 
@@ -52,7 +54,7 @@ mutable struct StanModel
             lib = compile_model(lib; stanc_args, make_args)
         end
 
-        if in(abspath(lib), Libc.Libdl.dllist())
+        if warn && in(abspath(lib), Libc.Libdl.dllist())
             @warn "Loading a shared object '" *
                   lib *
                   "' which is already loaded.\n" *
@@ -67,6 +69,8 @@ mutable struct StanModel
                 read(f, String)
             end
         end
+
+        windows_dll_path_setup()
 
         lib = Libc.Libdl.dlopen(lib)
 

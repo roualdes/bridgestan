@@ -20,11 +20,11 @@ BridgeStan is registered on JuliaRegistries each release.
 ] add BridgeStan
 ```
 
-The first time you compile a model, the BridgeStan source code will be downloaded
-as an [Artifact](https://pkgdocs.julialang.org/v1/artifacts/). If you
+The first time you compile a model, the BridgeStan source code for your current version
+will be downloaded as an [Artifact](https://pkgdocs.julialang.org/v1/artifacts/). If you
 prefer to use a source distribution of BridgeStan, consult the following section.
 
-Note that the system pre-requisites from the [Getting Started Guide](../getting-started.rst)
+Note that the system pre-requisites from the [Getting Started guide](../getting-started.rst)
 are still required and will not be automatically installed by this method.
 
 ### From Source
@@ -45,6 +45,11 @@ Or, since you have already downloaded the repository, you can run
 ```
 
 from the BridgeStan folder.
+
+To use the BridgeStan source you've manually downloaded instead of
+one the package will download for you, you must use
+[`set_bridgestan_path()`](BridgeStan.set_bridgestan_path!) or the `$BRIDGESTAN`
+environment variable.
 
 Note that the Julia package depends on Julia 1.8+.
 
