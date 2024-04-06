@@ -1,6 +1,6 @@
 use bridgestan::{compile_model, open_library, BridgeStanError, Model};
 use std::ffi::CString;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 fn main() {
     if std::env::var("RUST_LOG").is_err() {
@@ -18,11 +18,12 @@ fn main() {
 
     // You can manually set the BridgeStan src path or
     // automatically download it
-    let bs_path = "..".into();
+    let bs_path: PathBuf = "..".into();
     // let bs_path = bridgestan::download_bridgestan_src().unwrap();
 
     // The path to the compiled model
-    let path = compile_model(bs_path, path, vec![], vec![]).expect("Could not compile Stan model.");
+    let path =
+        compile_model(&bs_path, &path, vec![], vec![]).expect("Could not compile Stan model.");
     println!("Compiled model: {:?}", path);
 
     let lib = open_library(path).expect("Could not load compiled Stan model.");

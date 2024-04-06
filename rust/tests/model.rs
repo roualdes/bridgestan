@@ -70,7 +70,7 @@ fn model_compiling() {
             bs_path_download.join(format!("bridgestan-{}", bridgestan::VERSION))
         });
 
-    compile_model(bs_path_download_join_version, stan_path, vec![], vec![]).unwrap();
+    compile_model(&bs_path_download_join_version, &stan_path, vec![], vec![]).unwrap();
 
     let (lib, data) = get_model(name);
     let model = Model::new(&lib, data, 42).unwrap();

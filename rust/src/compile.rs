@@ -4,21 +4,17 @@ use path_absolutize::Absolutize;
 use std::path::{Path, PathBuf};
 
 /// Compile a Stan Model given the path to BridgeStan and to a stan_file
-pub fn compile_model<P>(
-    bs_path: P,
-    stan_file: P,
+pub fn compile_model(
+    bs_path: &Path,
+    stan_file: &Path,
     stanc_args: Vec<&str>,
     make_args: Vec<&str>,
-) -> Result<PathBuf>
-where
-    P: AsRef<Path>,
-{
+) -> Result<PathBuf> {
     // using path_absolutize crate for now since
     // std::fs::canonicalize doesn't behave well on windows
     // we may switch to std::path::absolute once it stabilizes, see
     // https://github.com/roualdes/bridgestan/pull/212#discussion_r1513375667
     let stan_file = stan_file
-        .as_ref()
         .absolutize()
         .map_err(|e| BridgeStanError::ModelCompilingFailed(e.to_string()))?;
 

@@ -282,8 +282,8 @@ jobs:
           cargo fmt --check
           cargo run --example=example --features download-bridgestan-src
 
-          # run all tests except docs and model_downloading
-          cargo test --verbose --all-targets
+          # run all tests except model_downloading
+          cargo test --verbose
           cargo test --verbose model_compiling -- --ignored
 
           # run all tests with feature download-bridgestan-src
