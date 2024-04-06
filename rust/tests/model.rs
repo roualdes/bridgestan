@@ -60,12 +60,15 @@ fn model_compiling() {
     base.push(name);
     let lib_path = base.join(format!("{}_model.so", name));
     let stan_path = base.join(format!("{}.stan", name));
-    remove_file(lib_path).unwrap();
+    remove_file(lib_path).unwrap_or_default();
 
     let homedir = dirs::home_dir().unwrap();
-    let bs_path_download = homedir.join(".bridgestan");
-    let bs_path_download_join_version =
-        bs_path_download.join(format!("bridgestan-{}", bridgestan::VERSION));
+    let bs_path_download_join_version = std::env::var("BRIDGESTAN")
+        .map(|x| x.into())
+        .unwrap_or_else(|_| {
+            let bs_path_download = homedir.join(".bridgestan");
+            bs_path_download.join(format!("bridgestan-{}", bridgestan::VERSION))
+        });
 
     compile_model(bs_path_download_join_version, stan_path, vec![], vec![]).unwrap();
 
@@ -84,29 +87,14 @@ fn model_compiling() {
 #[cfg(target_family = "unix")]
 #[test]
 #[ignore]
-fn model_downloading_and_compiling() {
-    use bridgestan::{compile_model, download_bridgestan_src};
-    use common::model_dir;
-    use std::fs::remove_file;
+fn model_downloading() {
+    use bridgestan::download_bridgestan_src;
 
-    let name = "stdnormal";
-    let mut base = model_dir();
-    base.push(name);
-    let lib_path = base.join(format!("{}_model.so", name));
-    let stan_path = base.join(format!("{}.stan", name));
-    remove_file(lib_path).unwrap();
     let bs_path = download_bridgestan_src().unwrap();
-    compile_model(bs_path, stan_path, vec![], vec![]).unwrap();
-
-    let (lib, data) = get_model(name);
-    let model = Model::new(&lib, data, 42).unwrap();
-    let theta = [1f64];
-    let mut grad = [0f64];
-    let logp = model
-        .log_density_gradient(&theta[..], false, true, &mut grad[..])
-        .unwrap();
-    assert_ulps_eq!(logp, (2. * PI).sqrt().recip().ln() - 0.5);
-    assert_ulps_eq!(grad[0], -1f64);
+    let stan_path = bs_path.join("stan");
+    assert!(stan_path.is_dir());
+    let makefile_path = bs_path.join("Makefile");
+    assert!(makefile_path.is_file());
 }
 
 #[test]

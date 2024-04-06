@@ -36,7 +36,7 @@ Run this example with `RUST_LOG=info cargo run --example=example --features down
 ```rust
 use std::ffi::CString;
 use std::path::Path;
-use bridgestan::{BridgeStanError, Model, open_library, compile_model, download_bridgestan_src};
+use bridgestan::{BridgeStanError, Model, open_library, compile_model};
 
 // The path to the Stan model
 let path = Path::new(env!["CARGO_MANIFEST_DIR"])
@@ -44,7 +44,11 @@ let path = Path::new(env!["CARGO_MANIFEST_DIR"])
     .unwrap()
     .join("test_models/simple/simple.stan");
 
-let bs_path = download_bridgestan_src().unwrap();
+// You can manually set the BridgeStan src path or
+// automatically download it
+let bs_path = "..".into();
+// let bs_path = bridgestan::download_bridgestan_src().unwrap();
+
 // The path to the compiled model
 let path = compile_model(bs_path, path, vec![], vec![]).expect("Could not compile Stan model.");
 println!("Compiled model: {:?}", path);
