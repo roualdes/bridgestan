@@ -47,7 +47,6 @@ fn logp_gradient() {
 // but it assumes that bridgestan_src is on the home folder
 // one way to have that assumption met is by running the example or
 // the model_downloading_and_compiling test before running this test
-#[cfg(target_family = "unix")]
 #[test]
 #[ignore]
 fn model_compiling() {
@@ -81,7 +80,6 @@ fn model_compiling() {
 }
 
 #[cfg(feature = "download-bridgestan-src")]
-#[cfg(target_family = "unix")]
 #[test]
 #[ignore]
 fn model_downloading() {
