@@ -58,12 +58,6 @@ jobs:
         run: |
           tar --exclude-vcs -chzvf bridgestan-${{ inputs.new_version }}.tar.gz --transform 's,^,bridgestan-${{ inputs.new_version }}/,' *
 
-        # Note: because of the order of operations here, the Julia package inside the tarball can never point to itself.
-      - name: Update Julia artifact
-        if: ${{ !inputs.is_rerun }}
-        run: |
-          julia ./julia/updateArtifacts.jl bridgestan-${{ inputs.new_version }}.tar.gz "v${{ inputs.new_version }}"
-
       - name: Setup git identity
         run: |
           git config --global user.name "github-actions[bot]"

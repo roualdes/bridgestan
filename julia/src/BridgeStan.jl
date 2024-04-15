@@ -1,7 +1,5 @@
 module BridgeStan
 
-using LazyArtifacts
-
 export StanModel,
     name,
     model_info,
@@ -29,6 +27,7 @@ export StanModel,
     new_rng
 
 include("model.jl")
+include("download.jl")
 include("compile.jl")
 
 """
