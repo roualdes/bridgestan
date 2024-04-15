@@ -48,6 +48,12 @@ get_bridgestan_path <- function() {
                 " to ", path))
             get_bridgestan_src()
         })
+        num_files <- length(list.files(HOME_BRIDGESTAN))
+        if (num_files >= 5) {
+            warning(paste0("Found ", num_files, " different versions of BridgeStan in ",
+                HOME_BRIDGESTAN, ". Consider deleting old versions to save space."))
+        }
+        print("Done!")
     }
 
     return(path)
