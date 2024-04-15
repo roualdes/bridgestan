@@ -55,7 +55,7 @@ function get_bridgestan_src()
     end
 
     try
-        tmp_extr = Tar.extract(IOBuffer(Inflate.inflate_gzip(tmp)))
+        tmp_extr = Tar.extract(IOBuffer(Inflate.inflate_gzip(tmp)), copy_symlinks = true)
         mv(joinpath(tmp_extr, "bridgestan-$pkg_version"), CURRENT_BRIDGESTAN)
     catch
         error("Failed to unpack $tmp during installation")

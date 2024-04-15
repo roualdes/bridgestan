@@ -56,7 +56,7 @@ jobs:
 
       - name: Create tarball
         run: |
-          tar --exclude-vcs -chzvf bridgestan-${{ inputs.new_version }}.tar.gz --transform 's,^,bridgestan-${{ inputs.new_version }}/,' *
+          tar --exclude-vcs -chzvf --hard-dereference bridgestan-${{ inputs.new_version }}.tar.gz --transform 's,^,bridgestan-${{ inputs.new_version }}/,' *
 
       - name: Setup git identity
         run: |
