@@ -24,8 +24,8 @@ if version == "latest":
     switcher_version = "latest"
     release = ""
 else:
-    release = version
-    switcher_version = f"{version}"
+    release = version.strip("v")
+    switcher_version = version
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

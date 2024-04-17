@@ -93,7 +93,12 @@ We are aware of the following projects using BridgeStan.
 
 - https://github.com/pymc-devs/nutpie
 - https://github.com/UoL-SignalProcessingGroup/retrospectr
+- https://github.com/UoL-SignalProcessingGroup/SMC-NUTS
 
+
+### R
+
+- https://github.com/JTorgander/hmc-sandbox
 
 ## Research using BridgeStan
 
@@ -103,6 +108,7 @@ and letting us know so we list your project here.
 - [*Verified Density Compilation for a Probabilistic Programming Language*](https://doi.org/10.1145/3591245)
 - [*Variational Inference with Gaussian Score Matching*](https://arxiv.org/pdf/2307.07849.pdf)
 - [*Stein Π-Importance Sampling*](https://arxiv.org/pdf/2305.10068.pdf)
+- [*Batch and match: black-box variational inference with a score-based divergence*](https://arxiv.org/abs/2402.14758)
 
 ## Acknowledgements
 
