@@ -5,7 +5,7 @@ authors = [
     "Bob Carpenter <bcarpenter@flatironinstitute.org>",
     "Edward Roualdes <eroualdes@csuchico.edu>",
 ]
-version = "2.4.0"
+version = "2.4.1"
 
 [deps]
 Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
