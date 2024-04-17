@@ -18,14 +18,14 @@ import os
 
 import bridgestan
 
-version = os.getenv("BS_DOCS_VERSION", bridgestan.__version__)
+version = os.getenv("BS_DOCS_VERSION", 'v' + bridgestan.__version__)
 if version == "latest":
     # don't display a version number for "latest" docs
     switcher_version = "latest"
     release = ""
 else:
     release = version
-    switcher_version = f"v{version}"
+    switcher_version = f"{version}"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
