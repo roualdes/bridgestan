@@ -3,23 +3,6 @@ function get_make()
     get(ENV, "MAKE", Sys.iswindows() ? "mingw32-make.exe" : "make")
 end
 
-"""
-    get_bridgestan_path() -> String
-
-Return the path the the BridgeStan directory.
-
-If the environment variable `BRIDGESTAN` is set, this will be returned. Otherwise, this
-function downloads an artifact containing the BridgeStan repository and returns the path to
-the extracted directory.
-"""
-function get_bridgestan_path()
-    path = get(ENV, "BRIDGESTAN", "")
-    if path == ""
-        artifact_path = artifact"bridgestan"
-        path = joinpath(artifact_path, only(readdir(artifact_path)))
-    end
-    return path
-end
 
 function validate_stan_dir(path::AbstractString)
     if !isdir(path)
@@ -30,6 +13,41 @@ function validate_stan_dir(path::AbstractString)
             "Makefile does not exist at path! Make sure it was installed correctly.\n$path",
         )
     end
+end
+
+
+"""
+    get_bridgestan_path() -> String
+
+Return the path the the BridgeStan directory.
+
+If the environment variable `BRIDGESTAN` is set, this will be returned.
+Otherwise, this function downloads a matching version of BridgeStan under
+a folder called `.bridgestan` in the user's home directory.
+
+See `set_bridgestan_path!()` to set the path from within Julia.
+"""
+function get_bridgestan_path()
+    path = get(ENV, "BRIDGESTAN", "")
+    if path == ""
+        path = CURRENT_BRIDGESTAN
+        try
+            validate_stan_dir(path)
+        catch
+            println(
+                "BridgeStan not found at location specified by \$BRIDGESTAN " *
+                "environment variable, downloading version $pkg_version to $path",
+            )
+            get_bridgestan_src()
+            num_files = length(readdir(HOME_BRIDGESTAN))
+            if num_files >= 5
+                @warn "Found $num_files different versions of BridgeStan in $HOME_BRIDGESTAN. " *
+                      "Consider deleting old versions to save space."
+            end
+            println("Done!")
+        end
+    end
+    return path
 end
 
 

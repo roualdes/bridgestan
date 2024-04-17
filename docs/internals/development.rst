@@ -41,7 +41,11 @@ Julia
 
 * Julia dependencies:
 
-  * `LazyArtifacts <https://docs.julialang.org/en/v1/stdlib/LazyArtifacts/>`_
+  * `Tar <https://docs.julialang.org/en/v1/stdlib/Tar/>`_ (standard library)
+  * `TOML <https://docs.julialang.org/en/v1/stdlib/TOML/>`_ (standard library)
+  * `Downloads <https://docs.julialang.org/en/v1/stdlib/Downloads/>`_ (standard library)
+  * `Inflate.jl <https://github.com/GunnarFarneback/Inflate.jl>`_ (external)
+
 
 * Julia code is formatted using `JuliaFormatter <https://github.com/domluna/JuliaFormatter.jl>`_.
 

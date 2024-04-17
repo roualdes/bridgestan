@@ -75,7 +75,7 @@ from the BridgeStan folder.
 To use the BridgeStan source you've manually downloaded instead of one the package will download for you, you must use [`set_bridgestan_path()`](BridgeStan.set_bridgestan_path!) or the `$BRIDGESTAN` environment variable.
 
 
-Note that the Julia package depends on Julia 1.8+.
+Note that the Julia package depends on Julia 1.6+ and the `Inflate` package.
 
 
 <a id='Example-Program'></a>
@@ -526,7 +526,7 @@ Run BridgeStan’s Makefile on a `.stan` file, creating the `.so` used by StanMo
 This function checks that the path to BridgeStan is valid and will error if it is not. This can be set with `set_bridgestan_path!()`.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L47-L60' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L65-L78' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.get_bridgestan_path' href='#BridgeStan.get_bridgestan_path'>#</a>
 **`BridgeStan.get_bridgestan_path`** &mdash; *Function*.
@@ -539,10 +539,12 @@ get_bridgestan_path() -> String
 
 Return the path the the BridgeStan directory.
 
-If the environment variable `BRIDGESTAN` is set, this will be returned. Otherwise, this function downloads an artifact containing the BridgeStan repository and returns the path to the extracted directory.
+If the environment variable `BRIDGESTAN` is set, this will be returned. Otherwise, this function downloads a matching version of BridgeStan under a folder called `.bridgestan` in the user's home directory.
+
+See `set_bridgestan_path!()` to set the path from within Julia.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L6-L14' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L19-L29' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.set_bridgestan_path!' href='#BridgeStan.set_bridgestan_path!'>#</a>
 **`BridgeStan.set_bridgestan_path!`** &mdash; *Function*.
@@ -556,5 +558,5 @@ set_bridgestan_path!(path)
 Set the path BridgeStan.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L36-L40' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L54-L58' class='documenter-source'>source</a><br>
 
