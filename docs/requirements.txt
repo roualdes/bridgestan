@@ -1,5 +1,5 @@
 
-sphinx>5,<7.3 # TODO try 7.3 after it stablizes 
+sphinx>5
 nbsphinx
 ipython
 ipykernel
