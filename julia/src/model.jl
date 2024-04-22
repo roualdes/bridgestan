@@ -22,7 +22,7 @@ If lib is a path to a file ending in `.stan`, this will first compile
 the model.  Compilation occurs if no shared object file exists for the
 supplied Stan file or if a shared object file exists and the Stan file
 has changed since last compilation.  This is equivalent to calling
-`compile_model` and then the constructor of `StanModel`. If `warn` is
+[`compile_model`](@ref) and then the constructor of `StanModel`. If `warn` is
 false, the warning about re-loading the same shared objects is suppressed.
 
 Data should either be a string containing a JSON string literal, a
@@ -108,8 +108,8 @@ end
 
 Construct a StanRNG instance from a `StanModel` instance and a seed.
 
-This can be used in the `param_constrain` and `param_constrain!` methods
-when using the generated quantities block.
+This can be used in the [`param_constrain`](@ref) and
+[`param_constrain!`](@ref) methods when using the generated quantities block.
 
 This object is not thread-safe, one should be created per thread.
 """
@@ -154,7 +154,7 @@ end
 Construct a StanRNG instance from a `StanModel` instance and a seed.  This
 function is a wrapper around the constructor `StanRNG`.
 
-This can be used in the `param_constrain` and `param_constrain!` methods
+This can be used in the [`param_constrain`](@ref) and [`param_constrain!`](@ref) methods
 when using the generated quantities block.
 
 The StanRNG object created is not thread-safe, one should be created per thread.
@@ -299,9 +299,9 @@ If `include_gq` is `true`, then `rng` must be provided.
 See `StanRNG` for details on how to construct RNGs.
 
 The result is stored in the vector `out`, and a reference is returned. See
-`param_constrain` for a version which allocates fresh memory.
+[`param_constrain`](@ref) for a version which allocates fresh memory.
 
-This is the inverse of `param_unconstrain!`.
+This is the inverse of [`param_unconstrain!`](@ref).
 """
 function param_constrain!(
     sm::StanModel,
@@ -363,13 +363,13 @@ Additionally (if `include_tp` and `include_gq` are set, respectively)
 returns transformed parameters and generated quantities.
 
 If `include_gq` is `true`, then `rng` must be provided.
-See `StanRNG` for details on how to construct RNGs.
+See [`StanRNG`](@ref) for details on how to construct RNGs.
 
 This allocates new memory for the output each call.
-See `param_constrain!` for a version which allows
+See [`param_constrain!`](@ref) for a version which allows
 re-using existing memory.
 
-This is the inverse of `param_unconstrain`.
+This is the inverse of [`param_unconstrain`](@ref).
 """
 function param_constrain(
     sm::StanModel,
@@ -395,12 +395,13 @@ end
 Returns a vector of unconstrained params give the constrained parameters.
 
 It is assumed that these will be in the same order as internally represented by the model (e.g.,
-in the same order as `param_names(sm)`). If structured input is needed, use `param_unconstrain_json!`
+in the same order as [`param_names()`](@ref)).
+If structured input is needed, use [`param_unconstrain_json!`](@ref)
 
 The result is stored in the vector `out`, and a reference is returned. See
-`param_unconstrain` for a version which allocates fresh memory.
+[`param_unconstrain`](@ref) for a version which allocates fresh memory.
 
-This is the inverse of `param_constrain!`.
+This is the inverse of [`param_constrain!`](@ref).
 """
 function param_unconstrain!(sm::StanModel, theta::Vector{Float64}, out::Vector{Float64})
     dims = param_unc_num(sm)
@@ -433,13 +434,14 @@ end
 Returns a vector of unconstrained params give the constrained parameters.
 
 It is assumed that these will be in the same order as internally represented by the model (e.g.,
-in the same order as `param_unc_names(sm)`). If structured input is needed, use `param_unconstrain_json`
+in the same order as [`param_unc_names()`](@ref)).
+If structured input is needed, use [`param_unconstrain_json`](@ref)
 
 This allocates new memory for the output each call.
-See `param_unconstrain!` for a version which allows
+See [`param_unconstrain!`](@ref) for a version which allows
 re-using existing memory.
 
-This is the inverse of `param_constrain`.
+This is the inverse of [`param_constrain`](@ref).
 """
 function param_unconstrain(sm::StanModel, theta::Vector{Float64})
     out = zeros(param_unc_num(sm))
@@ -454,7 +456,7 @@ This accepts a JSON string of constrained parameters and returns the unconstrain
 The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json.html).
 
 The result is stored in the vector `out`, and a reference is returned. See
-`param_unconstrain_json` for a version which allocates fresh memory.
+[`param_unconstrain_json`](@ref) for a version which allocates fresh memory.
 """
 function param_unconstrain_json!(sm::StanModel, theta::String, out::Vector{Float64})
     dims = param_unc_num(sm)
@@ -490,7 +492,7 @@ This accepts a JSON string of constrained parameters and returns the unconstrain
 The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json.html).
 
 This allocates new memory for the output each call.
-See `param_unconstrain_json!` for a version which allows
+See [`param_unconstrain_json!`](@ref) for a version which allows
 re-using existing memory.
 """
 function param_unconstrain_json(sm::StanModel, theta::String)
@@ -536,7 +538,7 @@ This calculation drops constant terms that do not depend on the parameters if `p
 and includes change of variables terms for constrained parameters if `jacobian` is `true`.
 
 The gradient is stored in the vector `out`, and a reference is returned. See
-`log_density_gradient` for a version which allocates fresh memory.
+[`log_density_gradient`](@ref) for a version which allocates fresh memory.
 """
 function log_density_gradient!(
     sm::StanModel,
@@ -589,9 +591,8 @@ Returns a tuple of the log density and gradient of the specified unconstrained p
 This calculation drops constant terms that do not depend on the parameters if `propto` is `true`
 and includes change of variables terms for constrained parameters if `jacobian` is `true`.
 
-
 This allocates new memory for the gradient output each call.
-See `log_density_gradient!` for a version which allows
+See [`log_density_gradient!`](@ref) for a version which allows
 re-using existing memory.
 """
 function log_density_gradient(
@@ -614,7 +615,7 @@ and includes change of variables terms for constrained parameters if `jacobian` 
 
 The gradient is stored in the vector `out_grad` and the
 Hessian is stored in `out_hess` and references are returned. See
-`log_density_hessian` for a version which allocates fresh memory.
+[`log_density_hessian`](@ref) for a version which allocates fresh memory.
 """
 function log_density_hessian!(
     sm::StanModel,
@@ -677,7 +678,7 @@ This calculation drops constant terms that do not depend on the parameters if `p
 and includes change of variables terms for constrained parameters if `jacobian` is `true`.
 
 This allocates new memory for the gradient and Hessian output each call.
-See `log_density_gradient!` for a version which allows
+See [`log_density_hessian!`](@ref) for a version which allows
 re-using existing memory.
 """
 function log_density_hessian(
@@ -702,7 +703,7 @@ This calculation drops constant terms that do not depend on the parameters if `p
 and includes change of variables terms for constrained parameters if `jacobian` is `true`.
 
 The product is stored in the vector `out` and a reference is returned. See
-`log_density_hessian_vector_product` for a version which allocates fresh memory.
+[`log_density_hessian_vector_product`](@ref) for a version which allocates fresh memory.
 """
 function log_density_hessian_vector_product!(
     sm::StanModel,
@@ -760,7 +761,8 @@ This calculation drops constant terms that do not depend on the parameters if `p
 and includes change of variables terms for constrained parameters if `jacobian` is `true`.
 
 This allocates new memory for the output each call. See
-`log_density_hessian_vector_product!` for a version which allows re-using existing memory.
+[`log_density_hessian_vector_product!`](@ref) for a version which allows re-using
+existing memory.
 """
 function log_density_hessian_vector_product(
     sm::StanModel,
@@ -772,11 +774,6 @@ function log_density_hessian_vector_product(
     out = zeros(param_unc_num(sm))
     log_density_hessian_vector_product!(sm, q, v, out; propto = propto, jacobian = jacobian)
 end
-
-"""
-    log_density_hessian_vector_product(sm, q, v; propto=true, jacobian=true)
-"""
-
 
 """
     handle_error(lib::Ptr{Nothing}, err::Ref{Cstring}, method::String)

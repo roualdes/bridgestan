@@ -47,6 +47,8 @@ myst_enable_extensions = [
     "substitution"
 ]
 
+suppress_warnings = ["myst.xref_missing"] # Julia doc generates raw html links
+
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "README.md"]
 
