@@ -18,7 +18,7 @@ remotes::install_github("https://github.com/roualdes/bridgestan", subdir="R")
 ```
 
 To install a specific version of BridgeStan you can use the argument `ref`,
-for example, {{ "`ref=\"vVERSION\"`".replace("VERSION", env.config.version) }}.
+for example, {{ "`ref=\"VERSION\"`".replace("VERSION", most_recent_release) }}.
 
 The first time you compile a model, the BridgeStan source code for your current version
 will be downloaded and placed in :file:`~/.bridgestan/`.
