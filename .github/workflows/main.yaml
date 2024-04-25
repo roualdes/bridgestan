@@ -270,12 +270,6 @@ jobs:
           path: ./test_models/
           key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp', 'Makefile') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
 
-      - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@v2
-        with:
-          version: "15.0"
-          directory: ${{ runner.temp }}/llvm
-
       - name: Set up TBB
         if: matrix.os == 'windows-latest'
         run: |
@@ -284,9 +278,6 @@ jobs:
       - name: Run rust tests
         working-directory: ./rust
         timeout-minutes: 60
-        env:
-          LIBCLANG_PATH: ${{ runner.temp }}/llvm/lib
-          LLVM_CONFIG_PATH: ${{ runner.temp }}/llvm/bin/llvm-config
         run: |
           cargo clippy
           cargo fmt --check
