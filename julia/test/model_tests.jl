@@ -491,7 +491,8 @@ end
     for _ = 1:R
         x = rand(BridgeStan.param_num(model))
         q = @. log(x / (1 - x)) # unconstrained scale
-        (log_density, gradient) = BridgeStan.log_density_gradient(model, q, jacobian = 0)
+        (log_density, gradient) =
+            BridgeStan.log_density_gradient(model, q, jacobian = false)
 
         p = x[1]
         @test isapprox(log_density, _bernoulli(y, p))
