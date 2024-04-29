@@ -1,3 +1,4 @@
+using Base.Libc.Libdl: dlsym, dllist, dlopen
 
 struct StanModelStruct end
 
@@ -54,7 +55,7 @@ mutable struct StanModel
             lib = compile_model(lib; stanc_args, make_args)
         end
 
-        if warn && in(abspath(lib), Libc.Libdl.dllist())
+        if warn && in(abspath(lib), dllist())
             @warn "Loading a shared object '" *
                   lib *
                   "' which is already loaded.\n" *
@@ -72,18 +73,14 @@ mutable struct StanModel
 
         windows_dll_path_setup()
 
-        lib = Libc.Libdl.dlopen(lib)
+        lib = dlopen(lib)
 
         err = Ref{Cstring}()
-
-        stanmodel = ccall(
-            Libc.Libdl.dlsym(lib, "bs_model_construct"),
-            Ptr{StanModelStruct},
-            (Cstring, UInt32, Ref{Cstring}),
-            data,
-            seed,
-            err,
-        )
+        stanmodel = @ccall $(dlsym(lib, :bs_model_construct))(
+            data::Cstring,
+            seed::UInt32,
+            err::Ref{Cstring},
+        )::Ptr{StanModelStruct}
         if stanmodel == C_NULL
             error(handle_error(lib, err, "bs_model_construct"))
         end
@@ -91,12 +88,9 @@ mutable struct StanModel
         sm = new(lib, stanmodel, data, seed)
 
         function f(sm)
-            ccall(
-                Libc.Libdl.dlsym(sm.lib, "bs_model_destruct"),
-                Cvoid,
-                (Ptr{StanModelStruct},),
-                sm.stanmodel,
-            )
+            @ccall $(dlsym(sm.lib, :bs_model_destruct))(
+                sm.stanmodel::Ptr{StanModelStruct},
+            )::Cvoid
         end
 
         finalizer(f, sm)
@@ -122,13 +116,12 @@ mutable struct StanRNG
         seed = convert(UInt32, seed)
 
         err = Ref{Cstring}()
-        ptr = ccall(
-            Libc.Libdl.dlsym(sm.lib, "bs_rng_construct"),
-            Ptr{StanModelStruct},
-            (UInt32, Ref{Cstring}),
-            seed,
-            err,
-        )
+
+        ptr = @ccall $(dlsym(sm.lib, :bs_rng_construct))(
+            seed::UInt32,
+            err::Ref{Cstring},
+        )::Ptr{StanRNGStruct}
+
         if ptr == C_NULL
             error(handle_error(sm.lib, err, "bs_rng_construct"))
         end
@@ -136,12 +129,9 @@ mutable struct StanRNG
         stanrng = new(sm.lib, ptr, seed)
 
         function f(stanrng)
-            ccall(
-                Libc.Libdl.dlsym(stanrng.lib, "bs_rng_destruct"),
-                Cvoid,
-                (Ptr{StanModelStruct},),
-                stanrng.ptr,
-            )
+            @ccall $(dlsym(stanrng.lib, :bs_rng_destruct))(
+                stanrng.ptr::Ptr{StanRNGStruct},
+            )::Cvoid
         end
 
         finalizer(f, stanrng)
@@ -167,12 +157,7 @@ new_rng(sm::StanModel, seed) = StanRNG(sm, seed)
 Return the name of the model `sm`
 """
 function name(sm::StanModel)
-    cstr = ccall(
-        Libc.Libdl.dlsym(sm.lib, "bs_name"),
-        Cstring,
-        (Ptr{StanModelStruct},),
-        sm.stanmodel,
-    )
+    cstr = @ccall $(dlsym(sm.lib, :bs_name))(sm.stanmodel::Ptr{StanModelStruct})::Cstring
     unsafe_string(cstr)
 end
 
@@ -185,12 +170,8 @@ This includes the Stan version and important
 compiler flags.
 """
 function model_info(sm::StanModel)
-    cstr = ccall(
-        Libc.Libdl.dlsym(sm.lib, "bs_model_info"),
-        Cstring,
-        (Ptr{StanModelStruct},),
-        sm.stanmodel,
-    )
+    cstr =
+        @ccall $(dlsym(sm.lib, :bs_model_info))(sm.stanmodel::Ptr{StanModelStruct})::Cstring
     unsafe_string(cstr)
 end
 
@@ -200,9 +181,9 @@ end
 Return the BridgeStan version of the compiled model `sm`.
 """
 function model_version(sm::StanModel)
-    major = reinterpret(Ptr{Cint}, Libc.Libdl.dlsym(sm.lib, "bs_major_version"))
-    minor = reinterpret(Ptr{Cint}, Libc.Libdl.dlsym(sm.lib, "bs_minor_version"))
-    patch = reinterpret(Ptr{Cint}, Libc.Libdl.dlsym(sm.lib, "bs_patch_version"))
+    major = reinterpret(Ptr{Cint}, dlsym(sm.lib, "bs_major_version"))
+    minor = reinterpret(Ptr{Cint}, dlsym(sm.lib, "bs_minor_version"))
+    patch = reinterpret(Ptr{Cint}, dlsym(sm.lib, "bs_patch_version"))
     (unsafe_load(major), unsafe_load(minor), unsafe_load(patch))
 end
 
@@ -216,15 +197,12 @@ of the model. If `include_tp` or `include_gq` are true, items declared
 in the `transformed parameters` and `generate quantities` blocks are included,
 respectively.
 """
-function param_num(sm::StanModel; include_tp = false, include_gq = false)
-    ccall(
-        Libc.Libdl.dlsym(sm.lib, "bs_param_num"),
-        Cint,
-        (Ptr{StanModelStruct}, Cint, Cint),
-        sm.stanmodel,
-        include_tp,
-        include_gq,
-    )
+function param_num(sm::StanModel; include_tp::Bool = false, include_gq::Bool = false)
+    @ccall $(dlsym(sm.lib, :bs_param_num))(
+        sm.stanmodel::Ptr{StanModelStruct},
+        include_tp::Bool,
+        include_gq::Bool,
+    )::Cint
 end
 
 
@@ -238,12 +216,7 @@ when variables are declared with constraints. For example,
 `simplex[5]` has a constrained size of 5, but an unconstrained size of 4.
 """
 function param_unc_num(sm::StanModel)
-    ccall(
-        Libc.Libdl.dlsym(sm.lib, "bs_param_unc_num"),
-        Cint,
-        (Ptr{StanModelStruct},),
-        sm.stanmodel,
-    )
+    @ccall $(dlsym(sm.lib, :bs_param_unc_num))(sm.stanmodel::Ptr{StanModelStruct})::Cint
 end
 
 """
@@ -258,15 +231,12 @@ For example, the scalar `a` has indexed name `"a"`, the vector entry `a[1]`
 has indexed name `"a.1"` and the matrix entry `a[2, 3]` has indexed names `"a.2.3"`.
 Parameter order of the output is column major and more generally last-index major for containers.
 """
-function param_names(sm::StanModel; include_tp = false, include_gq = false)
-    cstr = ccall(
-        Libc.Libdl.dlsym(sm.lib, "bs_param_names"),
-        Cstring,
-        (Ptr{StanModelStruct}, Cint, Cint),
-        sm.stanmodel,
-        include_tp,
-        include_gq,
-    )
+function param_names(sm::StanModel; include_tp::Bool = false, include_gq::Bool = false)
+    cstr = @ccall $(dlsym(sm.lib, :bs_param_names))(
+        sm.stanmodel::Ptr{StanModelStruct},
+        include_tp::Bool,
+        include_gq::Bool,
+    )::Cstring
     string.(split(unsafe_string(cstr), ','))
 end
 
@@ -279,12 +249,9 @@ For example, a scalar unconstrained parameter `b` has indexed name `b`
 and a vector entry `b[3]` has indexed name `b.3`.
 """
 function param_unc_names(sm::StanModel)
-    cstr = ccall(
-        Libc.Libdl.dlsym(sm.lib, "bs_param_unc_names"),
-        Cstring,
-        (Ptr{StanModelStruct},),
-        sm.stanmodel,
-    )
+    cstr = @ccall $(dlsym(sm.lib, :bs_param_unc_names))(
+        sm.stanmodel::Ptr{StanModelStruct},
+    )::Cstring
     string.(split(unsafe_string(cstr), ','))
 end
 
@@ -307,8 +274,8 @@ function param_constrain!(
     sm::StanModel,
     theta_unc::Vector{Float64},
     out::Vector{Float64};
-    include_tp = false,
-    include_gq = false,
+    include_tp::Bool = false,
+    include_gq::Bool = false,
     rng::Union{StanRNG,Nothing} = nothing,
 )
     dims = param_num(sm; include_tp = include_tp, include_gq = include_gq)
@@ -328,27 +295,15 @@ function param_constrain!(
     end
 
     err = Ref{Cstring}()
-
-    rc = ccall(
-        Libc.Libdl.dlsym(sm.lib, "bs_param_constrain"),
-        Cint,
-        (
-            Ptr{StanModelStruct},
-            Cint,
-            Cint,
-            Ref{Cdouble},
-            Ref{Cdouble},
-            Ptr{StanRNGStruct},
-            Ref{Cstring},
-        ),
-        sm.stanmodel,
-        include_tp,
-        include_gq,
-        theta_unc,
-        out,
-        rng_ptr,
-        err,
-    )
+    rc = @ccall $(dlsym(sm.lib, :bs_param_constrain))(
+        sm.stanmodel::Ptr{StanModelStruct},
+        include_tp::Bool,
+        include_gq::Bool,
+        theta_unc::Ref{Cdouble},
+        out::Ref{Cdouble},
+        rng_ptr::Ptr{StanRNGStruct},
+        err::Ref{Cstring},
+    )::Cint
     if rc != 0
         error(handle_error(sm.lib, err, "param_constrain"))
     end
@@ -374,8 +329,8 @@ This is the inverse of `param_unconstrain`.
 function param_constrain(
     sm::StanModel,
     theta_unc::Vector{Float64};
-    include_tp = false,
-    include_gq = false,
+    include_tp::Bool = false,
+    include_gq::Bool = false,
     rng::Union{StanRNG,Nothing} = nothing,
 )
     out = zeros(param_num(sm, include_tp = include_tp, include_gq = include_gq))
@@ -412,15 +367,12 @@ function param_unconstrain!(sm::StanModel, theta::Vector{Float64}, out::Vector{F
         )
     end
     err = Ref{Cstring}()
-    rc = ccall(
-        Libc.Libdl.dlsym(sm.lib, "bs_param_unconstrain"),
-        Cint,
-        (Ptr{StanModelStruct}, Ref{Cdouble}, Ref{Cdouble}, Ref{Cstring}),
-        sm.stanmodel,
-        theta,
-        out,
-        err,
-    )
+    rc = @ccall $(dlsym(sm.lib, :bs_param_unconstrain))(
+        sm.stanmodel::Ptr{StanModelStruct},
+        theta::Ref{Cdouble},
+        out::Ref{Cdouble},
+        err::Ref{Cstring},
+    )::Cint
     if rc != 0
         error(handle_error(sm.lib, err, "param_unconstrain"))
     end
@@ -467,15 +419,12 @@ function param_unconstrain_json!(sm::StanModel, theta::String, out::Vector{Float
     end
 
     err = Ref{Cstring}()
-    rc = ccall(
-        Libc.Libdl.dlsym(sm.lib, "bs_param_unconstrain_json"),
-        Cint,
-        (Ptr{StanModelStruct}, Cstring, Ref{Cdouble}, Ref{Cstring}),
-        sm.stanmodel,
-        theta,
-        out,
-        err,
-    )
+    rc = @ccall $(dlsym(sm.lib, :bs_param_unconstrain_json))(
+        sm.stanmodel::Ptr{StanModelStruct},
+        theta::Cstring,
+        out::Ref{Cdouble},
+        err::Ref{Cstring},
+    )::Cint
     if rc != 0
         error(handle_error(sm.lib, err, "param_unconstrain_json"))
     end
@@ -506,20 +455,22 @@ Return the log density of the specified unconstrained parameters.
 This calculation drops constant terms that do not depend on the parameters if `propto` is `true`
 and includes change of variables terms for constrained parameters if `jacobian` is `true`.
 """
-function log_density(sm::StanModel, q::Vector{Float64}; propto = true, jacobian = true)
+function log_density(
+    sm::StanModel,
+    q::Vector{Float64};
+    propto::Bool = true,
+    jacobian::Bool = true,
+)
     lp = Ref(0.0)
     err = Ref{Cstring}()
-    rc = ccall(
-        Libc.Libdl.dlsym(sm.lib, "bs_log_density"),
-        Cint,
-        (Ptr{StanModelStruct}, Cint, Cint, Ref{Cdouble}, Ref{Cdouble}, Ref{Cstring}),
-        sm.stanmodel,
-        propto,
-        jacobian,
-        q,
-        lp,
-        err,
-    )
+    rc = @ccall $(dlsym(sm.lib, :bs_log_density))(
+        sm.stanmodel::Ptr{StanModelStruct},
+        propto::Bool,
+        jacobian::Bool,
+        q::Ref{Cdouble},
+        lp::Ref{Cdouble},
+        err::Ref{Cstring},
+    )::Cint
     if rc != 0
         error(handle_error(sm.lib, err, "log_density"))
     end
@@ -542,8 +493,8 @@ function log_density_gradient!(
     sm::StanModel,
     q::Vector{Float64},
     out::Vector{Float64};
-    propto = true,
-    jacobian = true,
+    propto::Bool = true,
+    jacobian::Bool = true,
 )
     dims = param_unc_num(sm)
     if length(out) != dims
@@ -555,26 +506,15 @@ function log_density_gradient!(
     end
     lp = Ref(0.0)
     err = Ref{Cstring}()
-    rc = ccall(
-        Libc.Libdl.dlsym(sm.lib, "bs_log_density_gradient"),
-        Cint,
-        (
-            Ptr{StanModelStruct},
-            Cint,
-            Cint,
-            Ref{Cdouble},
-            Ref{Cdouble},
-            Ref{Cdouble},
-            Ref{Cstring},
-        ),
-        sm.stanmodel,
-        propto,
-        jacobian,
-        q,
-        lp,
-        out,
-        err,
-    )
+    rc = @ccall $(dlsym(sm.lib, :bs_log_density_gradient))(
+        sm.stanmodel::Ptr{StanModelStruct},
+        propto::Bool,
+        jacobian::Bool,
+        q::Ref{Cdouble},
+        lp::Ref{Cdouble},
+        out::Ref{Cdouble},
+        err::Ref{Cstring},
+    )::Cint
     if rc != 0
         error(handle_error(sm.lib, err, "log_density_gradient"))
     end
@@ -597,8 +537,8 @@ re-using existing memory.
 function log_density_gradient(
     sm::StanModel,
     q::Vector{Float64};
-    propto = true,
-    jacobian = true,
+    propto::Bool = true,
+    jacobian::Bool = true,
 )
     grad = zeros(param_unc_num(sm))
     log_density_gradient!(sm, q, grad; propto = propto, jacobian = jacobian)
@@ -621,8 +561,8 @@ function log_density_hessian!(
     q::Vector{Float64},
     out_grad::Vector{Float64},
     out_hess::Vector{Float64};
-    propto = true,
-    jacobian = true,
+    propto::Bool = true,
+    jacobian::Bool = true,
 )
     dims = param_unc_num(sm)
     if length(out_grad) != dims
@@ -640,28 +580,16 @@ function log_density_hessian!(
     end
     lp = Ref(0.0)
     err = Ref{Cstring}()
-    rc = ccall(
-        Libc.Libdl.dlsym(sm.lib, "bs_log_density_hessian"),
-        Cint,
-        (
-            Ptr{StanModelStruct},
-            Cint,
-            Cint,
-            Ref{Cdouble},
-            Ref{Cdouble},
-            Ref{Cdouble},
-            Ref{Cdouble},
-            Ref{Cstring},
-        ),
-        sm.stanmodel,
-        propto,
-        jacobian,
-        q,
-        lp,
-        out_grad,
-        out_hess,
-        err,
-    )
+    rc = @ccall $(dlsym(sm.lib, :bs_log_density_hessian))(
+        sm.stanmodel::Ptr{StanModelStruct},
+        propto::Bool,
+        jacobian::Bool,
+        q::Ref{Cdouble},
+        lp::Ref{Cdouble},
+        out_grad::Ref{Cdouble},
+        out_hess::Ref{Cdouble},
+        err::Ref{Cstring},
+    )::Cint
     if rc != 0
         error(handle_error(sm.lib, err, "log_density_hessian"))
     end
@@ -683,8 +611,8 @@ re-using existing memory.
 function log_density_hessian(
     sm::StanModel,
     q::Vector{Float64};
-    propto = true,
-    jacobian = true,
+    propto::Bool = true,
+    jacobian::Bool = true,
 )
     dims = param_unc_num(sm)
     grad = zeros(dims)
@@ -709,8 +637,8 @@ function log_density_hessian_vector_product!(
     q::Vector{Float64},
     v::Vector{Float64},
     out::Vector{Float64};
-    propto = true,
-    jacobian = true,
+    propto::Bool = true,
+    jacobian::Bool = true,
 )
     dims = param_unc_num(sm)
     if length(out) != dims
@@ -722,28 +650,16 @@ function log_density_hessian_vector_product!(
     end
     lp = Ref(0.0)
     err = Ref{Cstring}()
-    rc = ccall(
-        Libc.Libdl.dlsym(sm.lib, "bs_log_density_hessian_vector_product"),
-        Cint,
-        (
-            Ptr{StanModelStruct},
-            Cint,
-            Cint,
-            Ref{Cdouble},
-            Ref{Cdouble},
-            Ref{Cdouble},
-            Ref{Cdouble},
-            Ref{Cstring},
-        ),
-        sm.stanmodel,
-        propto,
-        jacobian,
-        q,
-        v,
-        lp,
-        out,
-        err,
-    )
+    rc = @ccall $(dlsym(sm.lib, :bs_log_density_hessian_vector_product))(
+        sm.stanmodel::Ptr{StanModelStruct},
+        propto::Bool,
+        jacobian::Bool,
+        q::Ref{Cdouble},
+        v::Ref{Cdouble},
+        lp::Ref{Cdouble},
+        out::Ref{Cdouble},
+        err::Ref{Cstring},
+    )::Cint
     if rc != 0
         error(handle_error(sm.lib, err, "log_density_hessian_vector_product"))
     end
@@ -766,8 +682,8 @@ function log_density_hessian_vector_product(
     sm::StanModel,
     q::Vector{Float64},
     v::Vector{Float64};
-    propto = true,
-    jacobian = true,
+    propto::Bool = true,
+    jacobian::Bool = true,
 )
     out = zeros(param_unc_num(sm))
     log_density_hessian_vector_product!(sm, q, v, out; propto = propto, jacobian = jacobian)
@@ -788,7 +704,7 @@ function handle_error(lib::Ptr{Nothing}, err::Ref{Cstring}, method::String)
         return "Unknown error in $method."
     else
         s = string(unsafe_string(err[]))
-        ccall(Libc.Libdl.dlsym(lib, "bs_free_error_msg"), Cvoid, (Cstring,), err[])
+        @ccall $(dlsym(lib, "bs_free_error_msg"))(err[]::Cstring)::Cvoid
         return s
     end
 end

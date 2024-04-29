@@ -23,14 +23,14 @@ void bs_model_info_R(bs_model** model, char const** info_out) {
 }
 void bs_param_names_R(bs_model** model, int* include_tp, int* include_gq,
                       char const** names_out) {
-  *names_out = bs_param_names(*model, *include_tp, *include_gq);
+  *names_out = bs_param_names(*model, (*include_tp != 0), (*include_gq != 0));
 }
 void bs_param_unc_names_R(bs_model** model, char const** names_out) {
   *names_out = bs_param_unc_names(*model);
 }
 void bs_param_num_R(bs_model** model, int* include_tp, int* include_gq,
                     int* num_out) {
-  *num_out = bs_param_num(*model, *include_tp, *include_gq);
+  *num_out = bs_param_num(*model, (*include_tp != 0), (*include_gq != 0));
 }
 void bs_param_unc_num_R(bs_model** model, int* num_out) {
   *num_out = bs_param_unc_num(*model);
@@ -38,8 +38,9 @@ void bs_param_unc_num_R(bs_model** model, int* num_out) {
 void bs_param_constrain_R(bs_model** model, int* include_tp, int* include_gq,
                           const double* theta_unc, double* theta, bs_rng** rng,
                           int* return_code, char** err_msg, void** err_ptr) {
-  *return_code = bs_param_constrain(*model, *include_tp, *include_gq, theta_unc,
-                                    theta, *rng, err_msg);
+  *return_code
+      = bs_param_constrain(*model, (*include_tp != 0), (*include_gq != 0),
+                           theta_unc, theta, *rng, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
 void bs_param_unconstrain_R(bs_model** model, const double* theta,
@@ -57,24 +58,25 @@ void bs_param_unconstrain_json_R(bs_model** model, char const** json,
 void bs_log_density_R(bs_model** model, int* propto, int* jacobian,
                       const double* theta_unc, double* val, int* return_code,
                       char** err_msg, void** err_ptr) {
-  *return_code
-      = bs_log_density(*model, *propto, *jacobian, theta_unc, val, err_msg);
+  *return_code = bs_log_density(*model, (*propto != 0), (*jacobian != 0),
+                                theta_unc, val, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
 void bs_log_density_gradient_R(bs_model** model, int* propto, int* jacobian,
                                const double* theta_unc, double* val,
                                double* grad, int* return_code, char** err_msg,
                                void** err_ptr) {
-  *return_code = bs_log_density_gradient(*model, *propto, *jacobian, theta_unc,
-                                         val, grad, err_msg);
+  *return_code = bs_log_density_gradient(
+      *model, (*propto != 0), (*jacobian != 0), theta_unc, val, grad, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
 void bs_log_density_hessian_R(bs_model** model, int* propto, int* jacobian,
                               const double* theta_unc, double* val,
                               double* grad, double* hess, int* return_code,
                               char** err_msg, void** err_ptr) {
-  *return_code = bs_log_density_hessian(*model, *propto, *jacobian, theta_unc,
-                                        val, grad, hess, err_msg);
+  *return_code
+      = bs_log_density_hessian(*model, (*propto != 0), (*jacobian != 0),
+                               theta_unc, val, grad, hess, err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
 void bs_log_density_hessian_vector_product_R(bs_model** model, int* propto,
@@ -84,7 +86,8 @@ void bs_log_density_hessian_vector_product_R(bs_model** model, int* propto,
                                              double* Hvp, int* return_code,
                                              char** err_msg, void** err_ptr) {
   *return_code = bs_log_density_hessian_vector_product(
-      *model, *propto, *jacobian, theta_unc, vector, val, Hvp, err_msg);
+      *model, (*propto != 0), (*jacobian != 0), theta_unc, vector, val, Hvp,
+      err_msg);
   *err_ptr = static_cast<void*>(*err_msg);
 }
 void bs_rng_construct_R(int* seed, bs_rng** ptr_out, char** err_msg,

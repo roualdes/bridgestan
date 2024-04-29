@@ -190,7 +190,7 @@ class StanModel:
 
         self._param_num = self.stanlib.bs_param_num
         self._param_num.restype = ctypes.c_int
-        self._param_num.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_int]
+        self._param_num.argtypes = [ctypes.c_void_p, ctypes.c_bool, ctypes.c_bool]
 
         self._param_unc_num = self.stanlib.bs_param_unc_num
         self._param_unc_num.restype = ctypes.c_int
@@ -213,8 +213,8 @@ class StanModel:
         self._param_names.restype = ctypes.c_char_p
         self._param_names.argtypes = [
             ctypes.c_void_p,
-            ctypes.c_int,
-            ctypes.c_int,
+            ctypes.c_bool,
+            ctypes.c_bool,
         ]
 
         self._param_unc_names = self.stanlib.bs_param_unc_names
@@ -225,8 +225,8 @@ class StanModel:
         self._param_constrain.restype = ctypes.c_int
         self._param_constrain.argtypes = [
             ctypes.c_void_p,
-            ctypes.c_int,
-            ctypes.c_int,
+            ctypes.c_bool,
+            ctypes.c_bool,
             double_array,
             writeable_double_array,
             ctypes.c_void_p,
@@ -255,8 +255,8 @@ class StanModel:
         self._log_density.restype = ctypes.c_int
         self._log_density.argtypes = [
             ctypes.c_void_p,
-            ctypes.c_int,
-            ctypes.c_int,
+            ctypes.c_bool,
+            ctypes.c_bool,
             double_array,
             ctypes.POINTER(ctypes.c_double),
             star_star_char,
@@ -266,8 +266,8 @@ class StanModel:
         self._log_density_gradient.restype = ctypes.c_int
         self._log_density_gradient.argtypes = [
             ctypes.c_void_p,
-            ctypes.c_int,
-            ctypes.c_int,
+            ctypes.c_bool,
+            ctypes.c_bool,
             double_array,
             ctypes.POINTER(ctypes.c_double),
             param_sized_out_array,
@@ -278,8 +278,8 @@ class StanModel:
         self._log_density_hessian.restype = ctypes.c_int
         self._log_density_hessian.argtypes = [
             ctypes.c_void_p,
-            ctypes.c_int,
-            ctypes.c_int,
+            ctypes.c_bool,
+            ctypes.c_bool,
             double_array,
             ctypes.POINTER(ctypes.c_double),
             param_sized_out_array,
@@ -291,8 +291,8 @@ class StanModel:
         self._log_density_hvp.restype = ctypes.c_int
         self._log_density_hvp.argtypes = [
             ctypes.c_void_p,
-            ctypes.c_int,
-            ctypes.c_int,
+            ctypes.c_bool,
+            ctypes.c_bool,
             double_array,
             double_array,
             ctypes.POINTER(ctypes.c_double),
@@ -352,7 +352,7 @@ class StanModel:
         :param include_gq: ``True`` to include the generated quantities.
         :return: The number of parameters.
         """
-        return self._param_num(self.model, int(include_tp), int(include_gq))
+        return self._param_num(self.model, include_tp, include_gq)
 
     def param_unc_num(self) -> int:
         """
@@ -380,7 +380,7 @@ class StanModel:
         :return: The indexed names of the parameters.
         """
         return (
-            self._param_names(self.model, int(include_tp), int(include_gq))
+            self._param_names(self.model, include_tp, include_gq)
             .decode("utf-8")
             .split(",")
         )
@@ -448,8 +448,8 @@ class StanModel:
 
         rc = self._param_constrain(
             self.model,
-            int(include_tp),
-            int(include_gq),
+            include_tp,
+            include_gq,
             theta_unc,
             out,
             rng_ptr,
@@ -550,8 +550,8 @@ class StanModel:
         err = ctypes.c_char_p()
         rc = self._log_density(
             self.model,
-            int(propto),
-            int(jacobian),
+            propto,
+            jacobian,
             theta_unc,
             ctypes.byref(lp),
             ctypes.byref(err),
@@ -597,8 +597,8 @@ class StanModel:
 
         rc = self._log_density_gradient(
             self.model,
-            int(propto),
-            int(jacobian),
+            propto,
+            jacobian,
             theta_unc,
             ctypes.byref(lp),
             out,
@@ -654,8 +654,8 @@ class StanModel:
 
         rc = self._log_density_hessian(
             self.model,
-            int(propto),
-            int(jacobian),
+            propto,
+            jacobian,
             theta_unc,
             ctypes.byref(lp),
             out_grad,
@@ -701,8 +701,8 @@ class StanModel:
 
         rc = self._log_density_hvp(
             self.model,
-            int(propto),
-            int(jacobian),
+            propto,
+            jacobian,
             theta_unc,
             v,
             ctypes.byref(lp),
