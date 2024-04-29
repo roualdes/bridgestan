@@ -26,7 +26,7 @@ end
 
 
 
-@testset "download artifact" begin
+@testset "download" begin
     withenv("BRIDGESTAN" => nothing) do
         BridgeStan.validate_stan_dir(BridgeStan.get_bridgestan_path())
     end

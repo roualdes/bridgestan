@@ -7,8 +7,6 @@ function get_home()
     if Sys.iswindows()
         if haskey(ENV, "USERPROFILE")
             userhome = ENV["USERPROFILE"]
-        elseif !haskey(ENV, "HOMEPATH")
-            userhome = path
         else
             drive = get(ENV, "HOMEDRIVE", "")
             userhome = joinpath(drive, ENV["HOMEPATH"])

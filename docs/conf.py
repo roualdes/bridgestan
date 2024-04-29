@@ -18,7 +18,9 @@ import os
 
 import bridgestan
 
-version = os.getenv("BS_DOCS_VERSION", 'v' + bridgestan.__version__)
+
+most_recent_release = 'v' + bridgestan.__version__
+version = os.getenv("BS_DOCS_VERSION", most_recent_release)
 if version == "latest":
     # don't display a version number for "latest" docs
     switcher_version = "latest"
@@ -46,6 +48,11 @@ extensions = [
 myst_enable_extensions = [
     "substitution"
 ]
+myst_substitutions = {
+    "most_recent_release": most_recent_release
+}
+
+suppress_warnings = ["myst.xref_missing"] # Julia doc generates raw html links
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "README.md"]

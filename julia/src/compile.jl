@@ -25,7 +25,7 @@ If the environment variable `BRIDGESTAN` is set, this will be returned.
 Otherwise, this function downloads a matching version of BridgeStan under
 a folder called `.bridgestan` in the user's home directory.
 
-See `set_bridgestan_path!()` to set the path from within Julia.
+See [`set_bridgestan_path!()`](@ref) to set the path from within Julia.
 """
 function get_bridgestan_path()
     path = get(ENV, "BRIDGESTAN", "")
@@ -74,7 +74,7 @@ enables the model's threading capabilities. If the same flags are defined in `ma
 the versions passed here will take precedent.
 
 This function checks that the path to BridgeStan is valid and will error if it is not.
-This can be set with `set_bridgestan_path!()`.
+This can be set with [`set_bridgestan_path!()`](@ref).
 """
 function compile_model(
     stan_file::AbstractString;
