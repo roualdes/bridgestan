@@ -3,7 +3,7 @@ name: bridgestan tests
 on:
   push:
     branches:
-      - 'main'
+      - "main"
   pull_request:
   workflow_dispatch: {}
 
@@ -127,7 +127,6 @@ jobs:
           pytest -v python/ --run-type=ad_hessian
         env:
           BRIDGESTAN: ${{ github.workspace }}
-
 
   julia:
     needs: [build]
@@ -282,4 +281,7 @@ jobs:
           cargo clippy
           cargo fmt --check
           cargo run --example=example
-          cargo test --verbose
+
+          # run all tests with feature download-bridgestan-src
+          cargo test --verbose --all-features
+          cargo test --verbose model_compiling -- --ignored

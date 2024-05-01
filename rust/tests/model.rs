@@ -25,8 +25,8 @@ fn throw_data() {
 fn bad_arglength() {
     let (lib, data) = get_model("stdnormal");
     let model = Model::new(&lib, data, 42).unwrap();
-    let theta = vec![];
-    let mut grad = vec![];
+    let theta = [];
+    let mut grad = [];
     let _ = model.log_density_gradient(&theta[..], true, true, &mut grad[..]);
 }
 
@@ -34,8 +34,8 @@ fn bad_arglength() {
 fn logp_gradient() {
     let (lib, data) = get_model("stdnormal");
     let model = Model::new(&lib, data, 42).unwrap();
-    let theta = vec![1f64];
-    let mut grad = vec![0f64];
+    let theta = [1f64];
+    let mut grad = [0f64];
     let logp = model
         .log_density_gradient(&theta[..], false, true, &mut grad[..])
         .unwrap();
@@ -47,8 +47,8 @@ fn logp_gradient() {
 fn logp_hessian() {
     let (lib, data) = get_model("stdnormal");
     let model = Model::new(&lib, data, 42).unwrap();
-    let theta = vec![1f64];
-    let mut grad = vec![0f64];
+    let theta = [1f64];
+    let mut grad = [0f64];
     let mut hessian = vec![0f64];
     let logp = model
         .log_density_hessian(&theta[..], false, true, &mut grad[..], &mut hessian)
@@ -169,4 +169,50 @@ fn test_params() {
         .param_unconstrain_json(CString::new(r#"{"theta": 0.5}"#).unwrap(), &mut theta_unc)
         .unwrap();
     assert_eq!(theta_unc[0], 0.);
+}
+
+#[cfg(feature = "download-bridgestan-src")]
+#[test]
+fn model_downloading() {
+    use bridgestan::download_bridgestan_src;
+
+    let bs_path = download_bridgestan_src().unwrap();
+    let stan_path = bs_path.join("stan");
+    assert!(stan_path.is_dir());
+    let makefile_path = bs_path.join("Makefile");
+    assert!(makefile_path.is_file());
+}
+
+// ignore-d to prevent overwriting the model on disk
+// while other tests are running
+#[test]
+#[ignore]
+fn model_compiling() {
+    use bridgestan::compile_model;
+    use common::model_dir;
+    use std::fs::remove_file;
+    use std::path::PathBuf;
+
+    let name = "stdnormal";
+    let mut base = model_dir();
+    base.push(name);
+    let lib_path = base.join(format!("{}_model.so", name));
+    let stan_path = base.join(format!("{}.stan", name));
+    remove_file(lib_path).unwrap_or_default();
+
+    let bs_path: PathBuf = std::env::var("BRIDGESTAN")
+        .unwrap_or("..".to_string())
+        .into();
+
+    compile_model(&bs_path, &stan_path, &[], &[]).unwrap();
+
+    let (lib, data) = get_model(name);
+    let model = Model::new(&lib, data, 42).unwrap();
+    let theta = [1f64];
+    let mut grad = [0f64];
+    let logp = model
+        .log_density_gradient(&theta[..], false, true, &mut grad[..])
+        .unwrap();
+    assert_ulps_eq!(logp, (2. * PI).sqrt().recip().ln() - 0.5);
+    assert_ulps_eq!(grad[0], -1f64);
 }

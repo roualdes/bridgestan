@@ -11,42 +11,40 @@ Internally, it relies on [`bindgen`](https://docs.rs/bindgen/) and
 
 ## Compiling the model
 
-The Rust wrapper does not currently have any functionality to compile Stan models.
-Compiled shared libraries need to be built manually using `make` or with the Julia
-or Python bindings.
+The Rust wrapper has the ability to compile Stan models by invoking the `make` command through the [`compile_model`] function.
 
-For safety reasons all Stan models need to be installed with `STAN_THREADS=true`.
-When compiling a model using `make`, set the environment variable:
+This requires a C++ toolchain and a copy of the BridgeStan source code. The source code can be downloaded automatically by enabling the `download-bridgestan-src` feature and calling [`download_bridgestan_src`]. Alternatively, the path to the BridgeStan source code can be provided manually.
 
-```bash
-STAN_THREADS=true make some_model
-```
-
-When compiling a Stan model in python, this has to be specified in the `make_args`
-argument:
-
-```python
-path = bridgestan.compile_model("stan_model.stan", make_args=["STAN_THREADS=true"])
-```
+For safety reasons all Stan models need to be built with `STAN_THREADS=true`. This is the default behavior in the `compile_model` function,
+but may need to be set manually when compiling the model in other contexts.
 
 If `STAN_THREADS` was not specified while building the model, the Rust wrapper
 will throw an error when loading the model.
 
-## Usage:
+## Usage
 
 Run this example with `cargo run --example=example`.
 
 ```rust
 use std::ffi::CString;
-use std::path::Path;
-use bridgestan::{BridgeStanError, Model, open_library};
+use std::path::{Path, PathBuf};
+use bridgestan::{BridgeStanError, Model, open_library, compile_model};
 
-// The path to the compiled model.
-// Get for instance from python `bridgestan.compile_model`
+// The path to the Stan model
 let path = Path::new(env!["CARGO_MANIFEST_DIR"])
     .parent()
     .unwrap()
-    .join("test_models/simple/simple_model.so");
+    .join("test_models/simple/simple.stan");
+
+// You can manually set the BridgeStan src path or
+// automatically download it (but remember to
+// enable the download-bridgestan-src feature first)
+let bs_path: PathBuf = "..".into();
+// let bs_path = bridgestan::download_bridgestan_src().unwrap();
+
+// The path to the compiled model
+let path = compile_model(&bs_path, &path, &[], &[]).expect("Could not compile Stan model.");
+println!("Compiled model: {:?}", path);
 
 let lib = open_library(path).expect("Could not load compiled Stan model.");
 
@@ -59,11 +57,13 @@ let data = CString::new(data.to_string().into_bytes()).unwrap();
 let seed = 42;
 
 let model = match Model::new(&lib, Some(data), seed) {
-Ok(model) => { model },
-Err(BridgeStanError::ConstructFailed(msg)) => {
-    panic!("Model initialization failed. Error message from Stan was {}", msg)
-},
-_ => { panic!("Unexpected error") },
+    Ok(model) => model,
+    Err(BridgeStanError::ConstructFailed(msg)) => {
+        panic!("Model initialization failed. Error message from Stan was {msg}")
+    }
+    Err(e) => {
+        panic!("Unexpected error:\n{e}")
+    }
 };
 
 let n_dim = model.param_unc_num();
