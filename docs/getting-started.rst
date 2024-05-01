@@ -19,7 +19,8 @@ Downloading BridgeStan
 
 .. note::
     The :doc:`Julia <languages/julia>`, :doc:`Python <languages/python>`, and :doc:`R <languages/r>`
-    interfaces will download the source for you the first time you compile a model.
+    interfaces will download the source for you the first time you compile a model, and the :doc:`Rust <languages/rust>`
+    interface has an optional feature to download the source upon request.
     This section is optional for users primarily interested in those interfaces.
 
 

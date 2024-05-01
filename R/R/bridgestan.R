@@ -152,11 +152,11 @@ StanModel <- R6::R6Class("StanModel",
     },
     #' @description
     #' Returns a vector of constrained parameters given the unconstrained parameters.
-    #' See also `StanModel$param_unconstrain()`, the inverse of this function.
+    #' See also [StanModel$param_unconstrain()], the inverse of this function.
     #' @param theta_unc The vector of unconstrained parameters.
     #' @param include_tp Whether to also output the transformed parameters of the model.
     #' @param include_gq Whether to also output the generated quantities of the model.
-    #' @param rng The random number generator to use if `include_gq` is `TRUE`.  See `StanModel$new_rng()`.
+    #' @param rng The random number generator to use if `include_gq` is `TRUE`.  See [StanModel$new_rng()].
     #' @return The constrained parameters of the model.
     param_constrain = function(theta_unc, include_tp = FALSE, include_gq = FALSE, rng) {
       if (missing(rng)) {
@@ -184,7 +184,7 @@ StanModel <- R6::R6Class("StanModel",
       vars$theta
     },
     #' @description
-    #' Create a new persistent PRNG object for use in `param_constrain()`.
+    #' Create a new persistent PRNG object for use in [param_constrain()].
     #' @param seed The seed for the PRNG.
     #' @return A `StanRNG` object.
     new_rng = function(seed) {
@@ -194,9 +194,9 @@ StanModel <- R6::R6Class("StanModel",
     #' Returns a vector of unconstrained parameters give the constrained parameters.
     #'
     #' It is assumed that these will be in the same order as internally represented by
-    #' the model (e.g., in the same order as `StanModel$param_names()`).
-    #' If structured input is needed, use `StanModel$param_unconstrain_json()`.
-    #' See also `StanModel$param_constrain()`, the inverse of this function.
+    #' the model (e.g., in the same order as [StanModel$param_names()]).
+    #' If structured input is needed, use [StanModel$param_unconstrain_json()].
+    #' See also [StanModel$param_constrain()], the inverse of this function.
     #' @param theta The vector of constrained parameters.
     #' @return The unconstrained parameters of the model.
     param_unconstrain = function(theta) {
@@ -353,7 +353,7 @@ handle_error <- function(lib_name, err_msg, err_ptr, function_name) {
 
 #' StanRNG
 #'
-#' RNG object for use with `StanModel$param_constrain()`
+#' RNG object for use with [StanModel$param_constrain()]
 #' @field ptr The pointer to the RNG object.
 #' @keywords internal
 StanRNG <- R6::R6Class("StanRNG",

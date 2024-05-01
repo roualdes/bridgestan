@@ -16,5 +16,5 @@ a matching version of BridgeStan to a folder called
 \code{.bridgestan} in the user's home directory.
 }
 \seealso{
-\link{set_bridgestan_path}
+\code{\link[=set_bridgestan_path]{set_bridgestan_path()}}
 }
