@@ -6,7 +6,7 @@ use std::{env::temp_dir, fs, path::PathBuf};
 use tar::Archive;
 
 /// Download and unzip the BridgeStan source distribution for this version
-/// to ~/.bridgestan/bridgestan-version
+/// to `~/.bridgestan/bridgestan-$VERSION`.
 pub fn download_bridgestan_src() -> Result<PathBuf> {
     let homedir = dirs::home_dir().unwrap_or(temp_dir());
 

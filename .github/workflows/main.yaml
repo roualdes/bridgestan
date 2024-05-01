@@ -280,13 +280,8 @@ jobs:
         run: |
           cargo clippy
           cargo fmt --check
-          cargo run --example=example --features download-bridgestan-src
-
-          # run all tests except model_downloading
-          cargo test --verbose
-          cargo test --verbose model_compiling -- --ignored
+          cargo run --example=example
 
           # run all tests with feature download-bridgestan-src
-          cargo test --verbose --features download-bridgestan-src
-          cargo test --verbose --features download-bridgestan-src model_downloading -- --ignored
-          cargo test --verbose --features download-bridgestan-src model_compiling -- --ignored
+          cargo test --verbose --all-features
+          cargo test --verbose model_compiling -- --ignored

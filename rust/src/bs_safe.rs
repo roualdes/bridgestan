@@ -102,10 +102,10 @@ pub enum BridgeStanError {
     /// Setting a print-callback failed.
     #[error("Failed to set a print-callback: {0}")]
     SetCallbackFailed(String),
-    /// Setting a compile Stan model failed.
+    /// Compilation of the Stan model shared object failed.
     #[error("Failed to compile Stan model: {0}")]
     ModelCompilingFailed(String),
-    /// Setting a download BridgeStan failed.
+    /// Downloading BridgeStan's C++ source code from GitHub failed.
     #[error("Failed to download BridgeStan {VERSION} from github.com: {0}")]
     DownloadFailed(String),
 }

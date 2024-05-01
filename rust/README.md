@@ -11,27 +11,19 @@ Internally, it relies on [`bindgen`](https://docs.rs/bindgen/) and
 
 ## Compiling the model
 
-The Rust wrapper currently have a builtin functionality to compile Stan models (function `compile_model` under the feature flag `download-bridgestan-src`). For safety reasons all Stan models need to be installed with `STAN_THREADS=true`. However, if you use the Rust wrapper builtin functionality to compile Stan models, this will automatically be set for you.
+The Rust wrapper has the ability to compile Stan models by invoking the `make` command through the [`compile_model`] function.
 
-When compiling a model using `make`, set the environment variable:
+This requires a C++ toolchain and a copy of the BridgeStan source code. The source code can be downloaded automatically by enabling the `download-bridgestan-src` feature and calling [`download_bridgestan_src`]. Alternatively, the path to the BridgeStan source code can be provided manually.
 
-```bash
-STAN_THREADS=true make some_model
-```
-
-When compiling a Stan model in python, this has to be specified in the `make_args`
-argument:
-
-```python
-path = bridgestan.compile_model("stan_model.stan", make_args=["STAN_THREADS=true"])
-```
+For safety reasons all Stan models need to be built with `STAN_THREADS=true`. This is the default behavior in the `compile_model` function,
+but may need to be set manually when compiling the model in other contexts.
 
 If `STAN_THREADS` was not specified while building the model, the Rust wrapper
 will throw an error when loading the model.
 
 ## Usage
 
-Run this example with `RUST_LOG=info cargo run --example=example --features download-bridgestan-src`.
+Run this example with `cargo run --example=example`.
 
 ```rust
 use std::ffi::CString;
@@ -51,7 +43,7 @@ let bs_path: PathBuf = "..".into();
 // let bs_path = bridgestan::download_bridgestan_src().unwrap();
 
 // The path to the compiled model
-let path = compile_model(&bs_path, &path, vec![], vec![]).expect("Could not compile Stan model.");
+let path = compile_model(&bs_path, &path, &[], &[]).expect("Could not compile Stan model.");
 println!("Compiled model: {:?}", path);
 
 let lib = open_library(path).expect("Could not load compiled Stan model.");
@@ -65,11 +57,13 @@ let data = CString::new(data.to_string().into_bytes()).unwrap();
 let seed = 42;
 
 let model = match Model::new(&lib, Some(data), seed) {
-Ok(model) => { model },
-Err(BridgeStanError::ConstructFailed(msg)) => {
-    panic!("Model initialization failed. Error message from Stan was {}", msg)
-},
-_ => { panic!("Unexpected error") },
+    Ok(model) => model,
+    Err(BridgeStanError::ConstructFailed(msg)) => {
+        panic!("Model initialization failed. Error message from Stan was {msg}")
+    }
+    Err(e) => {
+        panic!("Unexpected error:\n{e}")
+    }
 };
 
 let n_dim = model.param_unc_num();

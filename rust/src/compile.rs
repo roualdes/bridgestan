@@ -3,12 +3,21 @@ use log::info;
 use path_absolutize::Absolutize;
 use std::path::{Path, PathBuf};
 
-/// Compile a Stan Model given the path to BridgeStan and to a stan_file
+const MAKE: &str = if cfg!(target_os = "windows") {
+    "mingw32-make"
+} else {
+    "make"
+};
+
+/// Compile a Stan Model. Requires a path to the BridgeStan sources (can be
+/// downloaded with [`download_bridgestan_src`](crate::download_bridgestan_src) if that feature
+/// is enabled), a path to the `.stan` file, and additional arguments
+/// for the Stan compiler and the make command.
 pub fn compile_model(
     bs_path: &Path,
     stan_file: &Path,
-    stanc_args: Vec<&str>,
-    make_args: Vec<&str>,
+    stanc_args: &[&str],
+    make_args: &[&str],
 ) -> Result<PathBuf> {
     // using path_absolutize crate for now since
     // std::fs::canonicalize doesn't behave well on windows
@@ -23,12 +32,9 @@ pub fn compile_model(
         .parent()
         .and_then(Path::to_str)
         .map(|x| format!("--include-paths={x}"))
-        .map(|x| vec![x])
         .unwrap_or_default();
-    let includir_stan_file_dir = includir_stan_file_dir
-        .iter()
-        .map(String::as_str)
-        .collect::<Vec<&str>>();
+
+    let includir_stan_file_dir = includir_stan_file_dir.as_str();
 
     if stan_file.extension().unwrap_or_default() != "stan" {
         return Err(BridgeStanError::ModelCompilingFailed(
@@ -44,29 +50,24 @@ pub fn compile_model(
     ));
     let output = output.with_extension("so");
 
-    let stanc_args = [includir_stan_file_dir.as_slice(), stanc_args.as_slice()].concat();
+    let stanc_args = [&[includir_stan_file_dir], stanc_args].concat();
     let stanc_args = stanc_args.join(" ");
     let stanc_args = format!("STANCFLAGS={}", stanc_args);
     let stanc_args = [stanc_args.as_str()];
 
     let cmd = [
         &[output.to_str().unwrap_or_default()],
-        make_args.as_slice(),
+        make_args,
         stanc_args.as_slice(),
     ]
     .concat();
 
-    let make = if cfg!(target_os = "windows") {
-        "mingw32-make"
-    } else {
-        "make"
-    };
     info!(
         "Compiling model with command: {} \"{}\"",
-        make,
+        MAKE,
         cmd.join("\" \"")
     );
-    std::process::Command::new(make)
+    std::process::Command::new(MAKE)
         .args(cmd)
         .current_dir(bs_path)
         .env("STAN_THREADS", "true")
