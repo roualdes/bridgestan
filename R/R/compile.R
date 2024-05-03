@@ -104,7 +104,7 @@ compile_model <- function(stan_file, stanc_args = NULL, make_args = NULL) {
         error_msg <- paste0("Compilation failed with error code ", res_attrs$status,
             "\noutput:\n", paste(res, collapse = "\n"))
 
-        if (getOption("warning.length") < nchar(err_msg)) {
+        if (getOption("warning.length") < nchar(error_msg)) {
             warning("BridgeStan error message too long to fully display. Consider increasing options(warning.length)")
         }
         stop(error_msg)
