@@ -347,6 +347,9 @@ handle_error <- function(lib_name, err_msg, err_ptr, function_name) {
     return(paste("Unknown error in", function_name))
   } else {
     .C("bs_free_error_msg_R", as.raw(err_ptr), PACKAGE = lib_name)
+    if (getOption("warning.length") < nchar(err_msg)) {
+      warning("BridgeStan error message too long to fully display. Consider increasing options(warning.length)")
+    }
     return(err_msg)
   }
 }
