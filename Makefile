@@ -1,4 +1,4 @@
-## include paths
+# include paths
 BS_ROOT ?= .
 
 # user config
@@ -10,21 +10,21 @@ STANC ?= $(BS_ROOT)/bin/stanc$(EXE)
 MATH ?= $(STAN)lib/stan_math/
 RAPIDJSON ?= $(STAN)lib/rapidjson_1.1.0/
 
-## required C++ includes
+# required C++ includes
 INC_FIRST ?= -I $(STAN)src -I $(RAPIDJSON)
 
-## makefiles needed for math library
+# makefiles needed for math library
 include $(MATH)make/compiler_flags
 include $(MATH)make/libraries
 
-## Set -fPIC globally since we're always building a shared library
-CXXFLAGS += -fPIC -fvisibility=hidden -fvisibility-inlines-hidden
-CXXFLAGS_SUNDIALS += -fPIC
-CPPFLAGS += -DBRIDGESTAN_EXPORT
+# Set -fPIC globally since we're always building a shared library
+override CXXFLAGS += -fPIC -fvisibility=hidden -fvisibility-inlines-hidden
+override CXXFLAGS_SUNDIALS += -fPIC
+override CPPFLAGS += -DBRIDGESTAN_EXPORT
 
-## set flags for stanc compiler (math calls MIGHT? set STAN_OPENCL)
+# set flags for stanc compiler (math calls MIGHT? set STAN_OPENCL)
 ifdef STAN_OPENCL
-	STANCFLAGS += --use-opencl
+	override STANCFLAGS += --use-opencl
 	STAN_FLAG_OPENCL=_opencl
 else
 	STAN_FLAG_OPENCL=
@@ -35,7 +35,7 @@ else
 	STAN_FLAG_THREADS=
 endif
 ifdef BRIDGESTAN_AD_HESSIAN
-	CPPFLAGS += -DSTAN_MODEL_FVAR_VAR -DBRIDGESTAN_AD_HESSIAN
+	override CPPFLAGS += -DSTAN_MODEL_FVAR_VAR -DBRIDGESTAN_AD_HESSIAN
 	STAN_FLAG_HESS=_adhessian
 else
 	STAN_FLAG_HESS=
@@ -51,16 +51,31 @@ $(BRIDGE_O) : $(BRIDGE_DEPS)
 	@mkdir -p $(dir $@)
 	$(COMPILE.cpp) $(OUTPUT_OPTION) $(LDLIBS) $<
 
-## generate .hpp file from .stan file using stanc
+
+ifneq ($(findstring allow-undefined,$(STANCFLAGS)),)
+USER_HEADER ?= $(dir $(MAKECMDGOALS))user_header.hpp
+USER_INCLUDE = -include $(USER_HEADER)
+# Give a better error message if the USER_HEADER is not found
+$(USER_HEADER):
+	@echo 'ERROR: Missing user header.'
+	@echo 'Because --allow-undefined is set, we need a C++ header file to include.'
+	@echo 'We tried to find the user header at:'
+	@echo '  $(USER_HEADER)'
+	@echo ''
+	@echo 'You can also set the USER_HEADER variable to the path of your C++ file.'
+	@exit 1
+endif
+
+# generate .hpp file from .stan file using stanc
 %.hpp : %.stan $(STANC)
 	@echo ''
 	@echo '--- Translating Stan model to C++ code ---'
 	$(STANC) $(STANCFLAGS) --o=$(subst  \,/,$@) $(subst  \,/,$<)
 
-%.o : %.hpp
+%.o : %.hpp $(USER_HEADER)
 	@echo ''
 	@echo '--- Compiling C++ code ---'
-	$(COMPILE.cpp) -x c++ -o $(subst  \,/,$*).o $(subst \,/,$<)
+	$(COMPILE.cpp) $(USER_INCLUDE) -x c++ -o $(subst  \,/,$*).o $(subst \,/,$<)
 
 %_model.so : %.o $(BRIDGE_O) $(SUNDIALS_TARGETS) $(MPI_TARGETS) $(TBB_TARGETS)
 	@echo ''
@@ -81,7 +96,9 @@ clean:
 
 # build all test models at once
 TEST_MODEL_NAMES = $(patsubst $(BS_ROOT)/test_models/%/, %, $(sort $(dir $(wildcard $(BS_ROOT)/test_models/*/))))
-TEST_MODEL_NAMES := $(filter-out syntax_error, $(TEST_MODEL_NAMES))
+# these are for compilation testing in the interfaces
+SKIPPED_TEST_MODEL_NAMES = syntax_error external
+TEST_MODEL_NAMES := $(filter-out $(SKIPPED_TEST_MODEL_NAMES), $(TEST_MODEL_NAMES))
 TEST_MODEL_LIBS = $(join $(addprefix test_models/, $(TEST_MODEL_NAMES)), $(addsuffix _model.so, $(addprefix /, $(TEST_MODEL_NAMES))))
 
 .PHONY: test_models
@@ -112,7 +129,7 @@ format:
 #    R seems to have no good formatter that doesn't choke on doc comments
 #    Rscript -e 'formatR::tidy_dir("R/", recursive=TRUE)' || $(BS_FORMAT_IGNOREABLE)
 
-## print value of makefile variable (e.g., make print-TBB_TARGETS)
+# print value of makefile variable (e.g., make print-TBB_TARGETS)
 .PHONY: print-%
 print-%  : ; @echo $* = $($*) ;
 
