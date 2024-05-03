@@ -47,13 +47,13 @@ get_bridgestan_path <- function() {
                 "environment variable, downloading version ", packageVersion("bridgestan"),
                 " to ", path))
             get_bridgestan_src()
+            print("Done!")
         })
         num_files <- length(list.files(HOME_BRIDGESTAN))
         if (num_files >= 5) {
             warning(paste0("Found ", num_files, " different versions of BridgeStan in ",
                 HOME_BRIDGESTAN, ". Consider deleting old versions to save space."))
         }
-        print("Done!")
     }
 
     return(path)
@@ -101,8 +101,13 @@ compile_model <- function(stan_file, stanc_args = NULL, make_args = NULL) {
     })
     res_attrs <- attributes(res)
     if ("status" %in% names(res_attrs) && res_attrs$status != 0) {
-        stop(paste0("Compilation failed with error code ", res_attrs$status, "\noutput:\n",
-            paste(res, collapse = "\n")))
+        error_msg <- paste0("Compilation failed with error code ", res_attrs$status,
+            "\noutput:\n", paste(res, collapse = "\n"))
+
+        if (getOption("warning.length") < nchar(error_msg)) {
+            warning("BridgeStan error message too long to fully display. Consider increasing options(warning.length)")
+        }
+        stop(error_msg)
     }
 
     return(output)
