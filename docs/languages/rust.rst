@@ -14,9 +14,12 @@ The BridgeStan Rust client is available on `crates.io <https://crates.io/crates/
 
     cargo add bridgestan
 
-The first time you compile a model, the BridgeStan source code will be downloaded to `~/.bridgestan`. If you prefer to use a source distribution of BridgeStan, you can pass its path as the `bs_path` argument to `compile_model`.
+A copy of the BridgeStan C++ sources is needed to compile models. This can be downloaded to
+:file:`~/.bridgestan/` automatically if you use the ``download-bridgestan-src`` feature.
+Otherwise, it can be downloaded manually (see :doc:`../getting-started`).
 
-Note that the system pre-requisites from the [Getting Started Guide](../getting-started.rst) are still required and will not be automatically installed by this method.
+Note that the system pre-requisites from the :doc:`Getting Started guide <../getting-started>`
+are still required and will not be automatically installed by this method.
 
 Example Program
 ---------------

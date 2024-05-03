@@ -34,7 +34,7 @@ set_bridgestan_path <- function(path) {
 #' a matching version of BridgeStan to a folder called
 #' `.bridgestan` in the user's home directory.
 #'
-#' @seealso [set_bridgestan_path]
+#' @seealso [set_bridgestan_path()]
 get_bridgestan_path <- function() {
     # try to get from environment
     path <- Sys.getenv("BRIDGESTAN", unset = "")

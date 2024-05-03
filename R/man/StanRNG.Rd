@@ -9,7 +9,7 @@ StanRNG
 StanRNG
 }
 \details{
-RNG object for use with \code{StanModel$param_constrain()}
+RNG object for use with \code{\link[=StanModel$param_constrain]{StanModel$param_constrain()}}
 }
 \keyword{internal}
 \section{Public fields}{

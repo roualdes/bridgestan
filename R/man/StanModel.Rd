@@ -191,7 +191,7 @@ The number of parameters in the model.
 \if{latex}{\out{\hypertarget{method-StanModel-param_constrain}{}}}
 \subsection{Method \code{param_constrain()}}{
 Returns a vector of constrained parameters given the unconstrained parameters.
-See also \code{StanModel$param_unconstrain()}, the inverse of this function.
+See also \code{\link[=StanModel$param_unconstrain]{StanModel$param_unconstrain()}}, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$param_constrain(
   theta_unc,
@@ -210,7 +210,7 @@ See also \code{StanModel$param_unconstrain()}, the inverse of this function.
 
 \item{\code{include_gq}}{Whether to also output the generated quantities of the model.}
 
-\item{\code{rng}}{The random number generator to use if \code{include_gq} is \code{TRUE}.  See \code{StanModel$new_rng()}.}
+\item{\code{rng}}{The random number generator to use if \code{include_gq} is \code{TRUE}.  See \code{\link[=StanModel$new_rng]{StanModel$new_rng()}}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -222,7 +222,7 @@ The constrained parameters of the model.
 \if{html}{\out{<a id="method-StanModel-new_rng"></a>}}
 \if{latex}{\out{\hypertarget{method-StanModel-new_rng}{}}}
 \subsection{Method \code{new_rng()}}{
-Create a new persistent PRNG object for use in \code{param_constrain()}.
+Create a new persistent PRNG object for use in \code{\link[=param_constrain]{param_constrain()}}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$new_rng(seed)}\if{html}{\out{</div>}}
 }
@@ -245,9 +245,9 @@ A \code{StanRNG} object.
 Returns a vector of unconstrained parameters give the constrained parameters.
 
 It is assumed that these will be in the same order as internally represented by
-the model (e.g., in the same order as \code{StanModel$param_names()}).
-If structured input is needed, use \code{StanModel$param_unconstrain_json()}.
-See also \code{StanModel$param_constrain()}, the inverse of this function.
+the model (e.g., in the same order as \code{\link[=StanModel$param_names]{StanModel$param_names()}}).
+If structured input is needed, use \code{\link[=StanModel$param_unconstrain_json]{StanModel$param_unconstrain_json()}}.
+See also \code{\link[=StanModel$param_constrain]{StanModel$param_constrain()}}, the inverse of this function.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$param_unconstrain(theta)}\if{html}{\out{</div>}}
 }
