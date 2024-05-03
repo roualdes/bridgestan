@@ -3,7 +3,7 @@ BridgeStan -- efficient, in-memory access to the methods of a Stan model
 ========================================================================
 
 BridgeStan is a library (with :doc:`bindings <languages>` available in Python,
-Julia, R, and Rust) that grants to the methods of a `Stan <https://mc-stan.org>`__
+Julia, R, and Rust) that grants access to the methods of a `Stan <https://mc-stan.org>`__
 model, including log densities, gradients, Hessians, and constraining and
 unconstraining transforms.
 
