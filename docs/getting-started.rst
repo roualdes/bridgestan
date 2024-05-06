@@ -165,6 +165,19 @@ to set :makevar:`CPPFLAGS` in :file:`make/local`:
 
     CPPFLAGS+=-DSTAN_MATH_CONSTRAINT_TOLERANCE=1e-5
 
+
+Using External C++ Code
+_______________________
+
+BridgeStan supports the same `capability to plug in external C++ code as CmdStan <https://mc-stan.org/docs/cmdstan-guide/external_code.html>`_.
+
+Namely, you can declare a function in your Stan model and then define it in a separate C++ file.
+This requires passing the ``--allow-undefined`` flag to the Stan compiler when building your model.
+The :makevar:`USER_HEADER` variable must point to the C++ file containing the function definition.
+By default, this will be the file :file:`user_header.hpp` in the same directory as the Stan model.
+
+For a more complete example, consult the `CmdStan documentation <https://mc-stan.org/docs/cmdstan-guide/external_code.html>`_.
+
 Using Older Stan Versions
 __________________________
 
