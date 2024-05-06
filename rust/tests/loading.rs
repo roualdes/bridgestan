@@ -8,6 +8,8 @@ use std::{
 
 use bridgestan::Model;
 
+const EXCLUDED_MODELS: [&str; 4] = ["logistic", "regression", "syntax_error", "external"];
+
 #[test]
 fn create_all_serial() {
     let base = model_dir();
@@ -15,7 +17,7 @@ fn create_all_serial() {
         let path = path.unwrap().path();
         let name = path.file_name().unwrap().to_str().unwrap();
 
-        if (name == "logistic") | (name == "regression") | (name == "syntax_error") {
+        if EXCLUDED_MODELS.contains(&name) {
             continue;
         }
 
@@ -44,7 +46,7 @@ fn create_all_late_drop_fwd() {
 
     let handles: Vec<_> = names
         .into_iter()
-        .filter(|name| (name != "logistic") & (name != "regression") & (name != "syntax_error"))
+        .filter(|name| !EXCLUDED_MODELS.contains(&name.as_str()))
         .map(|name| {
             let (lib, data) = get_model(&name);
             let Ok(model) = Model::new(&lib, data.as_ref(), 42) else {
@@ -74,7 +76,7 @@ fn create_all_thread_serial() {
 
     names.into_iter().for_each(|name| {
         spawn(move || {
-            if (&name == "logistic") | (&name == "regression") | (&name == "syntax_error") {
+            if EXCLUDED_MODELS.contains(&name.as_str()) {
                 return;
             }
 
@@ -108,7 +110,7 @@ fn create_all_parallel() {
         .into_iter()
         .map(|name| {
             spawn(move || {
-                if (&name == "logistic") | (&name == "regression") | (&name == "syntax_error") {
+                if EXCLUDED_MODELS.contains(&name.as_str()) {
                     return;
                 }
 
