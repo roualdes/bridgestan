@@ -86,23 +86,22 @@ endif
 docs:
 	$(MAKE) -C docs/ html
 
+# build all test models at once
+ALL_TEST_MODEL_NAMES = $(patsubst $(BS_ROOT)/test_models/%/, %, $(sort $(dir $(wildcard $(BS_ROOT)/test_models/*/))))
+# these are for compilation testing in the interfaces
+SKIPPED_TEST_MODEL_NAMES = syntax_error external
+TEST_MODEL_NAMES := $(filter-out $(SKIPPED_TEST_MODEL_NAMES), $(ALL_TEST_MODEL_NAMES))
+TEST_MODEL_LIBS = $(join $(addprefix $(BS_ROOT)/test_models/, $(TEST_MODEL_NAMES)), $(addsuffix _model.so, $(addprefix /, $(TEST_MODEL_NAMES))))
+
+.PHONY: test_models
+test_models: $(TEST_MODEL_LIBS)
+
 .PHONY: clean
 clean:
 	$(RM) $(SRC)/*.o
 	$(RM) test_models/**/*.so
-	$(RM) test_models/**/*.hpp
+	$(RM) $(join $(addprefix $(BS_ROOT)/test_models/, $(TEST_MODEL_NAMES)), $(addsuffix .hpp, $(addprefix /, $(TEST_MODEL_NAMES))))
 	$(RM) bin/stanc$(EXE)
-
-
-# build all test models at once
-TEST_MODEL_NAMES = $(patsubst $(BS_ROOT)/test_models/%/, %, $(sort $(dir $(wildcard $(BS_ROOT)/test_models/*/))))
-# these are for compilation testing in the interfaces
-SKIPPED_TEST_MODEL_NAMES = syntax_error external
-TEST_MODEL_NAMES := $(filter-out $(SKIPPED_TEST_MODEL_NAMES), $(TEST_MODEL_NAMES))
-TEST_MODEL_LIBS = $(join $(addprefix test_models/, $(TEST_MODEL_NAMES)), $(addsuffix _model.so, $(addprefix /, $(TEST_MODEL_NAMES))))
-
-.PHONY: test_models
-test_models: $(TEST_MODEL_LIBS)
 
 .PHONY: stan-update stan-update-version
 stan-update:
