@@ -8,6 +8,8 @@
 c-example/example
 c-example/example_static
 *.exe
+make/local
+
 
 # Rust
 rust/target/
