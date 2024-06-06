@@ -31,6 +31,7 @@ WINDOWS_PATH_SET = False
 
 MAKE = os.getenv("MAKE", "make")
 
+
 def set_bridgestan_path(path: Union[str, os.PathLike]) -> None:
     """
     Set the path to BridgeStan.
