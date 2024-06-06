@@ -2,7 +2,7 @@
 #define MODEL_RNG_H
 
 #include <stan/model/model_base.hpp>
-#include <boost/random/additive_combine.hpp>
+#include <stan/services/util/create_rng.hpp>
 #include <string>
 #include <vector>
 #include <random>
@@ -30,6 +30,11 @@ class bs_model {
    * Destroy this object and free all of the memory allocated for it.
    */
   ~bs_model() noexcept;
+
+  bs_model(bs_model const&) = delete;
+  bs_model(bs_model&&) = delete;
+  bs_model operator=(bs_model const&) = delete;
+  bs_model operator=(bs_model&&) = delete;
 
   /**
    * Return the name of the model.  This class manages the memory,
@@ -116,7 +121,7 @@ class bs_model {
    */
   void param_constrain(bool include_tp, bool include_gq,
                        const double* theta_unc, double* theta,
-                       boost::ecuyer1988& rng) const;
+                       stan::rng_t& rng) const;
 
   /**
    * Calculate the log density for the specified unconstrain
@@ -251,13 +256,9 @@ class bs_model {
  */
 class bs_rng {
  public:
-  bs_rng(unsigned int seed) : rng_(seed) {
-    // discard first value as workaround for
-    // https://github.com/stan-dev/stan/issues/3167
-    rng_.discard(1);
-  }
+  bs_rng(unsigned int seed) : rng_(0, 1, 0, seed) {}
 
-  boost::ecuyer1988 rng_;
+  stan::rng_t rng_;
 };
 
 #endif
