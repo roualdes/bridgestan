@@ -3,11 +3,7 @@ use log::info;
 use path_absolutize::Absolutize;
 use std::path::{Path, PathBuf};
 
-const MAKE: &str = if cfg!(target_os = "windows") {
-    "mingw32-make"
-} else {
-    "make"
-};
+const MAKE: &str = "make";
 
 /// Compile a Stan Model. Requires a path to the BridgeStan sources (can be
 /// downloaded with [`download_bridgestan_src`](crate::download_bridgestan_src) if that feature

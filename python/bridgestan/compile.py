@@ -29,11 +29,7 @@ def verify_bridgestan_path(path: Union[str, os.PathLike]) -> None:
 IS_WINDOWS = platform.system() == "Windows"
 WINDOWS_PATH_SET = False
 
-MAKE = os.getenv(
-    "MAKE",
-    "make" if not IS_WINDOWS else "mingw32-make",
-)
-
+MAKE = os.getenv("MAKE", "make")
 
 def set_bridgestan_path(path: Union[str, os.PathLike]) -> None:
     """
