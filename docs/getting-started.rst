@@ -8,7 +8,7 @@ Requirement: C++ toolchain
 Stan requires a C++ tool chain consisting of
 
 * A C++14 compiler. On Windows, MSCV is *not* supported, so something like MinGW GCC is required.
-* The Gnu :command:`make` utility for \*nix *or* :command:`mingw32-make` for Windows
+* The Gnu :command:`make` utility. On Windows, :command:`make` or :command:`mingw32-make` can be used
 
 Here are complete instructions by platform for installing both, from the CmdStan installation instructions.
 
@@ -63,10 +63,7 @@ a terminal in your BridgeStan folder and running
 
 .. code-block:: shell
 
-    # MacOS and Linux
     make test_models/multi/multi_model.so
-    # Windows
-    mingw32-make.exe test_models/multi/multi_model.so
 
 This will compile the file :file:`test_models/multi/multi.stan` into a shared library object for use with BridgeStan.
 This will require internet access the first time you run it in order

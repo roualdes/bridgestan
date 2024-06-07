@@ -1,5 +1,5 @@
 IS_WINDOWS <- isTRUE(.Platform$OS.type == "windows")
-MAKE <- Sys.getenv("MAKE", ifelse(IS_WINDOWS, "mingw32-make", "make"))
+MAKE <- Sys.getenv("MAKE", "make")
 
 
 verify_bridgestan_path <- function(path) {

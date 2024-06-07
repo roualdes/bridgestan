@@ -5,7 +5,6 @@
 #include <stan/io/empty_var_context.hpp>
 #include <stan/io/var_context.hpp>
 #include <stan/model/model_base.hpp>
-#include <stan/services/util/create_rng.hpp>
 #include <stan/math.hpp>
 #include <stan/math/prim/meta.hpp>
 #include <stan/version.hpp>
@@ -219,7 +218,7 @@ void bs_model::param_unconstrain_json(const char* json,
 
 void bs_model::param_constrain(bool include_tp, bool include_gq,
                                const double* theta_unc, double* theta,
-                               boost::ecuyer1988& rng) const {
+                               stan::rng_t& rng) const {
   Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, param_unc_num_);
   Eigen::VectorXd params;
   model_->write_array(rng, params_unc, params, include_tp, include_gq,

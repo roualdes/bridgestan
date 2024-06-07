@@ -1,6 +1,6 @@
 
 function get_make()
-    get(ENV, "MAKE", Sys.iswindows() ? "mingw32-make.exe" : "make")
+    get(ENV, "MAKE", "make")
 end
 
 

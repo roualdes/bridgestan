@@ -65,7 +65,7 @@ int bs_param_constrain(const bs_model* m, bool include_tp, bool include_gq,
       // If RNG is not provided (e.g., we are not using include_gq), use a dummy
       // RNG.
       // SAFETY: this can be static because we know the rng is never advanced.
-      static boost::ecuyer1988 dummy_rng(0);
+      static stan::rng_t dummy_rng(0);
 
       if (include_gq)
         throw std::invalid_argument("include_gq=true but rng=nullptr");
