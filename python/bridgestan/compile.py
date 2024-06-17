@@ -43,16 +43,17 @@ def set_bridgestan_path(path: Union[str, os.PathLike]) -> None:
     os.environ["BRIDGESTAN"] = path
 
 
-def get_bridgestan_path() -> str:
+def get_bridgestan_path(download: bool = True) -> str:
     """
     Get the path to BridgeStan.
 
     By default this is set to the value of the environment
     variable ``BRIDGESTAN``.
 
-    If there is no path set, this function will download
-    a matching version of BridgeStan to a folder called
-    ``.bridgestan`` in the user's home directory.
+    If there is no path set and ``download`` is True, this
+    function will download a matching version of BridgeStan
+    to a folder called ``.bridgestan`` in the user's home
+    directory if one is not already present.
 
     See also :func:`set_bridgestan_path`
     """
@@ -62,6 +63,12 @@ def get_bridgestan_path() -> str:
             path = os.fspath(CURRENT_BRIDGESTAN)
             verify_bridgestan_path(path)
         except ValueError:
+            if not download:
+                print(
+                    "BridgeStan not found at location specified by $BRIDGESTAN environment variable"
+                )
+                return ""
+
             print(
                 "BridgeStan not found at location specified by $BRIDGESTAN "
                 f"environment variable, downloading version {__version__} to {path}"

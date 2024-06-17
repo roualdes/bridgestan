@@ -17,23 +17,31 @@ end
 
 
 """
-    get_bridgestan_path() -> String
+    get_bridgestan_path(;download=true) -> String
 
 Return the path the the BridgeStan directory.
 
-If the environment variable `BRIDGESTAN` is set, this will be returned.
-Otherwise, this function downloads a matching version of BridgeStan under
-a folder called `.bridgestan` in the user's home directory.
+If the environment variable `\$BRIDGESTAN` is set, this will be returned.
+
+If `\$BRIDGESTAN` is not set and `download` is true, this function downloads
+a matching version of BridgeStan under a folder called `.bridgestan` in the
+user's home directory if one is not already present.
 
 See [`set_bridgestan_path!()`](@ref) to set the path from within Julia.
 """
-function get_bridgestan_path()
+function get_bridgestan_path(; download::Bool = true)
     path = get(ENV, "BRIDGESTAN", "")
     if path == ""
         path = CURRENT_BRIDGESTAN
         try
             validate_stan_dir(path)
         catch
+            if !download
+                println(
+                    "BridgeStan not found at location specified by \$BRIDGESTAN environment variable",
+                )
+                return ""
+            end
             println(
                 "BridgeStan not found at location specified by \$BRIDGESTAN " *
                 "environment variable, downloading version $pkg_version to $path",

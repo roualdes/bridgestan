@@ -30,24 +30,31 @@ set_bridgestan_path <- function(path) {
 #' By default this is set to the value of the environment
 #' variable `BRIDGESTAN`.
 #'
-#' If there is no path set, this function will download
-#' a matching version of BridgeStan to a folder called
-#' `.bridgestan` in the user's home directory.
+#' If there is no path set and the argument `download` is TRUE,
+#' this function will download a matching version of BridgeStan
+#' to a folder called `.bridgestan` in the user's home directory
+#' if one is not already present.
 #'
 #' @seealso [set_bridgestan_path()]
-get_bridgestan_path <- function() {
+get_bridgestan_path <- function(download=TRUE) {
     # try to get from environment
     path <- Sys.getenv("BRIDGESTAN", unset = "")
     if (path == "") {
-        path <- CURRENT_BRIDGESTAN
-        tryCatch({
+        path <- tryCatch({
+            path <- CURRENT_BRIDGESTAN
             verify_bridgestan_path(path)
+            path
         }, error = function(e) {
+            if (!download) {
+                print("BridgeStan not found at location specified by $BRIDGESTAN environment variable.")
+                return("")
+            }
             print(paste0("BridgeStan not found at location specified by $BRIDGESTAN ",
                 "environment variable, downloading version ", packageVersion("bridgestan"),
                 " to ", path))
             get_bridgestan_src()
             print("Done!")
+            path
         })
         num_files <- length(list.files(HOME_BRIDGESTAN))
         if (num_files >= 5) {

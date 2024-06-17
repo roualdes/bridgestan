@@ -4,16 +4,17 @@
 \alias{get_bridgestan_path}
 \title{Get the path to BridgeStan.}
 \usage{
-get_bridgestan_path()
+get_bridgestan_path(download = TRUE)
 }
 \description{
 By default this is set to the value of the environment
 variable \code{BRIDGESTAN}.
 }
 \details{
-If there is no path set, this function will download
-a matching version of BridgeStan to a folder called
-\code{.bridgestan} in the user's home directory.
+If there is no path set and the argument \code{download} is TRUE,
+this function will download a matching version of BridgeStan
+to a folder called \code{.bridgestan} in the user's home directory
+if one is not already present.
 }
 \seealso{
 \code{\link[=set_bridgestan_path]{set_bridgestan_path()}}
