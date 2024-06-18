@@ -4,7 +4,7 @@ function get_make()
 end
 
 
-function validate_stan_dir(path::AbstractString)
+function verify_bridgestan_path(path::AbstractString)
     if !isdir(path)
         error("Path does not exist!\n$path")
     end
@@ -17,23 +17,32 @@ end
 
 
 """
-    get_bridgestan_path() -> String
+    get_bridgestan_path(;download=true) -> String
 
 Return the path the the BridgeStan directory.
 
-If the environment variable `BRIDGESTAN` is set, this will be returned.
-Otherwise, this function downloads a matching version of BridgeStan under
-a folder called `.bridgestan` in the user's home directory.
+If the environment variable `\$BRIDGESTAN` is set, this will be returned.
+
+If `\$BRIDGESTAN` is not set and `download` is true, this function downloads
+a copy of the BridgeStan source code for the currently installed version under
+a folder called `.bridgestan` in the user's home directory if one is not already
+present.
 
 See [`set_bridgestan_path!()`](@ref) to set the path from within Julia.
 """
-function get_bridgestan_path()
+function get_bridgestan_path(; download::Bool = true)
     path = get(ENV, "BRIDGESTAN", "")
     if path == ""
-        path = CURRENT_BRIDGESTAN
         try
-            validate_stan_dir(path)
+            path = CURRENT_BRIDGESTAN
+            verify_bridgestan_path(path)
         catch
+            if !download
+                println(
+                    "BridgeStan not found at location specified by \$BRIDGESTAN environment variable",
+                )
+                return ""
+            end
             println(
                 "BridgeStan not found at location specified by \$BRIDGESTAN " *
                 "environment variable, downloading version $pkg_version to $path",
@@ -57,7 +66,7 @@ end
 Set the path BridgeStan.
 """
 function set_bridgestan_path!(path::AbstractString)
-    validate_stan_dir(path)
+    verify_bridgestan_path(path)
     ENV["BRIDGESTAN"] = path
 end
 
@@ -82,7 +91,7 @@ function compile_model(
     make_args::AbstractVector{String} = String[],
 )
     bridgestan = get_bridgestan_path()
-    validate_stan_dir(bridgestan)
+    verify_bridgestan_path(bridgestan)
 
     if !isfile(stan_file)
         throw(SystemError("Stan file not found: $stan_file"))
