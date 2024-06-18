@@ -12,9 +12,10 @@ variable \code{BRIDGESTAN}.
 }
 \details{
 If there is no path set and the argument \code{download} is TRUE,
-this function will download a matching version of BridgeStan
-to a folder called \code{.bridgestan} in the user's home directory
-if one is not already present.
+this function will download a copy of the BridgeStan source code
+for the currently installed version under a folder called
+\code{.bridgestan} in the user's home directory if one is not already
+present.
 }
 \seealso{
 \code{\link[=set_bridgestan_path]{set_bridgestan_path()}}

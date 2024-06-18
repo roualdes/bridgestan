@@ -51,9 +51,10 @@ def get_bridgestan_path(download: bool = True) -> str:
     variable ``BRIDGESTAN``.
 
     If there is no path set and ``download`` is True, this
-    function will download a matching version of BridgeStan
-    to a folder called ``.bridgestan`` in the user's home
-    directory if one is not already present.
+    function will download a copy of the BridgeStan source code
+    for the currently installed version under a folder called
+    ``.bridgestan`` in the user's home directory if one is not
+    already present.
 
     See also :func:`set_bridgestan_path`
     """

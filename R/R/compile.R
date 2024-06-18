@@ -31,9 +31,10 @@ set_bridgestan_path <- function(path) {
 #' variable `BRIDGESTAN`.
 #'
 #' If there is no path set and the argument `download` is TRUE,
-#' this function will download a matching version of BridgeStan
-#' to a folder called `.bridgestan` in the user's home directory
-#' if one is not already present.
+#' this function will download a copy of the BridgeStan source code
+#' for the currently installed version under a folder called
+#' `.bridgestan` in the user's home directory if one is not already
+#' present.
 #'
 #' @seealso [set_bridgestan_path()]
 get_bridgestan_path <- function(download=TRUE) {

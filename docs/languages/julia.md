@@ -526,7 +526,7 @@ Run BridgeStan’s Makefile on a `.stan` file, creating the `.so` used by StanMo
 This function checks that the path to BridgeStan is valid and will error if it is not. This can be set with [`set_bridgestan_path!()`](julia.md#BridgeStan.set_bridgestan_path!).
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L73-L86' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L74-L87' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.get_bridgestan_path' href='#BridgeStan.get_bridgestan_path'>#</a>
 **`BridgeStan.get_bridgestan_path`** &mdash; *Function*.
@@ -541,12 +541,12 @@ Return the path the the BridgeStan directory.
 
 If the environment variable `$BRIDGESTAN` is set, this will be returned.
 
-If `$BRIDGESTAN` is not set and `download` is true, this function downloads a matching version of BridgeStan under a folder called `.bridgestan` in the user's home directory if one is not already present.
+If `$BRIDGESTAN` is not set and `download` is true, this function downloads a copy of the BridgeStan source code for the currently installed version under a folder called `.bridgestan` in the user's home directory if one is not already present.
 
 See [`set_bridgestan_path!()`](julia.md#BridgeStan.set_bridgestan_path!) to set the path from within Julia.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L19-L31' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L19-L32' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.set_bridgestan_path!' href='#BridgeStan.set_bridgestan_path!'>#</a>
 **`BridgeStan.set_bridgestan_path!`** &mdash; *Function*.
@@ -560,5 +560,5 @@ set_bridgestan_path!(path)
 Set the path BridgeStan.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L62-L66' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/compile.jl#L63-L67' class='documenter-source'>source</a><br>
 
