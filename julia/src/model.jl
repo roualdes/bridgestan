@@ -36,6 +36,7 @@ mutable struct StanModel
     stanmodel::Ptr{StanModelStruct}
     @const data::String
     @const seed::UInt32
+    @const param_unc_num::Int
 
     function StanModel(
         lib::String,
@@ -85,7 +86,11 @@ mutable struct StanModel
             error(handle_error(lib, err, "bs_model_construct"))
         end
 
-        sm = new(lib, stanmodel, data, seed)
+        # compute now to avoid re-computing in bounds checks later
+        param_unc_num =
+            @ccall $(dlsym(lib, :bs_param_unc_num))(stanmodel::Ptr{StanModelStruct})::Cint
+
+        sm = new(lib, stanmodel, data, seed, param_unc_num)
 
         function f(sm)
             @ccall $(dlsym(sm.lib, :bs_model_destruct))(
@@ -279,7 +284,13 @@ function param_constrain!(
     rng::Union{StanRNG,Nothing} = nothing,
 )
     dims = param_num(sm; include_tp = include_tp, include_gq = include_gq)
-    if length(out) != dims
+    if length(theta_unc) != sm.param_unc_num
+        throw(
+            DimensionMismatch(
+                "theta_unc must be same size as number of unconstrained parameters",
+            ),
+        )
+    elseif length(out) != dims
         throw(
             DimensionMismatch("out must be same size as number of constrained parameters"),
         )
@@ -359,8 +370,7 @@ The result is stored in the vector `out`, and a reference is returned. See
 This is the inverse of [`param_constrain!`](@ref).
 """
 function param_unconstrain!(sm::StanModel, theta::Vector{Float64}, out::Vector{Float64})
-    dims = param_unc_num(sm)
-    if length(out) != dims
+    if length(out) != sm.param_unc_num
         throw(
             DimensionMismatch(
                 "out must be same size as number of unconstrained parameters",
@@ -396,7 +406,7 @@ re-using existing memory.
 This is the inverse of [`param_constrain`](@ref).
 """
 function param_unconstrain(sm::StanModel, theta::Vector{Float64})
-    out = zeros(param_unc_num(sm))
+    out = zeros(sm.param_unc_num)
     param_unconstrain!(sm, theta, out)
 end
 
@@ -411,8 +421,7 @@ The result is stored in the vector `out`, and a reference is returned. See
 [`param_unconstrain_json`](@ref) for a version which allocates fresh memory.
 """
 function param_unconstrain_json!(sm::StanModel, theta::String, out::Vector{Float64})
-    dims = param_unc_num(sm)
-    if length(out) != dims
+    if length(out) != sm.param_unc_num
         throw(
             DimensionMismatch(
                 "out must be same size as number of unconstrained parameters",
@@ -445,7 +454,7 @@ See [`param_unconstrain_json!`](@ref) for a version which allows
 re-using existing memory.
 """
 function param_unconstrain_json(sm::StanModel, theta::String)
-    out = zeros(param_unc_num(sm))
+    out = zeros(sm.param_unc_num)
     param_unconstrain_json!(sm, theta, out)
 end
 
@@ -498,8 +507,11 @@ function log_density_gradient!(
     propto::Bool = true,
     jacobian::Bool = true,
 )
-    dims = param_unc_num(sm)
-    if length(out) != dims
+    if length(q) != sm.param_unc_num
+        throw(
+            DimensionMismatch("q must be same size as number of unconstrained parameters"),
+        )
+    elseif length(out) != sm.param_unc_num
         throw(
             DimensionMismatch(
                 "out must be same size as number of unconstrained parameters",
@@ -541,7 +553,7 @@ function log_density_gradient(
     propto::Bool = true,
     jacobian::Bool = true,
 )
-    grad = zeros(param_unc_num(sm))
+    grad = zeros(sm.param_unc_num)
     log_density_gradient!(sm, q, grad; propto = propto, jacobian = jacobian)
 end
 
@@ -565,8 +577,12 @@ function log_density_hessian!(
     propto::Bool = true,
     jacobian::Bool = true,
 )
-    dims = param_unc_num(sm)
-    if length(out_grad) != dims
+    dims = sm.param_unc_num
+    if length(q) != dims
+        throw(
+            DimensionMismatch("q must be same size as number of unconstrained parameters"),
+        )
+    elseif length(out_grad) != dims
         throw(
             DimensionMismatch(
                 "out_grad must be same size as number of unconstrained parameters",
@@ -615,7 +631,7 @@ function log_density_hessian(
     propto::Bool = true,
     jacobian::Bool = true,
 )
-    dims = param_unc_num(sm)
+    dims = sm.param_unc_num
     grad = zeros(dims)
     hess = zeros(dims * dims)
     log_density_hessian!(sm, q, grad, hess; propto = propto, jacobian = jacobian)
@@ -641,8 +657,15 @@ function log_density_hessian_vector_product!(
     propto::Bool = true,
     jacobian::Bool = true,
 )
-    dims = param_unc_num(sm)
-    if length(out) != dims
+    if length(q) != sm.param_unc_num
+        throw(
+            DimensionMismatch("q must be same size as number of unconstrained parameters"),
+        )
+    elseif length(v) != sm.param_unc_num
+        throw(
+            DimensionMismatch("v must be same size as number of unconstrained parameters"),
+        )
+    elseif length(out) != sm.param_unc_num
         throw(
             DimensionMismatch(
                 "out must be same size as number of unconstrained parameters",
@@ -687,7 +710,7 @@ function log_density_hessian_vector_product(
     propto::Bool = true,
     jacobian::Bool = true,
 )
-    out = zeros(param_unc_num(sm))
+    out = zeros(sm.param_unc_num)
     log_density_hessian_vector_product!(sm, q, v, out; propto = propto, jacobian = jacobian)
 end
 
