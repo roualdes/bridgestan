@@ -198,6 +198,12 @@ class StanModel:
 
         num_params = self._param_unc_num(self.model)
 
+        param_sized_array = array_ptr(
+            dtype=ctypes.c_double,
+            flags=("C_CONTIGUOUS",),
+            shape=(num_params,),
+        )
+
         param_sized_out_array = array_ptr(
             dtype=ctypes.c_double,
             flags=("C_CONTIGUOUS", "WRITEABLE"),
@@ -227,7 +233,7 @@ class StanModel:
             ctypes.c_void_p,
             ctypes.c_bool,
             ctypes.c_bool,
-            double_array,
+            param_sized_array,
             writeable_double_array,
             ctypes.c_void_p,
             star_star_char,
@@ -257,7 +263,7 @@ class StanModel:
             ctypes.c_void_p,
             ctypes.c_bool,
             ctypes.c_bool,
-            double_array,
+            param_sized_array,
             ctypes.POINTER(ctypes.c_double),
             star_star_char,
         ]
@@ -268,7 +274,7 @@ class StanModel:
             ctypes.c_void_p,
             ctypes.c_bool,
             ctypes.c_bool,
-            double_array,
+            param_sized_array,
             ctypes.POINTER(ctypes.c_double),
             param_sized_out_array,
             star_star_char,
@@ -280,7 +286,7 @@ class StanModel:
             ctypes.c_void_p,
             ctypes.c_bool,
             ctypes.c_bool,
-            double_array,
+            param_sized_array,
             ctypes.POINTER(ctypes.c_double),
             param_sized_out_array,
             param_sqrd_sized_out_array,
@@ -293,8 +299,8 @@ class StanModel:
             ctypes.c_void_p,
             ctypes.c_bool,
             ctypes.c_bool,
-            double_array,
-            double_array,
+            param_sized_array,
+            param_sized_array,
             ctypes.POINTER(ctypes.c_double),
             param_sized_out_array,
             star_star_char,
