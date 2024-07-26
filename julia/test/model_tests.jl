@@ -177,6 +177,7 @@ end
 
 
     model2 = load_test_model("full", false)
+    a = randn(BridgeStan.param_unc_num(model2))
     rng = StanRNG(model2, 1234)
     @test 1 == length(BridgeStan.param_constrain(model2, a))
     @test 2 == length(BridgeStan.param_constrain(model2, a; include_tp = true))
@@ -392,6 +393,12 @@ end
             jacobian = true,
         )
 
+        y_unc_bad = zeros(length(y_unc) + 1)
+        @test_throws DimensionMismatch BridgeStan.log_density_gradient(model, y_unc_bad)
+
+        y_unc_bad = zeros(length(y_unc) - 1)
+        @test_throws DimensionMismatch BridgeStan.log_density_gradient(model, y_unc_bad)
+
     end
 
     @testset "log_density_hessian" begin
@@ -472,6 +479,13 @@ end
             propto = true,
             jacobian = true,
         )
+
+
+        y_unc_bad = zeros(length(y_unc) + 1)
+        @test_throws DimensionMismatch BridgeStan.log_density_hessian(model, y_unc_bad)
+
+        y_unc_bad = zeros(length(y_unc) - 1)
+        @test_throws DimensionMismatch BridgeStan.log_density_hessian(model, y_unc_bad)
 
     end
 

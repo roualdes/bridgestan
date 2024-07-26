@@ -193,8 +193,8 @@ def test_param_constrain():
     bridge = bs.StanModel(fr_gaussian_so, fr_gaussian_data)
 
     D = 4
-    unc_size = 10
-    a = np.random.normal(size=unc_size)
+    unc_size = bridge.param_unc_num()
+    a = np.random.normal(size=(unc_size,))
     B_expected = cov_constrain(a, D)
 
     b = bridge.param_constrain(a, include_tp=False, include_gq=False)
@@ -213,9 +213,19 @@ def test_param_constrain():
     B = b.reshape(D, D)
     np.testing.assert_allclose(B_expected, B)
 
+    # out tests, matched and mismatched
+    scratch = np.zeros(16)
+    b = bridge.param_constrain(a, out=scratch)
+    B = b.reshape(D, D)
+    np.testing.assert_allclose(B_expected, B)
+    scratch_wrong = np.zeros(10)
+    with pytest.raises(ValueError):
+        bridge.param_constrain(a, out=scratch_wrong)
+
     full_so = STAN_FOLDER / "full" / "full_model.so"
     bridge2 = bs.StanModel(full_so)
     rng = bridge2.new_rng(seed=1234)
+    a = np.random.normal(size=bridge2.param_unc_num())
 
     np.testing.assert_equal(1, bridge2.param_constrain(a).size)
     np.testing.assert_equal(2, bridge2.param_constrain(a, include_tp=True).size)
@@ -236,20 +246,11 @@ def test_param_constrain():
     with pytest.raises(ValueError):
         bridge2.param_constrain(a, include_gq=True)
 
-    # out tests, matched and mismatched
-    scratch = np.zeros(16)
-    b = bridge.param_constrain(a, out=scratch)
-    B = b.reshape(D, D)
-    np.testing.assert_allclose(B_expected, B)
-    scratch_wrong = np.zeros(10)
-    with pytest.raises(ValueError):
-        bridge.param_constrain(a, out=scratch_wrong)
-
     # exception handling test in transformed parameters/model (compiled same way)
     throw_tp_so = STAN_FOLDER / "throw_tp" / "throw_tp_model.so"
     bridge2 = bs.StanModel(throw_tp_so)
 
-    y = np.array(np.random.uniform(1))
+    y = np.random.uniform(size=(1,))
     bridge2.param_constrain(y, include_tp=False)
     with pytest.raises(RuntimeError, match="find this text: tpfails"):
         bridge2.param_constrain(y, include_tp=True)
@@ -318,20 +319,20 @@ def test_log_density():
     bridge = bs.StanModel(bernoulli_so, bernoulli_data)
     y = np.asarray([0, 1, 0, 0, 0, 0, 0, 0, 0, 1])
     for _ in range(2):
-        x = np.random.uniform(size=bridge.param_unc_num())
+        x = np.random.uniform(size=(bridge.param_unc_num(),))
         x_unc = np.log(x / (1 - x))
-        lp = bridge.log_density(np.array([x_unc]), propto=False, jacobian=False)
+        lp = bridge.log_density(x_unc, propto=False, jacobian=False)
         np.testing.assert_allclose(lp, _bernoulli(y, x))
-        lp2 = bridge.log_density(np.array([x_unc]), propto=False, jacobian=True)
+        lp2 = bridge.log_density(x_unc, propto=False, jacobian=True)
         np.testing.assert_allclose(lp2, _bernoulli_jacobian(y, x))
-        lp3 = bridge.log_density(np.array([x_unc]), propto=True, jacobian=True)
+        lp3 = bridge.log_density(x_unc, propto=True, jacobian=True)
         np.testing.assert_allclose(lp3, _bernoulli_jacobian(y, x))
-        lp4 = bridge.log_density(np.array([x_unc]), propto=True, jacobian=False)
+        lp4 = bridge.log_density(x_unc, propto=True, jacobian=False)
         np.testing.assert_allclose(lp4, _bernoulli(y, x))
 
     throw_lp_so = STAN_FOLDER / "throw_lp" / "throw_lp_model.so"
     bridge2 = bs.StanModel(throw_lp_so)
-    y2 = np.array(np.random.uniform(1))
+    y2 = np.array([np.random.uniform(1)])
 
     with pytest.raises(RuntimeError, match="find this text: lpfails"):
         bridge2.log_density(y2)
@@ -363,7 +364,7 @@ def test_log_density_gradient():
 
     y = np.abs(np.random.normal(1))
     y_unc = np.log(y)
-    y_unc_arr = np.array(y_unc)
+    y_unc_arr = np.array([y_unc])
     logdensity, grad = bridge.log_density_gradient(
         y_unc_arr, propto=True, jacobian=True
     )
@@ -405,6 +406,14 @@ def test_log_density_gradient():
     with pytest.raises(ctypes.ArgumentError):
         bridge.log_density_gradient(y_unc, out=scratch_bad)
 
+    y_unc_wrong = np.zeros(y_unc.size + 1)
+    with pytest.raises(ctypes.ArgumentError):
+        bridge.log_density_gradient(y_unc_wrong)
+
+    y_unc_wrong = np.zeros(y_unc.size - 1)
+    with pytest.raises(ctypes.ArgumentError):
+        bridge.log_density_gradient(y_unc_wrong)
+
 
 def test_log_density_hessian():
     def _logp(y_unc):
@@ -443,7 +452,7 @@ def test_log_density_hessian():
     # test value, gradient, hessian, all combos +/- propto, +/- jacobian
     y = np.abs(np.random.normal(1))
     y_unc = np.log(y)
-    y_unc_arr = np.array(y_unc)
+    y_unc_arr = np.array([y_unc])
     logdensity, grad, hess = bridge.log_density_hessian(
         y_unc_arr, propto=True, jacobian=True
     )
@@ -510,6 +519,14 @@ def test_log_density_hessian():
     scratch_bad = np.zeros(bridge.param_unc_num() + 10)
     with pytest.raises(ctypes.ArgumentError):
         bridge.log_density_hessian(y_unc, out_grad=scratch_bad)
+
+    y_unc_wrong = np.zeros(y_unc.size + 1)
+    with pytest.raises(ctypes.ArgumentError):
+        bridge.log_density_hessian(y_unc_wrong)
+
+    y_unc_wrong = np.zeros(y_unc.size - 1)
+    with pytest.raises(ctypes.ArgumentError):
+        bridge.log_density_hessian(y_unc_wrong)
 
     # test with 5 x 5 Hessian
     simple_so = STAN_FOLDER / "simple" / "simple_model.so"

@@ -114,6 +114,8 @@ test_that("param_constrain handles rng arguments", {
 
     # require at least one present
     expect_error(full$param_constrain(c(1.2), include_gq = TRUE), "rng must be provided")
+
+    expect_error(full$param_constrain(c(1.2, 1.2)), "Incorrect number of unconstrained parameters")
 })
 
 
