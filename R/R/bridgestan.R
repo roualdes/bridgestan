@@ -59,6 +59,9 @@ StanModel <- R6::R6Class("StanModel",
       }
       private$model <- ret$ptr_out
 
+      # pre-compute to avoid repeated work in bounds checks
+      private$unc_dims <- self$param_unc_num()
+
       model_version <- self$model_version()
       if (packageVersion("bridgestan") != paste(model_version$major, model_version$minor, model_version$patch, sep = ".")) {
         warning(paste0("The version of the compiled model does not match the version of the R library. ",
@@ -167,6 +170,9 @@ StanModel <- R6::R6Class("StanModel",
       } else {
         rng_ptr <- as.raw(rng$ptr)
       }
+      if (length(theta_unc) != private$unc_dims) {
+        stop("Incorrect number of unconstrained parameters.")
+      }
       vars <- .C("bs_param_constrain_R", as.raw(private$model),
         as.logical(include_tp), as.logical(include_gq), as.double(theta_unc),
         theta = double(self$param_num(include_tp = include_tp, include_gq = include_gq)),
@@ -202,7 +208,7 @@ StanModel <- R6::R6Class("StanModel",
     param_unconstrain = function(theta) {
       vars <- .C("bs_param_unconstrain_R", as.raw(private$model),
         as.double(theta),
-        theta_unc = double(self$param_unc_num()),
+        theta_unc = double(private$unc_dims),
         return_code = as.integer(0),
         err_msg = as.character(""),
         err_ptr = raw(8),
@@ -223,7 +229,7 @@ StanModel <- R6::R6Class("StanModel",
     param_unconstrain_json = function(json) {
       vars <- .C("bs_param_unconstrain_json_R", as.raw(private$model),
         as.character(json),
-        theta_unc = double(self$param_unc_num()),
+        theta_unc = double(private$unc_dims),
         return_code = as.integer(0),
         err_msg = as.character(""),
         err_ptr = raw(8),
@@ -241,6 +247,9 @@ StanModel <- R6::R6Class("StanModel",
     #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
     #' @return The log density.
     log_density = function(theta_unc, propto = TRUE, jacobian = TRUE) {
+      if (length(theta_unc) != private$unc_dims) {
+        stop("Incorrect number of unconstrained parameters.")
+      }
       vars <- .C("bs_log_density_R", as.raw(private$model),
         as.logical(propto), as.logical(jacobian), as.double(theta_unc),
         val = double(1),
@@ -262,7 +271,10 @@ StanModel <- R6::R6Class("StanModel",
     #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
     #' @return List containing entries `val` (the log density) and `gradient` (the gradient).
     log_density_gradient = function(theta_unc, propto = TRUE, jacobian = TRUE) {
-      dims <- self$param_unc_num()
+      if (length(theta_unc) != private$unc_dims) {
+        stop("Incorrect number of unconstrained parameters.")
+      }
+      dims <- private$unc_dims
       vars <- .C("bs_log_density_gradient_R", as.raw(private$model),
         as.logical(propto), as.logical(jacobian), as.double(theta_unc),
         val = double(1), gradient = double(dims),
@@ -284,7 +296,10 @@ StanModel <- R6::R6Class("StanModel",
     #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
     #' @return List containing entries `val` (the log density), `gradient` (the gradient), and `hessian` (the Hessian).
     log_density_hessian = function(theta_unc, propto = TRUE, jacobian = TRUE) {
-      dims <- self$param_unc_num()
+      if (length(theta_unc) != private$unc_dims) {
+        stop("Incorrect number of unconstrained parameters.")
+      }
+      dims <- private$unc_dims
       vars <- .C("bs_log_density_hessian_R", as.raw(private$model),
         as.logical(propto), as.logical(jacobian), as.double(theta_unc),
         val = double(1), gradient = double(dims), hess = double(dims * dims),
@@ -308,7 +323,12 @@ StanModel <- R6::R6Class("StanModel",
     #' @param jacobian If `TRUE`, include change of variables terms for constrained parameters.
     #' @return List containing entries `val` (the log density) and `Hvp` (the hessian-vector product).
     log_density_hessian_vector_product = function(theta_unc, v, propto = TRUE, jacobian = TRUE){
-      dims <- self$param_unc_num()
+      dims <- private$unc_dims
+      if (length(theta_unc) != dims) {
+        stop("Incorrect number of unconstrained parameters.")
+      } else if (length(v) != dims) {
+        stop("Incorrect number of vector elements.")
+      }
       vars <- .C("bs_log_density_hessian_vector_product_R",
         as.raw(private$model), as.logical(propto), as.logical(jacobian),
         as.double(theta_unc),
@@ -331,6 +351,7 @@ StanModel <- R6::R6Class("StanModel",
     lib_name = NA,
     model = NA,
     seed = NA,
+    unc_dims = NA,
     finalize = function() {
       .C("bs_model_destruct_R",
         as.raw(private$model),
