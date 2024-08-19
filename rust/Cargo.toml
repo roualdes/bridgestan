@@ -22,7 +22,7 @@ dirs = { version = "5.0", optional = true }
 download-bridgestan-src = ["dep:ureq", "dep:tar", "dep:flate2", "dep:dirs"]
 
 [build-dependencies]
-bindgen = "0.69.1"
+bindgen = "0.70.0"
 
 [dev-dependencies]
 approx = "0.5.1"
