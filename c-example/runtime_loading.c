@@ -7,7 +7,7 @@
 #include <libloaderapi.h>
 #include <errhandlingapi.h>
 #define dlopen(lib, flags) LoadLibraryA(lib)
-#define dlsym(handle, sym) GetProcAddress(handle, sym)
+#define dlsym(handle, sym) (void*)GetProcAddress(handle, sym)
 
 char* dlerror() {
   DWORD err = GetLastError();
@@ -63,8 +63,8 @@ int main(int argc, char** argv) {
   typeof(&bs_name) bs_name = dlsym(handle, "bs_name");
   typeof(&bs_param_num) bs_param_num = dlsym(handle, "bs_param_num");
 
-  if (!bs_model_construct || !bs_free_error_msg || !bs_model_destruct ||
-      !bs_name || !bs_param_num) {
+  if (!bs_model_construct || !bs_free_error_msg || !bs_model_destruct
+      || !bs_name || !bs_param_num) {
     fprintf(stderr, "Error: %s\n", dlerror());
     return 1;
   }
