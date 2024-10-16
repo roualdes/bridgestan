@@ -4,11 +4,17 @@ include ../Makefile
 
 MODEL?=full
 CC = gcc
+# .dll on Windows, .so on Linux
+ifeq ($(OS_TAG),windows)
+	DLL = dll
+else
+	DLL = so
+endif
 
-../test_models/$(MODEL)/lib$(MODEL)_model.so: ../test_models/$(MODEL)/$(MODEL)_model.so
-	cp ../test_models/$(MODEL)/$(MODEL)_model.so ../test_models/$(MODEL)/lib$(MODEL)_model.so
+../test_models/$(MODEL)/lib$(MODEL)_model.$(DLL): ../test_models/$(MODEL)/$(MODEL)_model.so
+	cp ../test_models/$(MODEL)/$(MODEL)_model.so ../test_models/$(MODEL)/lib$(MODEL)_model.$(DLL)
 
-example$(EXE): example.c ../test_models/$(MODEL)/lib$(MODEL)_model.so
+example$(EXE): example.c ../test_models/$(MODEL)/lib$(MODEL)_model.$(DLL)
 	$(CC) -c -I ../src example.c -o example.o
 	$(LINK.c) -o example$(EXE) example.o -Wl,-rpath ../test_models/$(MODEL) -L ../test_models/$(MODEL) -l$(MODEL)_model
 	$(RM) example.o
@@ -30,4 +36,4 @@ example_static$(EXE):  example.c ../test_models/$(MODEL)/$(MODEL)_model.a
 	$(RM) example.o
 
 example_runtime$(EXE): runtime_loading.c
-	$(CC) -I ../src runtime_loading.c -o example_runtime$(EXE) -ldl
+	$(CC) -I ../src runtime_loading.c -o example_runtime$(EXE)

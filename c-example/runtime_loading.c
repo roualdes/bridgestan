@@ -1,6 +1,24 @@
 #include "bridgestan.h"
 #include <stdio.h>
+
+#ifdef _WIN32
+// hacky way to get dlopen and friends on Windows
+
+#include <libloaderapi.h>
+#include <errhandlingapi.h>
+#define dlopen(lib, flags) LoadLibraryA(lib)
+#define dlsym(handle, sym) GetProcAddress(handle, sym)
+
+char* dlerror() {
+  DWORD err = GetLastError();
+  int length = snprintf(NULL, 0, "%d", err);
+  char* str = malloc(length + 1);
+  snprintf(str, length + 1, "%d", err);
+  return str;
+}
+#else
 #include <dlfcn.h>
+#endif
 
 #if __STDC_VERSION__ < 202000
 #define typeof __typeof__
@@ -34,8 +52,8 @@ int main(int argc, char** argv) {
   int patch = *(int*)dlsym(handle, "bs_patch_version");
   fprintf(stderr, "Using BridgeStan version %d.%d.%d\n", major, minor, patch);
 
-  // Get function pointers. Uses C23's typeof to re-use bridgestan.h definitions.
-  // We could also write out the types and not include bridgestan.h
+  // Get function pointers. Uses C23's typeof to re-use bridgestan.h
+  // definitions. We could also write out the types and not include bridgestan.h
   typeof(&bs_model_construct) bs_model_construct
       = dlsym(handle, "bs_model_construct");
   typeof(&bs_free_error_msg) bs_free_error_msg
@@ -44,6 +62,12 @@ int main(int argc, char** argv) {
       = dlsym(handle, "bs_model_destruct");
   typeof(&bs_name) bs_name = dlsym(handle, "bs_name");
   typeof(&bs_param_num) bs_param_num = dlsym(handle, "bs_param_num");
+
+  if (!bs_model_construct || !bs_free_error_msg || !bs_model_destruct ||
+      !bs_name || !bs_param_num) {
+    fprintf(stderr, "Error: %s\n", dlerror());
+    return 1;
+  }
 
   // from here on, the code is exactly the same as example.c
 

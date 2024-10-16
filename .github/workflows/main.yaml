@@ -8,7 +8,7 @@ on:
   workflow_dispatch: {}
 
 env:
-  CACHE_VERSION: 0
+  CACHE_VERSION: 1
 
 # only run one copy per PR
 concurrency:
@@ -36,6 +36,26 @@ jobs:
         with:
           path: ./stan/
           key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
+
+
+      - name: Set up PATH for C example
+        if: matrix.os == 'windows-latest'
+        run: |
+          Add-Content $env:GITHUB_PATH "$(pwd)/stan/lib/stan_math/lib/tbb"
+          Add-Content $env:GITHUB_PATH "$(pwd)/test_models/full"
+
+
+      - name: Build C example (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          cd c-example/
+          make -j4 example.exe example_runtime.exe
+          rm ../src/bridgestan.o
+
+          echo "Dynamically linked example"
+          ./example.exe
+          echo "Runtime loading example"
+          ./example_runtime.exe ../test_models/full/full_model.so
 
       - name: Build C example (Unix)
         if: matrix.os != 'windows-latest'
