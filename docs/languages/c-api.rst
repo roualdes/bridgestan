@@ -13,8 +13,11 @@ BridgeStan's pre-requisites and downloaded a copy of the BridgeStan source code.
 Example Program
 ---------------
 
-An example program is provided alongside the BridgeStan source in :file:`c-example/`.
+Two example programs are provided alongside the BridgeStan source in :file:`c-example/`.
 Details for building the example can be found in :file:`c-example/Makefile`.
+
+The first assumes you wish to link a specific model into the program,
+and the second demonstrates how to load a model at runtime
 
 .. raw:: html
 
@@ -23,6 +26,20 @@ Details for building the example can be found in :file:`c-example/Makefile`.
 
 
 .. literalinclude:: ../../c-example/example.c
+   :language: c
+
+.. raw:: html
+
+   </details>
+
+
+.. raw:: html
+
+   <details>
+   <summary><a>Show runtime_loading.c</a></summary>
+
+
+.. literalinclude:: ../../c-example/runtime_loading.c
    :language: c
 
 .. raw:: html

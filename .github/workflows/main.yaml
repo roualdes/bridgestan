@@ -41,13 +41,15 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           cd c-example/
-          make example -j4
-          make example_static
-          rm ../src/bridgestan.o
-          rm ../test_models/full/full_model.a
+          make -j4 example example_static example_runtime
+          rm ../src/bridgestan.o ../test_models/full/*.a
 
+          echo "Dynamically linked example"
           ./example
+          echo "Statically linked example"
           ./example_static
+          echo "Runtime loading example"
+          ./example_runtime ../test_models/full/full_model.so
         shell: bash
 
       # we use the cache here to build the Stan models once for multiple interfaces

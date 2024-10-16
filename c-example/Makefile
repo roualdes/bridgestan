@@ -3,7 +3,7 @@ BS_ROOT=..
 include ../Makefile
 
 MODEL?=full
-CC ?= gcc
+CC = gcc
 
 ../test_models/$(MODEL)/lib$(MODEL)_model.so: ../test_models/$(MODEL)/$(MODEL)_model.so
 	cp ../test_models/$(MODEL)/$(MODEL)_model.so ../test_models/$(MODEL)/lib$(MODEL)_model.so
@@ -28,3 +28,6 @@ example_static$(EXE):  example.c ../test_models/$(MODEL)/$(MODEL)_model.a
 	$(CC) -c -I ../src example.c -o example.o
 	$(LINK.cpp) -o example_static$(EXE) example.o ../test_models/$(MODEL)/$(MODEL)_model.a $(LDLIBS) $(LIBSUNDIALS) $(MPI_TARGETS) $(TBB_TARGETS)
 	$(RM) example.o
+
+example_runtime$(EXE): runtime_loading.c
+	$(CC) -I ../src runtime_loading.c -o example_runtime$(EXE) -ldl
