@@ -85,6 +85,9 @@ load different models in the same executable.
 
 ```shell
 make example_runtime
+# unlike above, this did not automatically build a model, since it
+# was not needed to _build_, but we still need one to _run_ the program
+make ../test_models/full/full_model.so
 ./example_runtime ../test_models/full/full_model.so
 ```
 
