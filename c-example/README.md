@@ -7,7 +7,7 @@ This shows how one could write a C program which calls BridgeStan.
 Any compiled language with a C foreign function interface and
 the ability to link against C libraries should be able to work similarly.
 
-## Binding a specific model at build type
+## Binding a specific model at build time
 
 ### Dynamic linking
 
