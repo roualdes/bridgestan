@@ -7,6 +7,7 @@
 *.a
 c-example/example
 c-example/example_static
+c-example/example_runtime
 *.exe
 make/local
 
