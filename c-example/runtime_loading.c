@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
   int major = *(int*)dlsym(handle, "bs_major_version");
   int minor = *(int*)dlsym(handle, "bs_minor_version");
   int patch = *(int*)dlsym(handle, "bs_patch_version");
-  fprintf(stderr, "Using BridgeStan version %d.%d.%d\n", major, minor, patch);
+  printf("Using BridgeStan version %d.%d.%d\n", major, minor, patch);
 
   // Get function pointers. Uses C23's typeof to re-use bridgestan.h
   // definitions. We could also write out the types and not include bridgestan.h
@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
   bs_model* model = bs_model_construct(data, 123, &err);
   if (!model) {
     if (err) {
-      printf("Error: %s", err);
+      fprintf(stderr, "Error: %s\n", err);
       bs_free_error_msg(err);
     }
     return 1;

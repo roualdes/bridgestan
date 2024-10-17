@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
   bs_model* model = bs_model_construct(data, 123, &err);
   if (!model) {
     if (err) {
-      printf("Error: %s", err);
+      fprintf(stderr, "Error: %s\n", err);
       bs_free_error_msg(err);
     }
     return 1;
