@@ -10,7 +10,7 @@ homepage = "https://roualdes.github.io/bridgestan/latest/"
 
 [dependencies]
 libloading = "0.8.0"
-thiserror = "1.0.40"
+thiserror = "2.0.3"
 path-absolutize = { version = "3.1" }
 log = { version = "0.4" }
 ureq = { version = "2.7", optional = true }
