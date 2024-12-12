@@ -8,7 +8,7 @@ on:
   workflow_dispatch: {}
 
 env:
-  CACHE_VERSION: 2
+  CACHE_VERSION: 3
 
 # only run one copy per PR
 concurrency:
@@ -151,7 +151,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         julia-version: ["1"]
         include:
-          - julia-version: "1.6"
+          - julia-version: "lts"
             os: ubuntu-latest
       fail-fast: false
     steps:
