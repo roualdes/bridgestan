@@ -32,9 +32,6 @@ jobs:
         with:
           python-version: 3.11
 
-      - name: Set up Julia
-        uses: julia-actions/setup-julia@v2
-
       - name: Update version numbers
         if: ${{ !inputs.is_rerun }}
         run: |
@@ -101,6 +98,7 @@ jobs:
     environment: publishing
     permissions:
       id-token: write
+      contents: write
 
     steps:
       - name: Check out github
