@@ -110,11 +110,13 @@ jobs:
 
       - name: Download release artifacts
         uses: actions/download-artifact@v4
+        with:
+          name: release-artifacts
 
       - name: Publish on PyPI
         uses: pypa/gh-action-pypi-publish@v1.12.2
         with:
-          packages-dir: python/dist/
+          packages-dir: release-artifacts/python/dist/
           skip-existing: true
 
       - name: Publish on crates.io
@@ -122,9 +124,6 @@ jobs:
           cd rust/
           cargo publish --token ${CRATES_TOKEN}
         env:
-          # clang is necessary unless we want to do --no-verify
-          LIBCLANG_PATH: ${{ runner.temp }}/llvm/lib
-          LLVM_CONFIG_PATH: ${{ runner.temp }}/llvm/bin/llvm-config
           CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
 
       - name: Create JuliaRegistration comment
