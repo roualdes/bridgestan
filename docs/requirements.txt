@@ -8,3 +8,4 @@ sphinx-copybutton
 pydata-sphinx-theme
 breathe
 myst-parser
+sphinxcontrib-rust

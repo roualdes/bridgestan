@@ -8,7 +8,7 @@ Description: BridgeStan provides efficient in-memory access to the methods of a 
     including log densities, gradients, Hessians, and constraining and unconstraining
     transforms.
 Encoding: UTF-8
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE, r6 = TRUE)
 Suggests:
     testthat (>= 3.0.0),

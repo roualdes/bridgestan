@@ -46,7 +46,7 @@ pub type StanPrintCallback = extern "C" fn(*const c_char, usize);
 impl StanLibrary {
     /// Provide a callback function to be called when Stan prints a message
     ///
-    /// # Safety
+    /// ## Safety
     ///
     /// The provided function must never panic.
     ///
@@ -65,7 +65,7 @@ impl StanLibrary {
 
     /// Unload the Stan library.
     ///
-    /// # Safety
+    /// ## Safety
     ///
     /// There seem to be issues around unloading libraries in threaded
     /// code that are not fully understood:
