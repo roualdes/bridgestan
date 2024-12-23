@@ -5,9 +5,9 @@
 #include "callback_stream.hpp"
 #include <sstream>
 
-int bs_major_version = BRIDGESTAN_MAJOR;
-int bs_minor_version = BRIDGESTAN_MINOR;
-int bs_patch_version = BRIDGESTAN_PATCH;
+const int bs_major_version = BRIDGESTAN_MAJOR;
+const int bs_minor_version = BRIDGESTAN_MINOR;
+const int bs_patch_version = BRIDGESTAN_PATCH;
 
 bs_model* bs_model_construct(const char* data, unsigned int seed,
                              char** error_msg) {
