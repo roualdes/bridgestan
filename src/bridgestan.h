@@ -34,9 +34,9 @@ typedef void (*STREAM_CALLBACK)(const char* data, size_t size);
  * @note These were not available pre-2.0.0, so their absence
  * implies the library is in the 1.0.x series
  */
-BS_PUBLIC extern int bs_major_version;
-BS_PUBLIC extern int bs_minor_version;
-BS_PUBLIC extern int bs_patch_version;
+BS_PUBLIC extern const int bs_major_version;
+BS_PUBLIC extern const int bs_minor_version;
+BS_PUBLIC extern const int bs_patch_version;
 
 /**
  * Construct an instance of a model wrapper.

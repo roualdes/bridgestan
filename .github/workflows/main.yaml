@@ -300,3 +300,7 @@ jobs:
           # run all tests with feature download-bridgestan-src
           cargo test --verbose --all-features
           cargo test --verbose model_compiling -- --ignored
+      - name: Check semver for rust interface
+        uses: obi1kenobi/cargo-semver-checks-action@v2
+        with:
+          manifest-path: ./rust/Cargo.toml
