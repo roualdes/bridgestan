@@ -25,6 +25,10 @@ pub struct StanLibrary {
     id: u64,
 }
 
+// Stan libraries are thread safe.
+unsafe impl Send for StanLibrary {}
+unsafe impl Sync for StanLibrary {}
+
 // To work around a bug where unloading a library
 // can lead to deadlocks.
 //
