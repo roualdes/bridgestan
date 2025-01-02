@@ -151,7 +151,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         julia-version: ["1"]
         include:
-          - julia-version: "1.6"
+          - julia-version: "lts"
             os: ubuntu-latest
       fail-fast: false
     steps:
