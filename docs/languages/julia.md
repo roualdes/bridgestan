@@ -254,7 +254,7 @@ param_unconstrain_json(sm, theta)
 
 This accepts a JSON string of constrained parameters and returns the unconstrained parameters.
 
-The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json.html).
+The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json_apdx.html).
 
 This allocates new memory for the output each call. See [`param_unconstrain_json!`](julia.md#BridgeStan.param_unconstrain_json!) for a version which allows re-using existing memory.
 
@@ -462,7 +462,7 @@ param_unconstrain_json!(sm, theta, out)
 
 This accepts a JSON string of constrained parameters and returns the unconstrained parameters.
 
-The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json.html).
+The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json_apdx.html).
 
 The result is stored in the vector `out`, and a reference is returned. See [`param_unconstrain_json`](julia.md#BridgeStan.param_unconstrain_json) for a version which allocates fresh memory.
 

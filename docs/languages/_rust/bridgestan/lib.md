@@ -9,20 +9,24 @@
 :used_name: self
 
 :::
+:::{rust:use} bridgestan
+:used_name: crate
+
+:::
 :::{rust:use} bridgestan::Rng
 :used_name: Rng
 
 :::
-:::{rust:use} bridgestan::open_library
-:used_name: open_library
-
-:::
-:::{rust:use} bridgestan::StanLibrary
-:used_name: StanLibrary
-
-:::
 :::{rust:use} bridgestan::download_bridgestan_src
 :used_name: download_bridgestan_src
+
+:::
+:::{rust:use} bridgestan::compile_model
+:used_name: compile_model
+
+:::
+:::{rust:use} bridgestan::open_library
+:used_name: open_library
 
 :::
 :::{rust:use} bridgestan::Model
@@ -33,8 +37,8 @@
 :used_name: BridgeStanError
 
 :::
-:::{rust:use} bridgestan::compile_model
-:used_name: compile_model
+:::{rust:use} bridgestan::StanLibrary
+:used_name: StanLibrary
 
 :::
 
@@ -61,9 +65,9 @@
 
   :::
   Compile a Stan Model. Requires a path to the BridgeStan sources (can be
-  downloaded with [`download_bridgestan_src`] if that feature
-  is enabled), a path to the `.stan` file, and additional arguments
-  for the Stan compiler and the make command.
+  downloaded with [`download_bridgestan_src`](crate::download_bridgestan_src)
+   if that feature is enabled), a path to the `.stan` file, and
+  additional arguments for the Stan compiler and the `make` command.
   
   
   :::
@@ -268,7 +272,7 @@
   The gradient of the log density will be stored in `grad`.
   
   *Panics* if the provided buffer has incorrect shape. The gradient buffer `grad`
-  must have length `self.param_unc_num()`.
+  must have length [`self.param_unc_num()`](Self::param_unc_num()).
   :::
 ::::
 ::::{rust:function} bridgestan::bs_safe::Model::log_density_hessian
@@ -287,8 +291,9 @@
   hessian is stored in `hessian`.
   
   *Panics* if the provided buffers have incorrect shapes. The gradient buffer `grad`
-  must have length `self.param_unc_num()` and the `hessian` buffer must
-  have length `self.param_unc_num() * self.param_unc_num()`.
+  must have length [`self.param_unc_num()`](Self::param_unc_num()) and the `hessian`
+  buffer must have length [`self.param_unc_num()`](Self::param_unc_num()) `*`
+  [`self.param_unc_num()`](Self::param_unc_num()).
   :::
 ::::
 ::::{rust:function} bridgestan::bs_safe::Model::log_density_hessian_vector_product
@@ -308,7 +313,7 @@
    will be stored in `hvp`.
   
   *Panics* if the provided buffer has incorrect shape. The buffer `hvp`
-  must have length `self.param_unc_num()`.
+  must have length [`self.param_unc_num()`](Self::param_unc_num()).
   :::
 ::::
 ::::{rust:function} bridgestan::bs_safe::Model::name
@@ -339,10 +344,10 @@
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"new_rng"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"self"},{"type":"punctuation","value":", "},{"type":"name","value":"seed"},{"type":"punctuation","value":": "},{"type":"link","value":"u32","target":"u32"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"link","value":"Result","target":"Result"},{"type":"punctuation","value":"<"},{"type":"link","value":"Rng","target":"Rng"},{"type":"punctuation","value":"<"},{"type":"punctuation","value":"&"},{"type":"link","value":"StanLibrary","target":"StanLibrary"},{"type":"punctuation","value":">"},{"type":"punctuation","value":">"}]
 
   :::
-  Create a new `Rng` random number generator from the library underlying this model.
+  Create a new [`Rng`] random number generator from the library underlying this model.
   
-  This can be used in `param_constrain` when values from the `generated quantities`
-  block are desired.
+  This can be used in [`param_constrain()`](Self::param_constrain()) when values
+  from the `generated quantities` block are desired.
   
   This instance can only be used with models from the same
   Stan library. Invalid usage will otherwise result in a
@@ -364,7 +369,8 @@
   set, we also include the generated quantities at the very end.
   
   *Panics* if the provided buffer has incorrect shape. The length of the `out` buffer
-  `self.param_num(include_tp, include_gq)`.
+  must be [`self.param_num(include_tp, include_gq)`](Self::param_num).
+  
   *Panics* if `include_gq` is set but no random number generator is provided.
   :::
 ::::
@@ -427,7 +433,7 @@
   :::
   Return the number of parameters on the unconstrained scale.
   
-  In particular, this is the size of the slice required by the log_density functions.
+  In particular, this is the size of the slice required by the `log_density` functions.
   :::
 ::::
 ::::{rust:function} bridgestan::bs_safe::Model::param_unconstrain
@@ -447,7 +453,8 @@
   :::
   Map a constrained point in json format to the unconstrained space.
   
-  The JSON schema assumed is fully defined in the *CmdStan Reference Manual*.
+  The JSON is expected to be in the
+  [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json.html).
   A value for each parameter in the Stan program should be provided, with
   dimensions and size corresponding to the Stan program declarations.
   :::
@@ -524,7 +531,7 @@
 
   :::
   A random number generator for Stan models.
-  This is only used in the `param_contrain` method
+  This is only used in the [`Model::param_constrain()`] method
   of the model when requesting values from the `generated quantities` block.
   Different threads should use different instances.
   

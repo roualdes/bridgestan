@@ -314,7 +314,7 @@ The unconstrained parameters of the model.
 
 This accepts a JSON string of constrained parameters and returns the unconstrained parameters.
 
-The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json.html).
+The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json_apdx.html).
 
 ###### Usage
 

@@ -1,4 +1,3 @@
-
 sphinx>5
 nbsphinx
 ipython
@@ -8,4 +7,4 @@ sphinx-copybutton
 pydata-sphinx-theme
 breathe
 myst-parser
-sphinxcontrib-rust
+git+https://gitlab.com/munir0b0t/sphinxcontrib-rust.git
