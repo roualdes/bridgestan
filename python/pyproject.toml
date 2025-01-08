@@ -13,7 +13,7 @@ authors = [
     { name = "Edward Roualdes", email = "eroualdes@csuchico.edu" },
 ]
 requires-python = ">=3.9"
-dependencies = ["numpy", "dllist"]
+dependencies = ["numpy", "dllist<2"]
 dynamic = ["version"]
 
 [project.urls]
