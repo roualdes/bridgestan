@@ -289,7 +289,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
 
     /// Create a new [`Rng`] random number generator from the library underlying this model.
     ///
-    /// This can be used in [`param_constrain()`](Self::param_constrain()) when values
+    /// This can be used in [`param_constrain()`](Model::param_constrain()) when values
     /// from the `generated quantities` block are desired.
     ///
     /// This instance can only be used with models from the same
@@ -416,7 +416,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// The gradient of the log density will be stored in `grad`.
     ///
     /// *Panics* if the provided buffer has incorrect shape. The gradient buffer `grad`
-    /// must have length [`self.param_unc_num()`](Self::param_unc_num()).
+    /// must have length [`self.param_unc_num()`](Model::param_unc_num()).
     pub fn log_density_gradient(
         &self,
         theta_unc: &[f64],
@@ -468,9 +468,9 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// hessian is stored in `hessian`.
     ///
     /// *Panics* if the provided buffers have incorrect shapes. The gradient buffer `grad`
-    /// must have length [`self.param_unc_num()`](Self::param_unc_num()) and the `hessian`
-    /// buffer must have length [`self.param_unc_num()`](Self::param_unc_num()) `*`
-    /// [`self.param_unc_num()`](Self::param_unc_num()).
+    /// must have length [`self.param_unc_num()`](Model::param_unc_num()) and the `hessian`
+    /// buffer must have length [`self.param_unc_num()`](Model::param_unc_num()) `*`
+    /// [`self.param_unc_num()`](Model::param_unc_num()).
     pub fn log_density_hessian(
         &self,
         theta_unc: &[f64],
@@ -530,7 +530,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     ///  will be stored in `hvp`.
     ///
     /// *Panics* if the provided buffer has incorrect shape. The buffer `hvp`
-    /// must have length [`self.param_unc_num()`](Self::param_unc_num()).
+    /// must have length [`self.param_unc_num()`](Model::param_unc_num()).
     pub fn log_density_hessian_vector_product(
         &self,
         theta_unc: &[f64],
@@ -588,7 +588,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// set, we also include the generated quantities at the very end.
     ///
     /// *Panics* if the provided buffer has incorrect shape. The length of the `out` buffer
-    /// must be [`self.param_num(include_tp, include_gq)`](Self::param_num).
+    /// must be [`self.param_num(include_tp, include_gq)`](Model::param_num).
     ///
     /// *Panics* if `include_gq` is set but no random number generator is provided.
     pub fn param_constrain<R: Borrow<StanLibrary>>(

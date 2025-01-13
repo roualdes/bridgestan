@@ -17,28 +17,28 @@
 :used_name: Rng
 
 :::
+:::{rust:use} bridgestan::BridgeStanError
+:used_name: BridgeStanError
+
+:::
 :::{rust:use} bridgestan::download_bridgestan_src
 :used_name: download_bridgestan_src
+
+:::
+:::{rust:use} bridgestan::StanLibrary
+:used_name: StanLibrary
 
 :::
 :::{rust:use} bridgestan::compile_model
 :used_name: compile_model
 
 :::
-:::{rust:use} bridgestan::open_library
-:used_name: open_library
-
-:::
 :::{rust:use} bridgestan::Model
 :used_name: Model
 
 :::
-:::{rust:use} bridgestan::BridgeStanError
-:used_name: BridgeStanError
-
-:::
-:::{rust:use} bridgestan::StanLibrary
-:used_name: StanLibrary
+:::{rust:use} bridgestan::open_library
+:used_name: open_library
 
 :::
 
@@ -223,7 +223,7 @@
 :::{rubric} Implementations
 :::
 
-:::::{rust:impl} bridgestan::bs_safe::Model
+:::::{rust:impl} bridgestan::Model
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"impl"},{"type":"punctuation","value":"<"},{"type":"name","value":"T"},{"type":"punctuation","value":": "},{"type":"link","value":"Borrow","target":"Borrow"},{"type":"punctuation","value":"<"},{"type":"link","value":"StanLibrary","target":"StanLibrary"},{"type":"punctuation","value":">"},{"type":"punctuation","value":">"},{"type":"space"},{"type":"link","value":"Model","target":"Model"},{"type":"punctuation","value":"<"},{"type":"link","value":"T","target":"T"},{"type":"punctuation","value":">"}]
@@ -235,7 +235,7 @@
 :::{rubric} Functions
 :::
 
-::::{rust:function} bridgestan::bs_safe::Model::info
+::::{rust:function} bridgestan::Model::info
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"info"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"self"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"punctuation","value":"&"},{"type":"link","value":"CStr","target":"CStr"}]
@@ -244,7 +244,7 @@
   Return information about the compiled model
   :::
 ::::
-::::{rust:function} bridgestan::bs_safe::Model::log_density
+::::{rust:function} bridgestan::Model::log_density
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"log_density"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"self"},{"type":"punctuation","value":", "},{"type":"name","value":"theta_unc"},{"type":"punctuation","value":": "},{"type":"punctuation","value":"&"},{"type":"punctuation","value":"["},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":"]"},{"type":"punctuation","value":", "},{"type":"name","value":"propto"},{"type":"punctuation","value":": "},{"type":"link","value":"bool","target":"bool"},{"type":"punctuation","value":", "},{"type":"name","value":"jacobian"},{"type":"punctuation","value":": "},{"type":"link","value":"bool","target":"bool"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"link","value":"Result","target":"Result"},{"type":"punctuation","value":"<"},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":">"}]
@@ -257,7 +257,7 @@
   of the density that do not depend on the parameters if `propto == true`.
   :::
 ::::
-::::{rust:function} bridgestan::bs_safe::Model::log_density_gradient
+::::{rust:function} bridgestan::Model::log_density_gradient
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"log_density_gradient"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"self"},{"type":"punctuation","value":", "},{"type":"name","value":"theta_unc"},{"type":"punctuation","value":": "},{"type":"punctuation","value":"&"},{"type":"punctuation","value":"["},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":"]"},{"type":"punctuation","value":", "},{"type":"name","value":"propto"},{"type":"punctuation","value":": "},{"type":"link","value":"bool","target":"bool"},{"type":"punctuation","value":", "},{"type":"name","value":"jacobian"},{"type":"punctuation","value":": "},{"type":"link","value":"bool","target":"bool"},{"type":"punctuation","value":", "},{"type":"name","value":"grad"},{"type":"punctuation","value":": "},{"type":"punctuation","value":"&"},{"type":"keyword","value":"mut"},{"type":"space"},{"type":"punctuation","value":"["},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":"]"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"link","value":"Result","target":"Result"},{"type":"punctuation","value":"<"},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":">"}]
@@ -272,10 +272,10 @@
   The gradient of the log density will be stored in `grad`.
   
   *Panics* if the provided buffer has incorrect shape. The gradient buffer `grad`
-  must have length [`self.param_unc_num()`](Self::param_unc_num()).
+  must have length [`self.param_unc_num()`](Model::param_unc_num()).
   :::
 ::::
-::::{rust:function} bridgestan::bs_safe::Model::log_density_hessian
+::::{rust:function} bridgestan::Model::log_density_hessian
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"log_density_hessian"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"self"},{"type":"punctuation","value":", "},{"type":"name","value":"theta_unc"},{"type":"punctuation","value":": "},{"type":"punctuation","value":"&"},{"type":"punctuation","value":"["},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":"]"},{"type":"punctuation","value":", "},{"type":"name","value":"propto"},{"type":"punctuation","value":": "},{"type":"link","value":"bool","target":"bool"},{"type":"punctuation","value":", "},{"type":"name","value":"jacobian"},{"type":"punctuation","value":": "},{"type":"link","value":"bool","target":"bool"},{"type":"punctuation","value":", "},{"type":"name","value":"grad"},{"type":"punctuation","value":": "},{"type":"punctuation","value":"&"},{"type":"keyword","value":"mut"},{"type":"space"},{"type":"punctuation","value":"["},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":"]"},{"type":"punctuation","value":", "},{"type":"name","value":"hessian"},{"type":"punctuation","value":": "},{"type":"punctuation","value":"&"},{"type":"keyword","value":"mut"},{"type":"space"},{"type":"punctuation","value":"["},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":"]"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"link","value":"Result","target":"Result"},{"type":"punctuation","value":"<"},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":">"}]
@@ -291,12 +291,12 @@
   hessian is stored in `hessian`.
   
   *Panics* if the provided buffers have incorrect shapes. The gradient buffer `grad`
-  must have length [`self.param_unc_num()`](Self::param_unc_num()) and the `hessian`
-  buffer must have length [`self.param_unc_num()`](Self::param_unc_num()) `*`
-  [`self.param_unc_num()`](Self::param_unc_num()).
+  must have length [`self.param_unc_num()`](Model::param_unc_num()) and the `hessian`
+  buffer must have length [`self.param_unc_num()`](Model::param_unc_num()) `*`
+  [`self.param_unc_num()`](Model::param_unc_num()).
   :::
 ::::
-::::{rust:function} bridgestan::bs_safe::Model::log_density_hessian_vector_product
+::::{rust:function} bridgestan::Model::log_density_hessian_vector_product
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"log_density_hessian_vector_product"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"self"},{"type":"punctuation","value":", "},{"type":"name","value":"theta_unc"},{"type":"punctuation","value":": "},{"type":"punctuation","value":"&"},{"type":"punctuation","value":"["},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":"]"},{"type":"punctuation","value":", "},{"type":"name","value":"v"},{"type":"punctuation","value":": "},{"type":"punctuation","value":"&"},{"type":"punctuation","value":"["},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":"]"},{"type":"punctuation","value":", "},{"type":"name","value":"propto"},{"type":"punctuation","value":": "},{"type":"link","value":"bool","target":"bool"},{"type":"punctuation","value":", "},{"type":"name","value":"jacobian"},{"type":"punctuation","value":": "},{"type":"link","value":"bool","target":"bool"},{"type":"punctuation","value":", "},{"type":"name","value":"hvp"},{"type":"punctuation","value":": "},{"type":"punctuation","value":"&"},{"type":"keyword","value":"mut"},{"type":"space"},{"type":"punctuation","value":"["},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":"]"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"link","value":"Result","target":"Result"},{"type":"punctuation","value":"<"},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":">"}]
@@ -313,10 +313,10 @@
    will be stored in `hvp`.
   
   *Panics* if the provided buffer has incorrect shape. The buffer `hvp`
-  must have length [`self.param_unc_num()`](Self::param_unc_num()).
+  must have length [`self.param_unc_num()`](Model::param_unc_num()).
   :::
 ::::
-::::{rust:function} bridgestan::bs_safe::Model::name
+::::{rust:function} bridgestan::Model::name
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"name"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"self"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"link","value":"Result","target":"Result"},{"type":"punctuation","value":"<"},{"type":"punctuation","value":"&"},{"type":"link","value":"str","target":"str"},{"type":"punctuation","value":">"}]
@@ -325,7 +325,7 @@
   Return the name of the model or error if UTF decode fails
   :::
 ::::
-::::{rust:function} bridgestan::bs_safe::Model::new
+::::{rust:function} bridgestan::Model::new
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"new"},{"type":"punctuation","value":"<"},{"type":"name","value":"D"},{"type":"punctuation","value":": "},{"type":"link","value":"AsRef","target":"AsRef"},{"type":"punctuation","value":"<"},{"type":"link","value":"CStr","target":"CStr"},{"type":"punctuation","value":">"},{"type":"punctuation","value":">"},{"type":"punctuation","value":"("},{"type":"name","value":"lib"},{"type":"punctuation","value":": "},{"type":"link","value":"T","target":"T"},{"type":"punctuation","value":", "},{"type":"name","value":"data"},{"type":"punctuation","value":": "},{"type":"link","value":"Option","target":"Option"},{"type":"punctuation","value":"<"},{"type":"link","value":"D","target":"D"},{"type":"punctuation","value":">"},{"type":"punctuation","value":", "},{"type":"name","value":"seed"},{"type":"punctuation","value":": "},{"type":"link","value":"u32","target":"u32"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"link","value":"Result","target":"Result"},{"type":"punctuation","value":"<"},{"type":"link","value":"Self","target":"Self"},{"type":"punctuation","value":">"}]
@@ -338,7 +338,7 @@
   the `transformed data` section.
   :::
 ::::
-::::{rust:function} bridgestan::bs_safe::Model::new_rng
+::::{rust:function} bridgestan::Model::new_rng
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"new_rng"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"self"},{"type":"punctuation","value":", "},{"type":"name","value":"seed"},{"type":"punctuation","value":": "},{"type":"link","value":"u32","target":"u32"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"link","value":"Result","target":"Result"},{"type":"punctuation","value":"<"},{"type":"link","value":"Rng","target":"Rng"},{"type":"punctuation","value":"<"},{"type":"punctuation","value":"&"},{"type":"link","value":"StanLibrary","target":"StanLibrary"},{"type":"punctuation","value":">"},{"type":"punctuation","value":">"}]
@@ -346,7 +346,7 @@
   :::
   Create a new [`Rng`] random number generator from the library underlying this model.
   
-  This can be used in [`param_constrain()`](Self::param_constrain()) when values
+  This can be used in [`param_constrain()`](Model::param_constrain()) when values
   from the `generated quantities` block are desired.
   
   This instance can only be used with models from the same
@@ -354,7 +354,7 @@
   panic.
   :::
 ::::
-::::{rust:function} bridgestan::bs_safe::Model::param_constrain
+::::{rust:function} bridgestan::Model::param_constrain
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"param_constrain"},{"type":"punctuation","value":"<"},{"type":"name","value":"R"},{"type":"punctuation","value":": "},{"type":"link","value":"Borrow","target":"Borrow"},{"type":"punctuation","value":"<"},{"type":"link","value":"StanLibrary","target":"StanLibrary"},{"type":"punctuation","value":">"},{"type":"punctuation","value":">"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"self"},{"type":"punctuation","value":", "},{"type":"name","value":"theta_unc"},{"type":"punctuation","value":": "},{"type":"punctuation","value":"&"},{"type":"punctuation","value":"["},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":"]"},{"type":"punctuation","value":", "},{"type":"name","value":"include_tp"},{"type":"punctuation","value":": "},{"type":"link","value":"bool","target":"bool"},{"type":"punctuation","value":", "},{"type":"name","value":"include_gq"},{"type":"punctuation","value":": "},{"type":"link","value":"bool","target":"bool"},{"type":"punctuation","value":", "},{"type":"name","value":"out"},{"type":"punctuation","value":": "},{"type":"punctuation","value":"&"},{"type":"keyword","value":"mut"},{"type":"space"},{"type":"punctuation","value":"["},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":"]"},{"type":"punctuation","value":", "},{"type":"name","value":"rng"},{"type":"punctuation","value":": "},{"type":"link","value":"Option","target":"Option"},{"type":"punctuation","value":"<"},{"type":"punctuation","value":"&"},{"type":"keyword","value":"mut"},{"type":"space"},{"type":"link","value":"Rng","target":"Rng"},{"type":"punctuation","value":"<"},{"type":"link","value":"R","target":"R"},{"type":"punctuation","value":">"},{"type":"punctuation","value":">"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"link","value":"Result","target":"Result"},{"type":"punctuation","value":"<"},{"type":"punctuation","value":"("},{"type":"punctuation","value":")"},{"type":"punctuation","value":">"}]
@@ -369,12 +369,12 @@
   set, we also include the generated quantities at the very end.
   
   *Panics* if the provided buffer has incorrect shape. The length of the `out` buffer
-  must be [`self.param_num(include_tp, include_gq)`](Self::param_num).
+  must be [`self.param_num(include_tp, include_gq)`](Model::param_num).
   
   *Panics* if `include_gq` is set but no random number generator is provided.
   :::
 ::::
-::::{rust:function} bridgestan::bs_safe::Model::param_names
+::::{rust:function} bridgestan::Model::param_names
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"param_names"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"self"},{"type":"punctuation","value":", "},{"type":"name","value":"include_tp"},{"type":"punctuation","value":": "},{"type":"link","value":"bool","target":"bool"},{"type":"punctuation","value":", "},{"type":"name","value":"include_gq"},{"type":"punctuation","value":": "},{"type":"link","value":"bool","target":"bool"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"punctuation","value":"&"},{"type":"link","value":"str","target":"str"}]
@@ -396,7 +396,7 @@
   the very end.
   :::
 ::::
-::::{rust:function} bridgestan::bs_safe::Model::param_num
+::::{rust:function} bridgestan::Model::param_num
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"param_num"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"self"},{"type":"punctuation","value":", "},{"type":"name","value":"include_tp"},{"type":"punctuation","value":": "},{"type":"link","value":"bool","target":"bool"},{"type":"punctuation","value":", "},{"type":"name","value":"include_gq"},{"type":"punctuation","value":": "},{"type":"link","value":"bool","target":"bool"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"link","value":"usize","target":"usize"}]
@@ -408,7 +408,7 @@
   quantities (`include_gq`) if requested.
   :::
 ::::
-::::{rust:function} bridgestan::bs_safe::Model::param_unc_names
+::::{rust:function} bridgestan::Model::param_unc_names
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"param_unc_names"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"mut"},{"type":"space"},{"type":"keyword","value":"self"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"punctuation","value":"&"},{"type":"link","value":"str","target":"str"}]
@@ -425,7 +425,7 @@
   3]` as `b.2.3`.  The numbering follows Stan and is indexed from 1.
   :::
 ::::
-::::{rust:function} bridgestan::bs_safe::Model::param_unc_num
+::::{rust:function} bridgestan::Model::param_unc_num
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"param_unc_num"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"self"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"link","value":"usize","target":"usize"}]
@@ -436,7 +436,7 @@
   In particular, this is the size of the slice required by the `log_density` functions.
   :::
 ::::
-::::{rust:function} bridgestan::bs_safe::Model::param_unconstrain
+::::{rust:function} bridgestan::Model::param_unconstrain
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"param_unconstrain"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"self"},{"type":"punctuation","value":", "},{"type":"name","value":"theta"},{"type":"punctuation","value":": "},{"type":"punctuation","value":"&"},{"type":"punctuation","value":"["},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":"]"},{"type":"punctuation","value":", "},{"type":"name","value":"theta_unc"},{"type":"punctuation","value":": "},{"type":"punctuation","value":"&"},{"type":"keyword","value":"mut"},{"type":"space"},{"type":"punctuation","value":"["},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":"]"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"link","value":"Result","target":"Result"},{"type":"punctuation","value":"<"},{"type":"punctuation","value":"("},{"type":"punctuation","value":")"},{"type":"punctuation","value":">"}]
@@ -445,7 +445,7 @@
   Map a point in constrained parameter space to the unconstrained space.
   :::
 ::::
-::::{rust:function} bridgestan::bs_safe::Model::param_unconstrain_json
+::::{rust:function} bridgestan::Model::param_unconstrain_json
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"param_unconstrain_json"},{"type":"punctuation","value":"<"},{"type":"name","value":"S"},{"type":"punctuation","value":": "},{"type":"link","value":"AsRef","target":"AsRef"},{"type":"punctuation","value":"<"},{"type":"link","value":"CStr","target":"CStr"},{"type":"punctuation","value":">"},{"type":"punctuation","value":">"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"self"},{"type":"punctuation","value":", "},{"type":"name","value":"json"},{"type":"punctuation","value":": "},{"type":"link","value":"S","target":"S"},{"type":"punctuation","value":", "},{"type":"name","value":"theta_unc"},{"type":"punctuation","value":": "},{"type":"punctuation","value":"&"},{"type":"keyword","value":"mut"},{"type":"space"},{"type":"punctuation","value":"["},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":"]"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"link","value":"Result","target":"Result"},{"type":"punctuation","value":"<"},{"type":"punctuation","value":"("},{"type":"punctuation","value":")"},{"type":"punctuation","value":">"}]
@@ -459,7 +459,7 @@
   dimensions and size corresponding to the Stan program declarations.
   :::
 ::::
-::::{rust:function} bridgestan::bs_safe::Model::ref_library
+::::{rust:function} bridgestan::Model::ref_library
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"ref_library"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"self"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"punctuation","value":"&"},{"type":"link","value":"StanLibrary","target":"StanLibrary"}]
@@ -469,7 +469,7 @@
   :::
 ::::
 :::::
-:::::{rust:impl} bridgestan::bs_safe::Model
+:::::{rust:impl} bridgestan::Model
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"impl"},{"type":"punctuation","value":"<"},{"type":"name","value":"T"},{"type":"punctuation","value":": "},{"type":"link","value":"Borrow","target":"Borrow"},{"type":"punctuation","value":"<"},{"type":"link","value":"StanLibrary","target":"StanLibrary"},{"type":"punctuation","value":">"},{"type":"punctuation","value":" + "},{"type":"link","value":"Clone","target":"Clone"},{"type":"punctuation","value":">"},{"type":"space"},{"type":"link","value":"Model","target":"Model"},{"type":"punctuation","value":"<"},{"type":"link","value":"T","target":"T"},{"type":"punctuation","value":">"}]
@@ -481,7 +481,7 @@
 :::{rubric} Functions
 :::
 
-::::{rust:function} bridgestan::bs_safe::Model::clone_library_ref
+::::{rust:function} bridgestan::Model::clone_library_ref
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"clone_library_ref"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"self"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"link","value":"T","target":"T"}]
@@ -495,7 +495,7 @@
 :::{rubric} Traits implemented
 :::
 
-:::::{rust:impl} bridgestan::bs_safe::Model::Sync
+:::::{rust:impl} bridgestan::Model::Sync
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"unsafe"},{"type":"space"},{"type":"keyword","value":"impl"},{"type":"punctuation","value":"<"},{"type":"name","value":"T"},{"type":"punctuation","value":": "},{"type":"link","value":"Sync","target":"Sync"},{"type":"punctuation","value":" + "},{"type":"link","value":"Borrow","target":"Borrow"},{"type":"punctuation","value":"<"},{"type":"link","value":"StanLibrary","target":"StanLibrary"},{"type":"punctuation","value":">"},{"type":"punctuation","value":">"},{"type":"space"},{"type":"link","value":"Sync","target":"Sync"},{"type":"space"},{"type":"keyword","value":"for"},{"type":"space"},{"type":"link","value":"Model","target":"Model"},{"type":"punctuation","value":"<"},{"type":"link","value":"T","target":"T"},{"type":"punctuation","value":">"}]
@@ -504,7 +504,7 @@
   :::
   :::
 :::::
-:::::{rust:impl} bridgestan::bs_safe::Model::Send
+:::::{rust:impl} bridgestan::Model::Send
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"unsafe"},{"type":"space"},{"type":"keyword","value":"impl"},{"type":"punctuation","value":"<"},{"type":"name","value":"T"},{"type":"punctuation","value":": "},{"type":"link","value":"Send","target":"Send"},{"type":"punctuation","value":" + "},{"type":"link","value":"Borrow","target":"Borrow"},{"type":"punctuation","value":"<"},{"type":"link","value":"StanLibrary","target":"StanLibrary"},{"type":"punctuation","value":">"},{"type":"punctuation","value":">"},{"type":"space"},{"type":"link","value":"Send","target":"Send"},{"type":"space"},{"type":"keyword","value":"for"},{"type":"space"},{"type":"link","value":"Model","target":"Model"},{"type":"punctuation","value":"<"},{"type":"link","value":"T","target":"T"},{"type":"punctuation","value":">"}]
@@ -513,7 +513,7 @@
   :::
   :::
 :::::
-:::::{rust:impl} bridgestan::bs_safe::Model::Drop
+:::::{rust:impl} bridgestan::Model::Drop
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"impl"},{"type":"punctuation","value":"<"},{"type":"name","value":"T"},{"type":"punctuation","value":": "},{"type":"link","value":"Borrow","target":"Borrow"},{"type":"punctuation","value":"<"},{"type":"link","value":"StanLibrary","target":"StanLibrary"},{"type":"punctuation","value":">"},{"type":"punctuation","value":">"},{"type":"space"},{"type":"link","value":"Drop","target":"Drop"},{"type":"space"},{"type":"keyword","value":"for"},{"type":"space"},{"type":"link","value":"Model","target":"Model"},{"type":"punctuation","value":"<"},{"type":"link","value":"T","target":"T"},{"type":"punctuation","value":">"}]
@@ -541,7 +541,7 @@
 :::{rubric} Implementations
 :::
 
-:::::{rust:impl} bridgestan::bs_safe::Rng
+:::::{rust:impl} bridgestan::Rng
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"impl"},{"type":"punctuation","value":"<"},{"type":"name","value":"T"},{"type":"punctuation","value":": "},{"type":"link","value":"Borrow","target":"Borrow"},{"type":"punctuation","value":"<"},{"type":"link","value":"StanLibrary","target":"StanLibrary"},{"type":"punctuation","value":">"},{"type":"punctuation","value":">"},{"type":"space"},{"type":"link","value":"Rng","target":"Rng"},{"type":"punctuation","value":"<"},{"type":"link","value":"T","target":"T"},{"type":"punctuation","value":">"}]
@@ -553,7 +553,7 @@
 :::{rubric} Functions
 :::
 
-::::{rust:function} bridgestan::bs_safe::Rng::new
+::::{rust:function} bridgestan::Rng::new
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"new"},{"type":"punctuation","value":"("},{"type":"name","value":"lib"},{"type":"punctuation","value":": "},{"type":"link","value":"T","target":"T"},{"type":"punctuation","value":", "},{"type":"name","value":"seed"},{"type":"punctuation","value":": "},{"type":"link","value":"u32","target":"u32"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"link","value":"Result","target":"Result"},{"type":"punctuation","value":"<"},{"type":"link","value":"Self","target":"Self"},{"type":"punctuation","value":">"}]
@@ -566,7 +566,7 @@
 :::{rubric} Traits implemented
 :::
 
-:::::{rust:impl} bridgestan::bs_safe::Rng::Sync
+:::::{rust:impl} bridgestan::Rng::Sync
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"unsafe"},{"type":"space"},{"type":"keyword","value":"impl"},{"type":"punctuation","value":"<"},{"type":"name","value":"T"},{"type":"punctuation","value":": "},{"type":"link","value":"Sync","target":"Sync"},{"type":"punctuation","value":" + "},{"type":"link","value":"Borrow","target":"Borrow"},{"type":"punctuation","value":"<"},{"type":"link","value":"StanLibrary","target":"StanLibrary"},{"type":"punctuation","value":">"},{"type":"punctuation","value":">"},{"type":"space"},{"type":"link","value":"Sync","target":"Sync"},{"type":"space"},{"type":"keyword","value":"for"},{"type":"space"},{"type":"link","value":"Rng","target":"Rng"},{"type":"punctuation","value":"<"},{"type":"link","value":"T","target":"T"},{"type":"punctuation","value":">"}]
@@ -575,7 +575,7 @@
   :::
   :::
 :::::
-:::::{rust:impl} bridgestan::bs_safe::Rng::Send
+:::::{rust:impl} bridgestan::Rng::Send
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"unsafe"},{"type":"space"},{"type":"keyword","value":"impl"},{"type":"punctuation","value":"<"},{"type":"name","value":"T"},{"type":"punctuation","value":": "},{"type":"link","value":"Send","target":"Send"},{"type":"punctuation","value":" + "},{"type":"link","value":"Borrow","target":"Borrow"},{"type":"punctuation","value":"<"},{"type":"link","value":"StanLibrary","target":"StanLibrary"},{"type":"punctuation","value":">"},{"type":"punctuation","value":">"},{"type":"space"},{"type":"link","value":"Send","target":"Send"},{"type":"space"},{"type":"keyword","value":"for"},{"type":"space"},{"type":"link","value":"Rng","target":"Rng"},{"type":"punctuation","value":"<"},{"type":"link","value":"T","target":"T"},{"type":"punctuation","value":">"}]
@@ -584,7 +584,7 @@
   :::
   :::
 :::::
-:::::{rust:impl} bridgestan::bs_safe::Rng::Drop
+:::::{rust:impl} bridgestan::Rng::Drop
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"impl"},{"type":"punctuation","value":"<"},{"type":"name","value":"T"},{"type":"punctuation","value":": "},{"type":"link","value":"Borrow","target":"Borrow"},{"type":"punctuation","value":"<"},{"type":"link","value":"StanLibrary","target":"StanLibrary"},{"type":"punctuation","value":">"},{"type":"punctuation","value":">"},{"type":"space"},{"type":"link","value":"Drop","target":"Drop"},{"type":"space"},{"type":"keyword","value":"for"},{"type":"space"},{"type":"link","value":"Rng","target":"Rng"},{"type":"punctuation","value":"<"},{"type":"link","value":"T","target":"T"},{"type":"punctuation","value":">"}]
@@ -609,7 +609,7 @@
 :::{rubric} Implementations
 :::
 
-:::::{rust:impl} bridgestan::bs_safe::StanLibrary
+:::::{rust:impl} bridgestan::StanLibrary
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"impl"},{"type":"space"},{"type":"link","value":"StanLibrary","target":"StanLibrary"}]
@@ -621,7 +621,7 @@
 :::{rubric} Functions
 :::
 
-::::{rust:function} bridgestan::bs_safe::StanLibrary::set_print_callback
+::::{rust:function} bridgestan::StanLibrary::set_print_callback
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"unsafe"},{"type":"space"},{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"set_print_callback"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"mut"},{"type":"space"},{"type":"keyword","value":"self"},{"type":"punctuation","value":", "},{"type":"name","value":"callback"},{"type":"punctuation","value":": "},{"type":"link","value":"StanPrintCallback","target":"StanPrintCallback"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"link","value":"Result","target":"Result"},{"type":"punctuation","value":"<"},{"type":"punctuation","value":"("},{"type":"punctuation","value":")"},{"type":"punctuation","value":">"}]
@@ -637,7 +637,7 @@
   need to be thread safe.
   :::
 ::::
-::::{rust:function} bridgestan::bs_safe::StanLibrary::unload_library
+::::{rust:function} bridgestan::StanLibrary::unload_library
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"unsafe"},{"type":"space"},{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"unload_library"},{"type":"punctuation","value":"("},{"type":"keyword","value":"mut"},{"type":"space"},{"type":"keyword","value":"self"},{"type":"punctuation","value":")"}]
@@ -657,7 +657,7 @@
 :::{rubric} Traits implemented
 :::
 
-:::::{rust:impl} bridgestan::bs_safe::StanLibrary::Send
+:::::{rust:impl} bridgestan::StanLibrary::Send
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"unsafe"},{"type":"space"},{"type":"keyword","value":"impl"},{"type":"space"},{"type":"link","value":"Send","target":"Send"},{"type":"space"},{"type":"keyword","value":"for"},{"type":"space"},{"type":"link","value":"StanLibrary","target":"StanLibrary"}]
@@ -666,7 +666,7 @@
   :::
   :::
 :::::
-:::::{rust:impl} bridgestan::bs_safe::StanLibrary::Sync
+:::::{rust:impl} bridgestan::StanLibrary::Sync
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"unsafe"},{"type":"space"},{"type":"keyword","value":"impl"},{"type":"space"},{"type":"link","value":"Sync","target":"Sync"},{"type":"space"},{"type":"keyword","value":"for"},{"type":"space"},{"type":"link","value":"StanLibrary","target":"StanLibrary"}]
@@ -675,7 +675,7 @@
   :::
   :::
 :::::
-:::::{rust:impl} bridgestan::bs_safe::StanLibrary::Drop
+:::::{rust:impl} bridgestan::StanLibrary::Drop
 :index: -1
 :vis: pub
 :layout: [{"type":"keyword","value":"impl"},{"type":"space"},{"type":"link","value":"Drop","target":"Drop"},{"type":"space"},{"type":"keyword","value":"for"},{"type":"space"},{"type":"link","value":"StanLibrary","target":"StanLibrary"}]

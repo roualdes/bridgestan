@@ -1,4 +1,4 @@
-sphinx>5
+sphinx>5,<8
 nbsphinx
 ipython
 ipykernel
