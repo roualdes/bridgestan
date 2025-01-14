@@ -13,32 +13,32 @@
 :used_name: crate
 
 :::
-:::{rust:use} bridgestan::Rng
-:used_name: Rng
-
-:::
 :::{rust:use} bridgestan::BridgeStanError
 :used_name: BridgeStanError
-
-:::
-:::{rust:use} bridgestan::download_bridgestan_src
-:used_name: download_bridgestan_src
 
 :::
 :::{rust:use} bridgestan::StanLibrary
 :used_name: StanLibrary
 
 :::
+:::{rust:use} bridgestan::Rng
+:used_name: Rng
+
+:::
 :::{rust:use} bridgestan::compile_model
 :used_name: compile_model
 
 :::
-:::{rust:use} bridgestan::Model
-:used_name: Model
+:::{rust:use} bridgestan::download_bridgestan_src
+:used_name: download_bridgestan_src
 
 :::
 :::{rust:use} bridgestan::open_library
 :used_name: open_library
+
+:::
+:::{rust:use} bridgestan::Model
+:used_name: Model
 
 :::
 
@@ -272,7 +272,7 @@
   The gradient of the log density will be stored in `grad`.
   
   *Panics* if the provided buffer has incorrect shape. The gradient buffer `grad`
-  must have length [`self.param_unc_num()`](Model::param_unc_num()).
+  must have length [`self.param_unc_num()`](Model::param_unc_num).
   :::
 ::::
 ::::{rust:function} bridgestan::Model::log_density_hessian
@@ -291,9 +291,9 @@
   hessian is stored in `hessian`.
   
   *Panics* if the provided buffers have incorrect shapes. The gradient buffer `grad`
-  must have length [`self.param_unc_num()`](Model::param_unc_num()) and the `hessian`
-  buffer must have length [`self.param_unc_num()`](Model::param_unc_num()) `*`
-  [`self.param_unc_num()`](Model::param_unc_num()).
+  must have length [`self.param_unc_num()`](Model::param_unc_num) and the `hessian`
+  buffer must have length [`self.param_unc_num()`](Model::param_unc_num) `*`
+  [`self.param_unc_num()`](Model::param_unc_num).
   :::
 ::::
 ::::{rust:function} bridgestan::Model::log_density_hessian_vector_product
@@ -313,7 +313,7 @@
    will be stored in `hvp`.
   
   *Panics* if the provided buffer has incorrect shape. The buffer `hvp`
-  must have length [`self.param_unc_num()`](Model::param_unc_num()).
+  must have length [`self.param_unc_num()`](Model::param_unc_num).
   :::
 ::::
 ::::{rust:function} bridgestan::Model::name
@@ -531,7 +531,7 @@
 
   :::
   A random number generator for Stan models.
-  This is only used in the [`Model::param_constrain()`] method
+  This is only used in the [`Model::param_constrain()`](Model::param_constrain) method
   of the model when requesting values from the `generated quantities` block.
   Different threads should use different instances.
   

@@ -162,7 +162,7 @@ unsafe impl<T: Sync + Borrow<StanLibrary>> Sync for Model<T> {}
 unsafe impl<T: Send + Borrow<StanLibrary>> Send for Model<T> {}
 
 /// A random number generator for Stan models.
-/// This is only used in the [`Model::param_constrain()`] method
+/// This is only used in the [`Model::param_constrain()`](Model::param_constrain) method
 /// of the model when requesting values from the `generated quantities` block.
 /// Different threads should use different instances.
 pub struct Rng<T: Borrow<StanLibrary>> {
@@ -416,7 +416,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// The gradient of the log density will be stored in `grad`.
     ///
     /// *Panics* if the provided buffer has incorrect shape. The gradient buffer `grad`
-    /// must have length [`self.param_unc_num()`](Model::param_unc_num()).
+    /// must have length [`self.param_unc_num()`](Model::param_unc_num).
     pub fn log_density_gradient(
         &self,
         theta_unc: &[f64],
@@ -468,9 +468,9 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// hessian is stored in `hessian`.
     ///
     /// *Panics* if the provided buffers have incorrect shapes. The gradient buffer `grad`
-    /// must have length [`self.param_unc_num()`](Model::param_unc_num()) and the `hessian`
-    /// buffer must have length [`self.param_unc_num()`](Model::param_unc_num()) `*`
-    /// [`self.param_unc_num()`](Model::param_unc_num()).
+    /// must have length [`self.param_unc_num()`](Model::param_unc_num) and the `hessian`
+    /// buffer must have length [`self.param_unc_num()`](Model::param_unc_num) `*`
+    /// [`self.param_unc_num()`](Model::param_unc_num).
     pub fn log_density_hessian(
         &self,
         theta_unc: &[f64],
@@ -530,7 +530,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     ///  will be stored in `hvp`.
     ///
     /// *Panics* if the provided buffer has incorrect shape. The buffer `hvp`
-    /// must have length [`self.param_unc_num()`](Model::param_unc_num()).
+    /// must have length [`self.param_unc_num()`](Model::param_unc_num).
     pub fn log_density_hessian_vector_product(
         &self,
         theta_unc: &[f64],
