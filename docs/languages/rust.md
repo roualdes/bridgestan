@@ -22,7 +22,7 @@ are still required and will not be automatically installed by this method.
 An example program is provided alongside the Rust crate in `examples/example.rs`:
 
 <details>
-<summary><a>Show example.R</a></summary>
+<summary><a>Show example.rs</a></summary>
 
 ```{literalinclude} ../../rust/examples/example.rs
 :language: Rust
