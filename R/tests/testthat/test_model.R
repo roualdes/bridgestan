@@ -5,28 +5,34 @@ test_that("missing data throws error", {
 })
 
 test_that("simple_model name is correct", {
+    simple <- load_model("simple")
     expect_identical(simple$name(), "simple_model")
 })
 
 test_that("simple_model info exists", {
+    simple <- load_model("simple")
     expect_true(grepl("STAN_OPENCL", simple$model_info(), fixed = TRUE))
 })
 
 test_that("simple_model param_names are correct", {
+    simple <- load_model("simple")
     expect_equal(simple$param_names(), c("y.1", "y.2", "y.3", "y.4", "y.5"))
 })
 
 test_that("simple_model has 5 unconstrained parameters", {
+    simple <- load_model("simple")
     expect_equal(simple$param_unc_num(), 5)
 })
 
 test_that("simple_model grad(x) is -x", {
+    simple <- load_model("simple")
     x <- runif(5)
     expect_equal(-x, simple$log_density_gradient(x)$gradient)
 })
 
 
 test_that("models can be passed NAN or INF", {
+    simple <- load_model("simple")
     x <- runif(5)
     x[1] <- NaN
     x[2] <- Inf
@@ -40,23 +46,27 @@ test_that("models can be passed NAN or INF", {
 
 
 test_that("simple_model Hessian is -I", {
+    simple <- load_model("simple")
     x <- runif(5)
     expect_equal(-diag(5), simple$log_density_hessian(x)$hessian)
 })
 
 test_that("simple_model Hvp returns -v", {
+    simple <- load_model("simple")
     x <- runif(5)
     v <- runif(5)
     expect_equal(-v, simple$log_density_hessian_vector_product(x, v)$Hvp)
 })
 
 test_that("bernoulli constrain works", {
+    bernoulli <- load_model("bernoulli")
     x <- runif(bernoulli$param_unc_num())
     q <- log(x/(1 - x))
     expect_equal(x, bernoulli$param_constrain(q))
 })
 
 test_that("bernoulli unconstrain works", {
+    bernoulli <- load_model("bernoulli")
     x <- runif(bernoulli$param_unc_num())
     q <- log(x/(1 - x))
     expect_equal(q, bernoulli$param_unconstrain(x))
@@ -65,7 +75,6 @@ test_that("bernoulli unconstrain works", {
 })
 
 
-fr_gaussian <- load_model("fr_gaussian")
 
 cov_constrain <- function(v, D) {
     L <- matrix(c(0), D, D)
@@ -80,6 +89,7 @@ test_that("param_constrain works for a nontrivial case", {
 
     a <- rnorm(unc_size)
     B_expected <- cov_constrain(a, D)
+    fr_gaussian <- load_model("fr_gaussian")
 
     b <- fr_gaussian$param_constrain(a)
     B <- array(b, dim = c(D, D))
@@ -93,6 +103,7 @@ test_that("param_unconstrain works for a nontrivial case", {
 
     a <- rnorm(unc_size)
     B <- cov_constrain(a, D)
+    fr_gaussian <- load_model("fr_gaussian")
 
     c <- fr_gaussian$param_unconstrain(B)
 
