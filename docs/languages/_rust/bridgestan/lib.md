@@ -13,32 +13,32 @@
 :used_name: crate
 
 :::
-:::{rust:use} bridgestan::download_bridgestan_src
-:used_name: download_bridgestan_src
-
-:::
-:::{rust:use} bridgestan::Rng
-:used_name: Rng
-
-:::
 :::{rust:use} bridgestan::BridgeStanError
 :used_name: BridgeStanError
-
-:::
-:::{rust:use} bridgestan::open_library
-:used_name: open_library
-
-:::
-:::{rust:use} bridgestan::StanLibrary
-:used_name: StanLibrary
 
 :::
 :::{rust:use} bridgestan::Model
 :used_name: Model
 
 :::
+:::{rust:use} bridgestan::Rng
+:used_name: Rng
+
+:::
+:::{rust:use} bridgestan::StanLibrary
+:used_name: StanLibrary
+
+:::
 :::{rust:use} bridgestan::compile_model
 :used_name: compile_model
+
+:::
+:::{rust:use} bridgestan::download_bridgestan_src
+:used_name: download_bridgestan_src
+
+:::
+:::{rust:use} bridgestan::open_library
+:used_name: open_library
 
 :::
 
