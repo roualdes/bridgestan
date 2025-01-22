@@ -16,7 +16,7 @@ Example Program
 Two example programs are provided alongside the BridgeStan source in :file:`c-example/`.
 Details for building the example can be found in :file:`c-example/Makefile`.
 
-The if you wish to link a specific model into the program:
+If you wish to link a specific model into the program:
 
 .. raw:: html
 
