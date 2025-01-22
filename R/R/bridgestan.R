@@ -223,7 +223,7 @@ StanModel <- R6::R6Class("StanModel",
     #' @description
     #' This accepts a JSON string of constrained parameters and returns the unconstrained parameters.
     #'
-    #' The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json.html).
+    #' The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json_apdx.html).
     #' @param json Character vector containing a string representation of JSON data.
     #' @return The unconstrained parameters of the model.
     param_unconstrain_json = function(json) {

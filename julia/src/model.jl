@@ -406,7 +406,7 @@ end
 
 This accepts a JSON string of constrained parameters and returns the unconstrained parameters.
 
-The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json.html).
+The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json_apdx.html).
 
 The result is stored in the vector `out`, and a reference is returned. See
 [`param_unconstrain_json`](@ref) for a version which allocates fresh memory.
@@ -438,7 +438,7 @@ end
 
 This accepts a JSON string of constrained parameters and returns the unconstrained parameters.
 
-The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json.html).
+The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json_apdx.html).
 
 This allocates new memory for the output each call.
 See [`param_unconstrain_json!`](@ref) for a version which allows

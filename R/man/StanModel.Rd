@@ -269,7 +269,7 @@ The unconstrained parameters of the model.
 \subsection{Method \code{param_unconstrain_json()}}{
 This accepts a JSON string of constrained parameters and returns the unconstrained parameters.
 
-The JSON is expected to be in the \href{https://mc-stan.org/docs/cmdstan-guide/json.html}{JSON Format for CmdStan}.
+The JSON is expected to be in the \href{https://mc-stan.org/docs/cmdstan-guide/json_apdx.html}{JSON Format for CmdStan}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StanModel$param_unconstrain_json(json)}\if{html}{\out{</div>}}
 }

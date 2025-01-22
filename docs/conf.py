@@ -19,7 +19,7 @@ import os
 import bridgestan
 
 
-most_recent_release = 'v' + bridgestan.__version__
+most_recent_release = "v" + bridgestan.__version__
 version = os.getenv("BS_DOCS_VERSION", most_recent_release)
 if version == "latest":
     # don't display a version number for "latest" docs
@@ -45,17 +45,13 @@ extensions = [
     "myst_parser",
 ]
 
-myst_enable_extensions = [
-    "substitution"
-]
-myst_substitutions = {
-    "most_recent_release": most_recent_release
-}
+myst_enable_extensions = ["substitution"]
+myst_substitutions = {"most_recent_release": most_recent_release}
 
-suppress_warnings = ["myst.xref_missing"] # Julia doc generates raw html links
+suppress_warnings = ["myst.xref_missing"]  # Julia doc generates raw html links
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "README.md"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "README.md", "languages/_*"]
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -131,7 +127,7 @@ breathe_doxygen_config_options = {
 
 autoclass_content = "both"
 
-# Julia and C++ doc build
+# Other languages doc build
 import os
 import subprocess
 import pathlib
@@ -161,7 +157,7 @@ try:
     )
 
     # delete some broken links in the generated R docs
-    StanModel = (pathlib.Path(__file__).parent / "languages" / "_r" / "StanModel.md")
+    StanModel = pathlib.Path(__file__).parent / "languages" / "_r" / "StanModel.md"
     text = StanModel.read_text()
     start = text.find("### Public methods")
     end = text.find("### Method `")
@@ -169,7 +165,7 @@ try:
     StanModel.write_text(text)
 
     # replaces the headers with more appropriate levels for embedding
-    for f in (pathlib.Path(__file__).parent / "languages" / "_r" ).iterdir():
+    for f in (pathlib.Path(__file__).parent / "languages" / "_r").iterdir():
         text = f.read_text()
         text = re.sub(r"(#+) ", r"##\1 ", text)
         f.write_text(text)
@@ -195,3 +191,23 @@ except Exception as e:
         exclude_patterns += ["languages/c-api.rst"]
 else:
     extensions.append("breathe")
+
+
+try:
+    print("Checking Rust doc availability")
+    subprocess.run(["cargo", "--version"], check=True, capture_output=True)
+except Exception as e:
+    if RUNNING_IN_CI:
+        raise e
+    else:
+        print("Rust not installed, skipping Rust Doc")
+        exclude_patterns += ["languages/rust.md", "languages/_rust"]
+else:
+    extensions.append("sphinxcontrib_rust")
+    myst_enable_extensions += ["colon_fence", "attrs_block"]
+    rust_crates = {
+        "bridgestan": str(pathlib.Path(__file__).parent.parent / "rust"),
+    }
+    rust_doc_dir = "languages/_rust"
+    rust_rustdoc_fmt = "md"
+    rust_generate_mode = "changed" if not RUNNING_IN_CI else "always"

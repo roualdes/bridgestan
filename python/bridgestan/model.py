@@ -508,8 +508,8 @@ class StanModel:
     ) -> FloatArray:
         """
         Return an array of the unconstrained parameters derived from the
-        specified JSON formatted data.  See the *CmdStan Reference
-        Manual* for the schema definition used.
+        specified JSON formatted data.
+        The JSON is expected to be in the `JSON Format for CmdStan <https://mc-stan.org/docs/cmdstan-guide/json.html>`__.
 
         :param theta_json: The JSON encoded constrained parameters.
         :param out: A location into which the result is stored.  If

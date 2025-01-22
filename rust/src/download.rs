@@ -7,6 +7,7 @@ use tar::Archive;
 
 /// Download and unzip the BridgeStan source distribution for this version
 /// to `~/.bridgestan/bridgestan-$VERSION`.
+/// Requires feature `download-bridgestan-src`.
 pub fn download_bridgestan_src() -> Result<PathBuf> {
     let homedir = dirs::home_dir().unwrap_or(temp_dir());
 

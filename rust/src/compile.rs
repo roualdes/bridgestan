@@ -6,9 +6,9 @@ use std::path::{Path, PathBuf};
 const MAKE: &str = "make";
 
 /// Compile a Stan Model. Requires a path to the BridgeStan sources (can be
-/// downloaded with [`download_bridgestan_src`](crate::download_bridgestan_src) if that feature
-/// is enabled), a path to the `.stan` file, and additional arguments
-/// for the Stan compiler and the make command.
+/// downloaded with [`download_bridgestan_src`](crate::download_bridgestan_src)
+///  if that feature is enabled), a path to the `.stan` file, and
+/// additional arguments for the Stan compiler and the `make` command.
 pub fn compile_model(
     bs_path: &Path,
     stan_file: &Path,

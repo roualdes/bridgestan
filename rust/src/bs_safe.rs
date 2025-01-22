@@ -46,7 +46,7 @@ pub type StanPrintCallback = extern "C" fn(*const c_char, usize);
 impl StanLibrary {
     /// Provide a callback function to be called when Stan prints a message
     ///
-    /// # Safety
+    /// ## Safety
     ///
     /// The provided function must never panic.
     ///
@@ -65,7 +65,7 @@ impl StanLibrary {
 
     /// Unload the Stan library.
     ///
-    /// # Safety
+    /// ## Safety
     ///
     /// There seem to be issues around unloading libraries in threaded
     /// code that are not fully understood:
@@ -162,7 +162,7 @@ unsafe impl<T: Sync + Borrow<StanLibrary>> Sync for Model<T> {}
 unsafe impl<T: Send + Borrow<StanLibrary>> Send for Model<T> {}
 
 /// A random number generator for Stan models.
-/// This is only used in the `param_contrain` method
+/// This is only used in the [`Model::param_constrain()`](Model::param_constrain) method
 /// of the model when requesting values from the `generated quantities` block.
 /// Different threads should use different instances.
 pub struct Rng<T: Borrow<StanLibrary>> {
@@ -287,10 +287,10 @@ impl<T: Borrow<StanLibrary>> Model<T> {
         self.lib.borrow()
     }
 
-    /// Create a new `Rng` random number generator from the library underlying this model.
+    /// Create a new [`Rng`] random number generator from the library underlying this model.
     ///
-    /// This can be used in `param_constrain` when values from the `generated quantities`
-    /// block are desired.
+    /// This can be used in [`param_constrain()`](Model::param_constrain()) when values
+    /// from the `generated quantities` block are desired.
     ///
     /// This instance can only be used with models from the same
     /// Stan library. Invalid usage will otherwise result in a
@@ -367,7 +367,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
 
     /// Return the number of parameters on the unconstrained scale.
     ///
-    /// In particular, this is the size of the slice required by the log_density functions.
+    /// In particular, this is the size of the slice required by the `log_density` functions.
     pub fn param_unc_num(&self) -> usize {
         unsafe { self.ffi_lib().bs_param_unc_num(self.model.as_ptr()) }
             .try_into()
@@ -416,7 +416,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// The gradient of the log density will be stored in `grad`.
     ///
     /// *Panics* if the provided buffer has incorrect shape. The gradient buffer `grad`
-    /// must have length `self.param_unc_num()`.
+    /// must have length [`self.param_unc_num()`](Model::param_unc_num).
     pub fn log_density_gradient(
         &self,
         theta_unc: &[f64],
@@ -468,8 +468,9 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// hessian is stored in `hessian`.
     ///
     /// *Panics* if the provided buffers have incorrect shapes. The gradient buffer `grad`
-    /// must have length `self.param_unc_num()` and the `hessian` buffer must
-    /// have length `self.param_unc_num() * self.param_unc_num()`.
+    /// must have length [`self.param_unc_num()`](Model::param_unc_num) and the `hessian`
+    /// buffer must have length [`self.param_unc_num()`](Model::param_unc_num) `*`
+    /// [`self.param_unc_num()`](Model::param_unc_num).
     pub fn log_density_hessian(
         &self,
         theta_unc: &[f64],
@@ -529,7 +530,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     ///  will be stored in `hvp`.
     ///
     /// *Panics* if the provided buffer has incorrect shape. The buffer `hvp`
-    /// must have length `self.param_unc_num()`.
+    /// must have length [`self.param_unc_num()`](Model::param_unc_num).
     pub fn log_density_hessian_vector_product(
         &self,
         theta_unc: &[f64],
@@ -587,7 +588,8 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// set, we also include the generated quantities at the very end.
     ///
     /// *Panics* if the provided buffer has incorrect shape. The length of the `out` buffer
-    /// `self.param_num(include_tp, include_gq)`.
+    /// must be [`self.param_num(include_tp, include_gq)`](Model::param_num).
+    ///
     /// *Panics* if `include_gq` is set but no random number generator is provided.
     pub fn param_constrain<R: Borrow<StanLibrary>>(
         &self,
@@ -674,7 +676,8 @@ impl<T: Borrow<StanLibrary>> Model<T> {
 
     /// Map a constrained point in json format to the unconstrained space.
     ///
-    /// The JSON schema assumed is fully defined in the *CmdStan Reference Manual*.
+    /// The JSON is expected to be in the
+    /// [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json.html).
     /// A value for each parameter in the Stan program should be provided, with
     /// dimensions and size corresponding to the Stan program declarations.
     pub fn param_unconstrain_json<S: AsRef<CStr>>(

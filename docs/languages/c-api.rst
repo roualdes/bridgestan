@@ -16,8 +16,7 @@ Example Program
 Two example programs are provided alongside the BridgeStan source in :file:`c-example/`.
 Details for building the example can be found in :file:`c-example/Makefile`.
 
-The first assumes you wish to link a specific model into the program,
-and the second demonstrates how to load a model at runtime
+If you wish to link a specific model into the program:
 
 .. raw:: html
 
@@ -32,6 +31,7 @@ and the second demonstrates how to load a model at runtime
 
    </details>
 
+Alternatively, if you wish to load a model at runtime:
 
 .. raw:: html
 
