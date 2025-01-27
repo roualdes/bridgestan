@@ -2,6 +2,7 @@ use crate::bs_safe::{BridgeStanError, Result};
 use crate::VERSION;
 use flate2::read::GzDecoder;
 use log::info;
+use std::io::Read;
 use std::{env::temp_dir, fs, path::PathBuf};
 use tar::Archive;
 
@@ -32,12 +33,14 @@ pub fn download_bridgestan_src() -> Result<PathBuf> {
             .call()
             .map_err(|e| BridgeStanError::DownloadFailed(e.to_string()))?;
         let len = response
-            .header("Content-Length")
-            .and_then(|s| s.parse::<usize>().ok())
+            .headers()
+            .get("Content-Length")
+            .and_then(|s| s.to_str().ok()?.parse::<usize>().ok())
             .unwrap_or(50_000_000);
 
         let mut bytes: Vec<u8> = Vec::with_capacity(len);
         response
+            .into_body()
             .into_reader()
             .read_to_end(&mut bytes)
             .map_err(|e| BridgeStanError::DownloadFailed(e.to_string()))?;

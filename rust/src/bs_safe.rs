@@ -205,7 +205,7 @@ struct ErrorMsg<'lib> {
     lib: &'lib StanLibrary,
 }
 
-impl<'lib> Drop for ErrorMsg<'lib> {
+impl Drop for ErrorMsg<'_> {
     fn drop(&mut self) {
         if !self.msg.is_null() {
             unsafe { self.lib.lib.bs_free_error_msg(self.msg) };
