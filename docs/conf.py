@@ -4,7 +4,6 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 import datetime
-import re
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -133,12 +132,13 @@ import subprocess
 import pathlib
 
 RUNNING_IN_CI = os.environ.get("CI") or os.environ.get("READTHEDOCS")
+BASE_DIR = pathlib.Path(__file__).parent.parent
 
 try:
     print("Building Julia doc")
     subprocess.run(
         ["julia", "--project=.", "./make.jl"],
-        cwd=pathlib.Path(__file__).parent.parent / "julia" / "docs",
+        cwd=BASE_DIR / "julia" / "docs",
         check=True,
     )
 except Exception as e:
@@ -152,7 +152,7 @@ try:
     print("Building R doc")
     subprocess.run(
         ["Rscript", "convert_docs.R"],
-        cwd=pathlib.Path(__file__).parent.parent / "R",
+        cwd=BASE_DIR / "R",
         check=True,
     )
 
@@ -164,11 +164,6 @@ try:
     text = text[:start] + text[end:]
     StanModel.write_text(text)
 
-    # replaces the headers with more appropriate levels for embedding
-    for f in (pathlib.Path(__file__).parent / "languages" / "_r").iterdir():
-        text = f.read_text()
-        text = re.sub(r"(#+) ", r"##\1 ", text)
-        f.write_text(text)
 
 except Exception as e:
     # fail loudly in Github Actions
@@ -206,7 +201,7 @@ else:
     extensions.append("sphinxcontrib_rust")
     myst_enable_extensions += ["colon_fence", "attrs_block"]
     rust_crates = {
-        "bridgestan": str(pathlib.Path(__file__).parent.parent / "rust"),
+        "bridgestan": str(BASE_DIR / "rust"),
     }
     rust_doc_dir = "languages/_rust"
     rust_rustdoc_fmt = "md"

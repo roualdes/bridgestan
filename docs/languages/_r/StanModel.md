@@ -1,5 +1,7 @@
 ### StanModel
 
+#### Description
+
 R6 Class representing a compiled BridgeStan model.
 
 This model exposes log density, gradient, and Hessian information as well as constraining and unconstraining transforms.
@@ -459,3 +461,6 @@ StanModel$log_density_hessian_vector_product(
 ###### Returns
 
 List containing entries `val` (the log density) and `Hvp` (the hessian-vector product).
+
+
+

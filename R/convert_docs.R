@@ -22,7 +22,7 @@ for (f in files){
 
     # read .Rd file and convert to markdown
     rd <- rd2markdown::get_rd(file=file.path(".", "man", f))
-    md <- rd2markdown::rd2markdown(rd, fragments=c())
+    md <- rd2markdown::rd2markdown(rd, fragments=c(), level=3)
 
     # write it to the docs folder
     writeLines(md, file.path("..", "docs", "languages", "_r", paste0(name, ".md")))

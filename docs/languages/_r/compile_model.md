@@ -14,6 +14,8 @@ compile_model(stan_file, stanc_args = NULL, make_args = NULL)
 
 Path to the compiled model.
 
+#### Description
+
 Compiles a Stan model.
 
 #### Details
@@ -23,3 +25,6 @@ Run BridgeStan's Makefile on a `.stan` file, creating the `.so` used by the Stan
 #### See Also
 
 `set_bridgestan_path()`
+
+
+
