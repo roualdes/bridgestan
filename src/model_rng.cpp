@@ -27,15 +27,8 @@
 // ensure a thread-local ChainableStack exists. This macro is invoked in
 // each function that could need it.
 #ifdef STAN_THREADS
-// minor optimization: if GNU's __thread is available, prefer it to thread_local
-// this is also done by Stan internally.
-#ifdef __GNUC__
-#define BRIDGESTAN_PREPARE_AD_FOR_THREADING() \
-  static __thread stan::math::ChainableStack thread_instance
-#else
 #define BRIDGESTAN_PREPARE_AD_FOR_THREADING() \
   static thread_local stan::math::ChainableStack thread_instance
-#endif
 #else
 #define BRIDGESTAN_PREPARE_AD_FOR_THREADING()
 #endif
