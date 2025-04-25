@@ -253,8 +253,11 @@ void bs_model::log_density(bool propto, bool jacobian, const double* theta_unc,
   Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, param_unc_num_);
 
   if (propto) {
-    // need to have vars, otherwise the result is 0 since everything is
-    // treated as a constant
+// need to have vars, otherwise the result is 0 since everything is
+// treated as a constant
+#ifdef STAN_THREADS
+  static thread_local stan::math::ChainableStack thread_instance;
+#endif
     try {
       Eigen::Matrix<stan::math::var, Eigen::Dynamic, 1> params_unc_var(
           params_unc);
