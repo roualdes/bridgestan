@@ -302,6 +302,44 @@ end
 end
 
 
+@testset "threaded model: multi" begin
+
+    function gaussian(x)
+        return -0.5 * x' * x
+    end
+
+    function grad_gaussian(x)
+        return -x
+    end
+
+    model = load_test_model("multi")
+    nt = Threads.nthreads()
+
+    R = 1000
+    ld = Vector{Bool}(undef, R * 2)
+    g = Vector{Bool}(undef, R)
+
+    Threads.@threads for it = 1:nt
+        for r = it:nt:R
+            x = randn(BridgeStan.param_num(model))
+            lp  = BridgeStan.log_density(model, x)
+            ld[r] = isapprox(lp, gaussian(x))
+        end
+
+        for r = it:nt:R
+            x = randn(BridgeStan.param_num(model))
+            (lp, grad) = BridgeStan.log_density_gradient(model, x)
+
+            ld[R+r] = isapprox(lp, gaussian(x))
+            g[r] = isapprox(grad, grad_gaussian(x))
+        end
+    end
+
+    @test all(ld)
+    @test all(g)
+end
+
+
 @testset "jacobian model tests" begin
 
     function _logp(y_unc)
@@ -523,37 +561,6 @@ end
     @test isapprox(BridgeStan.param_unc_num(model), 1)
 end
 
-
-@testset "threaded model: multi" begin
-
-    function gaussian(x)
-        return -0.5 * x' * x
-    end
-
-    function grad_gaussian(x)
-        return -x
-    end
-
-    model = load_test_model("multi")
-    nt = Threads.nthreads()
-
-    R = 1000
-    ld = Vector{Bool}(undef, R)
-    g = Vector{Bool}(undef, R)
-
-    Threads.@threads for it = 1:nt
-        for r = it:nt:R
-            x = randn(BridgeStan.param_num(model))
-            (lp, grad) = BridgeStan.log_density_gradient(model, x)
-
-            ld[r] = isapprox(lp, gaussian(x))
-            g[r] = isapprox(grad, grad_gaussian(x))
-        end
-    end
-
-    @test all(ld)
-    @test all(g)
-end
 
 
 @testset "threaded model: full" begin
