@@ -4,15 +4,6 @@ struct StanModelStruct end
 
 mutable struct StanRNGStruct end
 
-# utility macro to annotate a field as const only if supported
-@eval macro $(Symbol("const"))(x)
-    if VERSION >= v"1.8"
-        Expr(:const, esc(x))
-    else
-        esc(x)
-    end
-end
-
 """
     StanModel(lib, data="", seed=204; stanc_args=[], make_args=[], warn=true)
 
@@ -34,9 +25,9 @@ If seed is supplied, it is used to initialize the RNG used by the model's constr
 mutable struct StanModel
     lib::Ptr{Nothing}
     stanmodel::Ptr{StanModelStruct}
-    @const data::String
-    @const seed::UInt32
-    @const param_unc_num::Int
+    const data::String
+    const seed::UInt32
+    const param_unc_num::Int
 
     function StanModel(
         lib::String,
