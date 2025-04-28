@@ -23,6 +23,16 @@
 #include <string>
 #include <vector>
 
+// whenever we are doing autodiff in a threaded context, we need to
+// ensure a thread-local ChainableStack exists. This macro is invoked in
+// each function that could need it.
+#ifdef STAN_THREADS
+#define BRIDGESTAN_PREPARE_AD_FOR_THREADING() \
+  static thread_local stan::math::ChainableStack thread_instance
+#else
+#define BRIDGESTAN_PREPARE_AD_FOR_THREADING()
+#endif
+
 // globals for Stan model output
 std::streambuf* buf = nullptr;
 std::ostream* outstream = &std::cout;
@@ -255,6 +265,7 @@ void bs_model::log_density(bool propto, bool jacobian, const double* theta_unc,
   if (propto) {
     // need to have vars, otherwise the result is 0 since everything is
     // treated as a constant
+    BRIDGESTAN_PREPARE_AD_FOR_THREADING();
     try {
       Eigen::Matrix<stan::math::var, Eigen::Dynamic, 1> params_unc_var(
           params_unc);
@@ -283,9 +294,7 @@ void bs_model::log_density(bool propto, bool jacobian, const double* theta_unc,
 void bs_model::log_density_gradient(bool propto, bool jacobian,
                                     const double* theta_unc, double* val,
                                     double* grad) const {
-#ifdef STAN_THREADS
-  static thread_local stan::math::ChainableStack thread_instance;
-#endif
+  BRIDGESTAN_PREPARE_AD_FOR_THREADING();
   auto logp = make_model_lambda(propto, jacobian);
   int N = param_unc_num_;
   Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, N);
@@ -295,9 +304,7 @@ void bs_model::log_density_gradient(bool propto, bool jacobian,
 void bs_model::log_density_hessian(bool propto, bool jacobian,
                                    const double* theta_unc, double* val,
                                    double* grad, double* hessian) const {
-#ifdef STAN_THREADS
-  static thread_local stan::math::ChainableStack thread_instance;
-#endif
+  BRIDGESTAN_PREPARE_AD_FOR_THREADING();
   auto logp = make_model_lambda(propto, jacobian);
   int N = param_unc_num_;
   Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
@@ -320,11 +327,8 @@ void bs_model::log_density_hessian_vector_product(bool propto, bool jacobian,
                                                   const double* vector,
                                                   double* val,
                                                   double* hvp) const {
-#ifdef STAN_THREADS
-  static thread_local stan::math::ChainableStack thread_instance;
-#endif
+  BRIDGESTAN_PREPARE_AD_FOR_THREADING();
   auto logp = make_model_lambda(propto, jacobian);
-
   int N = param_unc_num_;
   Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
   Eigen::Map<const Eigen::VectorXd> v(vector, N);
