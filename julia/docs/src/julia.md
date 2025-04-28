@@ -51,7 +51,7 @@ one the package will download for you, you must use
 [`set_bridgestan_path()`](BridgeStan.set_bridgestan_path!) or the `$BRIDGESTAN`
 environment variable.
 
-Note that the Julia package depends on Julia 1.10 (LTS) and the `Inflate` package.
+Note that the Julia package depends on Julia 1.6+ and the `Inflate` package.
 
 ## Example Program
 
