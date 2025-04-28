@@ -91,7 +91,7 @@ We are aware of the following projects using BridgeStan.
 
 ### Python
 
-- https://github.com/pymc-devs/nutpie
+- https://github.com/pymc-devs/nutpie (through Rust)
 - https://github.com/UoL-SignalProcessingGroup/retrospectr
 - https://github.com/UoL-SignalProcessingGroup/SMC-NUTS
 
@@ -99,6 +99,8 @@ We are aware of the following projects using BridgeStan.
 ### R
 
 - https://github.com/JTorgander/hmc-sandbox
+- https://github.com/UCL/rmcmc
+- https://github.com/CerulloE1996/BayesMVP/
 
 ## Research using BridgeStan
 
@@ -109,6 +111,9 @@ and letting us know so we can list your project here.
 - [*Variational Inference with Gaussian Score Matching*](https://arxiv.org/pdf/2307.07849.pdf)
 - [*Stein Π-Importance Sampling*](https://arxiv.org/pdf/2305.10068.pdf)
 - [*Batch and match: black-box variational inference with a score-based divergence*](https://arxiv.org/abs/2402.14758)
+- [*Variational Inference in Location-Scale Families: Exact Recovery of the Mean and Correlation Matrix*](https://arxiv.org/abs/2410.11067)
+- [*Sampling From Multiscale Densities With Delayed Rejection Generalized Hamiltonian Monte Carlo*](https://arxiv.org/abs/2406.02741)
+- [*MCBench: A Benchmark Suite for Monte Carlo Sampling Algorithms*](https://arxiv.org/abs/2501.03138)
 
 ## Acknowledgements
 
