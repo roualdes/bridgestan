@@ -3,9 +3,6 @@
 
 #include <stan/model/model_base.hpp>
 #include <stan/services/util/create_rng.hpp>
-#include <string>
-#include <vector>
-#include <random>
 
 /**
  * This structure holds a pointer to a model and holds pointers to the parameter
