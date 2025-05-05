@@ -4,7 +4,8 @@
 /// \file bridgestan.h
 
 #ifdef __cplusplus
-#include "model_rng.hpp"
+class bs_model;
+class bs_rng;
 #include "callback_stream.hpp"
 extern "C" {
 #else
