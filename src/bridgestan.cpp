@@ -1,8 +1,11 @@
 #include "bridgestan.h"
-#include "model_rng.cpp"
-#include "bridgestanR.cpp"
-#include "version.hpp"
+#include "model.hpp"
+#include "rng.hpp"
 #include "callback_stream.hpp"
+#include "version.hpp"
+
+#include "bridgestanR.cpp"
+
 #include <sstream>
 
 const int bs_major_version = BRIDGESTAN_MAJOR;
@@ -256,18 +259,25 @@ bs_rng* bs_rng_construct(unsigned int seed, char** error_msg) {
 
 void bs_rng_destruct(bs_rng* rng) { delete (rng); }
 
+// global for Stan model output
+// TODO(bmw): Next major version, move inside of the model object
+std::ostream* outstream = &std::cout;
+
 int bs_set_print_callback(STREAM_CALLBACK callback, char** error_msg) {
   try {
-    if (buf != nullptr) {  // nullptr only when `outstream` is &std::cout
-      delete buf;
-      delete outstream;
-    }
+    std::ostream* old_outstream = outstream;
+
     if (callback == nullptr) {
       outstream = &std::cout;
-      buf = nullptr;
     } else {
-      buf = new callback_ostreambuf(callback);
-      outstream = new std::ostream(buf);
+      outstream
+          = new std::ostream(new bridgestan::callback_ostreambuf(callback));
+    }
+    if (old_outstream != &std::cout) {
+      // clean up old memory
+      std::streambuf* buf = old_outstream->rdbuf();
+      delete old_outstream;
+      delete buf;
     }
     return 0;
   } catch (...) {

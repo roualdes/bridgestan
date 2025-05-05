@@ -3,6 +3,7 @@
 *.o
 *.so
 *.hpp
+!src/*.hpp
 *.dll
 *.a
 c-example/example

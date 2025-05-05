@@ -42,7 +42,7 @@ else
 endif
 STAN_FLAGS=$(STAN_FLAG_THREADS)$(STAN_FLAG_OPENCL)$(STAN_FLAG_HESS)
 
-BRIDGE_DEPS = $(SRC)bridgestan.cpp $(SRC)bridgestan.h $(SRC)model_rng.cpp $(SRC)model_rng.hpp $(SRC)bridgestanR.cpp $(SRC)bridgestanR.h $(SRC)callback_stream.hpp
+BRIDGE_DEPS = $(SRC)bridgestan.cpp $(SRC)bridgestan.h $(SRC)bridgestanR.cpp $(SRC)bridgestanR.h $(wildcard $(SRC)*.hpp)
 BRIDGE_O = $(patsubst %.cpp,%$(STAN_FLAGS).o,$(SRC)bridgestan.cpp)
 
 $(BRIDGE_O) : $(BRIDGE_DEPS)

@@ -1,10 +1,11 @@
-#ifndef CALLBACK_STREAM_H
-#define CALLBACK_STREAM_H
+#ifndef BRIDGESTAN_CALLBACK_STREAM_HPP
+#define BRIDGESTAN_CALLBACK_STREAM_HPP
 
 #include <streambuf>
 #include <mutex>
+#include "bridgestan.h"
 
-typedef void (*STREAM_CALLBACK)(const char* data, size_t size);
+namespace bridgestan {
 
 struct callback_ostreambuf : public std::streambuf {
   callback_ostreambuf(STREAM_CALLBACK callback) : callback(callback) {}
@@ -30,4 +31,5 @@ struct callback_ostreambuf : public std::streambuf {
   std::mutex callback_mutex;
 };
 
+}  // namespace bridgestan
 #endif
