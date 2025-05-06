@@ -66,10 +66,10 @@ fn hessian_vector_product() {
     let n = model.param_unc_num();
     use rand::Rng;
 
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
 
     let theta = vec![0.0; n];
-    let v: Vec<f64> = (0..n).map(|_| rng.gen()).collect();
+    let v: Vec<f64> = (0..n).map(|_| rng.random()).collect();
 
     let mut out = vec![0.0; n];
     let _logp = model

@@ -11,13 +11,10 @@
 #ifdef BRIDGESTAN_AD_HESSIAN
 #include <stan/math/mix.hpp>
 #endif
-#include <algorithm>
 #include <cmath>
-#include <exception>
 #include <fstream>
 #include <iostream>
 #include <ostream>
-#include <set>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -34,6 +31,7 @@
 #endif
 
 // globals for Stan model output
+// TODO(bmw): Next major version, move these inside of the model object
 std::streambuf* buf = nullptr;
 std::ostream* outstream = &std::cout;
 

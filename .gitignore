@@ -10,7 +10,8 @@ c-example/example_static
 c-example/example_runtime
 *.exe
 make/local
-
+compile_commands.json
+compile_flags.txt
 
 # Rust
 rust/target/
