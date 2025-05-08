@@ -4,9 +4,9 @@
 /// \file bridgestan.h
 
 #ifdef __cplusplus
+#include <cstddef>  // for size_t
 class bs_model;
 class bs_rng;
-#include "callback_stream.hpp"
 extern "C" {
 #else
 #include <stddef.h>   // for size_t
@@ -14,8 +14,6 @@ extern "C" {
 typedef struct bs_model bs_model;  ///< Opaque type for model
 typedef struct bs_rng bs_rng;      ///< Opaque type for RNG
 
-/** Type signature for optional print callback */
-typedef void (*STREAM_CALLBACK)(const char* data, size_t size);
 #endif
 
 // Macros to control visibility of symbols in the shared library.
@@ -353,6 +351,9 @@ BS_PUBLIC bs_rng* bs_rng_construct(unsigned int seed, char** error_msg);
  * @param[in] rng pointer to RNG object
  */
 BS_PUBLIC void bs_rng_destruct(bs_rng* rng);
+
+/** Type signature for optional print callback */
+typedef void (*STREAM_CALLBACK)(const char* data, size_t size);
 
 /**
  * Provide a function for printing. This will be called when the Stan

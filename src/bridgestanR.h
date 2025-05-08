@@ -1,5 +1,5 @@
-#ifndef BRIDGESTANR_H
-#define BRIDGESTANR_H
+#ifndef BRIDGESTANR_HPP
+#define BRIDGESTANR_HPP
 
 #include "bridgestan.h"
 
