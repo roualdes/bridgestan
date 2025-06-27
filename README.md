@@ -102,6 +102,10 @@ We are aware of the following projects using BridgeStan.
 - https://github.com/UCL/rmcmc
 - https://github.com/CerulloE1996/BayesMVP/
 
+### Other
+
+- https://github.com/xhep-lab/polystan
+
 ## Research using BridgeStan
 
 If you use BridgeStan in your research, please consider citing [our JOSS paper](https://joss.theoj.org/papers/10.21105/joss.05236)
