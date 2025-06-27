@@ -137,8 +137,8 @@ pub fn open_library<P: AsRef<OsStr>>(path: P) -> Result<StanLibrary> {
 
     if !((self_major == major) & (self_minor <= minor)) {
         return Err(BridgeStanError::BadLibraryVersion(
-            format!("{}.{}.{}", major, minor, patch),
-            format!("{}.{}.{}", self_major, self_minor, self_patch),
+            format!("{major}.{minor}.{patch}"),
+            format!("{self_major}.{self_minor}.{self_patch}"),
         ));
     }
 

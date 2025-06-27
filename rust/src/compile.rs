@@ -48,7 +48,7 @@ pub fn compile_model(
 
     let stanc_args = [&[includir_stan_file_dir], stanc_args].concat();
     let stanc_args = stanc_args.join(" ");
-    let stanc_args = format!("STANCFLAGS={}", stanc_args);
+    let stanc_args = format!("STANCFLAGS={stanc_args}");
     let stanc_args = [stanc_args.as_str()];
 
     let cmd = [
