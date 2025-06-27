@@ -125,11 +125,6 @@ class bs_model {
 #else
     info << "\tSTAN_NO_RANGE_CHECKS=false" << std::endl;
 #endif
-#ifdef STAN_CPP_OPTIMS
-    info << "\tSTAN_CPP_OPTIMS=true" << std::endl;
-#else
-    info << "\tSTAN_CPP_OPTIMS=false" << std::endl;
-#endif
 #ifdef BRIDGESTAN_AD_HESSIAN
     info << "\tBRIDGESTAN_AD_HESSIAN=true" << std::endl;
 #else
