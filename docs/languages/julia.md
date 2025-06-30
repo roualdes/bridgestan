@@ -209,7 +209,7 @@ This allocates new memory for the output each call. See [`log_density_hessian_ve
 
 
 ```julia
-param_constrain(sm, theta_unc, out; include_tp=false, include_gq=false, rng=nothing)
+param_constrain(sm, theta_unc; include_tp=false, include_gq=false, rng=nothing)
 ```
 
 Returns a vector constrained parameters given unconstrained parameters. Additionally (if `include_tp` and `include_gq` are set, respectively) returns transformed parameters and generated quantities.
