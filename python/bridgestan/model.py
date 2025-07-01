@@ -37,7 +37,7 @@ def array_ptr(*args, **kwargs):
 
 FloatArray = Union[
     npt.NDArray[np.float64],
-    ctypes.POINTER(ctypes.c_double),
+    "ctypes._Pointer[ctypes.c_double]",
     ctypes.Array[ctypes.c_double],
 ]
 
@@ -681,7 +681,8 @@ class StanModel:
         )
         if rc:
             raise self._handle_error(err, "log_density_hessian")
-        out_hess = out_hess.reshape(dims, dims)
+        if isinstance(out_hess, np.ndarray):
+            out_hess = out_hess.reshape(dims, dims)
         return lp.value, out_grad, out_hess
 
     def log_density_hessian_vector_product(
