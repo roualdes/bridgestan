@@ -2,11 +2,12 @@ import ctypes
 import warnings
 from os import PathLike, fspath
 from pathlib import Path
-from typing import List, Optional, Tuple, Union
+from typing import Any, Mapping, List, Optional, Tuple, Union
 
+import dllist
+import stanio
 import numpy as np
 import numpy.typing as npt
-from dllist import dllist
 from numpy.ctypeslib import ndpointer
 
 from .__version import __version_info__
@@ -36,9 +37,10 @@ def array_ptr(*args, **kwargs):
 
 FloatArray = Union[
     npt.NDArray[np.float64],
-    ctypes.POINTER(ctypes.c_double),
+    "ctypes._Pointer[ctypes.c_double]",
     ctypes.Array[ctypes.c_double],
 ]
+
 double_array = array_ptr(dtype=ctypes.c_double, flags=("C_CONTIGUOUS"))
 writeable_double_array = array_ptr(
     dtype=ctypes.c_double, flags=("C_CONTIGUOUS", "WRITEABLE")
@@ -62,7 +64,7 @@ class StanModel:
     def __init__(
         self,
         model_lib: Union[str, PathLike],
-        data: Union[str, PathLike, None] = None,
+        data: Union[str, PathLike, None, Mapping[str, Any]] = None,
         *,
         seed: int = 1234,
         stanc_args: List[str] = [],
@@ -77,8 +79,9 @@ class StanModel:
 
         :param model_lib: A system path to compiled shared object or a ``.stan``
             file to be compiled.
-        :param data: Data for the model. Either a JSON string literal or a
-            system path to a data file in JSON format ending in ``.json``.
+        :param data: Data for the model. Either a JSON string literal, a
+            system path to a data file in JSON format ending in ``.json``, or
+            a dictionary which will be turned into a JSON string.
             If the model does not require data, this can be either the
             empty string or ``None`` (the default).
         :param seed: A pseudo random number generator seed, used for RNG functions
@@ -122,11 +125,14 @@ class StanModel:
             )
             data = model_data
         if data is not None:
-            data = fspath(data)
-            if data.endswith(".json"):
-                validate_readable(data)
-                with open(data, "r", encoding="utf-8") as file:
-                    data = file.read()
+            if isinstance(data, (str, PathLike)):
+                data = fspath(data)
+                if data.endswith(".json"):
+                    validate_readable(data)
+                    with open(data, "r", encoding="utf-8") as file:
+                        data = file.read()
+            else:
+                data = stanio.dump_stan_json(data)
 
         windows_dll_path_setup()
 
@@ -136,7 +142,7 @@ class StanModel:
             )
 
         self.lib_path = fspath(Path(model_lib).absolute().resolve())
-        if warn and self.lib_path in dllist():
+        if warn and hasattr(dllist, "dllist") and self.lib_path in dllist.dllist():
             warnings.warn(
                 f"Loading a shared object {self.lib_path} that has already been loaded.\n"
                 "If the file has changed since the last time it was loaded, this load may "
@@ -504,14 +510,18 @@ class StanModel:
         return out
 
     def param_unconstrain_json(
-        self, theta_json: str, *, out: Optional[FloatArray] = None
+        self,
+        theta_json: Union[str, Mapping[str, Any]],
+        *,
+        out: Optional[FloatArray] = None,
     ) -> FloatArray:
         """
         Return an array of the unconstrained parameters derived from the
         specified JSON formatted data.
         The JSON is expected to be in the `JSON Format for CmdStan <https://mc-stan.org/docs/cmdstan-guide/json.html>`__.
 
-        :param theta_json: The JSON encoded constrained parameters.
+        :param theta_json: The JSON encoded constrained parameters or a dictionary which
+            will be converted to a JSON string.
         :param out: A location into which the result is stored.  If
             provided, it must have shape ``(D, )``, where ``D`` is the number of
             unconstrained parameters.  If not provided or ``None``, a freshly
@@ -524,7 +534,8 @@ class StanModel:
         dims = self.param_unc_num()
         if out is None:
             out = np.zeros(shape=dims)
-
+        if not isinstance(theta_json, str):
+            theta_json = stanio.dump_stan_json(theta_json)
         chars = theta_json.encode("UTF-8")
         err = ctypes.c_char_p()
         rc = self._param_unconstrain_json(self.model, chars, out, ctypes.byref(err))
@@ -670,7 +681,8 @@ class StanModel:
         )
         if rc:
             raise self._handle_error(err, "log_density_hessian")
-        out_hess = out_hess.reshape(dims, dims)
+        if isinstance(out_hess, np.ndarray):
+            out_hess = out_hess.reshape(dims, dims)
         return lp.value, out_grad, out_hess
 
     def log_density_hessian_vector_product(

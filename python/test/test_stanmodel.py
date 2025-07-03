@@ -16,19 +16,26 @@ def test_constructor():
     # test empty data
     std_so = STAN_FOLDER / "stdnormal" / "stdnormal_model.so"
     b1 = bs.StanModel(std_so)
-    np.testing.assert_allclose(bool(b1), True)
+    assert b1.model
 
     # test load data
     bernoulli_so = STAN_FOLDER / "bernoulli" / "bernoulli_model.so"
     bernoulli_data = STAN_FOLDER / "bernoulli" / "bernoulli.data.json"
     b2 = bs.StanModel(bernoulli_so, bernoulli_data)
-    np.testing.assert_allclose(bool(b2), True)
+    assert b2.model
 
     bernoulli_data_string = (
         STAN_FOLDER / "bernoulli" / "bernoulli.data.json"
     ).read_text()
     b3 = bs.StanModel(bernoulli_so, bernoulli_data_string)
-    np.testing.assert_allclose(bool(b3), True)
+    assert b3.model
+
+    bernoulli_data_dict = {
+        "N": 10,
+        "y": [0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+    }
+    b4 = bs.StanModel(bernoulli_so, bernoulli_data_dict)
+    assert b4.model
 
     # test missing so file
     with pytest.raises(FileNotFoundError):
@@ -41,7 +48,7 @@ def test_constructor():
     # test data load exception
     throw_data_so = STAN_FOLDER / "throw_data" / "throw_data_model.so"
     with pytest.raises(RuntimeError, match="find this text: datafails"):
-        b4 = bs.StanModel(throw_data_so)
+        b5 = bs.StanModel(throw_data_so)
 
     load_sundials = STAN_FOLDER / "ode_sundials" / "ode_sundials_model.so"
     ode_sundials_data = (
@@ -291,6 +298,9 @@ def test_param_unconstrain_json():
     theta_json = '{"mu": 0.2, "sigma": 1.9}'
     theta_unc_j_test = bridge.param_unconstrain_json(theta_json)
     np.testing.assert_allclose(theta_unc, theta_unc_j_test)
+    theta_dict = {"mu":0.2, "sigma":1.9}
+    theta_unc_j_test2 = bridge.param_unconstrain_json(theta_dict)
+    np.testing.assert_allclose(theta_unc, theta_unc_j_test2)
 
     scratch = np.zeros(2)
     theta_unc_j_test2 = bridge.param_unconstrain_json(theta_json, out=scratch)
