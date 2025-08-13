@@ -15,12 +15,12 @@
 
 #include <cmath>
 #include <fstream>
-#include <iostream>
 #include <ostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "util.hpp"
 #include "version.hpp"
@@ -51,6 +51,38 @@ stan::model::model_base& new_model(stan::io::var_context& data_context,
 // TODO(bmw): Next major version, move inside of the model object
 extern std::ostream* outstream;
 
+namespace bridgestan {
+
+using model_ptr = std::unique_ptr<stan::model::model_base>;
+
+inline model_ptr model_from_data(const char* data, unsigned int seed) {
+  if (data == nullptr) {
+    stan::io::empty_var_context data_context;
+    return model_ptr(&new_model(data_context, seed, outstream));
+  } else {
+    std::string data_str(data);
+    if (data_str.empty()) {
+      stan::io::empty_var_context data_context;
+      return model_ptr(&new_model(data_context, seed, outstream));
+    } else {
+      if (stan::io::ends_with(".json", data_str)) {
+        std::ifstream in(data_str);
+        if (!in.good())
+          throw std::runtime_error("Cannot read input file: " + data_str);
+        stan::json::json_data data_context(in);
+        in.close();
+        return model_ptr(&new_model(data_context, seed, outstream));
+      } else {
+        std::istringstream json(data_str);
+        stan::json::json_data data_context(json);
+        return model_ptr(&new_model(data_context, seed, outstream));
+      }
+    }
+  }
+}
+
+}  // namespace bridgestan
+
 /**
  * This structure holds a pointer to a model and holds pointers to the parameter
  * names in CSV format.  Instances can be constructed with the C function
@@ -68,35 +100,9 @@ class bs_model {
    * pointer are both interpreted as no data.
    * @param[in] seed pseudorandom number generator seed
    */
-  bs_model(const char* data, unsigned int seed) {
-    if (data == nullptr) {
-      stan::io::empty_var_context data_context;
-      model_ = &new_model(data_context, seed, outstream);
-    } else {
-      std::string data_str(data);
-      if (data_str.empty()) {
-        stan::io::empty_var_context data_context;
-        model_ = &new_model(data_context, seed, outstream);
-      } else {
-        if (stan::io::ends_with(".json", data_str)) {
-          std::ifstream in(data_str);
-          if (!in.good())
-            throw std::runtime_error("Cannot read input file: " + data_str);
-          stan::json::json_data data_context(in);
-          in.close();
-          model_ = &new_model(data_context, seed, outstream);
-        } else {
-          std::istringstream json(data_str);
-          stan::json::json_data data_context(json);
-          model_ = &new_model(data_context, seed, outstream);
-        }
-      }
-    }
-
-    std::string model_name = model_->model_name();
-    const char* model_name_c = model_name.c_str();
-    name_ = strdup(model_name_c);
-
+  bs_model(const char* data, unsigned int seed)
+      : model_(bridgestan::model_from_data(data, seed)),
+        name_(bridgestan::make_unique_cstr(model_->model_name())) {
     std::stringstream info;
     info << "BridgeStan version: " << bridgestan::MAJOR_VERSION << '.'
          << bridgestan::MINOR_VERSION << '.' << bridgestan::PATCH_VERSION
@@ -136,7 +142,7 @@ class bs_model {
       info << '\t' << s << std::endl;
     }
 
-    model_info_ = strdup(info.str().c_str());
+    model_info_ = bridgestan::make_unique_cstr(info.str());
 
     std::vector<std::string> names;
     model_->unconstrained_param_names(names, false, false);
@@ -164,32 +170,13 @@ class bs_model {
     param_tp_gq_num_ = names.size();
   }
 
-  bs_model(bs_model const&) = delete;
-  bs_model operator=(bs_model const&) = delete;
-  bs_model(bs_model&&) = delete;
-  bs_model operator=(bs_model&&) = delete;
-
-  /**
-   * Destroy this object and free all of the memory allocated for it.
-   */
-  ~bs_model() noexcept {
-    delete (model_);
-    free(name_);
-    free(model_info_);
-    free(param_unc_names_);
-    free(param_names_);
-    free(param_tp_names_);
-    free(param_gq_names_);
-    free(param_tp_gq_names_);
-  }
-
   /**
    * Return the name of the model.  This class manages the memory,
    * so the returned string should not be freed.
    *
    * @return name of model
    */
-  const char* name() const { return name_; }
+  const char* name() const { return name_.get(); }
 
   /**
    *  Return information about the compiled model. This class manages the
@@ -197,7 +184,7 @@ class bs_model {
    *
    * @return name of model
    */
-  const char* model_info() const { return model_info_; }
+  const char* model_info() const { return model_info_.get(); }
 
   /**
    * Return the parameter names as a comma-separated list.  Indexes
@@ -210,12 +197,12 @@ class bs_model {
    */
   const char* param_names(bool include_tp, bool include_gq) const {
     if (include_tp && include_gq)
-      return param_tp_gq_names_;
+      return param_tp_gq_names_.get();
     if (include_tp)
-      return param_tp_names_;
+      return param_tp_names_.get();
     if (include_gq)
-      return param_gq_names_;
-    return param_names_;
+      return param_gq_names_.get();
+    return param_names_.get();
   }
 
   /**
@@ -226,7 +213,7 @@ class bs_model {
    * @return comma-separated unconstrained parameter names with
    * indexes
    */
-  const char* param_unc_names() const { return param_unc_names_; }
+  const char* param_unc_names() const { return param_unc_names_.get(); }
 
   /**
    * Return the number of unconstrianed parameters.
@@ -314,7 +301,7 @@ class bs_model {
    * constrained parameter transforms
    */
   auto make_model_lambda(bool propto, bool jacobian) const {
-    return [model = this->model_, propto, jacobian](auto& x) {
+    return [model = this->model_.get(), propto, jacobian](auto& x) {
       // log_prob() requires non-const but doesn't modify its argument
       auto& params
           = const_cast<Eigen::Matrix<stan::scalar_type_t<decltype(x)>, -1, 1>&>(
@@ -479,22 +466,22 @@ class bs_model {
 
  private:
   /** Stan model */
-  stan::model::model_base* model_;
+  bridgestan::model_ptr model_;
 
   /** name of the Stan model */
-  char* name_ = nullptr;
+  bridgestan::unique_cstr name_;
 
   /** Model compile info */
-  char* model_info_ = nullptr;
+  bridgestan::unique_cstr model_info_;
 
   /** CSV list of parameter names */
-  char* param_names_ = nullptr;
+  bridgestan::unique_cstr param_names_;
 
   /** CSV list of parameter, transformed parameter names */
-  char* param_tp_names_ = nullptr;
+  bridgestan::unique_cstr param_tp_names_;
 
   /** CSV list of parameter, generated quantity names */
-  char* param_gq_names_ = nullptr;
+  bridgestan::unique_cstr param_gq_names_;
 
   /** number of parameters */
   int param_num_ = -1;
@@ -512,10 +499,10 @@ class bs_model {
    * CSV list of parameter, transformed parameters, generated
    * quantity names
    */
-  char* param_tp_gq_names_ = nullptr;
+  bridgestan::unique_cstr param_tp_gq_names_;
 
   /** name of the Stan model */
-  char* param_unc_names_ = nullptr;
+  bridgestan::unique_cstr param_unc_names_;
 
   /** number of unconstrained parameters */
   int param_unc_num_ = -1;

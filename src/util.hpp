@@ -1,12 +1,28 @@
 #ifndef BRIDGESTAN_UTIL_HPP
 #define BRIDGESTAN_UTIL_HPP
 
+#include <stan/model/model_base.hpp>
+
 #include <string>
+#include <memory>
 #include <vector>
 #include <cstring>
 #include <sstream>
 
 namespace bridgestan {
+
+struct free_deleter {
+  template <typename T>
+  void operator()(T* p) const {
+    std::free(const_cast<std::remove_const_t<T>*>(p));
+  }
+};
+
+using unique_cstr = std::unique_ptr<const char, free_deleter>;
+
+inline unique_cstr make_unique_cstr(const std::string& str) {
+  return unique_cstr(strdup(str.c_str()));
+}
 
 /**
  * Convert the specified sequence of names to comma-separated value
@@ -17,16 +33,14 @@ namespace bridgestan {
  * @param names sequence of names to convert
  * @return CSV formatted sequence of names
  */
-inline char* to_csv(const std::vector<std::string>& names) {
+inline unique_cstr to_csv(const std::vector<std::string>& names) {
   std::stringstream ss;
   for (size_t i = 0; i < names.size(); ++i) {
     if (i > 0)
       ss << ',';
     ss << names[i];
   }
-  std::string s = ss.str();
-  const char* s_c = s.c_str();
-  return strdup(s_c);
+  return make_unique_cstr(ss.str());
 }
 
 /**
