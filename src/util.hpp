@@ -1,8 +1,6 @@
 #ifndef BRIDGESTAN_UTIL_HPP
 #define BRIDGESTAN_UTIL_HPP
 
-#include <stan/model/model_base.hpp>
-
 #include <string>
 #include <memory>
 #include <vector>
