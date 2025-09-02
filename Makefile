@@ -20,9 +20,8 @@ include $(MATH)make/libraries
 # Set -fPIC globally since we're always building a shared library
 override CXXFLAGS += -fPIC -fvisibility=hidden -fvisibility-inlines-hidden
 override CXXFLAGS_SUNDIALS += -fPIC
-override CPPFLAGS += -DBRIDGESTAN_EXPORT
+override CPPFLAGS += -DBRIDGESTAN_EXPORT -DSTAN_OVERRIDE_EIGEN_ASSERT
 
-# set flags for stanc compiler (math calls MIGHT? set STAN_OPENCL)
 ifdef STAN_OPENCL
 	override STANCFLAGS += --use-opencl
 	STAN_FLAG_OPENCL=_opencl
