@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Check out github
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -102,7 +102,7 @@ jobs:
 
     steps:
       - name: Check out github
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
           ref: main
