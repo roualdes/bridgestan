@@ -20,9 +20,8 @@ include $(MATH)make/libraries
 # Set -fPIC globally since we're always building a shared library
 override CXXFLAGS += -fPIC -fvisibility=hidden -fvisibility-inlines-hidden
 override CXXFLAGS_SUNDIALS += -fPIC
-override CPPFLAGS += -DBRIDGESTAN_EXPORT
+override CPPFLAGS += -DBRIDGESTAN_EXPORT -DSTAN_OVERRIDE_EIGEN_ASSERT
 
-# set flags for stanc compiler (math calls MIGHT? set STAN_OPENCL)
 ifdef STAN_OPENCL
 	override STANCFLAGS += --use-opencl
 	STAN_FLAG_OPENCL=_opencl
@@ -136,7 +135,7 @@ print-%  : ; @echo $* = $($*) ;
 STANC_DL_RETRY = 5
 STANC_DL_DELAY = 10
 STANC3_TEST_BIN_URL ?=
-STANC3_VERSION ?= v2.36.0
+STANC3_VERSION ?= v2.37.0
 
 ifeq ($(OS),Windows_NT)
  OS_TAG := windows

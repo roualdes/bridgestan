@@ -25,7 +25,7 @@ fn main() {
 
     // The path to the compiled model
     let path = compile_model(&bs_path, &path, &[], &[]).expect("Could not compile Stan model.");
-    println!("Compiled model: {:?}", path);
+    println!("Compiled model: {path:?}");
 
     let lib = open_library(path).expect("Could not load compiled Stan model.");
 
@@ -54,5 +54,5 @@ fn main() {
     let logp = model
         .log_density_gradient(&point[..], true, true, &mut gradient_out[..])
         .expect("Stan failed to evaluate the logp function.");
-    println!("logp: {}\ngrad: {:?}", logp, gradient_out);
+    println!("logp: {logp}\ngrad: {gradient_out:?}");
 }

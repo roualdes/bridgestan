@@ -196,8 +196,8 @@ fn model_compiling() {
     let name = "stdnormal";
     let mut base = model_dir();
     base.push(name);
-    let lib_path = base.join(format!("{}_model.so", name));
-    let stan_path = base.join(format!("{}.stan", name));
+    let lib_path = base.join(format!("{name}_model.so"));
+    let stan_path = base.join(format!("{name}.stan"));
     remove_file(lib_path).unwrap_or_default();
 
     let bs_path: PathBuf = std::env::var("BRIDGESTAN")
