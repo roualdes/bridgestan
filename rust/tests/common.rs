@@ -17,9 +17,9 @@ pub fn get_model<S: AsRef<str>>(name: S) -> (StanLibrary, Option<CString>) {
     let name = name.as_ref();
     let mut base = model_dir();
     base.push(name);
-    let lib = base.join(format!("{}_model.so", name));
+    let lib = base.join(format!("{name}_model.so"));
     if !lib.exists() {
-        panic!("Could not find compiled model {}", name);
+        panic!("Could not find compiled model {name}");
     }
     let lib = open_library(lib).unwrap();
 
