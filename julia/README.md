@@ -1,7 +1,7 @@
 
 # BridgeStan.jl - The Julia interface to BridgeStan
 
-[View the Julia interface documentation online](https://roualdes.github.io/bridgestan/latest/languages/julia.html)
+[View the Julia interface documentation online](https://roualdes.us/bridgestan/latest/languages/julia.html)
 
 ## Installation
 

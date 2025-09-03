@@ -6,7 +6,7 @@ rust-version = "1.69"
 description = "Rust interface for BridgeStan"
 repository = "https://github.com/roualdes/bridgestan"
 license = "BSD-3-Clause"
-homepage = "https://roualdes.github.io/bridgestan/latest/"
+homepage = "https://roualdes.us/bridgestan/latest/"
 
 [dependencies]
 libloading = "0.8.0"

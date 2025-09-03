@@ -1,6 +1,6 @@
 # BridgeStan from Rust
 
-[*View the BridgeStan documentation on Github Pages*](https://roualdes.github.io/bridgestan/latest/languages/rust.html).
+[*View the BridgeStan documentation on Github Pages*](https://roualdes.us/bridgestan/latest/languages/rust.html).
 
 This is a Rust wrapper for [BridgeStan](https://github.com/roualdes/bridgestan). It
 allows users to evaluate the log likelihood and related functions for Stan models

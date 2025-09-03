@@ -3,11 +3,11 @@
 This folder hosts the top-level documentation for BridgeStan.
 
 These docs are available online at
-[https://roualdes.github.io/bridgestan/](https://roualdes.github.io/bridgestan/latest/).
+[https://roualdes.us/bridgestan/](https://roualdes.us/bridgestan/latest/).
 
 ## Building
 
-Building the documentation is documented [here](https://roualdes.github.io/bridgestan/latest/internals/documentation.html).
+Building the documentation is documented [here](https://roualdes.us/bridgestan/latest/internals/documentation.html).
 
 The main documentation can be build by running `make docs` in the top-level
 repository. `make` can also be run in this folder to produce a specific format,
