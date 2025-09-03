@@ -5,7 +5,7 @@
 
 # BridgeStan
 
-[![DOCS](https://img.shields.io/badge/docs-latest-blue)](https://roualdes.github.io/bridgestan/) [![DOI](https://joss.theoj.org/papers/10.21105/joss.05236/status.svg)](https://doi.org/10.21105/joss.05236) [![CI](https://github.com/roualdes/bridgestan/actions/workflows/main.yaml/badge.svg)](https://github.com/roualdes/bridgestan/actions/workflows/main.yaml)
+[![DOCS](https://img.shields.io/badge/docs-latest-blue)](https://roualdes.us/bridgestan/) [![DOI](https://joss.theoj.org/papers/10.21105/joss.05236/status.svg)](https://doi.org/10.21105/joss.05236) [![CI](https://github.com/roualdes/bridgestan/actions/workflows/main.yaml/badge.svg)](https://github.com/roualdes/bridgestan/actions/workflows/main.yaml)
 
 BridgeStan provides efficient in-memory access through Python, Julia,
 Rust, and R to the methods of a [Stan](https://mc-stan.org) model, including
@@ -19,7 +19,7 @@ models.  For an introduction to what can be coded in Stan, see the
 
 BridgeStan is currently shipping with Stan version 2.37.0
 
-Documentation is available at https://roualdes.github.io/bridgestan/
+Documentation is available at https://roualdes.us/bridgestan/
 
 
 #### Compatibility
@@ -44,7 +44,7 @@ git clone --recurse-submodules https://github.com/roualdes/bridgestan.git
 ```
 
 For a full guide on installing, configuring, and using BridgeStan, consult the
-[documentation](https://roualdes.github.io/bridgestan/latest/getting-started.html)
+[documentation](https://roualdes.us/bridgestan/latest/getting-started.html)
 
 ## Using BridgeStan
 
