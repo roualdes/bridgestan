@@ -81,7 +81,7 @@ html_theme_options = {
     ],
     "use_edit_page_button": True,
     "switcher": {
-        "json_url": "https://roualdes.github.io/bridgestan/latest/_static/switcher.json",
+        "json_url": "https://roualdes.us/bridgestan/latest/_static/switcher.json",
         "version_match": switcher_version,
     },
     "logo": {
