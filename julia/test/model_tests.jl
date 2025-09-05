@@ -563,13 +563,13 @@ end
 
 
 
-@testset "threaded model: full" begin
+@testset "threaded model: ode_sundials" begin
 
-    model = load_test_model("full", false)
+    model = load_test_model("ode_sundials")
     nt = Threads.nthreads()
     seeds = rand(UInt32, nt)
 
-    x = [0.5] # bernoulli parameter
+    x = zeros(Float64, 0) # model is gq-only
 
     R = 1000
     out_size = BridgeStan.param_num(model; include_tp = false, include_gq = true)

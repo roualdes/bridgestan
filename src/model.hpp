@@ -21,6 +21,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <type_traits>
 
 #include "util.hpp"
 #include "version.hpp"
@@ -56,6 +57,10 @@ namespace bridgestan {
 using model_ptr = std::unique_ptr<stan::model::model_base>;
 
 inline model_ptr model_from_data(const char* data, unsigned int seed) {
+  // transformed data block could contain a call to a sundials ODE
+  // solver which requires AD
+  BRIDGESTAN_PREPARE_AD_FOR_THREADING();
+
   if (data == nullptr) {
     stan::io::empty_var_context data_context;
     return model_ptr(&new_model(data_context, seed, outstream));
@@ -283,6 +288,9 @@ class bs_model {
   void param_constrain(bool include_tp, bool include_gq,
                        const double* theta_unc, double* theta,
                        stan::rng_t& rng) const {
+    // write_array can run arbitrary user code in tparams/gqs,
+    // including sundials ODES which always require AD
+    BRIDGESTAN_PREPARE_AD_FOR_THREADING();
     Eigen::VectorXd params_unc
         = Eigen::VectorXd::Map(theta_unc, param_unc_num_);
     Eigen::VectorXd params;
@@ -301,11 +309,14 @@ class bs_model {
    * constrained parameter transforms
    */
   auto make_model_lambda(bool propto, bool jacobian) const {
+    // functions that need the model lambda all need autodiff setup
+    // we do it here to save the small overhead of duplicating the local
+    // in each function
+    BRIDGESTAN_PREPARE_AD_FOR_THREADING();
     return [model = this->model_.get(), propto, jacobian](auto& x) {
       // log_prob() requires non-const but doesn't modify its argument
-      auto& params
-          = const_cast<Eigen::Matrix<stan::scalar_type_t<decltype(x)>, -1, 1>&>(
-              x);
+      auto& params = const_cast<
+          std::remove_const_t<std::remove_reference_t<decltype(x)>>&>(x);
       if (propto) {
         if (jacobian) {
           return model->log_prob_propto_jacobian(params, outstream);
@@ -337,14 +348,15 @@ class bs_model {
    */
   void log_density(bool propto, bool jacobian, const double* theta_unc,
                    double* val) const {
+    BRIDGESTAN_PREPARE_AD_FOR_THREADING();
+
     Eigen::VectorXd params_unc
         = Eigen::VectorXd::Map(theta_unc, param_unc_num_);
 
     if (propto) {
-      // need to have vars, otherwise the result is 0 since everything is
-      // treated as a constant
-      BRIDGESTAN_PREPARE_AD_FOR_THREADING();
       try {
+        // need to have vars, otherwise the result is 0 since everything is
+        // treated as a constant
         Eigen::Matrix<stan::math::var, Eigen::Dynamic, 1> params_unc_var(
             params_unc);
         if (jacobian) {
@@ -385,7 +397,6 @@ class bs_model {
    */
   void log_density_gradient(bool propto, bool jacobian, const double* theta_unc,
                             double* val, double* grad) const {
-    BRIDGESTAN_PREPARE_AD_FOR_THREADING();
     auto logp = make_model_lambda(propto, jacobian);
     int N = param_unc_num_;
     Eigen::VectorXd params_unc = Eigen::VectorXd::Map(theta_unc, N);
@@ -410,7 +421,6 @@ class bs_model {
    */
   void log_density_hessian(bool propto, bool jacobian, const double* theta_unc,
                            double* val, double* grad, double* hessian) const {
-    BRIDGESTAN_PREPARE_AD_FOR_THREADING();
     auto logp = make_model_lambda(propto, jacobian);
     int N = param_unc_num_;
     Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
@@ -447,7 +457,6 @@ class bs_model {
                                           const double* theta_unc,
                                           const double* vector, double* val,
                                           double* hvp) const {
-    BRIDGESTAN_PREPARE_AD_FOR_THREADING();
     auto logp = make_model_lambda(propto, jacobian);
     int N = param_unc_num_;
     Eigen::Map<const Eigen::VectorXd> params_unc(theta_unc, N);
