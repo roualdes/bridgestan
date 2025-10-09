@@ -345,7 +345,7 @@ impl<T: Borrow<StanLibrary>> Model<T> {
     /// generally last-index major) order.  Parameter indices are separated with
     /// periods (`.`).  For example, `a[3]` is written `a.3` and `b[2,
     /// 3]` as `b.2.3`.  The numbering follows Stan and is indexed from 1.
-    pub fn param_unc_names(&mut self) -> &str {
+    pub fn param_unc_names(&self) -> &str {
         let cstr =
             unsafe { CStr::from_ptr(self.ffi_lib().bs_param_unc_names(self.model.as_ptr())) };
         cstr.to_str()
