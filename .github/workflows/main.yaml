@@ -8,7 +8,7 @@ on:
   workflow_dispatch: {}
 
 env:
-  CACHE_VERSION: 3
+  CACHE_VERSION: 4
 
 # only run one copy per PR
 concurrency:
@@ -37,13 +37,11 @@ jobs:
           path: ./stan/
           key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
-
       - name: Set up PATH for C example
         if: matrix.os == 'windows-latest'
         run: |
           Add-Content $env:GITHUB_PATH "$(pwd)/stan/lib/stan_math/lib/tbb"
           Add-Content $env:GITHUB_PATH "$(pwd)/test_models/full"
-
 
       - name: Build C example (Windows)
         if: matrix.os == 'windows-latest'
@@ -186,9 +184,15 @@ jobs:
           julia --project=. -e "using BridgeStan"
 
       - name: Run tests
+        uses: julia-actions/julia-runtest@v1
+        with:
+          project: julia/
+        env:
+          BRIDGESTAN: ${{ github.workspace }}
+
+      - name: Run example
         run: |
           cd julia/
-          julia --project=. -t 2 -e "using Pkg; Pkg.test()"
           julia --project=. example.jl
         env:
           BRIDGESTAN: ${{ github.workspace }}

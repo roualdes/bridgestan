@@ -689,7 +689,7 @@ end
     out = @capture_out f()
 
     lines = split(out, "\n")
-    @test lines[1] == "Hello from Julia"
-    @test lines[2] == "Hi from Stan!"
-    @test lines[3] == "theta = $theta"
+    @test strip(lines[1]) == "Hello from Julia"
+    @test strip(lines[2]) == "Hi from Stan!"
+    @test strip(lines[3]) == "theta = $theta"
 end
