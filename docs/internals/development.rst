@@ -62,6 +62,8 @@ R
 
   * `R6 <https://cran.r-project.org/web/packages/R6/index.html>`_
 
+* R code is formatted using `air <https://github.com/posit-dev/air>`_.
+
 Rust
 ----
 
