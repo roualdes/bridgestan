@@ -323,7 +323,7 @@ end
     Threads.@threads for it = 1:nt
         for r = it:nt:R
             x = randn(BridgeStan.param_num(model))
-            lp  = BridgeStan.log_density(model, x)
+            lp = BridgeStan.log_density(model, x)
             ld[r] = isapprox(lp, gaussian(x))
         end
 
