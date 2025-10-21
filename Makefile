@@ -114,18 +114,24 @@ stan-update-remote:
 compile_info:
 	@echo '$(LINK.cpp) $(BRIDGE_O) $(LDLIBS) $(SUNDIALS_TARGETS) $(MPI_TARGETS) $(TBB_TARGETS)'
 
-# set to false if you want to fail on formatting errors
-# e.g., in continuous integration
-BS_FORMAT_IGNOREABLE ?= true
 
-.PHONY: format
+
+.PHONY: format format-check
 format:
-	clang-format -i src/*.cpp src/*.hpp src/*.h || $(BS_FORMAT_IGNOREABLE)
-	isort python || $(BS_FORMAT_IGNOREABLE)
-	black python || $(BS_FORMAT_IGNOREABLE)
-	julia --project=julia -e 'using JuliaFormatter; format("julia/")' || $(BS_FORMAT_IGNOREABLE)
-#    R seems to have no good formatter that doesn't choke on doc comments
-#    Rscript -e 'formatR::tidy_dir("R/", recursive=TRUE)' || $(BS_FORMAT_IGNOREABLE)
+	clang-format -i src/*.cpp src/*.hpp src/*.h || true
+	isort python || true
+	black python || true
+	julia --project=julia -e 'using JuliaFormatter; format("julia/")' || true
+	air format R || true
+	cd rust && cargo fmt || true
+
+format-check:
+	clang-format --dry-run --Werror src/*.cpp src/*.hpp src/*.h
+	isort python --check
+	black python --check
+	julia --project=julia -e 'using JuliaFormatter; if !format("julia/", overwrite=false) exit(1) end'
+	air format R --check
+	cd rust && cargo fmt --check
 
 # print value of makefile variable (e.g., make print-TBB_TARGETS)
 .PHONY: print-%
