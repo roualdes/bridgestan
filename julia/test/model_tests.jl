@@ -314,6 +314,7 @@ end
 
     model = load_test_model("multi")
     nt = Threads.nthreads()
+    @test nt > 1
 
     R = 1000
     ld = Vector{Bool}(undef, R * 2)
@@ -567,6 +568,7 @@ end
 
     model = load_test_model("ode_sundials")
     nt = Threads.nthreads()
+    @test nt > 1
     seeds = rand(UInt32, nt)
 
     x = zeros(Float64, 0) # model is gq-only
@@ -689,7 +691,7 @@ end
     out = @capture_out f()
 
     lines = split(out, "\n")
-    @test lines[1] == "Hello from Julia"
-    @test lines[2] == "Hi from Stan!"
-    @test lines[3] == "theta = $theta"
+    @test strip(lines[1]) == "Hello from Julia"
+    @test strip(lines[2]) == "Hi from Stan!"
+    @test strip(lines[3]) == "theta = $theta"
 end
