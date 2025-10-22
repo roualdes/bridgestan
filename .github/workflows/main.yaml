@@ -161,9 +161,9 @@ jobs:
           submodules: recursive
 
       - name: Set up Julia
-        uses: julia-actions/setup-julia@v2
+        uses: julia-actions/install-juliaup@v2
         with:
-          version: ${{ matrix.julia-version }}
+          channel: ${{ matrix.julia-version }}
 
       - name: Restore Stan
         uses: actions/cache@v4
@@ -182,16 +182,20 @@ jobs:
       - name: Check import
         run: |
           cd julia/
+          julia --version
           julia --project=. -e "using Pkg; Pkg.instantiate()"
           julia --project=. -e "using BridgeStan"
 
       - name: Run tests
         run: |
-          cd julia/
-          julia --project=. -t 2 -e "using Pkg; Pkg.test()"
-          julia --project=. example.jl
+          julia --project=julia/ --color=yes -t 2 -e "using Pkg; Pkg.test()"
         env:
           BRIDGESTAN: ${{ github.workspace }}
+
+      - name: Run example
+        run: |
+          cd julia/
+          julia --project=. example.jl
 
   Rlang:
     needs: [build]
