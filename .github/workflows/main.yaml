@@ -25,9 +25,9 @@ jobs:
           submodules: recursive
 
       - name: Set up Julia
-        uses: julia-actions/setup-julia@v2
+        uses: julia-actions/install-juliaup@v2
         with:
-          version: lts
+          channel: lts
 
       - name: Install Formatters
         run: |
