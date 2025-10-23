@@ -12,6 +12,16 @@ Building BridgeStan
 Developers should follow the instructions in :doc:`../getting-started` to ensure
 they have the minimal C++ build tools required for working with BridgeStan.
 
+Besides the normal build commands used by users, developers may find the following
+commands useful when working on BridgeStan itself:
+
+* ``make format``: Format all source code according to the project's style guidelines.
+  This will be checked by CI, so it's a good idea to run before each push.
+
+* ``make test_models``: Build all of the models in the :file:`test_models/` directory at once.
+
+* ``make docs``: Build these docs (see :doc:`./documentation`).
+
 C++
 ---
 
@@ -40,7 +50,7 @@ Python
 
   * `NumPy <https://numpy.org/>`_
 
-* We autoformat code with `black <https://black.readthedocs.io/en/stable/>`_.
+* We autoformat code with `isort <https://pycqa.github.io/isort/>`_ and `black <https://black.readthedocs.io/en/stable/>`_.
 
 Julia
 -----
