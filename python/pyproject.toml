@@ -30,7 +30,8 @@ packages = ["bridgestan"]
 "bridgestan" = ["py.typed"]
 
 [project.optional-dependencies]
-test = ["pandas", "pytest", "pytest-cov"]
+test = ["pytest", "pytest-cov"]
+dev = ["black", "isort"]
 
 [tool.isort]
 profile = "black"

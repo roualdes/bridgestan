@@ -298,7 +298,7 @@ def test_param_unconstrain_json():
     theta_json = '{"mu": 0.2, "sigma": 1.9}'
     theta_unc_j_test = bridge.param_unconstrain_json(theta_json)
     np.testing.assert_allclose(theta_unc, theta_unc_j_test)
-    theta_dict = {"mu":0.2, "sigma":1.9}
+    theta_dict = {"mu": 0.2, "sigma": 1.9}
     theta_unc_j_test2 = bridge.param_unconstrain_json(theta_dict)
     np.testing.assert_allclose(theta_unc, theta_unc_j_test2)
 

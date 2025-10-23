@@ -2,12 +2,12 @@ import ctypes
 import warnings
 from os import PathLike, fspath
 from pathlib import Path
-from typing import Any, Mapping, List, Optional, Tuple, Union
+from typing import Any, List, Mapping, Optional, Tuple, Union
 
 import dllist
-import stanio
 import numpy as np
 import numpy.typing as npt
+import stanio
 from numpy.ctypeslib import ndpointer
 
 from .__version import __version_info__

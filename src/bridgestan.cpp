@@ -7,7 +7,6 @@
 
 #include "bridgestanR.cpp"
 
-
 using bridgestan::handle_errors;
 
 const int bs_major_version = BRIDGESTAN_MAJOR;

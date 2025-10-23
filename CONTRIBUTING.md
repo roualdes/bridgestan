@@ -26,6 +26,8 @@ We follow standard open source and GitHub practices:
 
 * We add unit tests when changing or adding code.
 
+* We keep our code formatted using automatic tools (`make format` can run all of them for you).
+
 * We keep the main branch in a release-ready state at all times.
 
 * We propose updates through [GitHub Pull Requests](https://github.com/roualdes/bridgestan/pulls) so that we can do code review.  We do not push directly to the main branch.
