@@ -1,11 +1,13 @@
-use bridgestan::{compile_model, open_library, BridgeStanError, Model};
+use bridgestan::{BridgeStanError, Model, compile_model, open_library};
 use std::ffi::CString;
 use std::path::{Path, PathBuf};
 
 fn main() {
     // Set up logging - optional
     if std::env::var("RUST_LOG").is_err() {
-        std::env::set_var("RUST_LOG", "bridgestan=info");
+        unsafe {
+            std::env::set_var("RUST_LOG", "bridgestan=info");
+        }
     }
     env_logger::init();
 
