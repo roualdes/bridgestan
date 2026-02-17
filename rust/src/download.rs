@@ -1,5 +1,5 @@
-use crate::bs_safe::{BridgeStanError, Result};
 use crate::VERSION;
+use crate::bs_safe::{BridgeStanError, Result};
 use flate2::read::GzDecoder;
 use log::info;
 use std::io::Read;
