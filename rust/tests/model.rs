@@ -64,7 +64,7 @@ fn hessian_vector_product() {
     let model = Model::new(&lib, data, 42).unwrap();
 
     let n = model.param_unc_num();
-    use rand::Rng;
+    use rand::RngExt;
 
     let mut rng = rand::rng();
 
