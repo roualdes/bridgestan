@@ -88,6 +88,7 @@ We are aware of the following projects using BridgeStan.
 - https://github.com/sethaxen/StanLogDensityProblems.jl
 - https://github.com/Julia-Tempering/Pigeons.jl
 - https://github.com/TuringLang/TuringBenchmarking.jl
+- https://github.com/rubenseyer/FFFSampler.jl
 
 ### Python
 
@@ -95,12 +96,12 @@ We are aware of the following projects using BridgeStan.
 - https://github.com/UoL-SignalProcessingGroup/retrospectr
 - https://github.com/UoL-SignalProcessingGroup/SMC-NUTS
 
-
 ### R
 
 - https://github.com/JTorgander/hmc-sandbox
 - https://github.com/UCL/rmcmc
 - https://github.com/CerulloE1996/BayesMVP/
+- https://github.com/andytimm/nutpieR
 
 ### Other
 
@@ -123,6 +124,7 @@ and letting us know so we can list your project here.
 - [*Efficient scenario analysis in real-time Bayesian election forecasting via sequential meta-posterior sampling*](https://arxiv.org/abs/2510.19133)
 - [*Fisher meets Feynman: score-based variational inference with a product of experts*](https://arxiv.org/abs/2510.21598)
 - [*Generalized Guarantees for Variational Inference in the Presence of Even and Elliptical Symmetry*](https://arxiv.org/abs/2511.01064)
+- [*Rebalancing Markov jump processes for non-reversible continuous-time sampling*](https://arxiv.org/abs/2504.12190)
 
 <!-- https://search.arxiv.org/?query=bridgestan&byDate=1 -->
 

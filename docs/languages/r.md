@@ -10,7 +10,16 @@ Mac users have reported issues when using a copy of R installed from [conda-forg
 
 ### From inside R
 
-While BridgeStan is not available on CRAN, you can install the R package from the source code
+While BridgeStan is not available on CRAN, it is mirrored by the [R-Multiverse](https://r-multiverse.org/)
+project and can be installed as follows:
+```R
+install.packages(
+  "bridgestan",
+  repos = c("https://community.r-multiverse.org", getOption("repos"))
+)
+```
+
+Alternatively, you  can install the R package from the source code on Github
 using the `remotes` package:
 
 ```R
