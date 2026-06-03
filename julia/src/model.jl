@@ -64,7 +64,7 @@ mutable struct StanModel
         end
 
         windows_dll_path_setup()
-
+        println(ENV["PATH"])
         lib = dlopen(lib)
 
         err = Ref{Cstring}()
