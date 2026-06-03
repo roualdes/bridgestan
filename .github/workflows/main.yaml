@@ -207,6 +207,10 @@ jobs:
           julia --project=. -e "using Pkg; Pkg.instantiate()"
           julia --project=. -e "using BridgeStan"
 
+      - name: Set up PATH for C example
+        run: |
+          Add-Content $env:GITHUB_PATH "$(pwd)/stan/lib/stan_math/lib/tbb"
+
       - name: Run example
         run: |
           cd julia/
