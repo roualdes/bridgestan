@@ -227,13 +227,6 @@ jobs:
           julia --project=. -e "using Pkg; Pkg.instantiate()"
           julia --project=. -e "using BridgeStan"
 
-      - name: Set up PATH for C example
-        # if: runner.os == 'Windows'
-        run: |
-          Add-Content $env:GITHUB_PATH "$(pwd)/stan/lib/stan_math/lib/tbb"
-          Add-Content $env:GITHUB_PATH "C:/mingw64/bin"
-
-
       - name: Run example
         run: |
           # ldd ./test_models/bernoulli/bernoulli_model.so
