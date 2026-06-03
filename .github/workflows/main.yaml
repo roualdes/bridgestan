@@ -53,6 +53,11 @@ jobs:
         with:
           submodules: recursive
 
+      - name: "Windows: Set up GCC"
+        uses: bwoodsend/setup-winlibs-action@v1
+        with:
+          runtime: ucrt
+
       - name: Stan build caching
         uses: actions/cache@v5
         id: stan-cache
@@ -172,7 +177,7 @@ jobs:
       matrix:
         os: [windows-latest, windows-2025-vs2026, windows-2022  ] # , ubuntu-latest, macos-latest]
         julia-version: ["1"]
-        juliaup: ["yes"]
+        juliaup: ["yes", "no"]
         # include:
         #   - julia-version: "lts"
         #     os: ubuntu-latest
@@ -194,7 +199,12 @@ jobs:
         uses: julia-actions/setup-julia@v3
         with:
           version: ${{ matrix.julia-version }}
-          include-all-prereleases: true
+          # include-all-prereleases: true
+
+      - name: "Windows: Set up GCC"
+        uses: bwoodsend/setup-winlibs-action@v1
+        with:
+          runtime: ucrt
 
       - name: Restore Stan
         uses: actions/cache@v5
