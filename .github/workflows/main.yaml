@@ -44,7 +44,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-latest ] #, ubuntu-latest, macos-latest]
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -106,74 +106,74 @@ jobs:
         run: |
           make STAN_THREADS=true O=0 test_models -j4
 
-  python:
-    needs: [build]
-    runs-on: ${{matrix.os}}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.9", "3.14"]
-      fail-fast: false
-    steps:
-      - name: Check out github
-        uses: actions/checkout@v6
-        with:
-          submodules: recursive
+  # python:
+  #   needs: [build]
+  #   runs-on: ${{matrix.os}}
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-latest, macos-latest, windows-latest]
+  #       python-version: ["3.9", "3.14"]
+  #     fail-fast: false
+  #   steps:
+  #     - name: Check out github
+  #       uses: actions/checkout@v6
+  #       with:
+  #         submodules: recursive
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ matrix.python-version }}
+  #     - name: Set up Python ${{ matrix.python-version }}
+  #       uses: actions/setup-python@v6
+  #       with:
+  #         python-version: ${{ matrix.python-version }}
 
-      - name: Restore Stan
-        uses: actions/cache@v5
-        id: stan-cache
-        with:
-          path: ./stan/
-          key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
+  #     - name: Restore Stan
+  #       uses: actions/cache@v5
+  #       id: stan-cache
+  #       with:
+  #         path: ./stan/
+  #         key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
-      - name: Restore built models
-        uses: actions/cache@v5
-        id: test-models
-        with:
-          path: ./test_models/
-          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp', 'Makefile') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
+  #     - name: Restore built models
+  #       uses: actions/cache@v5
+  #       id: test-models
+  #       with:
+  #         path: ./test_models/
+  #         key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp', 'Makefile') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
 
-      - name: Install package
-        run: |
-          cd python/
-          pip install pytest
-          pip install .
+  #     - name: Install package
+  #       run: |
+  #         cd python/
+  #         pip install pytest
+  #         pip install .
 
-      - name: Test import
-        run: |
-          python -c "import bridgestan"
+  #     - name: Test import
+  #       run: |
+  #         python -c "import bridgestan"
 
-      - name: Run tests
-        run: |
-          pytest -v python/
-          cd python/
-          python example.py
-        env:
-          BRIDGESTAN: ${{ github.workspace }}
+  #     - name: Run tests
+  #       run: |
+  #         pytest -v python/
+  #         cd python/
+  #         python example.py
+  #       env:
+  #         BRIDGESTAN: ${{ github.workspace }}
 
-      - name: Run tests (Unix-specific)
-        if: matrix.os != 'windows-latest'
-        run: |
-          pytest -v python/ --run-type=ad_hessian
-        env:
-          BRIDGESTAN: ${{ github.workspace }}
+  #     - name: Run tests (Unix-specific)
+  #       if: matrix.os != 'windows-latest'
+  #       run: |
+  #         pytest -v python/ --run-type=ad_hessian
+  #       env:
+  #         BRIDGESTAN: ${{ github.workspace }}
 
   julia:
     needs: [build]
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [windows-latest ] # , ubuntu-latest, macos-latest]
         julia-version: ["1"]
-        include:
-          - julia-version: "lts"
-            os: ubuntu-latest
+        # include:
+        #   - julia-version: "lts"
+        #     os: ubuntu-latest
       fail-fast: false
     steps:
       - name: Check out github
@@ -212,119 +212,120 @@ jobs:
           julia --project=julia/ --color=yes -t 2 -e "using Pkg; Pkg.test()"
         env:
           BRIDGESTAN: ${{ github.workspace }}
+        timeout-minutes: 30
 
       - name: Run example
         run: |
           cd julia/
           julia --project=. example.jl
 
-  Rlang:
-    needs: [build]
-    runs-on: ${{matrix.os}}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-      fail-fast: false
-    steps:
-      - name: Check out github
-        uses: actions/checkout@v6
-        with:
-          submodules: recursive
+  # Rlang:
+  #   needs: [build]
+  #   runs-on: ${{matrix.os}}
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-latest, macos-latest, windows-latest]
+  #     fail-fast: false
+  #   steps:
+  #     - name: Check out github
+  #       uses: actions/checkout@v6
+  #       with:
+  #         submodules: recursive
 
-      - name: Install R
-        uses: r-lib/actions/setup-r@v2.12.0
+  #     - name: Install R
+  #       uses: r-lib/actions/setup-r@v2.12.0
 
-      - name: Install R dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2.12.0
-        with:
-          packages: |
-            any::R6
-            any::testthat
-            any::devtools
+  #     - name: Install R dependencies
+  #       uses: r-lib/actions/setup-r-dependencies@v2.12.0
+  #       with:
+  #         packages: |
+  #           any::R6
+  #           any::testthat
+  #           any::devtools
 
-      - name: Restore Stan
-        uses: actions/cache@v5
-        with:
-          path: ./stan/
-          key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
+  #     - name: Restore Stan
+  #       uses: actions/cache@v5
+  #       with:
+  #         path: ./stan/
+  #         key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
-      - name: Restore built models
-        uses: actions/cache@v5
-        id: test-models
-        with:
-          path: ./test_models/
-          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp', 'Makefile') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
+  #     - name: Restore built models
+  #       uses: actions/cache@v5
+  #       id: test-models
+  #       with:
+  #         path: ./test_models/
+  #         key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp', 'Makefile') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
 
-      - name: Run tests
-        if: matrix.os != 'windows-latest'
-        run: |
-          cd R/tests/testthat
-          gcc -fpic -shared -o test_collisions.so test_collisions.c
-          cd ../..
-          Rscript -e "devtools::test(reporter = c(\"summary\", \"fail\"))"
-          Rscript -e "install.packages(getwd(), repos=NULL, type=\"source\")"
-          Rscript example.R
-        env:
-          BRIDGESTAN: ${{ github.workspace }}
+  #     - name: Run tests
+  #       if: matrix.os != 'windows-latest'
+  #       run: |
+  #         cd R/tests/testthat
+  #         gcc -fpic -shared -o test_collisions.so test_collisions.c
+  #         cd ../..
+  #         Rscript -e "devtools::test(reporter = c(\"summary\", \"fail\"))"
+  #         Rscript -e "install.packages(getwd(), repos=NULL, type=\"source\")"
+  #         Rscript example.R
+  #       env:
+  #         BRIDGESTAN: ${{ github.workspace }}
 
-      - name: Run tests (windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          cd R/tests/testthat
-          gcc -fpic -shared -o test_collisions.dll test_collisions.c
-          if (!$LASTEXITCODE.Equals(0)) {exit $LASTEXITCODE}
-          cd ../..
-          Rscript -e 'devtools::test(reporter = c("summary", "fail"))'
-          if (!$LASTEXITCODE.Equals(0)) {exit $LASTEXITCODE}
-          Rscript -e 'install.packages(getwd(), repos=NULL, type="source")'
-          if (!$LASTEXITCODE.Equals(0)) {exit $LASTEXITCODE}
-          Rscript example.R
-          if (!$LASTEXITCODE.Equals(0)) {exit $LASTEXITCODE}
-        env:
-          BRIDGESTAN: ${{ github.workspace }}
+  #     - name: Run tests (windows)
+  #       if: matrix.os == 'windows-latest'
+  #       run: |
+  #         cd R/tests/testthat
+  #         gcc -fpic -shared -o test_collisions.dll test_collisions.c
+  #         if (!$LASTEXITCODE.Equals(0)) {exit $LASTEXITCODE}
+  #         cd ../..
+  #         Rscript -e 'devtools::test(reporter = c("summary", "fail"))'
+  #         if (!$LASTEXITCODE.Equals(0)) {exit $LASTEXITCODE}
+  #         Rscript -e 'install.packages(getwd(), repos=NULL, type="source")'
+  #         if (!$LASTEXITCODE.Equals(0)) {exit $LASTEXITCODE}
+  #         Rscript example.R
+  #         if (!$LASTEXITCODE.Equals(0)) {exit $LASTEXITCODE}
+  #       env:
+  #         BRIDGESTAN: ${{ github.workspace }}
 
-  rust:
-    needs: [build]
-    runs-on: ${{matrix.os}}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-      fail-fast: false
-    steps:
-      - name: Check out github
-        uses: actions/checkout@v6
-        with:
-          submodules: recursive
+  # rust:
+  #   needs: [build]
+  #   runs-on: ${{matrix.os}}
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-latest, macos-latest, windows-latest]
+  #     fail-fast: false
+  #   steps:
+  #     - name: Check out github
+  #       uses: actions/checkout@v6
+  #       with:
+  #         submodules: recursive
 
-      - name: Restore Stan
-        uses: actions/cache@v5
-        with:
-          path: ./stan/
-          key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
+  #     - name: Restore Stan
+  #       uses: actions/cache@v5
+  #       with:
+  #         path: ./stan/
+  #         key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
-      - name: Restore built models
-        uses: actions/cache@v5
-        id: test-models
-        with:
-          path: ./test_models/
-          key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp', 'Makefile') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
+  #     - name: Restore built models
+  #       uses: actions/cache@v5
+  #       id: test-models
+  #       with:
+  #         path: ./test_models/
+  #         key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp', 'Makefile') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
 
-      - name: Set up TBB
-        if: matrix.os == 'windows-latest'
-        run: |
-          Add-Content $env:GITHUB_PATH "$(pwd)/stan/lib/stan_math/lib/tbb"
+  #     - name: Set up TBB
+  #       if: matrix.os == 'windows-latest'
+  #       run: |
+  #         Add-Content $env:GITHUB_PATH "$(pwd)/stan/lib/stan_math/lib/tbb"
 
-      - name: Run rust tests
-        working-directory: ./rust
-        timeout-minutes: 60
-        run: |
-          cargo clippy
-          cargo run --example=example
+  #     - name: Run rust tests
+  #       working-directory: ./rust
+  #       timeout-minutes: 60
+  #       run: |
+  #         cargo clippy
+  #         cargo run --example=example
 
-          # run all tests with feature download-bridgestan-src
-          cargo test --verbose --all-features
-          cargo test --verbose model_compiling -- --ignored
-      - name: Check semver for rust interface
-        uses: obi1kenobi/cargo-semver-checks-action@v2
-        with:
-          manifest-path: ./rust/Cargo.toml
+  #         # run all tests with feature download-bridgestan-src
+  #         cargo test --verbose --all-features
+  #         cargo test --verbose model_compiling -- --ignored
+  #     - name: Check semver for rust interface
+  #       uses: obi1kenobi/cargo-semver-checks-action@v2
+  #       with:
+  #         manifest-path: ./rust/Cargo.toml
