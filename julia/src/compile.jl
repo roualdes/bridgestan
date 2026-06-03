@@ -137,7 +137,16 @@ function windows_dll_path_setup()
         else
             # add TBB to %PATH%
             ENV["PATH"] =
-                joinpath(get_bridgestan_path(), "stan", "lib", "stan_math", "lib", "tbb") *
+                abspath(
+                    joinpath(
+                        get_bridgestan_path(),
+                        "stan",
+                        "lib",
+                        "stan_math",
+                        "lib",
+                        "tbb",
+                    ),
+                ) *
                 ";" *
                 ENV["PATH"]
             WINDOWS_PATH_SET[] = tbb_found()
