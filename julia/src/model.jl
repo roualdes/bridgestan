@@ -1,4 +1,5 @@
 using Base.Libc.Libdl: dlsym, dllist, dlopen
+using Base: DL_LOAD_PATH
 
 struct StanModelStruct end
 
@@ -65,6 +66,7 @@ mutable struct StanModel
 
         windows_dll_path_setup()
         println(ENV["PATH"])
+        println(DL_LOAD_PATH)
         lib = dlopen(lib)
 
         err = Ref{Cstring}()
