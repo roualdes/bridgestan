@@ -122,7 +122,7 @@ WINDOWS_PATH_SET = Ref{Bool}(false)
 
 function tbb_found()
     try
-        run(pipeline(`where.exe tbb.dll`, stdout = devnull, stderr = devnull))
+        run(`where.exe tbb.dll`)
     catch
         return false
     end
@@ -132,6 +132,7 @@ end
 function windows_dll_path_setup()
     if Sys.iswindows() && !(WINDOWS_PATH_SET[])
         if tbb_found()
+            println("TBB found!")
             WINDOWS_PATH_SET[] = true
         else
             # add TBB to %PATH%
