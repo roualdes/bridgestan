@@ -207,17 +207,18 @@ jobs:
           julia --project=. -e "using Pkg; Pkg.instantiate()"
           julia --project=. -e "using BridgeStan"
 
+      - name: Run example
+        run: |
+          cd julia/
+          julia --project=. example.jl
+
       - name: Run tests
         run: |
           julia --project=julia/ --color=yes -t 2 -e "using Pkg; Pkg.test()"
         env:
           BRIDGESTAN: ${{ github.workspace }}
-        timeout-minutes: 30
+        timeout-minutes: 10
 
-      - name: Run example
-        run: |
-          cd julia/
-          julia --project=. example.jl
 
   # Rlang:
   #   needs: [build]
