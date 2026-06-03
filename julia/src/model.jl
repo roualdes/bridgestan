@@ -68,6 +68,7 @@ mutable struct StanModel
         println(ENV["PATH"])
         println(DL_LOAD_PATH)
         run(`ldd $(lib)`)
+        println(dllist())
         lib = dlopen(lib)
 
         err = Ref{Cstring}()

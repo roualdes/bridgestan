@@ -226,17 +226,17 @@ jobs:
 
       - name: Run example
         run: |
-          ldd ./test_models/bernoulli/bernoulli_model.so
-          nm ./test_models/bernoulli/bernoulli_model.so
-          ldd C:/Windows/SYSTEM32/ntdll.dll
-          ldd C:/Windows/System32/KERNEL32.DLL
-          ldd C:/Windows/System32/KERNELBASE.dll
-          ldd C:/Windows/System32/msvcrt.dll
-          ldd C:/Windows/System32/ucrtbase.dll
-          ldd D:/a/bridgestan/bridgestan/stan/lib/stan_math/lib/tbb/tbb.dll
-          ldd C:/mingw64/bin/libwinpthread-1.dll
-          ldd C:/mingw64/bin/libstdc++-6.dll
-          ldd C:/mingw64/bin/libgcc_s_seh-1.dll
+          # ldd ./test_models/bernoulli/bernoulli_model.so
+          # nm ./test_models/bernoulli/bernoulli_model.so
+          # ldd C:/Windows/SYSTEM32/ntdll.dll
+          # ldd C:/Windows/System32/KERNEL32.DLL
+          # ldd C:/Windows/System32/KERNELBASE.dll
+          # ldd C:/Windows/System32/msvcrt.dll
+          # ldd C:/Windows/System32/ucrtbase.dll
+          # ldd D:/a/bridgestan/bridgestan/stan/lib/stan_math/lib/tbb/tbb.dll
+          # ldd C:/mingw64/bin/libwinpthread-1.dll
+          # ldd C:/mingw64/bin/libstdc++-6.dll
+          # ldd C:/mingw64/bin/libgcc_s_seh-1.dll
 
           cd julia/
           julia --project=. example.jl
