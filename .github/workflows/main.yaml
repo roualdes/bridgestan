@@ -219,7 +219,7 @@ jobs:
       - name: Run example
         run: |
           ldd ./test_models/bernoulli/bernoulli_model.so
-          dumpbin.exe /EXPORTS ./test_models/bernoulli/bernoulli_model.so
+          nm ./test_models/bernoulli/bernoulli_model.so
           ldd C:/Windows/SYSTEM32/ntdll.dll
           ldd C:/Windows/System32/KERNEL32.DLL
           ldd C:/Windows/System32/KERNELBASE.dll
