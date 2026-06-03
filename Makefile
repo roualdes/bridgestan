@@ -22,7 +22,7 @@ override CXXFLAGS += -fPIC
 override CXXFLAGS_SUNDIALS += -fPIC
 
 # visibility control
-override CXXFLAGS += -fvisibility=hidden -fvisibility-inlines-hidden -w -lpthread
+# override CXXFLAGS += -fvisibility=hidden -fvisibility-inlines-hidden -w -lpthread
 override CPPFLAGS += -DBRIDGESTAN_EXPORT -DSTAN_OVERRIDE_EIGEN_ASSERT
 
 ifdef STAN_OPENCL

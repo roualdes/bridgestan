@@ -8,7 +8,7 @@ on:
   workflow_dispatch: {}
 
 env:
-  CACHE_VERSION: 1
+  CACHE_VERSION: 2
 
 # only run one copy per PR
 concurrency:
