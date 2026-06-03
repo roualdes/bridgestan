@@ -171,6 +171,7 @@ jobs:
       matrix:
         os: [windows-latest, windows-2025-vs2026, windows-2022  ] # , ubuntu-latest, macos-latest]
         julia-version: ["1", "1.10"]
+        juliaup: ["yes", "no"]
         # include:
         #   - julia-version: "lts"
         #     os: ubuntu-latest
@@ -182,9 +183,17 @@ jobs:
           submodules: recursive
 
       - name: Set up Julia
+        if: matrix.juliaup == 'yes'
         uses: julia-actions/install-juliaup@v3
         with:
           channel: ${{ matrix.julia-version }}
+
+      - name: Set up Julia
+        if: matrix.juliaup == 'no'
+        uses: julia-actions/setup-julia@v3
+        with:
+          version: ${{ matrix.julia-version }}
+
 
       - name: Restore Stan
         uses: actions/cache@v5
