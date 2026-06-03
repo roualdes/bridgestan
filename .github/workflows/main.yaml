@@ -53,13 +53,6 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Set up Julia
-
-        uses: julia-actions/setup-julia@v3
-        with:
-          version: "1"
-          include-all-prereleases: true
-
       - name: Stan build caching
         uses: actions/cache@v5
         id: stan-cache
@@ -179,7 +172,7 @@ jobs:
       matrix:
         os: [windows-latest, windows-2025-vs2026, windows-2022  ] # , ubuntu-latest, macos-latest]
         julia-version: ["1"]
-        juliaup: ["yes", "no"]
+        juliaup: ["yes"]
         # include:
         #   - julia-version: "lts"
         #     os: ubuntu-latest
