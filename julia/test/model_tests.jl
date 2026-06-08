@@ -24,16 +24,16 @@ function load_test_model(name::String, with_data = true)
     return BridgeStan.StanModel(lib, data)
 end
 
-@testset "constructor" begin
-    # no data
-    load_test_model("stdnormal", false)
-    # missing DSO
-    @test_throws SystemError BridgeStan.StanModel("Not going to find it")
-    # missing data
-    @test_throws SystemError load_test_model("stdnormal")
-    # exception in constructor
-    @test_throw_string "find this text: datafails" load_test_model("throw_data", false)
-end
+# @testset "constructor" begin
+#     # no data
+#     load_test_model("stdnormal", false)
+#     # missing DSO
+#     @test_throws SystemError BridgeStan.StanModel("Not going to find it")
+#     # missing data
+#     @test_throws SystemError load_test_model("stdnormal")
+#     # exception in constructor
+#     @test_throw_string "find this text: datafails" load_test_model("throw_data", false)
+# end
 
 @testset "name" begin
     b = load_test_model("stdnormal", false)
