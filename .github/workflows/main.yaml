@@ -8,7 +8,7 @@ on:
   workflow_dispatch: {}
 
 env:
-  CACHE_VERSION: 12
+  CACHE_VERSION: 13
 
 # only run one copy per PR
 concurrency:
@@ -56,7 +56,7 @@ jobs:
       - name: "Windows: Set up GCC"
         uses: bwoodsend/setup-winlibs-action@v1
         with:
-          runtime: msvcrt
+          tag: 14.2.0posix-19.1.7-12.0.0-msvcrt-r3
 
       - name: Stan build caching
         uses: actions/cache@v5
@@ -204,7 +204,7 @@ jobs:
       - name: "Windows: Set up GCC"
         uses: bwoodsend/setup-winlibs-action@v1
         with:
-          runtime: msvcrt
+          tag: 14.2.0posix-19.1.7-12.0.0-msvcrt-r3
 
       - name: Restore Stan
         uses: actions/cache@v5
