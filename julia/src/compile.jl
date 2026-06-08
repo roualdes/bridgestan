@@ -122,7 +122,7 @@ WINDOWS_PATH_SET = Ref{Bool}(false)
 
 function tbb_found()
     try
-        run(`where.exe tbb.dll`)
+        run(pipeline(`where.exe tbb.dll`, stdout = devnull, stderr = devnull))
     catch
         return false
     end
@@ -132,21 +132,11 @@ end
 function windows_dll_path_setup()
     if Sys.iswindows() && !(WINDOWS_PATH_SET[])
         if tbb_found()
-            println("TBB found!")
             WINDOWS_PATH_SET[] = true
         else
             # add TBB to %PATH%
             ENV["PATH"] =
-                abspath(
-                    joinpath(
-                        get_bridgestan_path(),
-                        "stan",
-                        "lib",
-                        "stan_math",
-                        "lib",
-                        "tbb",
-                    ),
-                ) *
+                joinpath(get_bridgestan_path(), "stan", "lib", "stan_math", "lib", "tbb") *
                 ";" *
                 ENV["PATH"]
             WINDOWS_PATH_SET[] = tbb_found()
