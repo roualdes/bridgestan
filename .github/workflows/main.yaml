@@ -56,7 +56,7 @@ jobs:
       - name: "Windows: Set up GCC"
         uses: bwoodsend/setup-winlibs-action@v1
         with:
-          tag: 14.2.0posix-19.1.7-12.0.0-msvcrt-r3
+          tag: 14.2.0posix-19.1.1-12.0.0-ucrt-r2
 
       - name: Stan build caching
         uses: actions/cache@v5
@@ -204,7 +204,7 @@ jobs:
       - name: "Windows: Set up GCC"
         uses: bwoodsend/setup-winlibs-action@v1
         with:
-          tag: 14.2.0posix-19.1.7-12.0.0-msvcrt-r3
+          tag: 14.2.0posix-19.1.1-12.0.0-ucrt-r2
 
       - name: Restore Stan
         uses: actions/cache@v5
