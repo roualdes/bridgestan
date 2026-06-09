@@ -8,11 +8,12 @@ Description: BridgeStan provides efficient in-memory access to the methods of a 
     including log densities, gradients, Hessians, and constraining and unconstraining
     transforms.
 Encoding: UTF-8
-RoxygenNote: 7.3.2
-Roxygen: list(markdown = TRUE, r6 = TRUE)
 Suggests:
     testthat (>= 3.0.0),
     withr (>= 3.0.0)
 Imports:
     R6 (>= 2.4.0)
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0
+Config/roxygen2/markdown: TRUE
+Config/roxygen2/r6: TRUE

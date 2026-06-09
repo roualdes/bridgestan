@@ -4,47 +4,43 @@
 \alias{StanRNG}
 \title{StanRNG}
 \description{
-StanRNG
-
-StanRNG
-}
-\details{
 RNG object for use with \code{\link[=StanModel$param_constrain]{StanModel$param_constrain()}}
 }
 \keyword{internal}
 \section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{ptr}}{The pointer to the RNG object.}
-}
-\if{html}{\out{</div>}}
+  \if{html}{\out{<div class="r6-fields">}}
+  \describe{
+    \item{\code{ptr}}{The pointer to the RNG object.}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-StanRNG-new}{\code{StanRNG$new()}}
-}
+  \itemize{
+    \item \href{#method-StanRNG-initialize}{\code{StanRNG$new()}}
+  }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-StanRNG-new"></a>}}
-\if{latex}{\out{\hypertarget{method-StanRNG-new}{}}}
-\subsection{Method \code{new()}}{
-Create a StanRng
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StanRNG$new(lib_name, seed)}\if{html}{\out{</div>}}
+\if{html}{\out{<a id="method-StanRNG-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-StanRNG-initialize}{}}}
+\subsection{\code{StanRNG$new()}}{
+  Create a StanRng
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{StanRNG$new(lib_name, seed)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{lib_name}}{The name of the Stan dynamic library.}
+      \item{\code{seed}}{The seed for the RNG.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A new StanRNG.
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{lib_name}}{The name of the Stan dynamic library.}
-
-\item{\code{seed}}{The seed for the RNG.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A new StanRNG.
-}
-}
 }

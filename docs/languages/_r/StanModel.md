@@ -8,11 +8,13 @@ This model exposes log density, gradient, and Hessian information as well as con
 
 #### Methods
 
-##### Method `new()`
+####### `StanModel$new()`
 
 Create a Stan Model instance.
 
 ###### Usage
+
+
 
 ```
 StanModel$new(
@@ -25,9 +27,15 @@ StanModel$new(
 )
 ```
 
+  
+
+ 
+
  
 
 ###### Arguments
+
+
 
 - **`lib`**: A path to a compiled BridgeStan Shared Object file or a .stan file (will be compiled).
 - **`data`**: Either a JSON string literal, a path to a data file in JSON format ending in ".json", or the empty string.
@@ -35,6 +43,10 @@ StanModel$new(
 - **`stanc_args`**: A list of arguments to pass to stanc3 if the model is not already compiled.
 - **`make_args`**: A list of additional arguments to pass to Make if the model is not already compiled.
 - **`warn`**: If false, the warning about re-loading the same shared object is suppressed.
+
+  
+
+ 
 
  
 
@@ -48,15 +60,21 @@ A new StanModel.
 
  
 
-##### Method `name()`
+##### `StanModel$name()`
 
 Get the name of this StanModel.
 
 ###### Usage
 
+
+
 ```
 StanModel$name()
 ```
+
+  
+
+ 
 
  
 
@@ -70,15 +88,21 @@ A character vector of the name.
 
  
 
-##### Method `model_info()`
+##### `StanModel$model_info()`
 
 Get compile information about this Stan model.
 
 ###### Usage
 
+
+
 ```
 StanModel$model_info()
 ```
+
+  
+
+ 
 
  
 
@@ -92,17 +116,19 @@ A character vector of the Stan version and important flags.
 
  
 
-##### Method `model_version()`
+##### `StanModel$model_version()`
 
 Get the version of BridgeStan used in the compiled model.
 
 ###### Usage
 
+
+
 ```
 StanModel$model_version()
 ```
 
- 
+  
 
  
 
@@ -110,7 +136,9 @@ StanModel$model_version()
 
  
 
-##### Method `param_names()`
+ 
+
+##### `StanModel$param_names()`
 
 Return the indexed names of the (constrained) parameters. For containers, indexes are separated by periods (.).
 
@@ -118,16 +146,28 @@ For example, the scalar `a` has indexed name "a", the vector entry `a[1]` has in
 
 ###### Usage
 
+
+
 ```
 StanModel$param_names(include_tp = FALSE, include_gq = FALSE)
 ```
+
+  
+
+ 
 
  
 
 ###### Arguments
 
+
+
 - **`include_tp`**: Whether to include variables from transformed parameters.
 - **`include_gq`**: Whether to include variables from generated quantities.
+
+  
+
+ 
 
  
 
@@ -141,7 +181,7 @@ A list of character vectors of the names.
 
  
 
-##### Method `param_unc_names()`
+##### `StanModel$param_unc_names()`
 
 Return the indexed names of the unconstrained parameters. For containers, indexes are separated by periods (.).
 
@@ -149,9 +189,15 @@ For example, the scalar `a` has indexed name "a", the vector entry `a[1]` has in
 
 ###### Usage
 
+
+
 ```
 StanModel$param_unc_names()
 ```
+
+  
+
+ 
 
  
 
@@ -165,22 +211,34 @@ A list of character vectors of the names.
 
  
 
-##### Method `param_num()`
+##### `StanModel$param_num()`
 
 Return the number of (constrained) parameters in the model.
 
 ###### Usage
 
+
+
 ```
 StanModel$param_num(include_tp = FALSE, include_gq = FALSE)
 ```
+
+  
+
+ 
 
  
 
 ###### Arguments
 
+
+
 - **`include_tp`**: Whether to include variables from transformed parameters.
 - **`include_gq`**: Whether to include variables from generated quantities.
+
+  
+
+ 
 
  
 
@@ -194,7 +252,7 @@ The number of parameters in the model.
 
  
 
-##### Method `param_unc_num()`
+##### `StanModel$param_unc_num()`
 
 Return the number of unconstrained parameters in the model.
 
@@ -202,9 +260,15 @@ This function is mainly different from `param_num` when variables are declared w
 
 ###### Usage
 
+
+
 ```
 StanModel$param_unc_num()
 ```
+
+  
+
+ 
 
  
 
@@ -218,11 +282,13 @@ The number of parameters in the model.
 
  
 
-##### Method `param_constrain()`
+##### `StanModel$param_constrain()`
 
 Returns a vector of constrained parameters given the unconstrained parameters. See also `StanModel$param_unconstrain()`, the inverse of this function.
 
 ###### Usage
+
+
 
 ```
 StanModel$param_constrain(
@@ -233,14 +299,24 @@ StanModel$param_constrain(
 )
 ```
 
+  
+
+ 
+
  
 
 ###### Arguments
+
+
 
 - **`theta_unc`**: The vector of unconstrained parameters.
 - **`include_tp`**: Whether to also output the transformed parameters of the model.
 - **`include_gq`**: Whether to also output the generated quantities of the model.
 - **`rng`**: The random number generator to use if `include_gq` is `TRUE`. See `StanModel$new_rng()`.
+
+  
+
+ 
 
  
 
@@ -254,21 +330,33 @@ The constrained parameters of the model.
 
  
 
-##### Method `new_rng()`
+##### `StanModel$new_rng()`
 
 Create a new persistent PRNG object for use in `param_constrain()`.
 
 ###### Usage
 
+
+
 ```
 StanModel$new_rng(seed)
 ```
+
+  
+
+ 
 
  
 
 ###### Arguments
 
+
+
 - **`seed`**: The seed for the PRNG.
+
+  
+
+ 
 
  
 
@@ -282,7 +370,7 @@ A `StanRNG` object.
 
  
 
-##### Method `param_unconstrain()`
+##### `StanModel$param_unconstrain()`
 
 Returns a vector of unconstrained parameters give the constrained parameters.
 
@@ -290,15 +378,27 @@ It is assumed that these will be in the same order as internally represented by 
 
 ###### Usage
 
+
+
 ```
 StanModel$param_unconstrain(theta)
 ```
+
+  
+
+ 
 
  
 
 ###### Arguments
 
+
+
 - **`theta`**: The vector of constrained parameters.
+
+  
+
+ 
 
  
 
@@ -312,7 +412,7 @@ The unconstrained parameters of the model.
 
  
 
-##### Method `param_unconstrain_json()`
+##### `StanModel$param_unconstrain_json()`
 
 This accepts a JSON string of constrained parameters and returns the unconstrained parameters.
 
@@ -320,15 +420,27 @@ The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/
 
 ###### Usage
 
+
+
 ```
 StanModel$param_unconstrain_json(json)
 ```
+
+  
+
+ 
 
  
 
 ###### Arguments
 
+
+
 - **`json`**: Character vector containing a string representation of JSON data.
+
+  
+
+ 
 
  
 
@@ -342,7 +454,7 @@ The unconstrained parameters of the model.
 
  
 
-##### Method `param_initialize()`
+##### `StanModel$param_initialize()`
 
 Initialize a point in the unconstrained space, using the specified values from JSON and randomizing the others.
 
@@ -351,6 +463,8 @@ Any parameter not specified in the provided JSON will be randomly selected unifo
 The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json_apdx.html).
 
 ###### Usage
+
+
 
 ```
 StanModel$param_initialize(
@@ -362,15 +476,25 @@ StanModel$param_initialize(
 )
 ```
 
+  
+
+ 
+
  
 
 ###### Arguments
+
+
 
 - **`rng`**: The source of randomness for the unspecified parameters.
 - **`json`**: Character vector containing a string representation of JSON data.
 - **`init_radius`**: The parameters not provided will be drawn uniformly from `[-init_radius, init_radius)` on the unconstrained scale.
 - **`max_tries`**: Maximum number of random initializations considered to find a point with finite log density.
 - **`jacobian`**: If `TRUE`, include change of variables terms for constrained parameters when checking the log density and gradient for finiteness.
+
+  
+
+ 
 
  
 
@@ -384,23 +508,35 @@ The unconstrained parameters of the model.
 
  
 
-##### Method `log_density()`
+##### `StanModel$log_density()`
 
 Return the log density of the specified unconstrained parameters.
 
 ###### Usage
 
+
+
 ```
 StanModel$log_density(theta_unc, propto = TRUE, jacobian = TRUE)
 ```
+
+  
+
+ 
 
  
 
 ###### Arguments
 
+
+
 - **`theta_unc`**: The vector of unconstrained parameters.
 - **`propto`**: If `TRUE`, drop terms which do not depend on the parameters.
 - **`jacobian`**: If `TRUE`, include change of variables terms for constrained parameters.
+
+  
+
+ 
 
  
 
@@ -414,23 +550,35 @@ The log density.
 
  
 
-##### Method `log_density_gradient()`
+##### `StanModel$log_density_gradient()`
 
 Return the log density and gradient of the specified unconstrained parameters.
 
 ###### Usage
 
+
+
 ```
 StanModel$log_density_gradient(theta_unc, propto = TRUE, jacobian = TRUE)
 ```
+
+  
+
+ 
 
  
 
 ###### Arguments
 
+
+
 - **`theta_unc`**: The vector of unconstrained parameters.
 - **`propto`**: If `TRUE`, drop terms which do not depend on the parameters.
 - **`jacobian`**: If `TRUE`, include change of variables terms for constrained parameters.
+
+  
+
+ 
 
  
 
@@ -444,23 +592,35 @@ List containing entries `val` (the log density) and `gradient` (the gradient).
 
  
 
-##### Method `log_density_hessian()`
+##### `StanModel$log_density_hessian()`
 
 Return the log density, gradient, and Hessian of the specified unconstrained parameters.
 
 ###### Usage
 
+
+
 ```
 StanModel$log_density_hessian(theta_unc, propto = TRUE, jacobian = TRUE)
 ```
+
+  
+
+ 
 
  
 
 ###### Arguments
 
+
+
 - **`theta_unc`**: The vector of unconstrained parameters.
 - **`propto`**: If `TRUE`, drop terms which do not depend on the parameters.
 - **`jacobian`**: If `TRUE`, include change of variables terms for constrained parameters.
+
+  
+
+ 
 
  
 
@@ -474,11 +634,13 @@ List containing entries `val` (the log density), `gradient` (the gradient), and 
 
  
 
-##### Method `log_density_hessian_vector_product()`
+##### `StanModel$log_density_hessian_vector_product()`
 
 Return the log density and the product of the Hessian with the specified vector.
 
 ###### Usage
+
+
 
 ```
 StanModel$log_density_hessian_vector_product(
@@ -489,14 +651,24 @@ StanModel$log_density_hessian_vector_product(
 )
 ```
 
+  
+
+ 
+
  
 
 ###### Arguments
+
+
 
 - **`theta_unc`**: The vector of unconstrained parameters.
 - **`v`**: The vector to multiply the Hessian by.
 - **`propto`**: If `TRUE`, drop terms which do not depend on the parameters.
 - **`jacobian`**: If `TRUE`, include change of variables terms for constrained parameters.
+
+  
+
+ 
 
  
 

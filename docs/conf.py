@@ -160,7 +160,7 @@ try:
     StanModel = pathlib.Path(__file__).parent / "languages" / "_r" / "StanModel.md"
     text = StanModel.read_text()
     start = text.find("### Public methods")
-    end = text.find("### Method `")
+    end = text.find("##### `")
     text = text[:start] + text[end:]
     StanModel.write_text(text)
 
