@@ -58,7 +58,7 @@ jobs:
         id: stan-cache
         with:
           path: ./stan/
-          key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
+          key: ${{ matrix.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
       - name: Set up PATH for C example
         if: matrix.os == 'windows-latest'
@@ -130,7 +130,7 @@ jobs:
         id: stan-cache
         with:
           path: ./stan/
-          key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
+          key: ${{ matrix.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
       - name: Restore built models
         uses: actions/cache@v5
@@ -191,7 +191,7 @@ jobs:
         id: stan-cache
         with:
           path: ./stan/
-          key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
+          key: ${{ matrix.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
       - name: Restore built models
         uses: actions/cache@v5
@@ -246,7 +246,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ./stan/
-          key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
+          key: ${{ matrix.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
       - name: Restore built models
         uses: actions/cache@v5
@@ -300,7 +300,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ./stan/
-          key: ${{ runner.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
+          key: ${{ matrix.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
       - name: Restore built models
         uses: actions/cache@v5
