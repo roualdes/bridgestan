@@ -44,7 +44,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-2022, ubuntu-latest, macos-latest]
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -61,13 +61,13 @@ jobs:
           key: ${{ matrix.os }}-stan-${{ hashFiles('stan/src/stan/version.hpp') }}-v${{ env.CACHE_VERSION }}
 
       - name: Set up PATH for C example
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-2022'
         run: |
           Add-Content $env:GITHUB_PATH "$(pwd)/stan/lib/stan_math/lib/tbb"
           Add-Content $env:GITHUB_PATH "$(pwd)/test_models/full"
 
       - name: Build C example (Windows)
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-2022'
         run: |
           cd c-example/
           make -j4 example.exe example_runtime.exe
@@ -79,7 +79,7 @@ jobs:
           ./example_runtime.exe ../test_models/full/full_model.so
 
       - name: Build C example (Unix)
-        if: matrix.os != 'windows-latest'
+        if: matrix.os != 'windows-2022'
         run: |
           cd c-example/
           make -j4 example example_static example_runtime
@@ -111,7 +111,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-2022]
         python-version: ["3.9", "3.14"]
       fail-fast: false
     steps:
@@ -158,7 +158,7 @@ jobs:
           BRIDGESTAN: ${{ github.workspace }}
 
       - name: Run tests (Unix-specific)
-        if: matrix.os != 'windows-latest'
+        if: matrix.os != 'windows-2022'
         run: |
           pytest -v python/ --run-type=ad_hessian
         env:
@@ -169,7 +169,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-2022]
         julia-version: ["1"]
         include:
           - julia-version: "lts"
@@ -223,7 +223,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-2022]
       fail-fast: false
     steps:
       - name: Check out github
@@ -256,7 +256,7 @@ jobs:
           key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp', 'Makefile') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
 
       - name: Run tests
-        if: matrix.os != 'windows-latest'
+        if: matrix.os != 'windows-2022'
         run: |
           cd R/tests/testthat
           gcc -fpic -shared -o test_collisions.so test_collisions.c
@@ -268,7 +268,7 @@ jobs:
           BRIDGESTAN: ${{ github.workspace }}
 
       - name: Run tests (windows)
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-2022'
         run: |
           cd R/tests/testthat
           gcc -fpic -shared -o test_collisions.dll test_collisions.c
@@ -288,7 +288,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-2022]
       fail-fast: false
     steps:
       - name: Check out github
@@ -310,7 +310,7 @@ jobs:
           key: ${{ hashFiles('**/*.stan', 'src/*', 'stan/src/stan/version.hpp', 'Makefile') }}-${{ matrix.os }}-v${{ env.CACHE_VERSION }}
 
       - name: Set up TBB
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-2022'
         run: |
           Add-Content $env:GITHUB_PATH "$(pwd)/stan/lib/stan_math/lib/tbb"
 
