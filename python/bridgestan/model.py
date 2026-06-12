@@ -559,7 +559,7 @@ class StanModel:
     def param_initialize(
         self,
         rng: "StanRNG",
-        theta_json: Union[str, Mapping[str, Any]] = "{}",
+        theta_json: Union[str, Mapping[str, Any], None] = None,
         *,
         init_radius: float = 2.0,
         max_tries: int = 100,
@@ -598,9 +598,12 @@ class StanModel:
         dims = self.param_unc_num()
         if out is None:
             out = np.zeros(shape=dims)
-        if not isinstance(theta_json, str):
-            theta_json = stanio.dump_stan_json(theta_json)
-        chars = theta_json.encode("UTF-8")
+        if theta_json is None:
+            chars = None
+        else:
+            if not isinstance(theta_json, str):
+                theta_json = stanio.dump_stan_json(theta_json)
+            chars = theta_json.encode("UTF-8")
         err = ctypes.c_char_p()
         rc = self._param_initialize(
             self.model,

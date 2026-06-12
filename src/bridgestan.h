@@ -239,7 +239,7 @@ BS_PUBLIC int bs_param_unconstrain_json(const bs_model* m, const char* json,
  * CmdStan</a>.
  *
  * @param[in] m pointer to model structure
- * @param[in] json JSON-encoded constrained parameters
+ * @param[in] json JSON-encoded constrained parameters. Can be NULL.
  * @param[in] rng Random number generator to use for the parameters not provided
  * in the JSON.
  * @param[in] init_radius The parameters not provided will be drawn uniformly
