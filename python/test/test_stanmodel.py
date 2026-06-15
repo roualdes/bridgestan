@@ -337,6 +337,23 @@ def test_param_initialize():
     with pytest.raises(RuntimeError):
         bridge.param_initialize(rng, {"sigma": -1})
 
+    # testing various options for empty inits
+
+    carry = None  # used to test that they all get the same result for a fixed seed
+
+    for empty in [None, "", "{}", {}]:
+        rng2 = bridge.new_rng(4567)
+        empty_init = bridge.param_initialize(rng2, empty)
+
+        if carry is not None:
+            np.testing.assert_equal(carry, empty_init)
+        carry = empty_init
+
+        # basic functionality: result has finite value and gradient under the model
+        lp, grad = bridge.log_density_gradient(empty_init)
+        assert np.isfinite(lp)
+        assert np.isfinite(grad).all()
+
 
 def _log_jacobian(p):
     return np.log(p * (1 - p))
