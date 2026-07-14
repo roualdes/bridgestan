@@ -11,7 +11,7 @@ homepage = "https://roualdes.us/bridgestan/latest/"
 [dependencies]
 libloading = "0.8.0"
 thiserror = "2.0.3"
-path-absolutize = { version = "3.1" }
+path-absolutize = { version = "4.0" }
 log = { version = "0.4" }
 ureq = { version = "3.0", optional = true }
 tar = { version = "0.4", optional = true }
