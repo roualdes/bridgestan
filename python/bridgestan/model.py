@@ -134,13 +134,12 @@ class StanModel:
             else:
                 data = stanio.dump_stan_json(data)
 
-        windows_dll_path_setup()
-
         if str(model_lib).endswith(".stan"):
             model_lib = compile_model(
                 model_lib, make_args=make_args, stanc_args=stanc_args
             )
 
+        windows_dll_path_setup()
         self.lib_path = fspath(Path(model_lib).absolute().resolve())
         if warn and hasattr(dllist, "dllist") and self.lib_path in dllist.dllist():
             warnings.warn(
