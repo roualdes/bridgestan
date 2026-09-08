@@ -72,17 +72,17 @@ endif
 %.hpp : %.stan $(STANC)
 	@echo ''
 	@echo '--- Translating Stan model to C++ code ---'
-	$(STANC) $(STANCFLAGS) --o=$(subst  \,/,$@) $(subst  \,/,$<)
+	$(STANC) $(STANCFLAGS) --o="$(subst \,/,$@)" "$(subst \,/,$<)"
 
 %.o : %.hpp $(USER_HEADER)
 	@echo ''
 	@echo '--- Compiling C++ code ---'
-	$(COMPILE.cpp) $(USER_INCLUDE) -x c++ -o $(subst  \,/,$*).o $(subst \,/,$<)
+	$(COMPILE.cpp) $(USER_INCLUDE) -x c++ -o "$(subst \\,/,$*).o" "$(subst \\,/,$<)"
 
 %_model.so : %.o $(BRIDGE_O) $(SUNDIALS_TARGETS) $(MPI_TARGETS) $(TBB_TARGETS)
 	@echo ''
 	@echo '--- Linking C++ code ---'
-	$(LINK.cpp) -shared -lm -o $(patsubst %.o, %_model.so, $(subst \,/,$<)) $(subst \,/,$*.o) $(BRIDGE_O) $(LDLIBS) $(SUNDIALS_TARGETS) $(MPI_TARGETS) $(TBB_TARGETS)
+	$(LINK.cpp) -shared -lm -o "$(patsubst %.o,%_model.so,$(subst \\,/,$<))" "$(subst \,/,$*.o)" $(BRIDGE_O) $(LDLIBS) $(SUNDIALS_TARGETS) $(MPI_TARGETS) $(TBB_TARGETS)
 
 .PHONY: docs
 docs:

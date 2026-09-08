@@ -1,3 +1,6 @@
+import contextlib
+import shutil
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -7,21 +10,40 @@ import bridgestan as bs
 STAN_FOLDER = Path(__file__).parent.parent.parent / "test_models"
 
 
-def test_compile_good():
-    stanfile = STAN_FOLDER / "multi" / "multi.stan"
+def check_compile(stanfile, check_threads=True):
     lib = bs.compile.generate_so_name(stanfile)
     lib.unlink(missing_ok=True)
     res = bs.compile_model(stanfile, stanc_args=["--O1"])
     assert lib.samefile(res)
     lib.unlink()
 
-    model = bs.StanModel(
-        stanfile,
-        data=STAN_FOLDER / "multi" / "multi.data.json",
-        make_args=["STAN_THREADS=true"],
-    )
-    assert lib.exists()
-    assert "STAN_THREADS=true" in model.model_info()
+    if check_threads:
+        model = bs.StanModel(
+            stanfile,
+            data=STAN_FOLDER / "multi" / "multi.data.json",
+            make_args=["STAN_THREADS=true"],
+        )
+        assert lib.exists()
+        assert "STAN_THREADS=true" in model.model_info()
+
+
+def test_compile_with_spaces():
+    bridgestan_path = bs.compile.get_bridgestan_path()
+    with tempfile.TemporaryDirectory(
+        suffix="Bridge Stan"
+    ) as d, contextlib.ExitStack() as e:
+        e.callback(lambda: bs.set_bridgestan_path(bridgestan_path))
+
+        shutil.copytree(bridgestan_path, d, dirs_exist_ok=True)
+        bs.set_bridgestan_path(d)
+
+        check_compile(
+            Path(d) / "test_models" / "multi" / "multi.stan", check_threads=False
+        )
+
+
+def test_compile_good():
+    check_compile(STAN_FOLDER / "multi" / "multi.stan")
 
 
 def test_compile_user_header():
