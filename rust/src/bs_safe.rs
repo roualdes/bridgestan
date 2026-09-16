@@ -121,7 +121,7 @@ pub(crate) type Result<T> = std::result::Result<T, BridgeStanError>;
 /// The library should have been compiled with BridgeStan,
 /// with the same version as the Rust library.
 pub fn open_library<P: AsRef<OsStr>>(path: P) -> Result<StanLibrary> {
-    let library = unsafe { libloading::Library::new(&path) }.map_err(LoadingError)?;
+    let library = unsafe { libloading::Library::new(path.as_ref()) }.map_err(LoadingError)?;
     let major: libloading::Symbol<*const c_int> =
         unsafe { library.get(b"bs_major_version") }.map_err(LoadingError)?;
     let major = unsafe { **major };
