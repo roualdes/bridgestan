@@ -23,12 +23,12 @@ jobs:
 
     steps:
       - name: Check out github
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: 3.11
 
@@ -70,7 +70,7 @@ jobs:
           python -m build
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: release-artifacts
           path: |
@@ -102,19 +102,19 @@ jobs:
 
     steps:
       - name: Check out github
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           submodules: recursive
           ref: main
 
       - name: Download release artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: release-artifacts
           path: release-artifacts
 
       - name: Publish on PyPI
-        uses: pypa/gh-action-pypi-publish@v1.13.0
+        uses: pypa/gh-action-pypi-publish@v1.14.2
         with:
           packages-dir: release-artifacts/python/dist/
           skip-existing: true

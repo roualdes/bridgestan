@@ -84,6 +84,7 @@ log_density_hessian_vector_product
 param_constrain
 param_unconstrain
 param_unconstrain_json
+param_initialize
 name
 model_info
 param_num
@@ -96,6 +97,7 @@ log_density_hessian_vector_product!
 param_constrain!
 param_unconstrain!
 param_unconstrain_json!
+param_initialize!
 StanRNG
 new_rng
 ```

@@ -374,6 +374,21 @@
   *Panics* if `include_gq` is set but no random number generator is provided.
   :::
 ::::
+::::{rust:function} bridgestan::Model::param_initialize
+:index: -1
+:vis: pub
+:layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"param_initialize"},{"type":"punctuation","value":"<"},{"type":"name","value":"S"},{"type":"punctuation","value":": "},{"type":"link","value":"AsRef","target":"AsRef"},{"type":"punctuation","value":"<"},{"type":"link","value":"CStr","target":"CStr"},{"type":"punctuation","value":">"},{"type":"punctuation","value":", "},{"type":"name","value":"R"},{"type":"punctuation","value":": "},{"type":"link","value":"Borrow","target":"Borrow"},{"type":"punctuation","value":"<"},{"type":"link","value":"StanLibrary","target":"StanLibrary"},{"type":"punctuation","value":">"},{"type":"punctuation","value":">"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"self"},{"type":"punctuation","value":", "},{"type":"name","value":"rng"},{"type":"punctuation","value":": "},{"type":"punctuation","value":"&"},{"type":"keyword","value":"mut"},{"type":"space"},{"type":"link","value":"Rng","target":"Rng"},{"type":"punctuation","value":"<"},{"type":"link","value":"R","target":"R"},{"type":"punctuation","value":">"},{"type":"punctuation","value":", "},{"type":"name","value":"json"},{"type":"punctuation","value":": "},{"type":"link","value":"S","target":"S"},{"type":"punctuation","value":", "},{"type":"name","value":"init_radius"},{"type":"punctuation","value":": "},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":", "},{"type":"name","value":"max_tries"},{"type":"punctuation","value":": "},{"type":"link","value":"i32","target":"i32"},{"type":"punctuation","value":", "},{"type":"name","value":"jacobian"},{"type":"punctuation","value":": "},{"type":"link","value":"bool","target":"bool"},{"type":"punctuation","value":", "},{"type":"name","value":"theta_unc"},{"type":"punctuation","value":": "},{"type":"punctuation","value":"&"},{"type":"keyword","value":"mut"},{"type":"space"},{"type":"punctuation","value":"["},{"type":"link","value":"f64","target":"f64"},{"type":"punctuation","value":"]"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"link","value":"Result","target":"Result"},{"type":"punctuation","value":"<"},{"type":"punctuation","value":"("},{"type":"punctuation","value":")"},{"type":"punctuation","value":">"}]
+
+  :::
+  Initialize a point in the unconstrained space, using the specified values
+  from JSON and randomizing the others.
+  
+  The JSON is expected to be in the
+  [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json.html).
+  The result will be checked to ensure they achieve a finite
+  log density and gradient.
+  :::
+::::
 ::::{rust:function} bridgestan::Model::param_names
 :index: -1
 :vis: pub
@@ -411,7 +426,7 @@
 ::::{rust:function} bridgestan::Model::param_unc_names
 :index: -1
 :vis: pub
-:layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"param_unc_names"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"mut"},{"type":"space"},{"type":"keyword","value":"self"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"punctuation","value":"&"},{"type":"link","value":"str","target":"str"}]
+:layout: [{"type":"keyword","value":"fn"},{"type":"space"},{"type":"name","value":"param_unc_names"},{"type":"punctuation","value":"("},{"type":"punctuation","value":"&"},{"type":"keyword","value":"self"},{"type":"punctuation","value":")"},{"type":"space"},{"type":"returns"},{"type":"space"},{"type":"punctuation","value":"&"},{"type":"link","value":"str","target":"str"}]
 
   :::
   Return a comma-separated sequence of unconstrained parameters.

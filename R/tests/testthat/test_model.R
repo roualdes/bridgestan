@@ -75,6 +75,23 @@ test_that("bernoulli unconstrain works", {
 })
 
 
+test_that("guassian initialize works", {
+  gaussian <- load_model("gaussian")
+  rng <- gaussian$new_rng(123)
+  expect_equal(
+    0.2,
+    gaussian$param_initialize(rng, "{\"mu\": 0.2}")[1]
+  )
+  expect_equal(
+    log(1.9),
+    gaussian$param_initialize(rng, "{\"sigma\": 1.9}")[2]
+  )
+  expect_error(
+    gaussian$param_initialize(rng, "{\"sigma\": -1}", max_tries = 10),
+    "Initialization failed."
+  )
+})
+
 cov_constrain <- function(v, D) {
   L <- matrix(c(0), D, D)
   L[upper.tri(L, diag = TRUE)] <- v

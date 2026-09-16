@@ -1,5 +1,6 @@
-test_that("compilation works", {
-  name <- "multi"
+check_compile_model_works <- function(name) {
+  base <- get_bridgestan_path(download = FALSE)
+
   file <- file.path(base, "test_models", name, paste0(name, ".stan"))
 
   lib <- file.path(base, "test_models", name, paste0(name, "_model.so"))
@@ -13,6 +14,23 @@ test_that("compilation works", {
   unlink(lib, force = TRUE)
 
   out <- compile_model(file, make_args = c("STAN_THREADS=True"))
+}
+
+test_that("compilation works", {
+  check_compile_model_works(name = "multi")
+})
+
+test_that("compilation with bridgestan path containing spaces works", {
+  temp_dir <- withr::local_tempdir(pattern = "Bridge Stan")
+  bridgestan_path <- get_bridgestan_path(download = TRUE)
+  file.copy(bridgestan_path, temp_dir, recursive = TRUE)
+  temp_bridgestan_path <- file.path(temp_dir, basename(bridgestan_path))
+  verify_bridgestan_path(temp_bridgestan_path)
+  withr::with_envvar(c("BRIDGESTAN" = temp_bridgestan_path), {
+    bridgestan_path <- get_bridgestan_path(download = FALSE)
+    expect_equal(bridgestan_path, temp_bridgestan_path)
+    check_compile_model_works(name = "multi")
+  })
 })
 
 test_that("compilation fails on non-stan file", {

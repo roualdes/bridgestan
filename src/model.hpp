@@ -7,6 +7,9 @@
 #include <stan/io/var_context.hpp>
 #include <stan/model/model_base.hpp>
 #include <stan/services/util/create_rng.hpp>
+#include <stan/callbacks/stream_logger.hpp>
+#include <stan/callbacks/writer.hpp>
+#include <stan/services/util/initialize.hpp>
 #ifdef BRIDGESTAN_AD_HESSIAN
 #include <stan/math/mix.hpp>
 #endif
@@ -56,34 +59,34 @@ namespace bridgestan {
 
 using model_ptr = std::unique_ptr<stan::model::model_base>;
 
-inline model_ptr model_from_data(const char* data, unsigned int seed) {
-  // transformed data block could contain a call to a sundials ODE
-  // solver which requires AD
-  BRIDGESTAN_PREPARE_AD_FOR_THREADING();
-
+inline std::unique_ptr<stan::io::var_context> load_json(const char* data) {
   if (data == nullptr) {
-    stan::io::empty_var_context data_context;
-    return model_ptr(&new_model(data_context, seed, outstream));
+    return std::make_unique<stan::io::empty_var_context>();
   } else {
     std::string data_str(data);
     if (data_str.empty()) {
-      stan::io::empty_var_context data_context;
-      return model_ptr(&new_model(data_context, seed, outstream));
+      return std::make_unique<stan::io::empty_var_context>();
     } else {
       if (stan::io::ends_with(".json", data_str)) {
         std::ifstream in(data_str);
         if (!in.good())
           throw std::runtime_error("Cannot read input file: " + data_str);
-        stan::json::json_data data_context(in);
-        in.close();
-        return model_ptr(&new_model(data_context, seed, outstream));
+        return std::make_unique<stan::json::json_data>(in);
       } else {
         std::istringstream json(data_str);
-        stan::json::json_data data_context(json);
-        return model_ptr(&new_model(data_context, seed, outstream));
+        return std::make_unique<stan::json::json_data>(json);
       }
     }
   }
+}
+
+inline model_ptr model_from_data(const char* data, unsigned int seed) {
+  // transformed data block could contain a call to a sundials ODE
+  // solver which requires AD
+  BRIDGESTAN_PREPARE_AD_FOR_THREADING();
+
+  auto data_context = load_json(data);
+  return model_ptr(&new_model(*data_context, seed, outstream));
 }
 
 }  // namespace bridgestan
@@ -276,6 +279,43 @@ class bs_model {
   }
 
   /**
+   * Initialize the parameters for the model by using the values specified as a
+   * JSON string, randomizing the rest, and writing into the specified
+   * unconstrained parameter array. Checks to make sure the generated values
+   * produce a finite log_density, and tries again several times if they do not.
+   * See the CmdStan Reference Manual for details of the JSON schema.
+   *
+   * @param[in] json JSON string representing parameters
+   * @param[in] rng random number generator for unspecified parameters
+   * @param[in] init_radius radius to draw initial values from
+   * @param[in] max_tries maximum number of attempts at random initialization
+   * @param[in] jacobian whether to use the jacobian when calculating if the log
+   * density is finite.
+   * @param[out] theta_unc unconstrained parameters generated
+   */
+  void param_initialize(const char* json, stan::rng_t& rng, double init_radius,
+                        int max_tries, bool jacobian, double* theta_unc) const {
+    auto inits_context = bridgestan::load_json(json);
+    stan::callbacks::writer dummy_writer;
+    stan::callbacks::stream_logger logger{*outstream, *outstream, *outstream,
+                                          *outstream, *outstream};
+
+    BRIDGESTAN_PREPARE_AD_FOR_THREADING();
+    std::vector<double> initial_value;
+    if (jacobian) {
+      initial_value = stan::services::util::initialize<true>(
+          *model_, *inits_context, rng, init_radius, false, logger,
+          dummy_writer, max_tries);
+    } else {
+      initial_value = stan::services::util::initialize<false>(
+          *model_, *inits_context, rng, init_radius, false, logger,
+          dummy_writer, max_tries);
+    }
+    std::memcpy(theta_unc, initial_value.data(),
+                sizeof(double) * initial_value.size());
+  }
+
+  /**
    * Constrain the specified unconstrained parameters into the
    * specified array, optionally including transformed parameters
    * and generated quantities as specified.
@@ -284,6 +324,7 @@ class bs_model {
    * @param[in] include_gq `true` to include generated quantities
    * @param[in] theta_unc unconstrained parameters to constrain
    * @param[out] theta constrained parameters generated
+   * @param[in] rng random number generator for generated quantities
    */
   void param_constrain(bool include_tp, bool include_gq,
                        const double* theta_unc, double* theta,

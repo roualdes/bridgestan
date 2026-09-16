@@ -270,6 +270,38 @@ end
 
 end
 
+
+@testset "param_initialize" begin
+    model = load_test_model("gaussian")
+    rng = BridgeStan.new_rng(model, 1234)
+
+    theta_unc = [0.2, log(1.9)]
+
+    mu_json = "{\"mu\": 0.2}"
+    mu_unc_test = BridgeStan.param_initialize(model, rng, mu_json)
+    @test isapprox(theta_unc[1], mu_unc_test[1])
+
+    sigma_json = "{\"sigma\": 1.9}"
+    sigma_unc_test = BridgeStan.param_initialize(model, rng, sigma_json)
+    @test isapprox(theta_unc[2], sigma_unc_test[2])
+
+
+    scratch = zeros(2)
+    theta_unc_test2 = BridgeStan.param_initialize!(model, rng, scratch)
+    @test theta_unc_test2 === scratch
+
+    scratch_wrong = zeros(10)
+    @test_throws DimensionMismatch BridgeStan.param_initialize!(model, rng, scratch_wrong)
+
+    @test_throws ErrorException BridgeStan.param_initialize(
+        model,
+        rng,
+        "{\"sigma\":-1}";
+        max_tries = 2,
+    )
+
+end
+
 function _log_jacobian(p)
     log.(p .* (1 .- p))
 end

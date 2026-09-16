@@ -3,7 +3,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use bridgestan::{open_library, StanLibrary};
+use bridgestan::{StanLibrary, open_library};
 
 pub fn model_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR"))

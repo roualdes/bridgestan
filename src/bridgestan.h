@@ -51,7 +51,8 @@ BS_PUBLIC extern const int bs_patch_version;
  * This PRNG is used for RNG functions in the `transformed data`
  * block of the model, and then discarded.
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling bs_free_error_msg().
+ * is an error. This must later be freed by calling \link bs_free_error_msg()
+ * \endlink.
  * @return pointer to constructed model or `nullptr` if construction
  * fails
  */
@@ -176,7 +177,8 @@ BS_PUBLIC int bs_param_unc_num(const bs_model* m);
  * by bs_rng_construct(). This is only required when `include_gq` is `true`,
  * otherwise it can be null.
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling bs_free_error_msg().
+ * is an error. This must later be freed by calling \link bs_free_error_msg()
+ * \endlink.
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
@@ -195,7 +197,8 @@ BS_PUBLIC int bs_param_constrain(const bs_model* m, bool include_tp,
  * @param[in] theta sequence of constrained parameters
  * @param[out] theta_unc sequence of unconstrained parameters
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling bs_free_error_msg().
+ * is an error. This must later be freed by calling \link bs_free_error_msg()
+ * \endlink.
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
@@ -214,12 +217,48 @@ BS_PUBLIC int bs_param_unconstrain(const bs_model* m, const double* theta,
  * @param[in] json JSON-encoded constrained parameters
  * @param[out] theta_unc sequence of unconstrained parameters
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling bs_free_error_msg().
+ * is an error. This must later be freed by calling \link bs_free_error_msg()
+ * \endlink.
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
 BS_PUBLIC int bs_param_unconstrain_json(const bs_model* m, const char* json,
                                         double* theta_unc, char** error_msg);
+
+/**
+ * Similar to \link bs_param_unconstrain_json() \endlink, but specifically
+ * allows for incomplete specifications of the parameters.
+ * Any parameter not specified in the provided JSON will be randomly selected
+ * uniformly from `[-init_radius, init_radius)`. The resulting point will be
+ * checked for a finite log density value, and retried up to the specified
+ * number of times. If all such retries fail, the function will return -1
+ * to indicate an error.
+ *
+ * The JSON is expected to be in the
+ * <a href="https://mc-stan.org/docs/cmdstan-guide/json.html">JSON Format for
+ * CmdStan</a>.
+ *
+ * @param[in] m pointer to model structure
+ * @param[in] json JSON-encoded constrained parameters. Can be NULL.
+ * @param[in] rng Random number generator to use for the parameters not provided
+ * in the JSON.
+ * @param[in] init_radius The parameters not provided will be drawn uniformly
+ * from `[-init_radius, init_radius)` on the unconstrained scale.
+ * @param[in] max_tries maximum number of attempts at random initialization
+ * @param[in] jacobian whether to use the jacobian when calculating if the log
+ * density is finite.
+ * @param[out] theta_unc sequence of unconstrained parameters
+ * @param[out] error_msg a pointer to a string that will be allocated if there
+ * is an error. This must later be freed by calling \link bs_free_error_msg()
+ * \endlink.
+ * @return code 0 if successful and code -1 if there is an exception
+ * in the underlying Stan code or if the initialization failed to find a value
+ * with finite log density.
+ */
+BS_PUBLIC int bs_param_initialize(const bs_model* m, const char* json,
+                                  bs_rng* rng, double init_radius,
+                                  int max_tries, bool jacobian,
+                                  double* theta_unc, char** error_msg);
 
 /**
  * Set the log density of the specified parameters, dropping
@@ -234,7 +273,8 @@ BS_PUBLIC int bs_param_unconstrain_json(const bs_model* m, const char* json,
  * @param[in] theta_unc unconstrained parameters
  * @param[out] lp log density to be set
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling bs_free_error_msg().
+ * is an error. This must later be freed by calling \link bs_free_error_msg()
+ * \endlink.
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
@@ -259,7 +299,8 @@ BS_PUBLIC int bs_log_density(const bs_model* m, bool propto, bool jacobian,
  * @param[out] val log density to be set
  * @param[out] grad gradient to set
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling bs_free_error_msg().
+ * is an error. This must later be freed by calling \link bs_free_error_msg()
+ * \endlink.
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
@@ -291,7 +332,8 @@ BS_PUBLIC int bs_log_density_gradient(const bs_model* m, bool propto,
  * @param[out] grad gradient to set
  * @param[out] hessian hessian to set
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling bs_free_error_msg().
+ * is an error. This must later be freed by calling \link bs_free_error_msg()
+ * \endlink.
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
@@ -326,7 +368,8 @@ BS_PUBLIC int bs_log_density_hessian(const bs_model* m, bool propto,
  * @param[out] val log density to set
  * @param[out] hvp Hessian-vector to set
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling bs_free_error_msg().
+ * is an error. This must later be freed by calling \link bs_free_error_msg()
+ * \endlink.
  * @return code 0 if successful and code -1 if there is an exception
  * in the underlying Stan code
  */
@@ -335,13 +378,14 @@ BS_PUBLIC int bs_log_density_hessian_vector_product(
     const double* vector, double* val, double* hvp, char** error_msg);
 
 /**
- * Construct an PRNG object to be used in bs_param_constrain().
+ * Construct an PRNG object to be used in \link bs_param_constrain() \endlink.
  * This object is not thread safe and should be constructed and
  * destructed for each thread.
  *
  * @param[in] seed seed for the RNG
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling bs_free_error_msg().
+ * is an error. This must later be freed by calling \link bs_free_error_msg()
+ * \endlink.
  */
 BS_PUBLIC bs_rng* bs_rng_construct(unsigned int seed, char** error_msg);
 
@@ -364,7 +408,8 @@ typedef void (*STREAM_CALLBACK)(const char* data, size_t size);
  * never propagate an exception. Passing NULL will redirect printing back to
  * stdout.
  * @param[out] error_msg a pointer to a string that will be allocated if there
- * is an error. This must later be freed by calling bs_free_error_msg().
+ * is an error. This must later be freed by calling \link bs_free_error_msg()
+ * \endlink.
  * @return code 0 if successful and code -1 if there is an exception
  */
 BS_PUBLIC int bs_set_print_callback(STREAM_CALLBACK callback, char** error_msg);

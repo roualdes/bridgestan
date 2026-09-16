@@ -15,6 +15,7 @@ fn main() {
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         .dynamic_library_name("BridgeStan")
         .dynamic_link_require_all(true)
+        .wrap_unsafe_ops(true)
         .generate()
         .expect("Unable to generate bindings");
 

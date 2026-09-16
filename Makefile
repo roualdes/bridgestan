@@ -18,8 +18,11 @@ include $(MATH)make/compiler_flags
 include $(MATH)make/libraries
 
 # Set -fPIC globally since we're always building a shared library
-override CXXFLAGS += -fPIC -fvisibility=hidden -fvisibility-inlines-hidden
+override CXXFLAGS += -fPIC
 override CXXFLAGS_SUNDIALS += -fPIC
+
+# visibility control
+override CXXFLAGS += -fvisibility=hidden -fvisibility-inlines-hidden
 override CPPFLAGS += -DBRIDGESTAN_EXPORT -DSTAN_OVERRIDE_EIGEN_ASSERT
 
 ifdef STAN_OPENCL
@@ -69,17 +72,17 @@ endif
 %.hpp : %.stan $(STANC)
 	@echo ''
 	@echo '--- Translating Stan model to C++ code ---'
-	$(STANC) $(STANCFLAGS) --o=$(subst  \,/,$@) $(subst  \,/,$<)
+	$(STANC) $(STANCFLAGS) --o="$(subst \,/,$@)" "$(subst \,/,$<)"
 
 %.o : %.hpp $(USER_HEADER)
 	@echo ''
 	@echo '--- Compiling C++ code ---'
-	$(COMPILE.cpp) $(USER_INCLUDE) -x c++ -o $(subst  \,/,$*).o $(subst \,/,$<)
+	$(COMPILE.cpp) $(USER_INCLUDE) -x c++ -o "$(subst \\,/,$*).o" "$(subst \\,/,$<)"
 
 %_model.so : %.o $(BRIDGE_O) $(SUNDIALS_TARGETS) $(MPI_TARGETS) $(TBB_TARGETS)
 	@echo ''
 	@echo '--- Linking C++ code ---'
-	$(LINK.cpp) -shared -lm -o $(patsubst %.o, %_model.so, $(subst \,/,$<)) $(subst \,/,$*.o) $(BRIDGE_O) $(LDLIBS) $(SUNDIALS_TARGETS) $(MPI_TARGETS) $(TBB_TARGETS)
+	$(LINK.cpp) -shared -lm -o "$(patsubst %.o,%_model.so,$(subst \\,/,$<))" "$(subst \,/,$*.o)" $(BRIDGE_O) $(LDLIBS) $(SUNDIALS_TARGETS) $(MPI_TARGETS) $(TBB_TARGETS)
 
 .PHONY: docs
 docs:
@@ -141,7 +144,7 @@ print-%  : ; @echo $* = $($*) ;
 STANC_DL_RETRY = 5
 STANC_DL_DELAY = 10
 STANC3_TEST_BIN_URL ?=
-STANC3_VERSION ?= v2.37.0
+STANC3_VERSION ?= v2.39.0
 
 ifeq ($(OS),Windows_NT)
  OS_TAG := windows

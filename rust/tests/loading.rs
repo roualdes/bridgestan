@@ -2,7 +2,7 @@ mod common;
 use common::{get_model, model_dir};
 
 use std::{
-    sync::mpsc::{sync_channel, Receiver, SyncSender},
+    sync::mpsc::{Receiver, SyncSender, sync_channel},
     thread::spawn,
 };
 

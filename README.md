@@ -17,7 +17,7 @@ Stan is a probabilistic programming language for coding statistical
 models.  For an introduction to what can be coded in Stan, see the
 [*Stan User's Guide*](https://mc-stan.org/docs/stan-users-guide/index.html).
 
-BridgeStan is currently shipping with Stan version 2.37.0
+BridgeStan is currently shipping with Stan version 2.39.0
 
 Documentation is available at https://roualdes.us/bridgestan/
 
@@ -88,6 +88,7 @@ We are aware of the following projects using BridgeStan.
 - https://github.com/sethaxen/StanLogDensityProblems.jl
 - https://github.com/Julia-Tempering/Pigeons.jl
 - https://github.com/TuringLang/TuringBenchmarking.jl
+- https://github.com/rubenseyer/FFFSampler.jl
 
 ### Python
 
@@ -95,16 +96,18 @@ We are aware of the following projects using BridgeStan.
 - https://github.com/UoL-SignalProcessingGroup/retrospectr
 - https://github.com/UoL-SignalProcessingGroup/SMC-NUTS
 
-
 ### R
 
 - https://github.com/JTorgander/hmc-sandbox
 - https://github.com/UCL/rmcmc
 - https://github.com/CerulloE1996/BayesMVP/
+- https://github.com/andytimm/nutpieR
 
 ### Other
 
 - https://github.com/xhep-lab/polystan
+
+<!-- https://github.com/search?q=bridgestan+NOT+repo%3Aroualdes%2Fbridgestan+NOT+is%3Afork&type=code -->
 
 ## Research using BridgeStan
 
@@ -118,6 +121,12 @@ and letting us know so we can list your project here.
 - [*Variational Inference in Location-Scale Families: Exact Recovery of the Mean and Correlation Matrix*](https://arxiv.org/abs/2410.11067)
 - [*Sampling From Multiscale Densities With Delayed Rejection Generalized Hamiltonian Monte Carlo*](https://arxiv.org/abs/2406.02741)
 - [*MCBench: A Benchmark Suite for Monte Carlo Sampling Algorithms*](https://arxiv.org/abs/2501.03138)
+- [*Efficient scenario analysis in real-time Bayesian election forecasting via sequential meta-posterior sampling*](https://arxiv.org/abs/2510.19133)
+- [*Fisher meets Feynman: score-based variational inference with a product of experts*](https://arxiv.org/abs/2510.21598)
+- [*Generalized Guarantees for Variational Inference in the Presence of Even and Elliptical Symmetry*](https://arxiv.org/abs/2511.01064)
+- [*Rebalancing Markov jump processes for non-reversible continuous-time sampling*](https://arxiv.org/abs/2504.12190)
+
+<!-- https://search.arxiv.org/?query=bridgestan&byDate=1 -->
 
 ## Acknowledgements
 

@@ -147,7 +147,7 @@ Return the log density of the specified unconstrained parameters.
 This calculation drops constant terms that do not depend on the parameters if `propto` is `true` and includes change of variables terms for constrained parameters if `jacobian` is `true`.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L452-L459' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L538-L545' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.log_density_gradient' href='#BridgeStan.log_density_gradient'>#</a>
 **`BridgeStan.log_density_gradient`** &mdash; *Function*.
@@ -162,10 +162,10 @@ Returns a tuple of the log density and gradient of the specified unconstrained p
 
 This calculation drops constant terms that do not depend on the parameters if `propto` is `true` and includes change of variables terms for constrained parameters if `jacobian` is `true`.
 
-This allocates new memory for the gradient output each call. See [`log_density_gradient!`](julia.md#BridgeStan.log_density_gradient!) for a version which allows re-using existing memory.
+This allocates new memory for the gradient output each call. See [`log_density_gradient!`](julia.md#BridgeStan.log_density_gradient!) for a version which allows reusing existing memory.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L529-L540' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L615-L626' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.log_density_hessian' href='#BridgeStan.log_density_hessian'>#</a>
 **`BridgeStan.log_density_hessian`** &mdash; *Function*.
@@ -180,10 +180,10 @@ Returns a tuple of the log density, gradient, and Hessian  of the specified unco
 
 This calculation drops constant terms that do not depend on the parameters if `propto` is `true` and includes change of variables terms for constrained parameters if `jacobian` is `true`.
 
-This allocates new memory for the gradient and Hessian output each call. See [`log_density_hessian!`](julia.md#BridgeStan.log_density_hessian!) for a version which allows re-using existing memory.
+This allocates new memory for the gradient and Hessian output each call. See [`log_density_hessian!`](julia.md#BridgeStan.log_density_hessian!) for a version which allows reusing existing memory.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L607-L618' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L693-L704' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.log_density_hessian_vector_product' href='#BridgeStan.log_density_hessian_vector_product'>#</a>
 **`BridgeStan.log_density_hessian_vector_product`** &mdash; *Function*.
@@ -198,10 +198,10 @@ Returns log density and the product of the Hessian of the log density with the v
 
 This calculation drops constant terms that do not depend on the parameters if `propto` is `true` and includes change of variables terms for constrained parameters if `jacobian` is `true`.
 
-This allocates new memory for the output each call. See [`log_density_hessian_vector_product!`](julia.md#BridgeStan.log_density_hessian_vector_product!) for a version which allows re-using existing memory.
+This allocates new memory for the output each call. See [`log_density_hessian_vector_product!`](julia.md#BridgeStan.log_density_hessian_vector_product!) for a version which allows reusing existing memory.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L684-L696' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L770-L782' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.param_constrain' href='#BridgeStan.param_constrain'>#</a>
 **`BridgeStan.param_constrain`** &mdash; *Function*.
@@ -216,7 +216,7 @@ Returns a vector constrained parameters given unconstrained parameters. Addition
 
 If `include_gq` is `true`, then `rng` must be provided. See [`StanRNG`](julia.md#BridgeStan.StanRNG) for details on how to construct RNGs.
 
-This allocates new memory for the output each call. See [`param_constrain!`](julia.md#BridgeStan.param_constrain!) for a version which allows re-using existing memory.
+This allocates new memory for the output each call. See [`param_constrain!`](julia.md#BridgeStan.param_constrain!) for a version which allows reusing existing memory.
 
 This is the inverse of [`param_unconstrain`](julia.md#BridgeStan.param_unconstrain).
 
@@ -236,7 +236,7 @@ Returns a vector of unconstrained params give the constrained parameters.
 
 It is assumed that these will be in the same order as internally represented by the model (e.g., in the same order as [`param_unc_names()`](julia.md#BridgeStan.param_unc_names)). If structured input is needed, use [`param_unconstrain_json`](julia.md#BridgeStan.param_unconstrain_json)
 
-This allocates new memory for the output each call. See [`param_unconstrain!`](julia.md#BridgeStan.param_unconstrain!) for a version which allows re-using existing memory.
+This allocates new memory for the output each call. See [`param_unconstrain!`](julia.md#BridgeStan.param_unconstrain!) for a version which allows reusing existing memory.
 
 This is the inverse of [`param_constrain`](julia.md#BridgeStan.param_constrain).
 
@@ -256,10 +256,28 @@ This accepts a JSON string of constrained parameters and returns the unconstrain
 
 The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json_apdx.html).
 
-This allocates new memory for the output each call. See [`param_unconstrain_json!`](julia.md#BridgeStan.param_unconstrain_json!) for a version which allows re-using existing memory.
+This allocates new memory for the output each call. See [`param_unconstrain_json!`](julia.md#BridgeStan.param_unconstrain_json!) for a version which allows reusing existing memory.
 
 
 <a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L436-L446' class='documenter-source'>source</a><br>
+
+<a id='BridgeStan.param_initialize' href='#BridgeStan.param_initialize'>#</a>
+**`BridgeStan.param_initialize`** &mdash; *Function*.
+
+
+
+```julia
+param_initialize(sm, rng, theta="{}"; init_radius=2.0, max_tries=100, jacobian=true)
+```
+
+Similar to [`param_unconstrain_json`](julia.md#BridgeStan.param_unconstrain_json) but allows for incomplete specifications of the parameters. Any parameter not specified in the provided JSON will be randomly selected uniformly from `[-init_radius, init_radius)`. The resulting point will be checked for a finite log density value, and retried up to the specified number of times. If all such retries fail, an error is raised.
+
+The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json_apdx.html).
+
+This allocates new memory for the output each call. See [`param_initialize!`](julia.md#BridgeStan.param_initialize!) for a version which allows reusing existing memory.
+
+
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L502-L517' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.name' href='#BridgeStan.name'>#</a>
 **`BridgeStan.name`** &mdash; *Function*.
@@ -373,7 +391,7 @@ This calculation drops constant terms that do not depend on the parameters if `p
 The gradient is stored in the vector `out`, and a reference is returned. See [`log_density_gradient`](julia.md#BridgeStan.log_density_gradient) for a version which allocates fresh memory.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L483-L493' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L569-L579' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.log_density_hessian!' href='#BridgeStan.log_density_hessian!'>#</a>
 **`BridgeStan.log_density_hessian!`** &mdash; *Function*.
@@ -391,7 +409,7 @@ This calculation drops constant terms that do not depend on the parameters if `p
 The gradient is stored in the vector `out_grad` and the Hessian is stored in `out_hess` and references are returned. See [`log_density_hessian`](julia.md#BridgeStan.log_density_hessian) for a version which allocates fresh memory.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L551-L562' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L637-L648' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.log_density_hessian_vector_product!' href='#BridgeStan.log_density_hessian_vector_product!'>#</a>
 **`BridgeStan.log_density_hessian_vector_product!`** &mdash; *Function*.
@@ -409,7 +427,7 @@ This calculation drops constant terms that do not depend on the parameters if `p
 The product is stored in the vector `out` and a reference is returned. See [`log_density_hessian_vector_product`](julia.md#BridgeStan.log_density_hessian_vector_product) for a version which allocates fresh memory.
 
 
-<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L631-L642' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L717-L728' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.param_constrain!' href='#BridgeStan.param_constrain!'>#</a>
 **`BridgeStan.param_constrain!`** &mdash; *Function*.
@@ -468,6 +486,24 @@ The result is stored in the vector `out`, and a reference is returned. See [`par
 
 
 <a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L404-L413' class='documenter-source'>source</a><br>
+
+<a id='BridgeStan.param_initialize!' href='#BridgeStan.param_initialize!'>#</a>
+**`BridgeStan.param_initialize!`** &mdash; *Function*.
+
+
+
+```julia
+param_initialize!(sm, rng, out, theta="{}"; init_radius=2.0, max_tries=100, jacobian=true)
+```
+
+Similar to [`param_unconstrain_json!`](julia.md#BridgeStan.param_unconstrain_json!) but allows for incomplete specifications of the parameters. Any parameter not specified in the provided JSON will be randomly selected uniformly from `[-init_radius, init_radius)`. The resulting point will be checked for a finite log density value, and retried up to the specified number of times. If all such retries fail, an error is raised.
+
+The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json_apdx.html).
+
+The result is stored in the vector `out`, and a reference is returned. See [`param_initialize`](julia.md#BridgeStan.param_initialize) for a version which allocates fresh memory.
+
+
+<a target='_blank' href='https://github.com/roualdes/bridgestan/blob/main/julia/src/model.jl#L453-L467' class='documenter-source'>source</a><br>
 
 <a id='BridgeStan.StanRNG' href='#BridgeStan.StanRNG'>#</a>
 **`BridgeStan.StanRNG`** &mdash; *Type*.

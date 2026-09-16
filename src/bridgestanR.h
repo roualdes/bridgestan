@@ -67,6 +67,13 @@ BS_PUBLIC void bs_param_unconstrain_json_R(bs_model** model, char const** json,
                                            double* theta_unc, int* return_code,
                                            char** err_msg, void** err_ptr);
 
+/// See \link bs_param_initialize() \endlink for more details.
+BS_PUBLIC void bs_param_initialize_R(bs_model** model, char const** json,
+                                     bs_rng** rng, double* init_radius,
+                                     int* max_tries, int* jacobian,
+                                     double* theta_unc, int* return_code,
+                                     char** err_msg, void** err_ptr);
+
 /// See \link bs_log_density() \endlink for more details.
 BS_PUBLIC void bs_log_density_R(bs_model** model, int* propto, int* jacobian,
                                 const double* theta_unc, double* val,

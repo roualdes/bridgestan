@@ -134,13 +134,12 @@ class StanModel:
             else:
                 data = stanio.dump_stan_json(data)
 
-        windows_dll_path_setup()
-
         if str(model_lib).endswith(".stan"):
             model_lib = compile_model(
                 model_lib, make_args=make_args, stanc_args=stanc_args
             )
 
+        windows_dll_path_setup()
         self.lib_path = fspath(Path(model_lib).absolute().resolve())
         if warn and hasattr(dllist, "dllist") and self.lib_path in dllist.dllist():
             warnings.warn(
@@ -259,6 +258,19 @@ class StanModel:
         self._param_unconstrain_json.argtypes = [
             ctypes.c_void_p,
             ctypes.c_char_p,
+            param_sized_out_array,
+            star_star_char,
+        ]
+
+        self._param_initialize = self.stanlib.bs_param_initialize
+        self._param_initialize.restype = ctypes.c_int
+        self._param_initialize.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_char_p,
+            ctypes.c_void_p,
+            ctypes.c_double,
+            ctypes.c_int,
+            ctypes.c_bool,
             param_sized_out_array,
             star_star_char,
         ]
@@ -543,6 +555,69 @@ class StanModel:
             raise self._handle_error(err, "param_unconstrain_json")
         return out
 
+    def param_initialize(
+        self,
+        rng: "StanRNG",
+        theta_json: Union[str, Mapping[str, Any], None] = None,
+        *,
+        init_radius: float = 2.0,
+        max_tries: int = 100,
+        jacobian: bool = True,
+        out: Optional[FloatArray] = None,
+    ) -> FloatArray:
+        """
+        Return an array of the unconstrained parameters derived from the
+        specified JSON formatted data, allowing for incomplete specifications.
+        Any parameter not specified in the provided JSON will be randomly selected
+        uniformly from ``[-init_radius, init_radius)``. The resulting point will
+        be checked for a finite log density value, and retried up to the specified
+        number of times. If all such retries fail, an exception is raised.
+
+        The JSON is expected to be in the `JSON Format for CmdStan <https://mc-stan.org/docs/cmdstan-guide/json.html>`__.
+
+        :param rng: The source of randomness for the unspecified parameters.
+        :param theta_json: The JSON encoded constrained parameters or a dictionary
+            which will be converted to a JSON string.
+        :param init_radius: The parameters not provided will be drawn uniformly
+            from ``[-init_radius, init_radius)`` on the unconstrained scale.
+        :param max_tries: How many attempts should be made to find a point with finite
+            log density.
+        :param jacobian: ``True`` if change-of-variables terms for constrained
+            parameters should be included in the log density when checking for
+            finiteness.
+        :param out: A location into which the result is stored.  If
+            provided, it must have shape ``(D, )``, where ``D`` is the number of
+            unconstrained parameters.  If not provided or ``None``, a freshly
+            allocated array is returned.
+        :return: The unconstrained parameter array.
+        :raises ValueError: If ``out`` is specified and is not the same
+            shape as the return value.
+        :raises RuntimeError: If the C++ Stan model throws an exception or initialization fails after ``max_tries``.
+        """
+        dims = self.param_unc_num()
+        if out is None:
+            out = np.zeros(shape=dims)
+        if theta_json is None:
+            chars = None
+        else:
+            if not isinstance(theta_json, str):
+                theta_json = stanio.dump_stan_json(theta_json)
+            chars = theta_json.encode("UTF-8")
+        err = ctypes.c_char_p()
+        rc = self._param_initialize(
+            self.model,
+            chars,
+            rng.ptr,
+            init_radius,
+            max_tries,
+            jacobian,
+            out,
+            ctypes.byref(err),
+        )
+        if rc:
+            raise self._handle_error(err, "param_initialize")
+        return out
+
     def log_density(
         self,
         theta_unc: FloatArray,
@@ -813,6 +888,7 @@ class StanRNG:
         construct.restype = ctypes.c_void_p
         construct.argtypes = [ctypes.c_uint, star_star_char]
         self.ptr = construct(seed, None)
+        self.seed = seed
 
         if not self.ptr:
             raise RuntimeError("Failed to construct RNG.")
@@ -820,6 +896,9 @@ class StanRNG:
         self._destruct = self.stanlib.bs_rng_destruct
         self._destruct.restype = None
         self._destruct.argtypes = [ctypes.c_void_p]
+
+    def __repr__(self) -> str:
+        return f"StanRNG(seed={self.seed})"
 
     def __del__(self) -> None:
         """

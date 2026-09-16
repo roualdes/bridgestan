@@ -64,7 +64,7 @@ fn hessian_vector_product() {
     let model = Model::new(&lib, data, 42).unwrap();
 
     let n = model.param_unc_num();
-    use rand::Rng;
+    use rand::RngExt;
 
     let mut rng = rand::rng();
 
@@ -169,6 +169,47 @@ fn test_params() {
         .param_unconstrain_json(CString::new(r#"{"theta": 0.5}"#).unwrap(), &mut theta_unc)
         .unwrap();
     assert_eq!(theta_unc[0], 0.);
+
+    let (lib, data) = get_model("gaussian");
+    let model = Model::new(&lib, data, 42).unwrap();
+    let mut rng = model.new_rng(123456).unwrap();
+    let theta_result = [0.2, (1.9f64).ln()];
+    let mut theta_unc = vec![100f64; 2];
+    model
+        .param_initialize(
+            &mut rng,
+            CString::new(r#"{"mu":0.2}"#).unwrap(),
+            2.0,
+            100,
+            true,
+            &mut theta_unc,
+        )
+        .unwrap();
+
+    assert_eq!(theta_unc[0], theta_result[0]);
+
+    model
+        .param_initialize(
+            &mut rng,
+            CString::new(r#"{"sigma":1.9}"#).unwrap(),
+            2.0,
+            100,
+            true,
+            &mut theta_unc,
+        )
+        .unwrap();
+
+    assert_eq!(theta_unc[1], theta_result[1]);
+
+    let bad = model.param_initialize(
+        &mut rng,
+        CString::new(r#"{"sigma":-1}"#).unwrap(),
+        2.0,
+        10,
+        true,
+        &mut theta_unc,
+    );
+    assert!(matches!(bad, Err(BridgeStanError::EvaluationFailed(_))));
 }
 
 #[cfg(feature = "download-bridgestan-src")]

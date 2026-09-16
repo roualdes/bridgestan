@@ -27,12 +27,12 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Check out github
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: 3.11
 
@@ -47,14 +47,14 @@ jobs:
           sudo apt-get install pandoc doxygen -y
 
       - name: Set up Julia
-        uses: julia-actions/setup-julia@v2
+        uses: julia-actions/setup-julia@v3
 
 
       - name: Install R
-        uses: r-lib/actions/setup-r@v2.11.4
+        uses: r-lib/actions/setup-r@v2.13.0
 
       - name: Install R dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2.11.4
+        uses: r-lib/actions/setup-r-dependencies@v2.13.0
         with:
           packages: |
             any::roxygen2
@@ -85,7 +85,7 @@ jobs:
           make html
 
       - name: Check out github
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           path: docs/_build/bs-docs
           ref: gh-pages

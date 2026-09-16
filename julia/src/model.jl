@@ -324,7 +324,7 @@ See [`StanRNG`](@ref) for details on how to construct RNGs.
 
 This allocates new memory for the output each call.
 See [`param_constrain!`](@ref) for a version which allows
-re-using existing memory.
+reusing existing memory.
 
 This is the inverse of [`param_unconstrain`](@ref).
 """
@@ -392,7 +392,7 @@ If structured input is needed, use [`param_unconstrain_json`](@ref)
 
 This allocates new memory for the output each call.
 See [`param_unconstrain!`](@ref) for a version which allows
-re-using existing memory.
+reusing existing memory.
 
 This is the inverse of [`param_constrain`](@ref).
 """
@@ -442,11 +442,97 @@ The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/
 
 This allocates new memory for the output each call.
 See [`param_unconstrain_json!`](@ref) for a version which allows
-re-using existing memory.
+reusing existing memory.
 """
 function param_unconstrain_json(sm::StanModel, theta::String)
     out = zeros(sm.param_unc_num)
     param_unconstrain_json!(sm, theta, out)
+end
+
+
+"""
+    param_initialize!(sm, rng, out, theta=\"{}\"; init_radius=2.0, max_tries=100, jacobian=true)
+
+Similar to [`param_unconstrain_json!`](@ref) but allows for
+incomplete specifications of the parameters.
+Any parameter not specified in the provided JSON will be randomly selected
+uniformly from `[-init_radius, init_radius)`. The resulting point will be
+checked for a finite log density value, and retried
+up to the specified number of times. If all such retries fail, an error is raised.
+
+The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json_apdx.html).
+
+The result is stored in the vector `out`, and a reference is returned. See
+[`param_initialize`](@ref) for a version which allocates fresh memory.
+"""
+function param_initialize!(
+    sm::StanModel,
+    rng::StanRNG,
+    out::Vector{Float64},
+    theta::String = "{}";
+    init_radius::Float64 = 2.0,
+    max_tries = 100,
+    jacobian::Bool = true,
+)
+    if length(out) != sm.param_unc_num
+        throw(
+            DimensionMismatch(
+                "out must be same size as number of unconstrained parameters",
+            ),
+        )
+    end
+
+    err = Ref{Cstring}()
+    rc = @ccall $(dlsym(sm.lib, :bs_param_initialize))(
+        sm.stanmodel::Ptr{StanModelStruct},
+        theta::Cstring,
+        rng.ptr::Ptr{StanRNGStruct},
+        init_radius::Cdouble,
+        max_tries::Cint,
+        jacobian::Bool,
+        out::Ref{Cdouble},
+        err::Ref{Cstring},
+    )::Cint
+    if rc != 0
+        error(handle_error(sm.lib, err, "param_initialize"))
+    end
+    out
+end
+
+"""
+    param_initialize(sm, rng, theta=\"{}\"; init_radius=2.0, max_tries=100, jacobian=true)
+
+Similar to [`param_unconstrain_json`](@ref) but allows for
+incomplete specifications of the parameters.
+Any parameter not specified in the provided JSON will be randomly selected
+uniformly from `[-init_radius, init_radius)`. The resulting point will be
+checked for a finite log density value, and retried
+up to the specified number of times. If all such retries fail, an error is raised.
+
+The JSON is expected to be in the [JSON Format for CmdStan](https://mc-stan.org/docs/cmdstan-guide/json_apdx.html).
+
+This allocates new memory for the output each call.
+See [`param_initialize!`](@ref) for a version which allows
+reusing existing memory.
+"""
+function param_initialize(
+    sm::StanModel,
+    rng::StanRNG,
+    theta::String = "{}";
+    init_radius::Float64 = 2.0,
+    max_tries = 100,
+    jacobian::Bool = true,
+)
+    out = zeros(sm.param_unc_num)
+    param_initialize!(
+        sm,
+        rng,
+        out,
+        theta;
+        init_radius = init_radius,
+        max_tries = max_tries,
+        jacobian = jacobian,
+    )
 end
 
 """
@@ -536,7 +622,7 @@ and includes change of variables terms for constrained parameters if `jacobian` 
 
 This allocates new memory for the gradient output each call.
 See [`log_density_gradient!`](@ref) for a version which allows
-re-using existing memory.
+reusing existing memory.
 """
 function log_density_gradient(
     sm::StanModel,
@@ -614,7 +700,7 @@ and includes change of variables terms for constrained parameters if `jacobian` 
 
 This allocates new memory for the gradient and Hessian output each call.
 See [`log_density_hessian!`](@ref) for a version which allows
-re-using existing memory.
+reusing existing memory.
 """
 function log_density_hessian(
     sm::StanModel,
@@ -691,7 +777,7 @@ This calculation drops constant terms that do not depend on the parameters if `p
 and includes change of variables terms for constrained parameters if `jacobian` is `true`.
 
 This allocates new memory for the output each call. See
-[`log_density_hessian_vector_product!`](@ref) for a version which allows re-using
+[`log_density_hessian_vector_product!`](@ref) for a version which allows reusing
 existing memory.
 """
 function log_density_hessian_vector_product(

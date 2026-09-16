@@ -6,7 +6,7 @@ mod compile;
 mod download;
 pub(crate) mod ffi;
 
-pub use bs_safe::{open_library, BridgeStanError, Model, Rng, StanLibrary};
+pub use bs_safe::{BridgeStanError, Model, Rng, StanLibrary, open_library};
 pub use compile::compile_model;
 
 #[cfg(feature = "download-bridgestan-src")]

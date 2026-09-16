@@ -14,3 +14,12 @@ remotes::install_github("https://github.com/roualdes/bridgestan", subdir="R")
 # from folder R/
 install.packages(getwd(), repos=NULL, type="source")
 ```
+
+**From the R-Multiverse mirror**:
+
+```R
+install.packages(
+  "bridgestan",
+  repos = c("https://community.r-multiverse.org", getOption("repos"))
+)
+```

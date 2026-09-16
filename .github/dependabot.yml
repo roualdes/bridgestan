@@ -10,10 +10,10 @@ updates:
       interval: "monthly"
 
   # checks if stan-dev/stan@master has changed
-  - package-ecosystem: "gitsubmodule"
-    directory: "/"
-    schedule:
-      interval: "daily"
+  # - package-ecosystem: "gitsubmodule"
+  #   directory: "/"
+  #   schedule:
+  #     interval: "daily"
 
   - package-ecosystem: "cargo"
     directory: "/rust"
