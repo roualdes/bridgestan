@@ -45,6 +45,35 @@ end
 
 
 
+@testset "compile user header" begin
+    stanfile = joinpath(models, "external", "external.stan")
+    lib = splitext(stanfile)[1] * "_model.so"
+    rm(lib, force = true)
+
+    @test_throws r"declared without specifying a definition" BridgeStan.compile_model(
+        stanfile,
+    )
+    @test_throws r"USER_HEADER" BridgeStan.compile_model(
+        stanfile;
+        stanc_args = ["--allow-undefined"],
+    )
+
+    header = joinpath(models, "external", "make_odds.hpp")
+    # every stanc argument reaches stanc, in either order
+    for stanc_args in
+        (["--allow-undefined", "--warn-pedantic"], ["--warn-pedantic", "--allow-undefined"])
+        res = BridgeStan.compile_model(
+            stanfile;
+            stanc_args,
+            make_args = ["USER_HEADER=$header"],
+        )
+        @test Base.samefile(lib, res)
+        rm(lib)
+    end
+end
+
+
+
 @testset "compile bad" begin
     not_stanfile = joinpath(models, "multi", "multi.data.json")
     @test_throws ErrorException BridgeStan.compile_model(not_stanfile)
