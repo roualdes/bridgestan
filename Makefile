@@ -56,7 +56,7 @@ $(BRIDGE_O) : $(BRIDGE_DEPS)
 
 ifneq ($(findstring allow-undefined,$(STANCFLAGS)),)
 USER_HEADER ?= $(dir $(MAKECMDGOALS))user_header.hpp
-USER_INCLUDE = -include $(USER_HEADER)
+USER_INCLUDE = -include "$(subst \\,/,$(USER_HEADER))"
 # Give a better error message if the USER_HEADER is not found
 $(USER_HEADER):
 	@echo 'ERROR: Missing user header.'
