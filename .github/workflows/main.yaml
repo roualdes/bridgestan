@@ -32,7 +32,7 @@ jobs:
       - name: Install Formatters
         run: |
           sudo apt install -y clang-format black isort
-          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/posit-dev/air/releases/download/0.8.0/air-installer.sh | sh
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/posit-dev/air/releases/download/0.13.0/air-installer.sh | sh
           julia --project=julia -e 'import Pkg; Pkg.add("JuliaFormatter")'
 
       - name: Run formatting checks

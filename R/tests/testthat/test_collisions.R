@@ -3,9 +3,9 @@ test_that("loading another library didn't break prior ones", {
   simple <- load_model("simple")
 
   if (.Platform$OS.type == "windows") {
-    dll = "./test_collisions.dll"
+    dll <- "./test_collisions.dll"
   } else {
-    dll = "./test_collisions.so"
+    dll <- "./test_collisions.so"
   }
   skip_if_not(file.exists(dll), "Compiled DLL not found")
 
